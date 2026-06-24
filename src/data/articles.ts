@@ -38,6 +38,16 @@ export const articles: Article[] = [
     aiModel:     'Claude Opus 4.8',
   },
   {
+    slug:        'mycli-architecture',
+    title:       'mycli 架构解析',
+    date:        '2026-06-24',
+    category:    'code',
+    tags:        ['Python', 'MySQL', 'CLI', 'prompt_toolkit', 'Pygments'],
+    description: 'MySQL/MariaDB 命令行客户端 mycli v1.73.0 源码全面拆解——自动补全、语法高亮、SSH 隧道、LLM 集成的架构设计解读。',
+    readingTime: '20 min',
+    aiModel:     'Claude Opus 4.8',
+  },
+  {
     slug:        'langfuse-codebase-overview',
     title:       'Langfuse 源码深度解析',
     date:        '2026-06-24',

@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mycli 架构解析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════════ */
+:root {
+  --bg:        #0b0d14;
+  --surface:   #13162a;
+  --surface2:  #1d2138;
+  --surface3:  #252840;
+  --border:    #2a2e50;
+  --border2:   #363b62;
+  --accent:    #6c8ef5;
+  --accent2:   #4ecdc4;
+  --accent3:   #f9ca24;
+  --accent4:   #ff6b9d;
+  --text:      #e2e8f0;
+  --text-muted:#7a85a3;
+  --code-bg:   #090c14;
+  --green:     #64ffda;
+  --orange:    #f0a500;
+  --red:       #ff6b6b;
+  --purple:    #c792ea;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 20px rgba(108,142,245,0.18);
+  --nav-w: 260px;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Menlo', monospace;
+  --sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ════════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════════════════════════════════════════════
+   READING PROGRESS BAR
+════════════════════════════════════════════ */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 999;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px rgba(108,142,245,0.6);
+}
+
+/* ════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--nav-w);
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 0 0 24px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(108,142,245,0.06) 0%, transparent 100%);
+}
+
+.nav-logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(108,142,245,0.4);
+}
+
+.nav-logo h2 {
+  font-size: 17px;
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.nav-logo p {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 5px;
+  font-family: var(--mono);
+}
+
+nav ul { list-style: none; padding: 0 8px; }
+
+.nav-section {
+  padding: 10px 12px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  margin: 1px 0;
+}
+
+nav a:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
+}
+
+nav a.active {
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  border-left-color: var(--accent);
+}
+
+nav a .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--border2);
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+
+nav a:hover .dot { background: var(--text-muted); }
+nav a.active .dot { background: var(--accent); transform: scale(1.4); }
+
+/* ════════════════════════════════════════════
+   MAIN CONTENT
+════════════════════════════════════════════ */
+main {
+  margin-left: var(--nav-w);
+  padding: 48px 60px 80px;
+  max-width: calc(var(--nav-w) + 860px);
+}
+
+section {
+  margin-bottom: 80px;
+  scroll-margin-top: 40px;
+}
+
+/* ════════════════════════════════════════════
+   TYPOGRAPHY
+════════════════════════════════════════════ */
+h1 {
+  font-size: 38px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--green) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+/* CSS counter for auto section numbers */
+body { counter-reset: section; }
+section { counter-increment: section; }
+
+h2 {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+h2::before {
+  content: "§" counter(section);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  border: 1px solid rgba(108,142,245,0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+h2 .icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: rgba(108,142,245,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent2);
+  margin: 28px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+h3::before {
+  content: '';
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  background: var(--accent2);
+  flex-shrink: 0;
+}
+
+h4 {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--accent3);
+  margin: 16px 0 8px;
+}
+
+p { margin-bottom: 12px; color: var(--text-muted); }
+p strong { color: var(--text); font-weight: 600; }
+
+/* ════════════════════════════════════════════
+   CODE BLOCKS
+════════════════════════════════════════════ */
+.code-block {
+  margin: 14px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.code-header {
+  background: var(--surface2);
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.code-dots { display: flex; gap: 5px; }
+.code-dots span {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.dot-red   { background: #ff5f57; }
+.dot-yellow{ background: #ffbd2e; }
+.dot-green { background: #28ca41; }
+
+.code-lang {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text-muted);
+  margin-left: auto;
+  background: rgba(255,255,255,0.04);
+  padding: 1px 7px;
+  border-radius: 3px;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.65;
+  font-family: var(--mono);
+  color: #abb2bf;
+  margin: 0;
+}
+
+/* standalone pre (not in .code-block) */
+section > pre,
+.two-col pre,
+.callout pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 14px 0;
+  font-family: var(--mono);
+  box-shadow: var(--shadow-sm);
+}
+
+code {
+  background: rgba(108,142,245,0.1);
+  color: var(--accent2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-family: var(--mono);
+}
+
+pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* syntax colors */
+pre .k  { color: #c792ea; }
+pre .s  { color: #c3e88d; }
+pre .c  { color: #4a5568; font-style: italic; }
+pre .f  { color: #82aaff; }
+pre .n  { color: #f78c6c; }
+pre .t  { color: #89ddff; }
+pre .cm { color: #ffcb6b; }
+
+/* ════════════════════════════════════════════
+   INLINE CODE IN TABLE CELLS
+════════════════════════════════════════════ */
+td code { font-size: 12px; }
+
+/* ════════════════════════════════════════════
+   CARDS
+════════════════════════════════════════════ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(108,142,245,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(108,142,245,0.15), var(--shadow-md);
+}
+
+.card-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 7px;
+  font-family: var(--mono);
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+/* ════════════════════════════════════════════
+   BADGES
+════════════════════════════════════════════ */
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 2px;
+  font-family: var(--mono);
+  letter-spacing: 0.2px;
+}
+
+.badge-blue   { background: rgba(108,142,245,0.15); color: #8aabff; border: 1px solid rgba(108,142,245,0.2); }
+.badge-teal   { background: rgba(78,205,196,0.15);  color: #5ee8df; border: 1px solid rgba(78,205,196,0.2); }
+.badge-yellow { background: rgba(249,202,36,0.15);  color: #fcd53a; border: 1px solid rgba(249,202,36,0.2); }
+.badge-pink   { background: rgba(255,107,157,0.15); color: #ff85b3; border: 1px solid rgba(255,107,157,0.2); }
+.badge-green  { background: rgba(100,255,218,0.12); color: #64ffda; border: 1px solid rgba(100,255,218,0.2); }
+.badge-purple { background: rgba(199,146,234,0.15); color: #d4a8f0; border: 1px solid rgba(199,146,234,0.2); }
+.badge-orange { background: rgba(240,165,0,0.15);   color: #ffbe40; border: 1px solid rgba(240,165,0,0.2); }
+
+/* ════════════════════════════════════════════
+   TABLES
+════════════════════════════════════════════ */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+th {
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  vertical-align: top;
+}
+
+td:first-child {
+  color: var(--accent2);
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.018); }
+
+/* ════════════════════════════════════════════
+   FLOW DIAGRAMS
+════════════════════════════════════════════ */
+.flow {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 22px;
+  margin: 14px 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.flow-step {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.flow-box {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 4px 12px;
+  color: var(--text);
+  font-size: 12.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.flow-box.highlight {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  box-shadow: 0 0 0 1px rgba(108,142,245,0.15);
+}
+
+.flow-box.green {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(100,255,218,0.07);
+}
+
+.flow-box.orange {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(240,165,0,0.07);
+}
+
+.flow-box.purple {
+  border-color: var(--purple);
+  color: var(--purple);
+  background: rgba(199,146,234,0.08);
+}
+
+.arrow { color: var(--border2); font-size: 14px; flex-shrink: 0; }
+
+.flow-indent  { margin-left: 28px; }
+.flow-indent2 { margin-left: 56px; }
+.flow-indent3 { margin-left: 84px; }
+
+/* ════════════════════════════════════════════
+   CALLOUTS
+════════════════════════════════════════════ */
+.callout {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.callout-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  line-height: 1;
+}
+
+.callout-body strong {
+  color: var(--text);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13.5px;
+}
+
+.callout.tip  { border-left-color: var(--green); }
+.callout.warn { border-left-color: var(--orange); }
+.callout.tip  .callout-icon::after { content: "💡"; }
+.callout.warn .callout-icon::after { content: "⚠️"; }
+.callout:not(.tip):not(.warn) .callout-icon::after { content: "ℹ️"; }
+
+/* ════════════════════════════════════════════
+   LAYER STACK
+════════════════════════════════════════════ */
+.layer-stack {
+  margin: 20px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.layer {
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.layer:hover { background: rgba(255,255,255,0.015); }
+.layer:last-child { border-bottom: none; }
+
+.layer-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  font-family: var(--mono);
+}
+
+.layer-name { font-weight: 700; font-size: 14px; width: 170px; flex-shrink: 0; }
+.layer-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* ════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 40px 44px;
+  margin-bottom: 48px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(108,142,245,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(78,205,196,0.05) 0%, transparent 50%),
+    repeating-linear-gradient(
+      0deg, transparent, transparent 29px,
+      rgba(255,255,255,0.012) 29px, rgba(255,255,255,0.012) 30px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 29px,
+      rgba(255,255,255,0.012) 29px, rgba(255,255,255,0.012) 30px
+    );
+  pointer-events: none;
+}
+
+.hero > * { position: relative; }
+
+.hero .subtitle {
+  font-size: 15.5px;
+  color: var(--text-muted);
+  margin-top: 12px;
+  max-width: 620px;
+  line-height: 1.7;
+}
+
+.hero .meta {
+  display: flex;
+  gap: 20px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.hero .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+
+.hero .meta-item .val {
+  color: var(--text);
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
+/* ════════════════════════════════════════════
+   TREE
+════════════════════════════════════════════ */
+.tree {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.9;
+  overflow-x: auto;
+  white-space: pre;          /* CRITICAL: preserve indentation */
+  box-shadow: var(--shadow-sm);
+}
+
+.tree .dir     { color: var(--accent); font-weight: 600; }
+.tree .file    { color: #abb2bf; }
+.tree .comment { color: #3d4a5c; }
+
+/* ════════════════════════════════════════════
+   TWO-COL LAYOUT
+════════════════════════════════════════════ */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+  align-items: start;
+}
+
+/* ════════════════════════════════════════════
+   PILL LIST
+════════════════════════════════════════════ */
+.pill-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+
+/* ════════════════════════════════════════════
+   ORDERED LIST
+════════════════════════════════════════════ */
+ol.styled {
+  padding-left: 0;
+  counter-reset: ol-counter;
+  list-style: none;
+}
+
+ol.styled li {
+  counter-increment: ol-counter;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 5px 0;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+ol.styled li::before {
+  content: counter(ol-counter, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════════
+   BACK TO TOP
+════════════════════════════════════════════ */
+#back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 40px; height: 40px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.25s, transform 0.25s, border-color 0.15s;
+  z-index: 200;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+}
+
+#back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#back-to-top:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════ */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ════════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  nav { display: none; }
+  main { margin-left: 0; padding: 24px 20px 60px; max-width: 100%; }
+  .two-col { grid-template-columns: 1fr; }
+  .hero { padding: 28px 24px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<nav id="sidebar">
+  <div class="nav-logo">
+    <div class="nav-logo-title">
+      <div class="nav-logo-icon">🐬</div>
+      <h2>mycli</h2>
+    </div>
+    <p>源码架构深度解析</p>
+  </div>
+  <ul>
+    <li class="nav-section">概览</li>
+    <li><a href="#overview"><span class="dot"></span>项目简介</a></li>
+    <li><a href="#structure"><span class="dot"></span>目录结构</a></li>
+    <li><a href="#layers"><span class="dot"></span>分层架构</a></li>
+
+    <li class="nav-section">核心模块</li>
+    <li><a href="#entry"><span class="dot"></span>入口与启动</a></li>
+    <li><a href="#sqlexecute"><span class="dot"></span>数据库执行层</a></li>
+    <li><a href="#completer"><span class="dot"></span>智能补全引擎</a></li>
+    <li><a href="#config"><span class="dot"></span>配置管理</a></li>
+    <li><a href="#special"><span class="dot"></span>特殊命令框架</a></li>
+    <li><a href="#output"><span class="dot"></span>输出格式化</a></li>
+
+    <li class="nav-section">运行模式</li>
+    <li><a href="#modes"><span class="dot"></span>REPL 交互模式</a></li>
+    <li><a href="#batch"><span class="dot"></span>批量执行模式</a></li>
+
+    <li class="nav-section">基础设施</li>
+    <li><a href="#refresh"><span class="dot"></span>后台补全刷新</a></li>
+    <li><a href="#ssh"><span class="dot"></span>SSH 隧道 &amp; SSL</a></li>
+    <li><a href="#keybindings"><span class="dot"></span>按键绑定与样式</a></li>
+    <li><a href="#patterns"><span class="dot"></span>设计模式</a></li>
+    <li><a href="#deps"><span class="dot"></span>依赖总览</a></li>
+    <li><a href="#flow"><span class="dot"></span>全局数据流</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════ MAIN ════════════ -->
+<main>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>mycli 架构解析</h1>
+  <p class="subtitle">
+    mycli 是一个基于 Python 的 MySQL / MariaDB 命令行客户端，核心特性包括智能自动补全、语法高亮、多行编辑、SSH 隧道、结果分页及 LLM 集成。本文对其 v1.73.0 源码架构作全面拆解。
+  </p>
+  <div class="meta">
+    <div class="meta-item">版本 <span class="val">v1.73.0</span></div>
+    <div class="meta-item">协议 <span class="val">BSD-3-Clause</span></div>
+    <div class="meta-item">Python <span class="val">≥ 3.10</span></div>
+    <div class="meta-item">代码量 <span class="val">~18,000 行</span></div>
+    <div class="meta-item">维护 <span class="val">dbcli 社区</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     §1  项目简介
+══════════════════════════════════════════ -->
+<section id="overview">
+  <h2><span class="icon">🧭</span>项目简介</h2>
+
+  <p>mycli 属于 <strong>dbcli</strong> 家族（同系列有 pgcli、litecli 等）——一组基于 <code>prompt_toolkit</code> 构建的增强型数据库 CLI 工具。相比原生 mysql 命令行，mycli 提供了完整的上下文感知补全、语法高亮、多线程 schema 预取等现代终端体验。</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">智能 SQL 补全</div>
+      <div class="card-desc">感知上下文的关键字/表/列补全，支持模糊匹配（Rapidfuzz）和 CamelCase 模式，11 级补全优先级</div>
+      <span class="badge badge-blue">sqlcompleter.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">多协议连接</div>
+      <div class="card-desc">原生 TCP/Socket 连接，可选 SSL/TLS 加密和 SSH 隧道，支持 .mylogin.cnf AES 加密凭证</div>
+      <span class="badge badge-teal">sqlexecute.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">多运行模式</div>
+      <div class="card-desc">交互式 REPL / 批量文件执行 / 单次 -e 查询 / 健康检查，统一入口按需分发</div>
+      <span class="badge badge-yellow">main_modes/</span>
+    </div>
+    <div class="card">
+      <div class="card-title">可扩展特殊命令</div>
+      <div class="card-desc">装饰器注册的命令体系，支持 \u \r \# \. 等 MySQL CLI 兼容命令及编程式自定义扩展</div>
+      <span class="badge badge-pink">packages/special/</span>
+    </div>
+    <div class="card">
+      <div class="card-title">后台异步刷新</div>
+      <div class="card-desc">补全元数据在独立线程中重建，Schema 预取并行进行，主 REPL 循环零阻塞</div>
+      <span class="badge badge-green">completion_refresher.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">LLM 集成</div>
+      <div class="card-desc">通过 llm 库可选接入大语言模型，Ctrl-\ 快捷键触发，支持字段/区段截断配置</div>
+      <span class="badge badge-purple">packages/special/</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §2  目录结构
+══════════════════════════════════════════ -->
+<section id="structure">
+  <h2><span class="icon">📁</span>目录结构</h2>
+
+  <div class="two-col">
+    <div>
+      <h3>顶层结构</h3>
+      <div class="tree"><span class="dir">mycli/</span>          <span class="comment"># 主包</span>
+<span class="dir">test/</span>           <span class="comment"># 测试套件</span>
+<span class="dir">doc/</span>            <span class="comment"># 文档</span>
+<span class="dir">.github/</span>        <span class="comment"># CI/CD &amp; 模板</span>
+<span class="file">pyproject.toml</span>  <span class="comment"># 元数据 &amp; 依赖</span>
+<span class="file">changelog.md</span>
+<span class="file">LICENSE.txt</span>     <span class="comment"># BSD-3-Clause</span></div>
+    </div>
+    <div>
+      <h3>测试结构</h3>
+      <div class="tree"><span class="dir">test/</span>
+  <span class="dir">pytests/</span>        <span class="comment"># PyTest 单元测试</span>
+    <span class="file">test_sqlresult.py</span>
+    <span class="file">test_sqlexecute.py</span>
+    <span class="file">test_ssh_utils.py</span>
+    <span class="file">conftest.py</span>
+  <span class="dir">features/</span>       <span class="comment"># Behave BDD 验收测试</span>
+    <span class="file">*.feature</span>
+  <span class="file">utils.py</span>
+  <span class="file">myclirc</span>         <span class="comment"># 测试配置</span></div>
+    </div>
+  </div>
+
+  <h3>主包文件详解</h3>
+  <div class="tree"><span class="dir">mycli/</span>
+  <span class="file">__init__.py</span>              <span class="comment"># 版本元数据</span>
+  <span class="file">main.py</span>                  <span class="comment"># CLI 入口 + MyCli 核心类 (~1400 行)</span>
+  <span class="file">sqlexecute.py</span>            <span class="comment"># 数据库连接 &amp; 查询执行引擎</span>
+  <span class="file">sqlcompleter.py</span>          <span class="comment"># 智能补全引擎 (~900 行)</span>
+  <span class="file">config.py</span>                <span class="comment"># 配置文件解析 + .mylogin.cnf AES 解密</span>
+  <span class="file">output.py</span>                <span class="comment"># 输出格式化 Mixin</span>
+  <span class="file">app_state.py</span>             <span class="comment"># 应用状态 Mixin (my.cnf 读取/SSL 合并)</span>
+  <span class="file">clibuffer.py</span>             <span class="comment"># 多行输入缓冲检测</span>
+  <span class="file">clitoolbar.py</span>            <span class="comment"># 底部状态栏渲染</span>
+  <span class="file">clistyle.py</span>              <span class="comment"># 主题 &amp; 样式工厂</span>
+  <span class="file">key_bindings.py</span>          <span class="comment"># 键盘快捷键</span>
+  <span class="file">lexer.py</span>                 <span class="comment"># SQL 语法高亮 (Pygments 扩展)</span>
+  <span class="file">types.py</span>                 <span class="comment"># Query namedtuple 等类型定义</span>
+  <span class="file">constants.py</span>             <span class="comment"># URL、默认端口等常量</span>
+  <span class="file">completion_refresher.py</span>  <span class="comment"># 后台补全刷新线程</span>
+  <span class="file">schema_prefetcher.py</span>     <span class="comment"># 多 Schema 元数据预取线程</span>
+  <span class="file">cli_args.py</span>              <span class="comment"># CLI 参数解析 (Dataclass + Click)</span>
+  <span class="file">compat.py</span>                <span class="comment"># 兼容工具</span>
+  <span class="file">myclirc</span>                  <span class="comment"># 内置默认配置模板</span>
+  <span class="dir">packages/</span>                <span class="comment"># 工具 &amp; 扩展子包</span>
+    <span class="file">sqlresult.py</span>           <span class="comment"># 查询结果数据类</span>
+    <span class="file">completion_engine.py</span>   <span class="comment"># SQL 语义解析 &amp; 补全上下文</span>
+    <span class="file">sql_utils.py</span>           <span class="comment"># SQL 分析工具函数</span>
+    <span class="file">filepaths.py</span>           <span class="comment"># 路径补全</span>
+    <span class="file">ssh_utils.py</span>           <span class="comment"># SSH 配置读取</span>
+    <span class="file">hybrid_redirection.py</span>  <span class="comment"># &gt; / &gt;&gt; 重定向检测</span>
+    <span class="dir">special/</span>               <span class="comment"># 特殊命令子系统</span>
+      <span class="file">main.py</span>              <span class="comment"># 命令注册中心</span>
+      <span class="file">iocommands.py</span>        <span class="comment"># I/O 控制命令</span>
+      <span class="file">dbcommands.py</span>        <span class="comment"># 数据库元命令</span>
+      <span class="file">favoritequeries.py</span>   <span class="comment"># 收藏查询管理</span>
+    <span class="dir">ptoolkit/</span>              <span class="comment"># Prompt Toolkit 工具</span>
+      <span class="file">fzf.py</span>               <span class="comment"># Fzf 历史搜索</span>
+      <span class="file">history.py</span>           <span class="comment"># 带时间戳的历史记录</span>
+      <span class="file">utils.py</span>             <span class="comment"># UI 安全刷新</span>
+  <span class="dir">main_modes/</span>              <span class="comment"># 各运行模式实现</span>
+    <span class="file">repl.py</span>                <span class="comment"># 交互式 REPL</span>
+    <span class="file">batch.py</span>               <span class="comment"># 批量文件执行</span>
+    <span class="file">execute.py</span>             <span class="comment"># 单次 -e 执行</span>
+    <span class="file">checkup.py</span>             <span class="comment"># --checkup 健康诊断</span>
+    <span class="file">list_dsn.py</span>            <span class="comment"># --list-dsn</span>
+    <span class="file">list_ssh_config.py</span>     <span class="comment"># --list-ssh-config</span></div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §3  分层架构
+══════════════════════════════════════════ -->
+<section id="layers">
+  <h2><span class="icon">🏗️</span>分层架构</h2>
+
+  <p>mycli 的架构可划分为 5 个清晰的层次，自顶向下分别负责 UI 交互、应用编排、业务逻辑、数据访问和基础支撑。</p>
+
+  <div class="layer-stack">
+    <div class="layer" style="background: rgba(108,142,245,0.06)">
+      <div class="layer-num" style="background:#6c8ef5; color:#fff">5</div>
+      <div class="layer-name" style="color:#8aabff">UI 交互层</div>
+      <div class="layer-desc"><code>prompt_toolkit</code> PromptSession &nbsp;·&nbsp; 语法高亮 (Pygments) &nbsp;·&nbsp; 状态栏 &nbsp;·&nbsp; 快捷键绑定 &nbsp;·&nbsp; Fzf 历史搜索</div>
+    </div>
+    <div class="layer" style="background: rgba(78,205,196,0.05)">
+      <div class="layer-num" style="background:#4ecdc4; color:#0b0d14">4</div>
+      <div class="layer-name" style="color:#5ee8df">应用编排层</div>
+      <div class="layer-desc"><code>MyCli</code> 核心类 &nbsp;·&nbsp; REPL 主循环 &nbsp;·&nbsp; 配置加载合并 &nbsp;·&nbsp; 运行模式分发 &nbsp;·&nbsp; 审计日志</div>
+    </div>
+    <div class="layer" style="background: rgba(249,202,36,0.04)">
+      <div class="layer-num" style="background:#f9ca24; color:#0b0d14">3</div>
+      <div class="layer-name" style="color:#fcd53a">业务逻辑层</div>
+      <div class="layer-desc">特殊命令框架 &nbsp;·&nbsp; 智能补全引擎 &nbsp;·&nbsp; 后台刷新线程 &nbsp;·&nbsp; Schema 预取 &nbsp;·&nbsp; 结果格式化</div>
+    </div>
+    <div class="layer" style="background: rgba(255,107,157,0.04)">
+      <div class="layer-num" style="background:#ff6b9d; color:#fff">2</div>
+      <div class="layer-name" style="color:#ff85b3">数据访问层</div>
+      <div class="layer-desc"><code>SQLExecute</code> &nbsp;·&nbsp; PyMySQL 连接 &nbsp;·&nbsp; SQL 分割执行 &nbsp;·&nbsp; Schema 内省查询 &nbsp;·&nbsp; 类型转换</div>
+    </div>
+    <div class="layer" style="background: rgba(100,255,218,0.03)">
+      <div class="layer-num" style="background:#64ffda; color:#0b0d14">1</div>
+      <div class="layer-name" style="color:#64ffda">传输/安全层</div>
+      <div class="layer-desc">SSL/TLS &nbsp;·&nbsp; SSH 隧道 (sshtunnel/paramiko) &nbsp;·&nbsp; .mylogin.cnf AES 解密 &nbsp;·&nbsp; Keyring 密码存储</div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon"></div>
+    <div class="callout-body">
+      <strong>核心设计原则</strong>
+      各层职责边界清晰，跨层通信通过定义良好的接口进行。UI 层只感知 <code>prompt_toolkit</code> 抽象，数据访问层只感知 PyMySQL，两者均不直接耦合。
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §4  入口与启动
+══════════════════════════════════════════ -->
+<section id="entry">
+  <h2><span class="icon">🚀</span>入口与启动流程</h2>
+
+  <h3>CLI 入口链</h3>
+  <p><code>pyproject.toml</code> 中声明 <code>mycli = "mycli.main:main"</code>，安装后 <code>mycli</code> 命令直接映射到 <code>main()</code> 函数。</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="c"># pyproject.toml</span>
+[project.scripts]
+mycli = <span class="s">"mycli.main:main"</span>
+
+<span class="c"># main.py 入口链</span>
+<span class="k">def</span> <span class="f">main</span>():
+    click_entrypoint.main()          <span class="c"># Click 解析参数</span>
+
+<span class="cm">@click.command</span>()
+<span class="cm">@clickdc.adddc</span>(<span class="s">'cli_args'</span>, CliArgs)  <span class="c"># Dataclass 驱动参数</span>
+<span class="k">def</span> <span class="f">click_entrypoint</span>(cli_args: CliArgs):
+    mycli = MyCli(cli_args)          <span class="c"># 创建核心对象</span>
+    mycli.connect(...)               <span class="c"># 建立 DB 连接</span>
+    <span class="c"># 根据 cli_args 分发到对应模式</span></code></pre>
+  </div>
+
+  <h3>启动时序</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box highlight">main()</div><span class="arrow">→</span><div class="flow-box">click 解析 CliArgs 数据类</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">MyCli.__init__()</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">read_config_files() — 多层配置合并</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">SQLCompleter 初始化</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">CompletionRefresher 初始化</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">SchemaPrefetcher 初始化</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">mycli.connect()</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">SSH 隧道建立（可选）</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">PyMySQL 连接</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box orange">SQLExecute 实例化</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">模式分发</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">├─</span><div class="flow-box green">main_repl() — 交互模式</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">├─</span><div class="flow-box">main_batch_*() — 批量模式</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">├─</span><div class="flow-box">main_execute_from_cli() — 单次 -e</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">└─</span><div class="flow-box">main_checkup() — 健康诊断</div></div>
+  </div>
+
+  <h3>CliArgs 数据类（部分关键字段）</h3>
+  <p>CLI 参数通过 <code>clickdc</code> 库将 Python <code>dataclass</code> 直接映射为 Click 选项，彻底消除手写 <code>@click.option</code> 的重复代码，并获得静态类型检查。</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">Python · cli_args.py</span>
+    </div>
+    <pre><code><span class="cm">@dataclass</span>(slots=<span class="k">True</span>)
+<span class="k">class</span> <span class="cm">CliArgs</span>:
+    database:  str  | <span class="k">None</span>   <span class="c"># 位置参数：DB名 或 DSN 字符串</span>
+    user:      str  | <span class="k">None</span>   <span class="c"># -u</span>
+    host:      str  | <span class="k">None</span>   <span class="c"># -h</span>
+    port:      int  | <span class="k">None</span>   <span class="c"># -P</span>
+    password:  str  | <span class="k">None</span>   <span class="c"># -p（可选值标志）</span>
+    execute:   str  | <span class="k">None</span>   <span class="c"># -e 单次查询</span>
+    batch:     str  | <span class="k">None</span>   <span class="c"># -B 批量文件</span>
+    ssl_mode:  str  | <span class="k">None</span>   <span class="c"># --ssl-mode {off|auto|on}</span>
+    ssh_host:  str  | <span class="k">None</span>   <span class="c"># SSH 隧道主机</span>
+    checkup:   bool           <span class="c"># --checkup 诊断模式</span>
+    list_dsn:  bool           <span class="c"># --list-dsn</span>
+    <span class="c"># ... 30+ 更多选项</span></code></pre>
+  </div>
+
+  <h3>配置优先级（由低到高）</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>#</th><th>来源</th><th>路径</th></tr>
+      <tr><td>1</td><td>包内置默认值</td><td>mycli/myclirc（随包发布）</td></tr>
+      <tr><td>2</td><td>系统级配置</td><td>/etc/myclirc</td></tr>
+      <tr><td>3</td><td>XDG 用户配置</td><td>~/.config/mycli/myclirc</td></tr>
+      <tr><td>4</td><td>当前目录配置</td><td>.myclirc</td></tr>
+      <tr><td>5</td><td>用户主目录</td><td>~/.myclirc</td></tr>
+      <tr><td>6</td><td>MySQL 配置</td><td>my.cnf（多路径搜索）</td></tr>
+      <tr><td>7</td><td>加密登录凭证</td><td>~/.mylogin.cnf（AES ECB 加密）</td></tr>
+      <tr><td>8</td><td>系统密钥环</td><td>keyring（Python keyring）</td></tr>
+      <tr><td>9 ★</td><td>CLI 参数</td><td>命令行 -u / -h / -p 等</td></tr>
+    </table>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §5  数据库执行层
+══════════════════════════════════════════ -->
+<section id="sqlexecute">
+  <h2><span class="icon">🗄️</span>数据库执行层 — SQLExecute</h2>
+
+  <p><code>sqlexecute.py</code> 是 mycli 与 MySQL 服务器通信的唯一门面，封装了 PyMySQL 连接生命周期、多语句执行、Schema 内省查询及服务器类型检测。</p>
+
+  <div class="two-col">
+    <div>
+      <h3>核心属性</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python</span></div>
+        <pre><code><span class="k">class</span> <span class="cm">SQLExecute</span>:
+    conn:        pymysql.Connection
+    dbname:      str
+    user:        str
+    host:        str
+    port:        int
+    socket:      str | <span class="k">None</span>
+    server_info: ServerInfo
+    ssl:         dict
+    sandbox_mode: bool  <span class="c"># 密码过期模式</span></code></pre>
+      </div>
+    </div>
+    <div>
+      <h3>服务器类型检测</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python</span></div>
+        <pre><code><span class="k">class</span> <span class="cm">ServerSpecies</span>(Enum):
+    MySQL   = <span class="s">"MySQL"</span>
+    MariaDB = <span class="s">"MariaDB"</span>
+    Percona = <span class="s">"Percona"</span>
+    TiDB    = <span class="s">"TiDB"</span>
+    Unknown = <span class="s">"Unknown"</span>
+
+<span class="c"># 通过 @@version_comment 检测</span>
+<span class="c"># 不同 species 启用不同补全关键字</span></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>查询执行管线</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box highlight">run(statement)</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">split_queries() — 按分隔符拆分多语句</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">for each query:</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">special.execute(cur, sql) — 特殊命令优先检查</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">│</span><div style="color:var(--text-muted);font-size:12px">(若非特殊命令，抛 NotASpecialCommand)</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">cur.execute(sql) — PyMySQL 执行</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box green">get_result(cursor) → SQLResult</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">yield SQLResult (生成器，延迟消费)</div></div>
+  </div>
+
+  <h3>Schema 内省接口</h3>
+  <p>SQLExecute 提供完整的 Schema 内省接口，供 SQLCompleter 的后台刷新线程使用：</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>方法</th><th>查询目标</th><th>用途</th></tr>
+      <tr><td>tables()</td><td>information_schema.TABLES</td><td>表名补全</td></tr>
+      <tr><td>table_columns(schema)</td><td>information_schema.COLUMNS</td><td>列名补全</td></tr>
+      <tr><td>databases()</td><td>SHOW DATABASES</td><td>库名补全</td></tr>
+      <tr><td>functions()</td><td>information_schema.ROUTINES</td><td>函数名补全</td></tr>
+      <tr><td>procedures()</td><td>information_schema.ROUTINES</td><td>存储过程补全</td></tr>
+      <tr><td>enum_values()</td><td>information_schema.COLUMNS</td><td>枚举值补全</td></tr>
+      <tr><td>foreign_keys()</td><td>information_schema.KEY_COLUMN_USAGE</td><td>外键关系</td></tr>
+      <tr><td>users()</td><td>mysql.user</td><td>用户名补全</td></tr>
+    </table>
+  </div>
+
+  <h3>连接标志</h3>
+  <div class="code-block">
+    <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python</span></div>
+    <pre><code>CLIENT_FLAGS = (
+    CLIENT.INTERACTIVE,                <span class="c"># 交互式客户端标记</span>
+    CLIENT.MULTI_STATEMENTS,           <span class="c"># 允许多语句一次发送</span>
+    CLIENT.HANDLE_EXPIRED_PASSWORDS,   <span class="c"># 密码过期后进入 sandbox_mode</span>
+)</code></pre>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §6  智能补全引擎
+══════════════════════════════════════════ -->
+<section id="completer">
+  <h2><span class="icon">💡</span>智能补全引擎 — SQLCompleter</h2>
+
+  <p><code>sqlcompleter.py</code> 继承 <code>prompt_toolkit.Completer</code>，实现了多层次、上下文感知的 SQL 补全系统。</p>
+
+  <div class="two-col">
+    <div>
+      <h3>补全层次优先级</h3>
+      <ol class="styled">
+        <li>特殊命令（\ 开头）</li>
+        <li>数据库名</li>
+        <li>表 / 视图</li>
+        <li>列名</li>
+        <li>函数 / 存储过程</li>
+        <li>枚举值（ENUM）</li>
+        <li>MySQL 用户</li>
+        <li>字符集 / 排序规则</li>
+        <li>文件路径（source/load）</li>
+        <li>收藏查询</li>
+        <li>SQL 关键字</li>
+      </ol>
+    </div>
+    <div>
+      <h3>模糊匹配算法（Fuzziness）</h3>
+      <div class="card" style="margin:0 0 8px; padding: 12px 16px">
+        <div class="card-title">PERFECT</div>
+        <div class="card-desc">完全前缀匹配，最高优先级</div>
+      </div>
+      <div class="card" style="margin:0 0 8px; padding: 12px 16px">
+        <div class="card-title">REGEX</div>
+        <div class="card-desc">正则表达式模式匹配</div>
+      </div>
+      <div class="card" style="margin:0 0 8px; padding: 12px 16px">
+        <div class="card-title">UNDER_WORDS</div>
+        <div class="card-desc">下划线分词边界匹配</div>
+      </div>
+      <div class="card" style="margin:0 0 8px; padding: 12px 16px">
+        <div class="card-title">CAMEL_CASE</div>
+        <div class="card-desc">驼峰命名大写字母匹配</div>
+      </div>
+      <div class="card" style="margin:0; padding: 12px 16px">
+        <div class="card-title">RAPIDFUZZ</div>
+        <div class="card-desc">基于 rapidfuzz 的模糊字符串匹配</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>补全流程</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box highlight">get_completions(doc, complete_event)</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">completion_engine.suggest_type(text_before_cursor)</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">tokenize SQL (sqlparse)</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">分析最后一个有效 token 的语义位置</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box green">返回 suggestion 类型列表</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">for each suggestion:</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">从 dbmetadata 缓存查候选集合</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">fuzzify() — 按 Fuzziness 级别过滤排序</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box orange">yield Completion 对象</div></div>
+  </div>
+
+  <h3>补全上下文示例</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>输入片段</th><th>识别上下文</th><th>补全内容</th></tr>
+      <tr><td>SELECT &lt;cursor&gt;</td><td>column / function</td><td>列名 + 函数名 + 关键字</td></tr>
+      <tr><td>FROM &lt;cursor&gt;</td><td>table</td><td>表名 + 视图名</td></tr>
+      <tr><td>FROM mydb.&lt;cursor&gt;</td><td>schema.table</td><td>mydb 下的表</td></tr>
+      <tr><td>WHERE col = '&lt;cursor&gt;</td><td>enum value</td><td>该列的 ENUM 枚举值</td></tr>
+      <tr><td>\&lt;cursor&gt;</td><td>special command</td><td>\u \r \# \. 等</td></tr>
+      <tr><td>source &lt;cursor&gt;</td><td>file path</td><td>本地文件路径</td></tr>
+      <tr><td>GRANT … TO '&lt;cursor&gt;</td><td>user</td><td>MySQL 用户名</td></tr>
+    </table>
+  </div>
+
+  <h3>dbmetadata 缓存结构</h3>
+  <div class="code-block">
+    <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python</span></div>
+    <pre><code>dbmetadata = {
+    <span class="s">'tables'</span>:        {schema: [table_names]},
+    <span class="s">'views'</span>:         {schema: [view_names]},
+    <span class="s">'columns'</span>:       {<span class="s">'schema.table'</span>: [col_names]},
+    <span class="s">'functions'</span>:     {schema: [func_names]},
+    <span class="s">'datatypes'</span>:     {schema: [type_names]},
+    <span class="s">'show_commands'</span>: [...],
+}</code></pre>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §7  配置管理
+══════════════════════════════════════════ -->
+<section id="config">
+  <h2><span class="icon">⚙️</span>配置管理 — config.py</h2>
+
+  <p>配置系统基于 <code>configobj</code> 库，支持多文件分层合并，对 MySQL 原生的 <code>.mylogin.cnf</code> 实现了完整的 AES 解密读取。</p>
+
+  <div class="two-col">
+    <div>
+      <h3>myclirc 配置区块</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">INI · myclirc</span></div>
+        <pre><code>[main]           <span class="c"># UI、格式化、行为控制</span>
+[connection]     <span class="c"># 默认连接参数</span>
+[colors]         <span class="c"># 配色方案</span>
+[keys]           <span class="c"># 按键超时</span>
+[search]         <span class="c"># 搜索高亮</span>
+[alias_dsn]      <span class="c"># DSN 别名映射</span>
+[init-commands]  <span class="c"># 连接后自动执行的 SQL</span>
+[llm]            <span class="c"># LLM 集成配置</span>
+[favorite_queries]</code></pre>
+      </div>
+    </div>
+    <div>
+      <h3>.mylogin.cnf 解密原理</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">AES ECB 解密流程</span></div>
+        <pre><code><span class="n">1.</span> 读取文件开头 4 字节（magic）
+<span class="n">2.</span> 读取 20 字节 login_key
+<span class="n">3.</span> XOR 生成 16 字节 AES 密钥:
+   aes_key[i] ^= login_key[i % 20]
+<span class="n">4.</span> AES-128-ECB 解密剩余内容
+<span class="n">5.</span> 解析为 INI 格式（[section]）</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>DSN 别名支持</h3>
+  <p>在 <code>[alias_dsn]</code> 中预定义连接串，启动时直接用别名代替完整参数：</p>
+  <div class="code-block">
+    <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">INI</span></div>
+    <pre><code>[alias_dsn]
+prod = mysql://user:pass@prod-db.example.com:3306/mydb
+dev  = mysql://root@localhost/devdb
+
+<span class="c"># 使用方式：</span>
+$ mycli prod   <span class="c"># 等价于使用 prod DSN 连接</span></code></pre>
+  </div>
+
+  <h3>密码凭证获取链</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-box">CLI -p 参数</div><span class="arrow">→</span>
+      <div class="flow-box">.mylogin.cnf</div><span class="arrow">→</span>
+      <div class="flow-box">系统 Keyring</div><span class="arrow">→</span>
+      <div class="flow-box highlight">交互式 prompt 输入</div>
+    </div>
+  </div>
+  <p style="margin-top:10px">成功连接后，密码会自动存入系统 Keyring，下次无需重复输入。</p>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §8  特殊命令框架
+══════════════════════════════════════════ -->
+<section id="special">
+  <h2><span class="icon">⚡</span>特殊命令框架 — packages/special/</h2>
+
+  <p>特殊命令是 mycli 的可扩展元命令系统，实现 MySQL CLI 兼容的 <code>\命令</code> 语法，以及内置数据库管理命令。</p>
+
+  <h3>注册机制</h3>
+  <div class="code-block">
+    <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python · special/main.py</span></div>
+    <pre><code><span class="c"># 方式一：装饰器注册</span>
+<span class="cm">@special_command</span>(
+    command=<span class="s">"use"</span>,
+    aliases=[SpecialCommandAlias(<span class="s">"\\u"</span>, case_sensitive=<span class="k">False</span>)],
+    arg_type=ArgType.PARSED_QUERY,
+)
+<span class="k">def</span> <span class="f">use_database</span>(cur, pattern, verbose):
+    ...
+
+<span class="c"># 方式二：编程式注册（在 main.py 中注册实例方法）</span>
+<span class="f">register_special_command</span>(
+    handler=self.change_table_format,
+    command=<span class="s">"tableformat"</span>,
+    aliases=[...],
+)</code></pre>
+  </div>
+
+  <h3>命令解析管线</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box highlight">execute(cur, sql)</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">parse_special_command(sql)</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">提取命令词 + 详细程度 + 参数字符串</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">查 COMMANDS 注册表（大小写不敏感匹配）</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→ 找到</span><div class="flow-box green">handler(cur, pattern, verbose)</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→ 未找到</span><div class="flow-box">raise NotASpecialCommand → PyMySQL 执行</div></div>
+  </div>
+
+  <h3>内置特殊命令一览</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>命令</th><th>别名</th><th>功能</th></tr>
+      <tr><td>use / connect</td><td>\u</td><td>切换数据库</td></tr>
+      <tr><td>rehash</td><td>\#</td><td>重新加载补全元数据</td></tr>
+      <tr><td>tableformat</td><td>\T</td><td>切换输出表格格式</td></tr>
+      <tr><td>redirectformat</td><td>\Tr</td><td>切换重定向格式</td></tr>
+      <tr><td>prompt</td><td>\R</td><td>自定义命令提示符</td></tr>
+      <tr><td>source</td><td>\.</td><td>执行 SQL 文件</td></tr>
+      <tr><td>tee / notee</td><td>—</td><td>输出同时写入文件 / 停止</td></tr>
+      <tr><td>pager / nopager</td><td>—</td><td>设置分页器 / 禁用</td></tr>
+      <tr><td>\e / \edit</td><td>—</td><td>打开外部编辑器编辑 SQL</td></tr>
+      <tr><td>status</td><td>\s</td><td>显示服务器 &amp; 连接状态</td></tr>
+      <tr><td>exit / quit</td><td>\q</td><td>退出</td></tr>
+      <tr><td>\clip</td><td>—</td><td>复制查询到剪贴板</td></tr>
+      <tr><td>\bug</td><td>—</td><td>打开 GitHub Issues 页面</td></tr>
+      <tr><td>delimiter</td><td>—</td><td>更改语句分隔符</td></tr>
+    </table>
+  </div>
+
+  <h3>I/O 控制全局状态（iocommands.py）</h3>
+  <div class="code-block">
+    <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python · iocommands.py</span></div>
+    <pre><code>_expanded_output:       bool  <span class="c"># \G 竖排输出开关</span>
+_is_pager_enabled:      bool  <span class="c"># 分页器开关</span>
+_timing_enabled:        bool  <span class="c"># 查询计时开关</span>
+_show_warnings_enabled: bool  <span class="c"># 警告显示开关</span>
+_is_redirected:         bool  <span class="c"># 输出重定向状态</span>
+_current_delimiter:     str   <span class="c"># 当前分隔符（默认 ";"）</span></code></pre>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §9  输出格式化
+══════════════════════════════════════════ -->
+<section id="output">
+  <h2><span class="icon">🖨️</span>输出格式化 — OutputMixin</h2>
+
+  <p><code>output.py</code> 中的 <code>OutputMixin</code> 被 <code>MyCli</code> 混入，提供统一的结果渲染、分页、日志审计入口。</p>
+
+  <h3>支持的输出格式（由 cli_helpers 提供）</h3>
+  <div class="pill-list">
+    <span class="badge badge-blue">table（默认）</span>
+    <span class="badge badge-teal">vertical (\G)</span>
+    <span class="badge badge-yellow">csv</span>
+    <span class="badge badge-pink">tsv</span>
+    <span class="badge badge-green">json</span>
+    <span class="badge badge-purple">latex</span>
+    <span class="badge badge-orange">mediawiki</span>
+    <span class="badge badge-blue">rst</span>
+    <span class="badge badge-teal">html</span>
+    <span class="badge badge-yellow">jira</span>
+    <span class="badge badge-pink">pretty（Unicode box）</span>
+    <span class="badge badge-green">ascii</span>
+    <span class="badge badge-purple">double（double-line box）</span>
+    <span class="badge badge-orange">markdown</span>
+  </div>
+
+  <h3>渲染管线</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box highlight">SQLResult</div><span class="arrow">→</span><div class="flow-box">TabularOutputFormatter.format_output()</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">选择格式化器（table/csv/json/…）</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">计算可用宽度（终端宽 − 保留空间）</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box green">生成 FormattedText 行</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">echo() → 分页器 / 标准输出 / 审计日志</div></div>
+  </div>
+
+  <h3>SQLResult 数据结构</h3>
+  <div class="code-block">
+    <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python · packages/sqlresult.py</span></div>
+    <pre><code><span class="cm">@dataclass</span>
+<span class="k">class</span> <span class="cm">SQLResult</span>:
+    preamble:  str | <span class="k">None</span>           <span class="c"># 结果前置消息</span>
+    header:    list[str] | <span class="k">None</span>    <span class="c"># 列头</span>
+    rows:      Cursor | list        <span class="c"># 结果行（延迟消费游标）</span>
+    postamble: str | <span class="k">None</span>          <span class="c"># 结果后置消息</span>
+    status:    str | FormattedText  <span class="c"># 状态行（受影响行数等）</span>
+    command:   dict                 <span class="c"># 元数据（耗时等）</span>
+
+    <span class="cm">@cached_property</span>
+    <span class="k">def</span> <span class="f">status_plain</span>(self) -> str: ...  <span class="c"># 纯文本状态</span></code></pre>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §10  REPL 交互模式
+══════════════════════════════════════════ -->
+<section id="modes">
+  <h2><span class="icon">💻</span>REPL 交互模式 — main_modes/repl.py</h2>
+
+  <p>交互模式是 mycli 的核心使用场景，基于 <code>prompt_toolkit</code> 的 <code>PromptSession</code> 构建，实现了丰富的终端交互体验。</p>
+
+  <h3>REPL 主循环</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box highlight">main_repl(mycli)</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">构建 PromptSession</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">DynamicCompleter(mycli.completer) — 线程安全动态绑定</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">MyCliLexer — Pygments 语法高亮</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">mycli_bindings() — 自定义快捷键</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">create_toolbar_tokens_func() — 底部状态栏</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">循环:</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">session.prompt() — 等待用户输入</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">clibuffer 多行检测 — 不完整则继续读取</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">破坏性命令检测 + 确认提示</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">mycli.run_query(query)</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box green">输出结果 + 更新历史</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">need_completion_refresh? → 触发后台刷新</div></div>
+  </div>
+
+  <h3>多行输入检测规则</h3>
+  <p><code>clibuffer.py</code> 通过一套规则判断用户是否已完成输入：</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>规则</th><th>说明</th></tr>
+      <tr><td>以分隔符结尾</td><td>默认 <code>;</code>，可通过 delimiter 命令修改</td></tr>
+      <tr><td>以 \g / \G 结尾</td><td>普通 / 竖排输出结束符</td></tr>
+      <tr><td>以 \e / \edit 结尾</td><td>调用外部编辑器</td></tr>
+      <tr><td>以 \clip 结尾</td><td>复制到剪贴板</td></tr>
+      <tr><td>特殊元命令</td><td>exit / help 等无需分隔符</td></tr>
+      <tr><td>空行回车</td><td>立即提交当前内容</td></tr>
+    </table>
+  </div>
+
+  <h3>底部状态栏内容</h3>
+  <div class="pill-list">
+    <span class="badge badge-blue">user@host:port</span>
+    <span class="badge badge-teal">当前数据库</span>
+    <span class="badge badge-yellow">服务器版本</span>
+    <span class="badge badge-pink">事务状态</span>
+    <span class="badge badge-green">SSL 标识</span>
+    <span class="badge badge-purple">SSH 标识</span>
+    <span class="badge badge-orange">沙盒模式警告</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §11  批量执行模式
+══════════════════════════════════════════ -->
+<section id="batch">
+  <h2><span class="icon">📦</span>批量执行模式 — main_modes/batch.py</h2>
+
+  <p>批量模式支持从文件或 stdin 读取 SQL 语句依次执行，适用于脚本化部署和数据迁移场景。</p>
+
+  <div class="two-col">
+    <div>
+      <h3>三种批量变体</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python</span></div>
+        <pre><code><span class="f">main_batch_with_progress_bar</span>()
+<span class="c">  # -B 文件 + 检测到 tty</span>
+<span class="c">  # 显示进度条（当前行/总行数）</span>
+
+<span class="f">main_batch_without_progress_bar</span>()
+<span class="c">  # -B 文件 + 输出被重定向</span>
+<span class="c">  # 静默执行，适合脚本 pipe</span>
+
+<span class="f">main_batch_from_stdin</span>()
+<span class="c">  # echo "SELECT 1" | mycli</span>
+<span class="c">  # 从 stdin 读取，无进度条</span></code></pre>
+      </div>
+    </div>
+    <div>
+      <h3>断点续传</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python</span></div>
+        <pre><code><span class="f">replay_checkpoint_file</span>(mycli, file)
+<span class="c"># 记录已执行到的字节偏移量</span>
+<span class="c"># 中断重启后从该位置继续</span>
+<span class="c"># 避免重复执行已成功的语句</span></code></pre>
+      </div>
+      <div class="callout tip" style="margin-top:12px">
+        <div class="callout-icon"></div>
+        <div class="callout-body">
+          <strong>checkpoint 机制</strong>
+          以字节偏移量为恢复点，适合长时间运行的迁移脚本，网络中断后无需从头重跑。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §12  后台补全刷新
+══════════════════════════════════════════ -->
+<section id="refresh">
+  <h2><span class="icon">🔄</span>后台补全刷新 — CompletionRefresher &amp; SchemaPrefetcher</h2>
+
+  <p>mycli 设计了两级后台刷新机制，确保补全数据的实时性同时不影响 REPL 响应速度。</p>
+
+  <div class="two-col">
+    <div>
+      <h3>CompletionRefresher</h3>
+      <p>每次执行了 DDL/USE/REHASH 后触发，在独立线程中重建整个补全器。</p>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python</span></div>
+        <pre><code><span class="cm">@refresher</span>()
+<span class="k">def</span> <span class="f">refresh_tables</span>(executor, completer):
+    completer.extend_relations(
+        executor.tables(), kind=<span class="s">'tables'</span>
+    )
+
+<span class="c"># 全部 @refresher 函数：</span>
+<span class="c"># databases / tables / columns</span>
+<span class="c"># foreign_keys / functions</span>
+<span class="c"># procedures / users</span>
+<span class="c"># character_sets / collations</span>
+<span class="c"># special_commands / show_commands</span></code></pre>
+      </div>
+    </div>
+    <div>
+      <h3>SchemaPrefetcher</h3>
+      <p>连接成功后异步预取配置列表中所有 Schema 的元数据，支持跨库补全。</p>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">INI · myclirc</span></div>
+        <pre><code><span class="c"># 预取模式</span>
+prefetch_schemas = always  <span class="c"># 始终预取</span>
+prefetch_schemas = never   <span class="c"># 不预取</span>
+prefetch_schemas = listed  <span class="c"># 仅预取列表</span>
+
+prefetch_schemas_list = db1, db2
+
+<span class="c"># 通过 _completer_lock 原子更新</span>
+<span class="c"># 避免主线程读时的数据竞争</span></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>刷新时序</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box">USE new_db / CREATE TABLE / rehash</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">need_completion_refresh(sql) → True</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box highlight">completion_refresher.refresh(executor, callback)</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">后台线程: 新建 SQLCompleter 实例</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">依序运行所有 @refresher 函数</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box green">callback(_on_completions_refreshed)</div></div>
+    <div class="flow-step flow-indent3"><span class="arrow">→</span><div class="flow-box">acquire _completer_lock</div></div>
+    <div class="flow-step flow-indent3"><span class="arrow">→</span><div class="flow-box">原子替换 mycli.completer</div></div>
+    <div class="flow-step flow-indent3"><span class="arrow">→</span><div class="flow-box orange">启动 SchemaPrefetcher</div></div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §13  SSH & SSL
+══════════════════════════════════════════ -->
+<section id="ssh">
+  <h2><span class="icon">🔐</span>SSH 隧道 &amp; SSL/TLS</h2>
+
+  <h3>SSL 三种模式</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>模式</th><th>行为</th></tr>
+      <tr><td><code>ssl_mode = off</code></td><td>禁用 SSL，明文传输</td></tr>
+      <tr><td><code>ssl_mode = auto</code>（默认）</td><td>尝试 SSL，失败则自动降级为明文</td></tr>
+      <tr><td><code>ssl_mode = on</code></td><td>强制 SSL，失败则拒绝连接</td></tr>
+    </table>
+  </div>
+
+  <h3>SSL 证书选项</h3>
+  <div class="pill-list">
+    <span class="badge badge-blue">--ssl-ca</span>
+    <span class="badge badge-teal">--ssl-cert</span>
+    <span class="badge badge-yellow">--ssl-key</span>
+    <span class="badge badge-pink">--ssl-cipher</span>
+    <span class="badge badge-green">--ssl-verify-server-cert</span>
+    <span class="badge badge-purple">--tls-version</span>
+  </div>
+
+  <h3>SSH 隧道建立流程</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-box">--ssh-host / ssh config 文件</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box">ssh_utils.read_ssh_config() — 解析 ~/.ssh/config</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box highlight">SSHTunnelForwarder(ssh_host, ssh_port, …)</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">paramiko SSH 握手（密钥/密码认证）</div></div>
+    <div class="flow-step flow-indent2"><span class="arrow">→</span><div class="flow-box">本地端口映射: 127.0.0.1:LOCAL_PORT → DB_HOST:DB_PORT</div></div>
+    <div class="flow-step flow-indent"><span class="arrow">→</span><div class="flow-box green">PyMySQL 连接至 127.0.0.1:LOCAL_PORT</div></div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon"></div>
+    <div class="callout-body">
+      <strong>可选依赖</strong>
+      SSH 功能依赖 <code>paramiko</code> 和 <code>sshtunnel</code>，需通过 <code>pip install mycli[ssh]</code> 安装。
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §14  按键绑定与样式
+══════════════════════════════════════════ -->
+<section id="keybindings">
+  <h2><span class="icon">🎨</span>按键绑定与样式</h2>
+
+  <h3>默认快捷键</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>快捷键</th><th>功能</th></tr>
+      <tr><td>Ctrl-D</td><td>退出（空缓冲区时）</td></tr>
+      <tr><td>Ctrl-T</td><td>转置字符</td></tr>
+      <tr><td>F1</td><td>显示帮助</td></tr>
+      <tr><td>F2</td><td>Fzf 历史搜索</td></tr>
+      <tr><td>Ctrl-\</td><td>LLM 辅助（可选）</td></tr>
+      <tr><td>Page Up/Down</td><td>在历史记录中翻页</td></tr>
+      <tr><td>Ctrl-R</td><td>增量历史搜索</td></tr>
+    </table>
+  </div>
+
+  <h3>样式系统（clistyle.py）</h3>
+  <p>主题通过两个工厂函数创建，分别供 prompt_toolkit 和 Pygments 使用：</p>
+  <div class="code-block">
+    <div class="code-header"><div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="code-lang">Python · clistyle.py</span></div>
+    <pre><code><span class="c"># 可自定义的样式元素（在 myclirc [colors] 配置）</span>
+Token.Menu.Completions.Completion.Current  <span class="c"># 当前选中补全项</span>
+Token.Menu.Completions.Completion          <span class="c"># 普通补全项</span>
+Token.Output.Header                         <span class="c"># 输出表头</span>
+Token.Output.OddRow / Token.Output.EvenRow <span class="c"># 交替行颜色</span>
+Token.Output.Null                          <span class="c"># NULL 值颜色</span>
+Token.Toolbar                              <span class="c"># 状态栏背景</span>
+Token.Keyword / Token.String / ...         <span class="c"># SQL 语法高亮 token</span></code></pre>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §15  设计模式
+══════════════════════════════════════════ -->
+<section id="patterns">
+  <h2><span class="icon">🧩</span>核心设计模式</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Mixin 组合</div>
+      <div class="card-desc">
+        <code>MyCli</code> 通过多重继承组合 <code>AppStateMixin</code>（my.cnf 读取、SSL 合并）和 <code>OutputMixin</code>（日志、格式化），避免单一巨型类。
+      </div>
+      <span class="badge badge-blue">app_state.py</span>
+      <span class="badge badge-teal">output.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">装饰器注册表</div>
+      <div class="card-desc">
+        <code>@special_command()</code> 和 <code>@refresher()</code> 两套装饰器在模块加载时将函数注册到全局字典，实现开放/关闭原则扩展。
+      </div>
+      <span class="badge badge-yellow">special/main.py</span>
+      <span class="badge badge-pink">completion_refresher.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">线程安全互斥锁</div>
+      <div class="card-desc">
+        <code>_completer_lock</code>（threading.Lock）保护 completer 实例的替换操作，确保后台刷新线程和主 REPL 线程不产生数据竞争。
+      </div>
+      <span class="badge badge-green">main.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">Dataclass + Click</div>
+      <div class="card-desc">
+        通过 <code>clickdc</code> 库将 <code>CliArgs</code> dataclass 自动映射为 Click 命令选项，减少样板代码并获得完整类型检查。
+      </div>
+      <span class="badge badge-purple">cli_args.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">生成器管线</div>
+      <div class="card-desc">
+        <code>SQLExecute.run()</code> 返回 <code>SQLResult</code> 生成器，下游 formatter 按需消费，支持流式输出大结果集，不需全量加载到内存。
+      </div>
+      <span class="badge badge-orange">sqlexecute.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">工厂函数</div>
+      <div class="card-desc">
+        <code>style_factory_ptoolkit()</code>、<code>style_factory_helpers()</code>、<code>create_default_config()</code> 等工厂函数封装复杂对象创建逻辑。
+      </div>
+      <span class="badge badge-blue">clistyle.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">策略模式（格式化）</div>
+      <div class="card-desc">
+        输出格式化通过策略模式支持 14 种表格格式（table/csv/json/…），运行时通过 tableformat 命令切换，核心逻辑无需修改。
+      </div>
+      <span class="badge badge-teal">cli_helpers</span>
+    </div>
+    <div class="card">
+      <div class="card-title">Prompt Toolkit Filter</div>
+      <div class="card-desc">
+        <code>@Condition</code> 装饰器创建 prompt_toolkit 过滤器对象（如 <code>cli_is_multiline</code>），以声明式方式控制 UI 行为，与命令式判断解耦。
+      </div>
+      <span class="badge badge-yellow">clibuffer.py</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §16  依赖总览
+══════════════════════════════════════════ -->
+<section id="deps">
+  <h2><span class="icon">📦</span>依赖总览</h2>
+
+  <h3>核心依赖</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>依赖包</th><th>版本约束</th><th>用途</th></tr>
+      <tr><td>click</td><td>~8.3</td><td>CLI 框架，参数解析</td></tr>
+      <tr><td>prompt_toolkit</td><td>≥3.0.41, &lt;4.0</td><td>交互式终端 UI，补全菜单，历史管理</td></tr>
+      <tr><td>PyMySQL</td><td>~1.1.2</td><td>MySQL 协议纯 Python 实现</td></tr>
+      <tr><td>sqlparse</td><td>≥0.3.0, &lt;0.6.0</td><td>SQL 词法分析，多语句分割</td></tr>
+      <tr><td>sqlglot</td><td>~30.7</td><td>SQL 方言转换 &amp; 格式化</td></tr>
+      <tr><td>Pygments</td><td>~2.19</td><td>语法高亮词法分析器</td></tr>
+      <tr><td>cli_helpers</td><td>~2.15</td><td>表格输出格式化（14 种格式）</td></tr>
+      <tr><td>configobj</td><td>~5.0.9</td><td>INI 配置文件解析 &amp; 写入</td></tr>
+      <tr><td>cryptography</td><td>~46.0</td><td>AES 解密 .mylogin.cnf，SSL/TLS</td></tr>
+      <tr><td>keyring</td><td>~25.7</td><td>系统密码存储</td></tr>
+      <tr><td>rapidfuzz</td><td>~3.14</td><td>模糊字符串匹配（补全排序）</td></tr>
+      <tr><td>pyfzf</td><td>~0.3.1</td><td>Fzf 历史搜索集成</td></tr>
+      <tr><td>clickdc</td><td>~0.3</td><td>Dataclass → Click 参数自动映射</td></tr>
+    </table>
+  </div>
+
+  <h3>可选依赖</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>依赖包</th><th>安装方式</th><th>用途</th></tr>
+      <tr><td>paramiko</td><td><code>pip install mycli[ssh]</code></td><td>SSH 客户端库</td></tr>
+      <tr><td>sshtunnel</td><td><code>pip install mycli[ssh]</code></td><td>SSH 隧道封装</td></tr>
+      <tr><td>llm</td><td><code>pip install mycli[llm]</code></td><td>LLM 集成（Ctrl-\）</td></tr>
+      <tr><td>pydantic_core</td><td><code>pip install mycli[llm]</code></td><td>LLM 数据验证</td></tr>
+    </table>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §17  全局数据流
+══════════════════════════════════════════ -->
+<section id="flow">
+  <h2><span class="icon">🌊</span>全局数据流</h2>
+
+  <p>下图展示一次完整用户查询从按键输入到结果渲染的全链路数据流动：</p>
+
+  <div class="flow">
+<pre style="background:none;border:none;padding:0;color:#abb2bf;font-size:12.5px;line-height:1.85">
+┌──────────────────────────────────────────────────────────┐
+│                    用户终端 (TTY)                          │
+│  键入: SELECT * FROM orders WHERE status = 'pend[TAB]    │
+└──────────────────┬───────────────────────────────────────┘
+                   │ 按键事件
+                   ▼
+┌──────────────────────────────────────────────────────────┐
+│              prompt_toolkit PromptSession                  │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐  │
+│  │ MyCliLexer  │  │SQLCompleter  │  │  Key Bindings   │  │
+│  │ (语法高亮)  │  │  (补全菜单)  │  │  (Ctrl/F1/F2)   │  │
+│  └─────────────┘  └──────┬───────┘  └─────────────────┘  │
+└─────────────────────────┼────────────────────────────────┘
+                           │ suggest_type()
+                           ▼
+              ┌────────────────────────┐
+              │   completion_engine    │
+              │   SQL 语义位置分析      │
+              │   → enum_value 建议    │
+              └────────────┬───────────┘
+                           │ 查询 dbmetadata 缓存
+                           ▼
+              ┌────────────────────────┐
+              │  SQLCompleter 缓存     │
+              │  dbmetadata dict       │◄── 后台刷新线程
+              └────────────────────────┘
+
+用户按回车后:
+                   │
+                   ▼
+┌──────────────────────────────────────────────────────────┐
+│                     main_repl()                           │
+│  1. clibuffer: 多行完整性检测                              │
+│  2. 破坏性命令确认 (DROP/TRUNCATE?)                        │
+│  3. mycli.run_query(query)                                 │
+└──────────────────┬───────────────────────────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────────────────────────┐
+│                   SQLExecute.run()                        │
+│  1. split_queries()  → 按分隔符拆分                        │
+│  2. special.execute() → 特殊命令？                         │
+│  3. cur.execute()    → PyMySQL                            │
+│  4. get_result()     → SQLResult                          │
+└──────────────────┬───────────────────────────────────────┘
+                   │ via SSL/TLS or SSH Tunnel
+                   ▼
+         ┌──────────────────┐
+         │   MySQL Server   │
+         └────────┬─────────┘
+                  │ 结果集
+                  ▼
+┌──────────────────────────────────────────────────────────┐
+│                    OutputMixin                            │
+│  TabularOutputFormatter → 选择格式 (table/csv/json/…)     │
+│  echo() → 分页器(less/more) / stdout / 审计日志文件        │
+└──────────────────────────────────────────────────────────┘
+                   │
+                   ▼
+        ┌──────────────────┐
+        │  用户终端 (TTY)   │
+        │  渲染输出结果表格  │
+        └──────────────────┘
+
+并发后台线程:
+┌──────────────────────────────────────────────────────────┐
+│  CompletionRefresher Thread                               │
+│  DDL/USE/rehash 后重建 SQLCompleter                        │
+│  ┌─────────────────────────────────────────────────┐     │
+│  │ @refresher 链: databases→tables→columns→…       │     │
+│  └─────────────────────────────────────────────────┘     │
+│                                                           │
+│  SchemaPrefetcher Thread                                  │
+│  异步预取多 Schema 元数据（跨库补全）                       │
+│  通过 _completer_lock 原子更新主线程补全器                  │
+└──────────────────────────────────────────────────────────┘</pre>
+  </div>
+
+  <div class="callout">
+    <div class="callout-icon"></div>
+    <div class="callout-body">
+      <strong>关键设计亮点</strong>
+      补全元数据完全异步刷新，主 REPL 循环通过 <code>DynamicCompleter</code> 间接引用实际 completer，后台线程替换完成后主线程下一次按 Tab 即可获得新数据，零阻塞。
+    </div>
+  </div>
+
+  <h3>组件依赖关系</h3>
+  <div class="flow">
+<pre style="background:none;border:none;padding:0;color:#abb2bf;font-size:12.5px;line-height:1.85">
+                    ┌─────────────┐
+                    │   main.py   │
+                    │   MyCli     │
+                    └──────┬──────┘
+           ┌───────────────┼──────────────────────┐
+           │               │                      │
+           ▼               ▼                      ▼
+    ┌─────────────┐ ┌──────────────┐   ┌──────────────────┐
+    │ sqlexecute  │ │ sqlcompleter │   │  config.py        │
+    │ SQLExecute  │ │ SQLCompleter │   │  ConfigObj 合并   │
+    └──────┬──────┘ └──────┬───────┘   └──────────────────┘
+           │               │
+           │         ┌─────▼────────────────┐
+           │         │  packages/            │
+           │         │  completion_engine    │
+           │         │  sql_utils            │
+           │         │  filepaths            │
+           │         └──────────────────────┘
+           │
+    ┌──────▼────────────────────────┐
+    │  PyMySQL (conn)                │
+    │  + SSL/TLS                     │
+    │  + sshtunnel (optional)        │
+    └────────────────────────────────┘
+
+    ┌─────────────────────────────────────────────┐
+    │  packages/special/                           │
+    │  iocommands + dbcommands + favoritequeries   │
+    │            ↑                                 │
+    │  register_special_command() 注册表            │
+    └─────────────────────────────────────────────┘
+
+    ┌────────────────┐  ┌───────────────────────┐
+    │ completion_    │  │  schema_prefetcher.py  │
+    │ refresher.py   │  │  SchemaPrefetcher      │
+    │ (后台线程)     │  │  (后台线程)             │
+    └───────┬────────┘  └──────────┬─────────────┘
+            │                      │
+            └──────────┬───────────┘
+                       │ _completer_lock
+                       ▼
+               mycli.completer 原子替换</pre>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<div class="page-footer">
+  <span>mycli v1.73.0 &nbsp;·&nbsp; BSD-3-Clause &nbsp;·&nbsp; dbcli 社区</span>
+  <span>架构文档由 Claude Code 生成 &nbsp;·&nbsp; 2026-05-28</span>
+</div>
+
+</main>
+
+<!-- ─── BACK TO TOP ─── -->
+<a id="back-to-top" href="#" title="回到顶部">↑</a>
+
+<script>
+(function () {
+  /* ── Reading progress bar ── */
+  const bar = document.getElementById('progress-bar');
+  function updateProgress() {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = total > 0 ? (window.scrollY / total * 100) + '%' : '0%';
+  }
+
+  /* ── Back to top ── */
+  const btn = document.getElementById('back-to-top');
+  function updateBtn() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }
+
+  /* ── Nav active state ── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('nav a[href^="#"]');
+
+  function updateNav() {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+    });
+    navLinks.forEach(link => {
+      const isActive = link.getAttribute('href') === '#' + current;
+      link.classList.toggle('active', isActive);
+    });
+  }
+
+  /* Set initial active link */
+  updateNav();
+
+  window.addEventListener('scroll', () => {
+    updateProgress();
+    updateBtn();
+    updateNav();
+  }, { passive: true });
+
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

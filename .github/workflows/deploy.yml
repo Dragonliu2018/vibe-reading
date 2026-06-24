@@ -21,6 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: withastro/action@v3   # 官方 Action：自动处理 Node/npm/构建/上传
+        with:
+          node-version: 22
 
   deploy:
     needs: build

@@ -1,0 +1,426 @@
+---
+import { articles, CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
+
+export interface Props {
+  currentSlug?: string;
+}
+
+const { currentSlug } = Astro.props;
+
+const sorted = [...articles].sort(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const categories = (['code', 'paper', 'system'] as Category[])
+  .map(cat => ({
+    key:      cat,
+    label:    CATEGORY_LABEL[cat],
+    color:    CATEGORY_COLOR[cat],
+    articles: sorted.filter(a => a.category === cat),
+  }))
+  .filter(c => c.articles.length > 0);
+---
+
+<!-- Sidebar -->
+<aside class="sidebar" id="g-sidebar">
+  <p class="tree-label">Categories</p>
+  {categories.map(cat => {
+    const hasActive = cat.articles.some(a => a.slug === currentSlug);
+    return (
+      <div class="tree-node">
+        <button class="tree-cat" data-cat={cat.key} class:list={[{ open: hasActive }]}>
+          <span class="tree-dot" style={`background:${cat.color.text};`}></span>
+          <span class="tree-cat-name">{cat.label}</span>
+          <span class="tree-cat-count">{cat.articles.length}</span>
+          <svg class="tree-chevron" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class:list={['tree-articles', { open: hasActive }]}>
+          {cat.articles.map(a => (
+            <a
+              class:list={['tree-article', { active: a.slug === currentSlug }]}
+              href={`${base}/articles/${a.slug}`}
+              title={a.title}
+            >{a.title}</a>
+          ))}
+        </div>
+      </div>
+    );
+  })}
+</aside>
+
+<!-- Mobile backdrop (click to close) -->
+<div class="mob-backdrop" id="g-mob-backdrop" aria-hidden="true"></div>
+
+<!-- Draggable divider + collapse toggle -->
+<div class="resize-handle" id="g-resize-handle">
+  <button class="sidebar-toggle" id="g-sidebar-toggle"
+          title="折叠侧边栏" aria-label="折叠侧边栏">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <path d="M6.5 2L3.5 5L6.5 8" stroke="currentColor" stroke-width="1.4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  /* ── Sidebar — Mobile: slide-in overlay ── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: min(300px, 82vw);
+    height: 100%;
+    z-index: 6000;
+    background: #09090e;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    overflow-y: auto;
+    padding: 24px 20px 40px 24px;
+    scrollbar-width: none;
+    transform: translateX(-100%);
+    transition: transform .28s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+
+  .sidebar.mob-open {
+    transform: translateX(0);
+  }
+
+  /* Mobile backdrop */
+  .mob-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 5999;
+    opacity: 0;
+    transition: opacity .25s ease;
+  }
+  .mob-backdrop.mob-open {
+    display: block;
+    opacity: 1;
+  }
+
+  /* ── Sidebar — Desktop: inline panel ── */
+  @media (min-width: 960px) {
+    .sidebar {
+      position: relative;
+      transform: none;
+      flex-shrink: 0;
+      width: 220px;
+      min-width: 120px;
+      max-width: 480px;
+      height: 100%;
+      padding: 40px 28px 40px 48px;
+      background: transparent;
+      border-right: none;
+      z-index: auto;
+      transition:
+        width .28s cubic-bezier(0.4, 0, 0.2, 1),
+        padding .28s cubic-bezier(0.4, 0, 0.2, 1),
+        min-width .28s;
+    }
+
+    .sidebar.collapsed {
+      width: 0 !important;
+      min-width: 0;
+      padding-left: 0;
+      padding-right: 0;
+      overflow: hidden;
+    }
+
+    .mob-backdrop { display: none !important; }
+  }
+
+  /* ── Resize handle ── */
+  .resize-handle { display: none; }
+
+  @media (min-width: 960px) {
+    .resize-handle {
+      display: block;
+      flex-shrink: 0;
+      width: 12px;
+      cursor: col-resize;
+      position: relative;
+      overflow: visible;
+      background: transparent;
+    }
+
+    /* Separator line */
+    .resize-handle::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: rgba(255,255,255,0.14);
+      transition: background .18s;
+    }
+
+    /* Pill grip */
+    .resize-handle::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 4px;
+      height: 48px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0);
+      transition: background .18s, box-shadow .18s;
+    }
+
+    .resize-handle:hover::before  { background: rgba(255,255,255,0.28); }
+    .resize-handle:hover::after   { background: rgba(255,255,255,0.20); }
+
+    .resize-handle.dragging::before {
+      background: rgba(41,151,255,0.7);
+    }
+    .resize-handle.dragging::after {
+      background: rgba(41,151,255,0.45);
+      box-shadow: 0 0 10px rgba(41,151,255,0.35);
+    }
+
+    /* ── Toggle button ── */
+    .sidebar-toggle {
+      position: absolute;
+      top: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #0d0d12;
+      border: 1px solid rgba(255,255,255,0.14);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-dim);
+      z-index: 20;
+      padding: 0;
+      opacity: 0;
+      transition: opacity .18s, background .15s, border-color .15s, color .15s;
+    }
+
+    .resize-handle:hover .sidebar-toggle        { opacity: 1; }
+    .sidebar.collapsed ~ .resize-handle .sidebar-toggle { opacity: 1; }
+
+    .sidebar-toggle:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.28);
+      color: var(--text);
+    }
+
+    .sidebar-toggle svg {
+      transition: transform .28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar.collapsed ~ .resize-handle .sidebar-toggle svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  /* ── Tree ── */
+  .tree-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text-dim);
+    margin-bottom: 10px; padding-left: 8px;
+  }
+
+  .tree-node { margin-bottom: 2px; }
+
+  .tree-cat {
+    width: 100%; display: flex; align-items: center;
+    padding: 6px 8px; border-radius: 8px;
+    background: none; border: none; cursor: pointer;
+    font-family: var(--font, -apple-system, sans-serif);
+    font-size: 13px; font-weight: 500;
+    color: rgba(245,245,247,0.45);
+    letter-spacing: -0.15px;
+    transition: background .15s, color .15s;
+    text-align: left; gap: 7px;
+  }
+  .tree-cat:hover { background: rgba(255,255,255,0.05); color: rgba(245,245,247,0.75); }
+  .tree-cat.open  { color: var(--text, #f5f5f7); }
+
+  .tree-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0; opacity: 0.7;
+  }
+
+  .tree-cat-name { flex: 1; }
+
+  .tree-cat-count {
+    font-size: 11.5px; font-weight: 400;
+    color: var(--text-dim, #48484a);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tree-chevron {
+    width: 12px; height: 12px; flex-shrink: 0;
+    color: var(--text-dim, #48484a);
+    transition: transform .2s ease;
+  }
+  .tree-cat.open .tree-chevron { transform: rotate(90deg); }
+
+  .tree-articles {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .25s ease;
+    margin-left: 19px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(255,255,255,0.07);
+  }
+  .tree-articles.open { max-height: 800px; }
+
+  .tree-article {
+    display: block;
+    font-size: 12.5px; color: var(--text-dim, #48484a);
+    padding: 4.5px 6px; border-radius: 6px;
+    line-height: 1.45;
+    transition: color .15s, background .12s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tree-article:hover {
+    color: var(--accent, #2997ff);
+    background: rgba(41,151,255,0.06);
+  }
+
+  /* Active article (current page) */
+  .tree-article.active {
+    color: var(--accent, #2997ff) !important;
+    background: rgba(41,151,255,0.08);
+    font-weight: 500;
+  }
+
+  /* ── Mobile: larger touch targets ── */
+  @media (max-width: 959px) {
+    .tree-cat    { padding: 10px 8px; font-size: 14px; }
+    .tree-article{ padding: 9px 8px; font-size: 13px; }
+  }
+</style>
+
+<script>
+  const sidebar  = document.getElementById('g-sidebar')       as HTMLElement | null;
+  const handle   = document.getElementById('g-resize-handle') as HTMLElement | null;
+  const toggle   = document.getElementById('g-sidebar-toggle')as HTMLElement | null;
+  const backdrop = document.getElementById('g-mob-backdrop')  as HTMLElement | null;
+
+  const isDesktop = () => window.matchMedia('(min-width: 960px)').matches;
+
+  // ── Mobile: open / close ──────────────────────────────────────────
+  function openMobile() {
+    sidebar?.classList.add('mob-open');
+    backdrop?.classList.add('mob-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobile() {
+    sidebar?.classList.remove('mob-open');
+    backdrop?.classList.remove('mob-open');
+    document.body.style.overflow = '';
+  }
+
+  // Expose so nav hamburger buttons can call it
+  (window as any).openMobileSidebar  = openMobile;
+  (window as any).closeMobileSidebar = closeMobile;
+
+  // Backdrop click closes the sidebar
+  backdrop?.addEventListener('click', closeMobile);
+
+  // ESC key closes the sidebar
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeMobile();
+  });
+
+  // Clicking a link inside sidebar closes it on mobile
+  sidebar?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => { if (!isDesktop()) closeMobile(); });
+  });
+
+  // ── Always-on: category expand / collapse + scroll-to-active ──────
+  if (sidebar) {
+    // Scroll active article into view
+    const activeLink = sidebar.querySelector<HTMLElement>('.tree-article.active');
+    if (activeLink) {
+      requestAnimationFrame(() => activeLink.scrollIntoView({ block: 'nearest' }));
+    }
+
+    // Category expand/collapse (works on both mobile and desktop)
+    sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const isOpen = btn.classList.contains('open');
+        const list   = btn.nextElementSibling as HTMLElement | null;
+        btn.classList.toggle('open', !isOpen);
+        list?.classList.toggle('open', !isOpen);
+      });
+    });
+  }
+
+  // ── Desktop only: collapse toggle + drag to resize ───────────────
+  if (sidebar && handle && toggle && isDesktop()) {
+    // Restore collapse state
+    if (localStorage.getItem('sidebar-collapsed') === 'true') {
+      sidebar.classList.add('collapsed');
+      toggle.title = '展开侧边栏';
+      toggle.setAttribute('aria-label', '展开侧边栏');
+    }
+    // Restore width
+    const savedW = localStorage.getItem('sidebar-width');
+    if (savedW && !sidebar.classList.contains('collapsed')) {
+      sidebar.style.width = savedW;
+    }
+
+    // ── Toggle collapse ──
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nowCollapsed = sidebar.classList.toggle('collapsed');
+      toggle.title = nowCollapsed ? '展开侧边栏' : '折叠侧边栏';
+      toggle.setAttribute('aria-label', nowCollapsed ? '展开侧边栏' : '折叠侧边栏');
+      localStorage.setItem('sidebar-collapsed', String(nowCollapsed));
+      if (!nowCollapsed) {
+        sidebar.style.width = localStorage.getItem('sidebar-width') ?? '220px';
+      }
+    });
+
+    // ── Drag to resize ──
+    let dragging = false;
+    let startX   = 0;
+    let startW   = 0;
+
+    handle.addEventListener('mousedown', (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('.sidebar-toggle')) return;
+      if (sidebar.classList.contains('collapsed')) {
+        sidebar.classList.remove('collapsed');
+        localStorage.setItem('sidebar-collapsed', 'false');
+      }
+      dragging = true;
+      startX   = e.clientX;
+      startW   = sidebar.offsetWidth;
+      handle.classList.add('dragging');
+      document.body.style.cursor     = 'col-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e: MouseEvent) => {
+      if (!dragging) return;
+      const w = Math.min(480, Math.max(120, startW + e.clientX - startX));
+      sidebar.style.width = w + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('dragging');
+      document.body.style.cursor     = '';
+      document.body.style.userSelect = '';
+      localStorage.setItem('sidebar-width', sidebar.style.width);
+    });
+  }
+</script>

@@ -1,11 +1,11 @@
 ---
 import { articles, CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
+import Sidebar from '../components/Sidebar.astro';
 
 const sorted = [...articles].sort(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
 );
 
-// Astro 7 不再自动添加尾部斜杠，统一移除后手动加 /
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
@@ -20,582 +20,361 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vibe Reading · 技术文档解读博客</title>
-  <meta name="description" content="AI 生成 · 人工 Review 的技术文档解读博客，涵盖代码解读、论文解读等内容。" />
+  <meta name="description" content="AI-drafted, human-reviewed technical reading blog — code walkthroughs and paper breakdowns." />
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   <style>
-    /* ─── Reset & Base ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:          #0d1117;
-      --bg-card:     #161b22;
-      --bg-card2:    #1c2230;
-      --border:      #30363d;
-      --border-lite: #21262d;
-      --text:        #e6edf3;
-      --text-muted:  #8b949e;
-      --text-dim:    #6e7681;
-      --accent:      #f97316;
-      --accent2:     #fb923c;
-      --accent-glow: rgba(249,115,22,.15);
-      --radius:      12px;
-      --radius-sm:   8px;
-      --font: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --bg:          #000000;
+      --card-bg:     rgba(255,255,255,0.035);
+      --card-border: rgba(255,255,255,0.08);
+      --text:        #f5f5f7;
+      --text-muted:  #86868b;
+      --text-dim:    #48484a;
+      --accent:      #2997ff;
+      --radius:      20px;
+      --radius-sm:   10px;
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --mono: ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', Menlo, monospace;
     }
 
-    html { scroll-behavior: smooth; }
+    html, body { height: 100%; }
 
     body {
       background: var(--bg);
+      background-image: radial-gradient(ellipse 80% 45% at 50% -5%, rgba(41,151,255,0.06) 0%, transparent 70%);
       color: var(--text);
       font-family: var(--font);
-      font-size: 15px;
-      line-height: 1.75;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-    }
-
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    a { text-decoration: none; color: inherit; }
-
-    /* ─── Nav ──────────────────────────────────────────── */
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(13,17,23,.88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-lite);
-      padding: 0 40px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -.3px;
-    }
-
-    .nav-logo-icon { font-size: 20px; }
-
-    .nav-logo-text {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .nav-right { display: flex; align-items: center; gap: 16px; }
-
-    .nav-link-gh {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--text-muted);
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 5px 14px;
-      border-radius: 20px;
-      transition: all .15s;
-    }
-
-    .nav-link-gh:hover {
-      color: var(--text);
-      border-color: var(--accent);
-    }
-
-    /* ─── Hero ──────────────────────────────────────────── */
-    .hero {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 72px 40px 56px;
-      text-align: center;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11.5px;
-      font-weight: 600;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: var(--accent-glow);
-      border: 1px solid rgba(249,115,22,.3);
-      padding: 5px 16px;
-      border-radius: 20px;
-      margin-bottom: 28px;
-    }
-
-    .hero h1 {
-      font-size: 52px;
-      font-weight: 800;
-      letter-spacing: -2px;
-      line-height: 1.08;
-      background: linear-gradient(160deg, #ffffff 0%, #8b949e 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 18px;
-    }
-
-    .hero-desc {
-      font-size: 17px;
-      color: var(--text-muted);
-      max-width: 520px;
-      margin: 0 auto 36px;
       line-height: 1.7;
-    }
-
-    .hero-stats {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .stat-badge {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      color: var(--text-muted);
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 6px 16px;
-      border-radius: 20px;
-    }
-
-    .stat-badge strong { color: var(--text); font-weight: 600; }
-
-    /* ─── Filter ────────────────────────────────────────── */
-    .filter-bar {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 0 40px 36px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 18px;
-      border-radius: 20px;
-      font-size: 13.5px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text-muted);
-      transition: all .15s;
-    }
-
-    .filter-btn:hover { color: var(--text); border-color: var(--accent); }
-
-    .filter-btn.active {
-      background: var(--accent-glow);
-      border-color: rgba(249,115,22,.4);
-      color: var(--accent);
-    }
-
-    .filter-count {
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--bg-card2);
-      border: 1px solid var(--border-lite);
-      padding: 1px 7px;
-      border-radius: 20px;
-      color: var(--text-dim);
-    }
-
-    /* ─── Article Grid ──────────────────────────────────── */
-    .articles {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 0 40px 100px;
+      -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
-      gap: 20px;
-    }
-
-    .article-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 32px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 20px;
-      transition: border-color .2s, transform .2s, box-shadow .2s;
-      position: relative;
       overflow: hidden;
     }
 
-    .article-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity .2s;
+    @media (max-width: 959px) {
+      html, body { height: auto; overflow: visible; }
+      body { display: block; }
     }
 
-    .article-card:hover {
-      border-color: rgba(249,115,22,.35);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Nav ── */
+    .nav {
+      flex-shrink: 0;
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
     }
-
-    .article-card:hover::before { opacity: 1; }
-
-    .article-card-body { position: relative; }
-
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 15px; font-weight: 600; letter-spacing: -0.3px;
     }
-
-    .cat-badge {
-      display: inline-flex;
-      align-items: center;
-      font-size: 11.5px;
-      font-weight: 600;
-      padding: 3px 11px;
-      border-radius: 20px;
-      letter-spacing: .3px;
+    .nav-logo-icon {
+      width: 22px; height: 22px; border-radius: 7px;
+      background: linear-gradient(135deg, #2997ff 0%, #30d158 100%);
+      display: flex; align-items: center; justify-content: center;
     }
-
-    .card-date {
-      font-size: 12.5px;
-      color: var(--text-dim);
-      font-variant-numeric: tabular-nums;
+    .nav-pill {
+      font-size: 13px; color: var(--text-muted);
+      padding: 5px 14px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      transition: color .15s, border-color .15s, background .15s;
+      display: flex; align-items: center; gap: 6px;
     }
+    .nav-pill:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); }
 
-    .card-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -.3px;
-      line-height: 1.3;
-      margin-bottom: 10px;
-    }
-
-    .card-desc {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.7;
-      margin-bottom: 16px;
-    }
-
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 18px;
-    }
-
-    .tag {
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--text-dim);
-      background: var(--bg-card2);
-      border: 1px solid var(--border-lite);
-      padding: 2px 9px;
-      border-radius: 20px;
-      font-family: var(--mono);
-    }
-
-    .card-footer {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 12.5px;
-      color: var(--text-dim);
-    }
-
-    .card-footer-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    /* ─── Read Button ────────────────────────────────────── */
-    .card-side {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: flex-end;
-      position: relative;
-      min-width: 120px;
-    }
-
-    .read-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--accent-glow);
-      border: 1px solid rgba(249,115,22,.3);
-      padding: 9px 20px;
-      border-radius: var(--radius-sm);
-      transition: all .15s;
-      white-space: nowrap;
-    }
-
-    .read-btn:hover {
-      background: rgba(249,115,22,.22);
-      border-color: var(--accent);
-    }
-
-    .read-arrow { transition: transform .15s; }
-    .read-btn:hover .read-arrow { transform: translateX(3px); }
-
-    /* ─── Empty State ───────────────────────────────────── */
-    .empty {
-      text-align: center;
-      padding: 60px 0;
-      color: var(--text-dim);
-      font-size: 15px;
+    /* Hamburger — mobile only */
+    .mob-menu-btn {
       display: none;
+      align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 10px;
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); transition: color .15s, background .15s;
+      flex-shrink: 0;
     }
+    .mob-menu-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    @media (max-width: 959px) { .mob-menu-btn { display: flex; } }
 
-    /* ─── Divider ───────────────────────────────────────── */
-    .section-divider {
-      max-width: 860px;
-      margin: 0 auto 32px;
-      padding: 0 40px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .divider-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      white-space: nowrap;
-    }
-
-    .divider-line {
+    /* ── Two-column layout ── */
+    .layout {
       flex: 1;
-      height: 1px;
-      background: var(--border-lite);
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+    @media (max-width: 959px) {
+      .layout { flex: none; overflow: visible; display: block; }
     }
 
-    /* ─── Footer ────────────────────────────────────────── */
-    .footer {
-      border-top: 1px solid var(--border-lite);
-      padding: 32px 40px;
+    /* ── Right scroll panel ── */
+    .main-scroll {
+      flex: 1; min-width: 0;
+      height: 100%; overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .main-scroll::-webkit-scrollbar { width: 4px; }
+    .main-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    @media (max-width: 959px) {
+      .main-scroll { flex: none; height: auto; overflow: visible; }
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 48px 10% 32px;
       text-align: center;
-      color: var(--text-dim);
-      font-size: 12.5px;
-      line-height: 1.8;
     }
+    .hero-eyebrow {
+      font-size: 11.5px; font-weight: 500; letter-spacing: 0.8px;
+      color: var(--accent); text-transform: uppercase;
+      display: block; margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 700; letter-spacing: -2.5px; line-height: 1.05;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(245,245,247,0.85) 50%, rgba(134,134,139,0.7) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 12px;
+    }
+    .hero-sub {
+      font-size: 15px; font-weight: 400; color: var(--text-muted);
+      line-height: 1.6; margin: 0 auto 14px; letter-spacing: -0.1px;
+    }
+    .hero-stats { font-size: 13px; color: var(--text-dim); }
+    .hero-stats strong { color: #636366; font-weight: 500; }
 
-    .footer a { color: var(--accent); }
+    /* ── Main content col ── */
+    .main-col { min-width: 0; padding: 0 10% 120px 52px; }
+    @media (max-width: 959px) { .main-col { padding: 0 6% 80px; } }
 
-    /* ─── Responsive ────────────────────────────────────── */
-    @media (max-width: 640px) {
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 3px; gap: 2px;
+      margin-bottom: 32px;
+      max-width: 100%;
+    }
+    .filter-tab {
+      font-size: 13.5px; font-weight: 500;
+      padding: 6px 16px; border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer; border: none; background: none;
+      transition: color .15s, background .15s;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .filter-tab:hover { color: var(--text); }
+    .filter-tab.active { background: rgba(255,255,255,0.09); color: var(--text); }
+    .filter-count {
+      font-size: 11px; font-weight: 600; color: var(--text-dim);
+      background: rgba(255,255,255,0.06); padding: 1px 7px; border-radius: 20px;
+    }
+    .filter-tab.active .filter-count { color: #636366; }
+
+    /* Section label */
+    .section-label {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+    }
+    .section-label-text {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.9px;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap;
+    }
+    .section-label-line { flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
+
+    /* Article list */
+    .articles { display: flex; flex-direction: column; }
+
+    .article-card {
+      display: block;
+      background: var(--card-bg);
+      border-left: 1px solid var(--card-border);
+      border-right: 1px solid var(--card-border);
+      border-top: 1px solid var(--card-border);
+      padding: 22px 26px;
+      transition: background .18s;
+    }
+    .article-card:last-of-type { border-bottom: 1px solid var(--card-border); }
+    .article-card:first-of-type { border-radius: var(--radius) var(--radius) 0 0; }
+    .article-card:last-of-type  { border-radius: 0 0 var(--radius) var(--radius); }
+    .article-card:only-of-type  { border-radius: var(--radius); border-bottom: 1px solid var(--card-border); }
+    .article-card:hover { background: rgba(255,255,255,0.06); }
+    .article-card:hover .card-title { color: var(--accent); }
+
+    .card-inner { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
+    .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
+    .cat-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
+    .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
+    .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag {
+      font-size: 11px; font-weight: 500; color: var(--text-dim);
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      padding: 2px 8px; border-radius: 6px; font-family: var(--mono);
+    }
+    .card-aside { text-align: right; flex-shrink: 0; padding-top: 2px; }
+    .card-date { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; display: block; margin-bottom: 3px; white-space: nowrap; }
+    .card-reading { font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
+
+    .empty { display: none; text-align: center; padding: 80px 0; color: var(--text-dim); font-size: 15px; }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 36px 10%; text-align: center;
+      color: var(--text-dim); font-size: 13px; line-height: 1.8;
+    }
+    .footer a { color: #636366; transition: color .15s; }
+    .footer a:hover { color: var(--text-muted); }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
       .nav { padding: 0 20px; }
-      .hero { padding: 48px 20px 40px; }
-      .hero h1 { font-size: 36px; }
-      .filter-bar { padding: 0 20px 28px; }
-      .articles { padding: 0 20px 80px; }
-      .section-divider { padding: 0 20px; }
-      .article-card { grid-template-columns: 1fr; padding: 20px; }
-      .card-side { align-items: flex-start; }
+      .hero { padding: 32px 6% 24px; }
+      .card-inner { grid-template-columns: 1fr; gap: 10px; }
+      .card-aside { text-align: left; }
+      .footer { padding: 28px 6%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ══════════════ Nav ══════════════ -->
   <nav class="nav">
     <a href={base} class="nav-logo">
-      <span class="nav-logo-icon">🔥</span>
-      <span class="nav-logo-text">Vibe Reading</span>
+      <span class="nav-logo-icon">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 10L6 2L10 10" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.5 7.5H8.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Vibe Reading
     </a>
-    <div class="nav-right">
-      <a
-        href="https://github.com/Dragonliu2018/vibe-reading"
-        target="_blank"
-        rel="noopener"
-        class="nav-link-gh"
-      >
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-            -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
-            .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
-            -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
-            .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
-            .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
-            0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button class="mob-menu-btn" onclick="window.openMobileSidebar?.()" aria-label="打开菜单">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+          <path d="M1 1h16M1 7h16M1 13h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener" class="nav-pill">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
         </svg>
         GitHub
       </a>
     </div>
   </nav>
 
-  <!-- ══════════════ Hero ══════════════ -->
-  <section class="hero">
-    <div class="hero-badge">
-      <span>✦</span> AI 生成 · 人工 Review <span>✦</span>
-    </div>
-    <h1>Vibe Reading</h1>
-    <p class="hero-desc">技术文档深度解读博客——代码库解读、论文精读，由 AI 生成初稿，人工审阅校正后发布。</p>
-    <div class="hero-stats">
-      <div class="stat-badge">📄 文章总数 <strong>{sorted.length}</strong></div>
-      {Object.entries(totalByCategory).map(([cat, count]) => (
-        <div class="stat-badge">
-          {CATEGORY_LABEL[cat as Category]}
-          <strong>{count}</strong>
+  <div class="layout">
+    <Sidebar />
+
+    <div class="main-scroll">
+
+      <section class="hero">
+        <span class="hero-eyebrow">AI-drafted · Human-reviewed</span>
+        <h1>Vibe Reading</h1>
+        <p class="hero-sub">技术文档深度解读——代码库架构、论文精读。</p>
+        <p class="hero-stats">
+          <strong>{sorted.length}</strong> 篇文章
+          {Object.entries(totalByCategory).map(([cat, count]) => (
+            <span> · <strong>{count}</strong> {CATEGORY_LABEL[cat as Category]}</span>
+          ))}
+        </p>
+      </section>
+
+      <div class="main-col">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">
+            全部 <span class="filter-count">{sorted.length}</span>
+          </button>
+          {(['code', 'paper', 'system'] as Category[]).map(cat => {
+            const count = totalByCategory[cat] ?? 0;
+            if (count === 0) return null;
+            return (
+              <button class="filter-tab" data-filter={cat}>
+                {CATEGORY_LABEL[cat]} <span class="filter-count">{count}</span>
+              </button>
+            );
+          })}
         </div>
-      ))}
-    </div>
-  </section>
 
-  <!-- ══════════════ Filter ══════════════ -->
-  <div class="filter-bar">
-    <button class="filter-btn active" data-filter="all">
-      全部
-      <span class="filter-count">{sorted.length}</span>
-    </button>
-    {(['code', 'paper', 'system'] as Category[]).map(cat => {
-      const count = totalByCategory[cat] ?? 0;
-      if (count === 0) return null;
-      return (
-        <button class="filter-btn" data-filter={cat}>
-          {CATEGORY_LABEL[cat]}
-          <span class="filter-count">{count}</span>
-        </button>
-      );
-    })}
+        <div class="section-label">
+          <span class="section-label-text" id="section-title">所有文章</span>
+          <div class="section-label-line"></div>
+        </div>
+
+        <main class="articles" id="article-list">
+          {sorted.map((article) => {
+            const color = CATEGORY_COLOR[article.category];
+            return (
+              <a class="article-card" href={`${base}/articles/${article.slug}`} data-category={article.category}>
+                <div class="card-inner">
+                  <div>
+                    <div class="card-meta">
+                      <span class="cat-badge" style={`color:${color.text};background:${color.bg};border:1px solid ${color.border};`}>
+                        {CATEGORY_LABEL[article.category]}
+                      </span>
+                    </div>
+                    <div class="card-title">{article.title}</div>
+                    <div class="card-desc">{article.description}</div>
+                    <div class="card-tags">
+                      {article.tags.map(tag => <span class="tag">{tag}</span>)}
+                    </div>
+                  </div>
+                  <div class="card-aside">
+                    <span class="card-date">{article.date}</span>
+                    {article.readingTime && <span class="card-reading">{article.readingTime}</span>}
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+          <div class="empty" id="empty-state">暂无该分类的文章</div>
+        </main>
+      </div>
+
+      <footer class="footer">
+        Vibe Reading · AI-drafted · Human-reviewed &nbsp;·&nbsp;
+        <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener">GitHub</a>
+        &nbsp;·&nbsp; Astro
+      </footer>
+
+    </div>
   </div>
 
-  <!-- ══════════════ Divider ══════════════ -->
-  <div class="section-divider">
-    <span class="divider-label">所有文章</span>
-    <div class="divider-line"></div>
-  </div>
-
-  <!-- ══════════════ Articles ══════════════ -->
-  <main class="articles" id="article-list">
-    {sorted.map((article) => {
-      const color = CATEGORY_COLOR[article.category];
-      return (
-        <article
-          class="article-card"
-          data-category={article.category}
-        >
-          <div class="article-card-body">
-            <div class="card-meta">
-              <span
-                class="cat-badge"
-                style={`color:${color.text};background:${color.bg};border:1px solid ${color.border};`}
-              >
-                {CATEGORY_LABEL[article.category]}
-              </span>
-              <span class="card-date">{article.date}</span>
-            </div>
-
-            <div class="card-title">{article.title}</div>
-            <div class="card-desc">{article.description}</div>
-
-            <div class="card-tags">
-              {article.tags.map(tag => (
-                <span class="tag">{tag}</span>
-              ))}
-            </div>
-
-            <div class="card-footer">
-              {article.aiModel && (
-                <span class="card-footer-item">🤖 {article.aiModel}</span>
-              )}
-              {article.readingTime && (
-                <span class="card-footer-item">⏱ {article.readingTime}</span>
-              )}
-            </div>
-          </div>
-
-          <div class="card-side">
-            <a
-              href={`${base}/articles/${article.slug}`}
-              class="read-btn"
-            >
-              阅读全文
-              <span class="read-arrow">→</span>
-            </a>
-          </div>
-        </article>
-      );
-    })}
-
-    <div class="empty" id="empty-state">
-      暂无该分类的文章
-    </div>
-  </main>
-
-  <!-- ══════════════ Footer ══════════════ -->
-  <footer class="footer">
-    <p>Vibe Reading · AI 生成 · 人工 Review</p>
-    <p style="margin-top:6px;">
-      <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener">
-        GitHub
-      </a>
-      &nbsp;·&nbsp; 使用 Astro 构建 &nbsp;·&nbsp; 部署于 GitHub Pages
-    </p>
-  </footer>
-
-  <!-- ══════════════ Filter Script ══════════════ -->
   <script>
-    const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const tabs  = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
     const cards = document.querySelectorAll<HTMLElement>('.article-card');
     const empty = document.getElementById('empty-state')!;
-    const divLabel = document.querySelector<HTMLElement>('.divider-label')!;
-
+    const sectionTitle = document.getElementById('section-title')!;
     const LABELS: Record<string, string> = {
       all: '所有文章', code: '代码解读', paper: '论文解读', system: '系统设计',
     };
-
-    btns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const filter = btn.dataset.filter!;
-
-        btns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        divLabel.textContent = LABELS[filter] ?? '所有文章';
-
-        let visible = 0;
-        cards.forEach(card => {
-          const show = filter === 'all' || card.dataset.category === filter;
-          card.style.display = show ? '' : 'none';
-          if (show) visible++;
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const f = tab.dataset.filter!;
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        sectionTitle.textContent = LABELS[f] ?? '所有文章';
+        let n = 0;
+        cards.forEach(c => {
+          const show = f === 'all' || c.dataset.category === f;
+          c.style.display = show ? '' : 'none';
+          if (show) n++;
         });
-
-        empty.style.display = visible === 0 ? 'block' : 'none';
+        empty.style.display = n === 0 ? 'block' : 'none';
       });
     });
   </script>

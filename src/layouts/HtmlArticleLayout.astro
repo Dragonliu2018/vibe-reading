@@ -1,0 +1,174 @@
+---
+/**
+ * Layout for HTML-based articles.
+ * Renders the original HTML completely unchanged inside an <iframe>,
+ * while adding the persistent global sidebar on the left.
+ * Zero CSS manipulation of the original article.
+ */
+import Sidebar from '../components/Sidebar.astro';
+import { articles } from '../data/articles';
+
+export interface Props {
+  slug:      string;
+  iframeSrc: string;          // URL of the raw HTML file served from public/
+}
+
+const { slug, iframeSrc } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const meta = articles.find(a => a.slug === slug);
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{meta?.title ?? slug} · Vibe Reading</title>
+  {meta?.description && <meta name="description" content={meta.description} />}
+  <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #000000;
+      --text:   #f5f5f7;
+      --accent: #2997ff;
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 959px) {
+      html, body { height: auto; overflow: auto; }
+      body { display: block; }
+    }
+
+    /* ── Site nav ── */
+    .site-nav {
+      flex-shrink: 0;
+      height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .site-nav a { text-decoration: none; color: inherit; }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 15px; font-weight: 600; letter-spacing: -0.3px; color: var(--text);
+    }
+
+    .nav-logo-icon {
+      width: 22px; height: 22px; border-radius: 7px;
+      background: linear-gradient(135deg, #2997ff 0%, #30d158 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .nav-right { display: flex; gap: 6px; }
+
+    .nav-pill {
+      font-size: 13px; color: rgba(245,245,247,0.6);
+      padding: 5px 14px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .nav-pill:hover {
+      color: var(--text); border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ── Two-column: sidebar + iframe ── */
+    .layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    @media (max-width: 959px) {
+      .layout { flex: none; overflow: visible; display: block; }
+    }
+
+    /* The iframe fills all remaining space, no border */
+    .article-frame {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    @media (max-width: 959px) {
+      .article-frame {
+        height: calc(100vh - 52px); /* subtract nav height */
+        width: 100%;
+      }
+    }
+
+    /* Hamburger — mobile only */
+    .mob-menu-btn {
+      display: none; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 10px;
+      background: none; border: none; cursor: pointer;
+      color: rgba(245,245,247,0.6); transition: color .15s, background .15s;
+      flex-shrink: 0;
+    }
+    .mob-menu-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    @media (max-width: 959px) { .mob-menu-btn { display: flex; } }
+
+    @media (max-width: 680px) {
+      .site-nav { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site nav -->
+  <nav class="site-nav">
+    <a href={`${base}/`} class="nav-logo">
+      <span class="nav-logo-icon">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 10L6 2L10 10" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.5 7.5H8.5"    stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Vibe Reading
+    </a>
+    <div class="nav-right">
+      <button class="mob-menu-btn" onclick="window.openMobileSidebar?.()" aria-label="打开菜单">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+          <path d="M1 1h16M1 7h16M1 13h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <a href={`${base}/`} class="nav-pill">← 返回</a>
+      <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener" class="nav-pill">GitHub</a>
+    </div>
+  </nav>
+
+  <!-- Sidebar + iframe side by side -->
+  <div class="layout">
+    <Sidebar currentSlug={slug} />
+    <iframe
+      src={iframeSrc}
+      class="article-frame"
+      title={meta?.title ?? slug}
+    ></iframe>
+  </div>
+
+</body>
+</html>

@@ -38,6 +38,16 @@ export const articles: Article[] = [
     aiModel:     'Claude Opus 4.8',
   },
   {
+    slug:        'langfuse-codebase-overview',
+    title:       'Langfuse 源码深度解析',
+    date:        '2026-06-24',
+    category:    'code',
+    tags:        ['Langfuse', 'Next.js', 'tRPC', 'ClickHouse', 'TypeScript'],
+    description: '开源 LLM 工程平台 Langfuse v3.194.1 的完整源码解析——追踪、评估、提示词管理到自动化集成的全栈深度解读。',
+    readingTime: '25 min',
+    aiModel:     'Claude Opus 4.8',
+  },
+  {
     slug:        'litefuse-codebase-overview',
     title:       'Litefuse 代码库深度解读',
     date:        '2026-06-23',

@@ -34,7 +34,7 @@ jobs:
           enablement: true
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build with Astro
         run: npm run build

@@ -1,0 +1,603 @@
+---
+import { articles, CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
+
+const sorted = [...articles].sort(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+);
+
+const base = import.meta.env.BASE_URL; // '/vibe-reading/'
+
+const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
+  acc[a.category] = (acc[a.category] ?? 0) + 1;
+  return acc;
+}, {});
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibe Reading · 技术文档解读博客</title>
+  <meta name="description" content="AI 生成 · 人工 Review 的技术文档解读博客，涵盖代码解读、论文解读等内容。" />
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0d1117;
+      --bg-card:     #161b22;
+      --bg-card2:    #1c2230;
+      --border:      #30363d;
+      --border-lite: #21262d;
+      --text:        #e6edf3;
+      --text-muted:  #8b949e;
+      --text-dim:    #6e7681;
+      --accent:      #f97316;
+      --accent2:     #fb923c;
+      --accent-glow: rgba(249,115,22,.15);
+      --radius:      12px;
+      --radius-sm:   8px;
+      --font: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── Nav ──────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,17,23,.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-lite);
+      padding: 0 40px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+    }
+
+    .nav-logo-icon { font-size: 20px; }
+
+    .nav-logo-text {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+
+    .nav-link-gh {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 5px 14px;
+      border-radius: 20px;
+      transition: all .15s;
+    }
+
+    .nav-link-gh:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ─── Hero ──────────────────────────────────────────── */
+    .hero {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 72px 40px 56px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(249,115,22,.3);
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.08;
+      background: linear-gradient(160deg, #ffffff 0%, #8b949e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 18px;
+    }
+
+    .hero-desc {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    .stat-badge strong { color: var(--text); font-weight: 600; }
+
+    /* ─── Filter ────────────────────────────────────────── */
+    .filter-bar {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 40px 36px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 18px;
+      border-radius: 20px;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      transition: all .15s;
+    }
+
+    .filter-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    .filter-btn.active {
+      background: var(--accent-glow);
+      border-color: rgba(249,115,22,.4);
+      color: var(--accent);
+    }
+
+    .filter-count {
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-card2);
+      border: 1px solid var(--border-lite);
+      padding: 1px 7px;
+      border-radius: 20px;
+      color: var(--text-dim);
+    }
+
+    /* ─── Article Grid ──────────────────────────────────── */
+    .articles {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 40px 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .article-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .article-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .article-card:hover {
+      border-color: rgba(249,115,22,.35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+
+    .article-card:hover::before { opacity: 1; }
+
+    .article-card-body { position: relative; }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 11px;
+      border-radius: 20px;
+      letter-spacing: .3px;
+    }
+
+    .card-date {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.3px;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .tag {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-dim);
+      background: var(--bg-card2);
+      border: 1px solid var(--border-lite);
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-family: var(--mono);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+
+    .card-footer-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ─── Read Button ────────────────────────────────────── */
+    .card-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      position: relative;
+      min-width: 120px;
+    }
+
+    .read-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(249,115,22,.3);
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .read-btn:hover {
+      background: rgba(249,115,22,.22);
+      border-color: var(--accent);
+    }
+
+    .read-arrow { transition: transform .15s; }
+    .read-btn:hover .read-arrow { transform: translateX(3px); }
+
+    /* ─── Empty State ───────────────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--text-dim);
+      font-size: 15px;
+      display: none;
+    }
+
+    /* ─── Divider ───────────────────────────────────────── */
+    .section-divider {
+      max-width: 860px;
+      margin: 0 auto 32px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .divider-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-lite);
+    }
+
+    /* ─── Footer ────────────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--border-lite);
+      padding: 32px 40px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 12.5px;
+      line-height: 1.8;
+    }
+
+    .footer a { color: var(--accent); }
+
+    /* ─── Responsive ────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav { padding: 0 20px; }
+      .hero { padding: 48px 20px 40px; }
+      .hero h1 { font-size: 36px; }
+      .filter-bar { padding: 0 20px 28px; }
+      .articles { padding: 0 20px 80px; }
+      .section-divider { padding: 0 20px; }
+      .article-card { grid-template-columns: 1fr; padding: 20px; }
+      .card-side { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ Nav ══════════════ -->
+  <nav class="nav">
+    <a href={base} class="nav-logo">
+      <span class="nav-logo-icon">🔥</span>
+      <span class="nav-logo-text">Vibe Reading</span>
+    </a>
+    <div class="nav-right">
+      <a
+        href="https://github.com/Dragonliu2018/vibe-reading"
+        target="_blank"
+        rel="noopener"
+        class="nav-link-gh"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+            -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+            .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+            -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+            .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+            .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+            0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </nav>
+
+  <!-- ══════════════ Hero ══════════════ -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span>✦</span> AI 生成 · 人工 Review <span>✦</span>
+    </div>
+    <h1>Vibe Reading</h1>
+    <p class="hero-desc">技术文档深度解读博客——代码库解读、论文精读，由 AI 生成初稿，人工审阅校正后发布。</p>
+    <div class="hero-stats">
+      <div class="stat-badge">📄 文章总数 <strong>{sorted.length}</strong></div>
+      {Object.entries(totalByCategory).map(([cat, count]) => (
+        <div class="stat-badge">
+          {CATEGORY_LABEL[cat as Category]}
+          <strong>{count}</strong>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ══════════════ Filter ══════════════ -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">
+      全部
+      <span class="filter-count">{sorted.length}</span>
+    </button>
+    {(['code', 'paper', 'system'] as Category[]).map(cat => {
+      const count = totalByCategory[cat] ?? 0;
+      if (count === 0) return null;
+      return (
+        <button class="filter-btn" data-filter={cat}>
+          {CATEGORY_LABEL[cat]}
+          <span class="filter-count">{count}</span>
+        </button>
+      );
+    })}
+  </div>
+
+  <!-- ══════════════ Divider ══════════════ -->
+  <div class="section-divider">
+    <span class="divider-label">所有文章</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ══════════════ Articles ══════════════ -->
+  <main class="articles" id="article-list">
+    {sorted.map((article) => {
+      const color = CATEGORY_COLOR[article.category];
+      return (
+        <article
+          class="article-card"
+          data-category={article.category}
+        >
+          <div class="article-card-body">
+            <div class="card-meta">
+              <span
+                class="cat-badge"
+                style={`color:${color.text};background:${color.bg};border:1px solid ${color.border};`}
+              >
+                {CATEGORY_LABEL[article.category]}
+              </span>
+              <span class="card-date">{article.date}</span>
+            </div>
+
+            <div class="card-title">{article.title}</div>
+            <div class="card-desc">{article.description}</div>
+
+            <div class="card-tags">
+              {article.tags.map(tag => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+
+            <div class="card-footer">
+              {article.aiModel && (
+                <span class="card-footer-item">🤖 {article.aiModel}</span>
+              )}
+              {article.readingTime && (
+                <span class="card-footer-item">⏱ {article.readingTime}</span>
+              )}
+            </div>
+          </div>
+
+          <div class="card-side">
+            <a
+              href={`${base}articles/${article.slug}`}
+              class="read-btn"
+            >
+              阅读全文
+              <span class="read-arrow">→</span>
+            </a>
+          </div>
+        </article>
+      );
+    })}
+
+    <div class="empty" id="empty-state">
+      暂无该分类的文章
+    </div>
+  </main>
+
+  <!-- ══════════════ Footer ══════════════ -->
+  <footer class="footer">
+    <p>Vibe Reading · AI 生成 · 人工 Review</p>
+    <p style="margin-top:6px;">
+      <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener">
+        GitHub
+      </a>
+      &nbsp;·&nbsp; 使用 Astro 构建 &nbsp;·&nbsp; 部署于 GitHub Pages
+    </p>
+  </footer>
+
+  <!-- ══════════════ Filter Script ══════════════ -->
+  <script>
+    const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const cards = document.querySelectorAll<HTMLElement>('.article-card');
+    const empty = document.getElementById('empty-state')!;
+    const divLabel = document.querySelector<HTMLElement>('.divider-label')!;
+
+    const LABELS: Record<string, string> = {
+      all: '所有文章', code: '代码解读', paper: '论文解读', system: '系统设计',
+    };
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter!;
+
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        divLabel.textContent = LABELS[filter] ?? '所有文章';
+
+        let visible = 0;
+        cards.forEach(card => {
+          const show = filter === 'all' || card.dataset.category === filter;
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        empty.style.display = visible === 0 ? 'block' : 'none';
+      });
+    });
+  </script>
+
+</body>
+</html>

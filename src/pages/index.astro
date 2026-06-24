@@ -5,7 +5,8 @@ const sorted = [...articles].sort(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
 );
 
-const base = import.meta.env.BASE_URL; // '/vibe-reading/'
+// Astro 7 不再自动添加尾部斜杠，统一移除后手动加 /
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
   acc[a.category] = (acc[a.category] ?? 0) + 1;
@@ -20,7 +21,7 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vibe Reading · 技术文档解读博客</title>
   <meta name="description" content="AI 生成 · 人工 Review 的技术文档解读博客，涵盖代码解读、论文解读等内容。" />
-  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   <style>
     /* ─── Reset & Base ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -540,7 +541,7 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
 
           <div class="card-side">
             <a
-              href={`${base}articles/${article.slug}`}
+              href={`${base}/articles/${article.slug}`}
               class="read-btn"
             >
               阅读全文

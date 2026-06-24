@@ -38,6 +38,16 @@ export const articles: Article[] = [
     aiModel:     'Claude Opus 4.8',
   },
   {
+    slug:        'multica-codebase-overview',
+    title:       'Multica 源码全景解读',
+    date:        '2026-06-24',
+    category:    'code',
+    tags:        ['Go', 'Next.js', 'Electron', 'PostgreSQL', 'AI Agent'],
+    description: 'AI 原生任务管理平台 Multica 的源码全景解读——Go 后端、Next.js 前端、Electron 桌面端、iOS 移动端的跨端架构深度剖析。',
+    readingTime: '18 min',
+    aiModel:     'Claude Opus 4.8',
+  },
+  {
     slug:        'mycli-architecture',
     title:       'mycli 架构解析',
     date:        '2026-06-24',

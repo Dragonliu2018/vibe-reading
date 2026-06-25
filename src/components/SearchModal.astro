@@ -43,157 +43,165 @@
   .srch-overlay {
     display: none;
     position: fixed; inset: 0; z-index: 9000;
-    background: rgba(0,0,0,0.50);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   .srch-overlay.open { display: block; }
 
-  /* ── 对话框 ─────────────────────────────────────────────────── */
+  /* ── 对话框（macOS Spotlight 强磨砂）─────────────────────── */
   .srch-box {
     display: none;
     position: fixed;
     top: 13vh; left: 50%; transform: translateX(-50%);
     width: min(660px, 94vw);
     z-index: 9001;
-    background: #0f0f11;
-    border: 1px solid rgba(255,255,255,0.11);
+    background: rgba(28,28,30,0.95);
+    backdrop-filter: blur(60px) saturate(180%);
+    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.10);
     border-radius: 14px;
     box-shadow:
       0 0 0 1px rgba(255,255,255,0.04),
-      0 8px 24px rgba(0,0,0,0.45),
-      0 32px 80px rgba(0,0,0,0.55);
+      0 8px 32px rgba(0,0,0,0.50),
+      0 40px 100px rgba(0,0,0,0.60);
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', sans-serif;
-    overflow: hidden;
     flex-direction: column;
+    max-height: min(480px, 55vh);
   }
   .srch-box.open { display: flex; }
 
   /* ── 输入行 ─────────────────────────────────────────────────── */
   .srch-head {
     display: flex; align-items: center; gap: 10px;
-    padding: 14px 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(84,84,88,0.60);
     flex-shrink: 0;
   }
-  .srch-head-icon { color: #48484a; flex-shrink: 0; }
+  .srch-head-icon { color: rgba(235,235,245,0.28); flex-shrink: 0; }
 
   #srch-input {
     flex: 1; min-width: 0;
     background: none; border: none; outline: none;
-    font-size: 16px; color: #f2f2f7;
-    font-family: inherit; letter-spacing: -0.15px;
-    caret-color: #2997ff;
+    font-size: 17px; color: rgba(235,235,245,0.88);
+    font-family: inherit; letter-spacing: -0.2px;
+    caret-color: #0a84ff;
     -webkit-appearance: none;
   }
-  #srch-input::placeholder { color: #38383a; }
+  #srch-input::placeholder { color: rgba(235,235,245,0.28); }
   #srch-input::-webkit-search-cancel-button { display: none; }
 
   .srch-esc {
     flex-shrink: 0;
     padding: 3px 8px; border-radius: 6px;
-    border: 1px solid rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.12);
     background: none; cursor: pointer;
-    font-size: 11px; color: #48484a;
+    font-size: 11px; color: rgba(235,235,245,0.28);
     font-family: inherit; letter-spacing: 0.2px;
     transition: border-color .15s, color .15s;
   }
-  .srch-esc:hover { border-color: rgba(255,255,255,0.2); color: #86868b; }
+  .srch-esc:hover {
+    border-color: rgba(255,255,255,0.22);
+    color: rgba(235,235,245,0.50);
+  }
 
-  /* ── 结果区（无内边距，条目铺满宽度形成列表感）── */
+  /* ── 结果区 ─────────────────────────────────────────────────── */
   .srch-body {
     overflow-y: auto;
-    max-height: min(460px, 52vh);
-    padding: 0;
+    flex: 1;
+    padding: 8px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.07) transparent;
+    scrollbar-color: rgba(255,255,255,0.08) transparent;
   }
   .srch-body::-webkit-scrollbar { width: 3px; }
-  .srch-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+  .srch-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
 
   /* 空态 / 提示 */
   .srch-placeholder, .srch-empty {
-    padding: 44px 20px; text-align: center;
-    font-size: 14px; color: #38383a; line-height: 1.7;
+    padding: 40px 20px; text-align: center;
+    font-size: 14px; color: rgba(235,235,245,0.28); line-height: 1.7;
   }
   .srch-empty code {
     font-family: ui-monospace, 'SF Mono', monospace;
-    font-size: 12px; color: #48484a;
-    background: rgba(255,255,255,0.05);
+    font-size: 12px; color: rgba(235,235,245,0.50);
+    background: rgba(255,255,255,0.06);
     padding: 1px 6px; border-radius: 4px;
   }
 
-  /* ── 每个结果条目 ─────────────────────────────────────────── */
+  /* ── 每个结果条目（Apple Spotlight 风格）──────────────────── */
   .srch-hit {
     display: block;
-    padding: 13px 20px 13px 18px;
+    padding: 10px 14px;
+    border-radius: 8px;
     text-decoration: none; color: inherit;
     cursor: pointer; outline: none;
-    /* 条目间用 border-bottom 分隔，清晰区分每一条 */
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    border-left: 3px solid transparent;   /* 留位给 active 指示器 */
-    transition: background .12s, border-color .12s;
+    /* 无 border-bottom 分隔线，条目间距用 margin-top 控制 */
+    margin-top: 2px;
+    transition: background .12s;
   }
-  .srch-hit:last-child { border-bottom: none; }
-  .srch-hit:hover { background: rgba(255,255,255,0.03); }
+  .srch-hit:first-child { margin-top: 0; }
+  .srch-hit:hover { background: rgba(255,255,255,0.05); }
 
-  /* 键盘选中：蓝色左边框 + 淡蓝底，视觉上非常明确 */
+  /* 键盘选中：蓝色半透明底，无左边框，标题颜色保持主色 */
   .srch-hit.active {
-    background: rgba(41,151,255,0.09);
-    border-left-color: #2997ff;
+    background: rgba(10,132,255,0.18);
   }
 
   /* 标题 */
   .srch-hit-title {
-    font-size: 14px; font-weight: 600;
-    color: #d1d1d6; letter-spacing: -0.25px;
+    font-size: 15px; font-weight: 600;
+    color: rgba(235,235,245,0.88);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: 5px;
-    transition: color .12s;
+    margin-bottom: 3px;
   }
-  .srch-hit.active .srch-hit-title { color: #5ac8fa; }
 
   /* 摘录：单行，足够看清匹配上下文 */
   .srch-hit-excerpt {
-    font-size: 12.5px; color: #4a4a4e; line-height: 1.55;
+    font-size: 13px; font-weight: 400;
+    color: rgba(235,235,245,0.50); line-height: 1.5;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
   }
 
-  /* 高亮匹配词：无背景，加粗 + 亮色，干净 */
+  /* mark 高亮：蓝色半透明背景 + 圆角，Apple 风格 */
   .srch-body mark {
-    background: none;
-    color: #64b5f6;
-    font-weight: 600;
+    background: rgba(10,132,255,0.30);
+    color: rgba(235,235,245,0.88);
+    font-weight: inherit;
     font-style: normal;
+    border-radius: 3px;
+    padding: 0 2px;
   }
 
-  /* 路径：最小化，只显示关键信息 */
+  /* 路径：最弱色，最小字号 */
   .srch-hit-path {
-    font-size: 10.5px; color: #333335; letter-spacing: 0.15px;
+    font-size: 11.5px; color: rgba(235,235,245,0.25);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
   /* ── 底部提示 ───────────────────────────────────────────────── */
   .srch-foot {
     display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-    padding: 8px 18px;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 8px 16px;
+    border-top: 1px solid rgba(84,84,88,0.60);
     flex-shrink: 0;
   }
   .srch-hint {
-    display: flex; align-items: center; gap: 3px;
-    font-size: 11px; color: #48484a;
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; color: rgba(235,235,245,0.28);
   }
   .srch-hint kbd {
     display: inline-flex; align-items: center; justify-content: center;
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 4px; padding: 1px 5px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 5px; padding: 1px 5px;
     font-size: 10.5px; font-family: inherit;
     min-width: 18px;
-    color: #3a3a3c;
+    color: rgba(235,235,245,0.28);
   }
-  .srch-powered { margin-left: auto; font-size: 11px; color: #28282a; }
+  .srch-powered { margin-left: auto; font-size: 11px; color: rgba(235,235,245,0.18); }
   .hidden { display: none !important; }
 </style>
 

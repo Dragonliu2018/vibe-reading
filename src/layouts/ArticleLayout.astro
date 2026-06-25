@@ -369,6 +369,8 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     @media (max-width: 680px) {
       .nav { padding: 0 20px; }
       .footer { padding: 28px 6%; max-width: none; }
+      /* 移动端隐藏文字导航 pill，只保留图标按钮（搜索 + 汉堡） */
+      .nav-pill { display: none; }
     }
   </style>
 </head>

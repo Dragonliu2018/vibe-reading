@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Paperclip — AI 智能体公司控制平面</title>
+  <meta name="description" content="Paperclip 是一个开源的 AI 智能体编排平台，让你像运营一家真实公司一样管理 AI 团队。" />
+  <style>
+    /* ─── Reset & Base ────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --bg-tertiary: #fbfbfd;
+      --surface: rgba(255,255,255,0.85);
+      --surface-hover: rgba(255,255,255,0.95);
+      --border: rgba(0,0,0,0.08);
+      --border-strong: rgba(0,0,0,0.14);
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-tertiary: #aeaeb2;
+      --accent: #0066cc;
+      --accent-light: #e8f0fb;
+      --accent-2: #5856d6;
+      --accent-3: #30d158;
+      --accent-4: #ff9f0a;
+      --accent-5: #ff453a;
+      --accent-6: #64d2ff;
+      --card-bg: #ffffff;
+      --card-shadow: 0 2px 20px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+      --card-shadow-hover: 0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --radius-xs: 8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --bg-secondary: #1c1c1e;
+        --bg-tertiary: #0d0d0f;
+        --surface: rgba(28,28,30,0.9);
+        --surface-hover: rgba(44,44,46,0.95);
+        --border: rgba(255,255,255,0.10);
+        --border-strong: rgba(255,255,255,0.18);
+        --text-primary: #f5f5f7;
+        --text-secondary: #98989d;
+        --text-tertiary: #636366;
+        --accent: #2997ff;
+        --accent-light: rgba(41,151,255,0.12);
+        --card-bg: #1c1c1e;
+        --card-shadow: 0 2px 20px rgba(0,0,0,0.30), 0 1px 4px rgba(0,0,0,0.20);
+        --card-shadow-hover: 0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.30);
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                   "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* ─── Nav ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 max(20px, env(safe-area-inset-left));
+      height: 52px;
+      background: rgba(var(--bg-secondary-rgb, 245,245,247), 0.72);
+      backdrop-filter: saturate(180%) blur(24px);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      nav { background: rgba(28,28,30,0.72); }
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #0066cc 0%, #5856d6 100%);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text-primary); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+    }
+
+    /* ─── Sections & Layout ───────────────────────────── */
+    section { width: 100%; }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 max(24px, env(safe-area-inset-left));
+    }
+
+    /* ─── Hero ────────────────────────────────────────── */
+    .hero {
+      padding: 120px 0 80px;
+      text-align: center;
+      background: radial-gradient(ellipse 80% 50% at 50% -10%,
+        rgba(0,102,204,0.12) 0%,
+        transparent 70%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .hero {
+        background: radial-gradient(ellipse 80% 50% at 50% -10%,
+          rgba(41,151,255,0.15) 0%,
+          transparent 70%);
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      letter-spacing: 0.1px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.07;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 120%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto 40px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+      line-height: 1.5;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 100px;
+      padding: 14px 28px;
+      font-size: 17px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      letter-spacing: -0.2px;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0,102,204,0.30);
+    }
+
+    .hero-arch-diagram {
+      margin: 64px auto 0;
+      max-width: 700px;
+      position: relative;
+    }
+
+    /* ─── Section Title ───────────────────────────────── */
+    .section-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .section-eyebrow {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ─── Overview Cards ──────────────────────────────── */
+    .overview {
+      padding: 80px 0;
+      background: var(--bg-secondary);
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .overview-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .overview-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .icon-blue   { background: rgba(0,102,204,0.12); }
+    .icon-purple { background: rgba(88,86,214,0.12); }
+    .icon-green  { background: rgba(48,209,88,0.12); }
+    .icon-orange { background: rgba(255,159,10,0.12); }
+    .icon-red    { background: rgba(255,69,58,0.12); }
+    .icon-teal   { background: rgba(100,210,255,0.12); }
+    .icon-pink   { background: rgba(255,55,95,0.12); }
+    .icon-indigo { background: rgba(94,92,230,0.12); }
+
+    @media (prefers-color-scheme: dark) {
+      .icon-blue   { background: rgba(41,151,255,0.15); }
+      .icon-purple { background: rgba(88,86,214,0.20); }
+      .icon-green  { background: rgba(48,209,88,0.15); }
+      .icon-orange { background: rgba(255,159,10,0.15); }
+      .icon-red    { background: rgba(255,69,58,0.15); }
+      .icon-teal   { background: rgba(100,210,255,0.15); }
+      .icon-pink   { background: rgba(255,55,95,0.15); }
+      .icon-indigo { background: rgba(94,92,230,0.15); }
+    }
+
+    .overview-card h3 {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin-bottom: 10px;
+    }
+
+    .overview-card p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ─── Architecture ────────────────────────────────── */
+    .architecture {
+      padding: 96px 0;
+    }
+
+    .arch-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .arch-layer {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 640px) {
+      .arch-layer {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+
+    .arch-layer-label {
+      text-align: right;
+      padding-top: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .arch-layer-label { text-align: left; }
+    }
+
+    .arch-layer-name {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+
+    .arch-layer-desc {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    .arch-layer-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .arch-layer-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .arch-layer-title .layer-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .layer-ui    .layer-dot { background: var(--accent-6); }
+    .layer-api   .layer-dot { background: var(--accent); }
+    .layer-svc   .layer-dot { background: var(--accent-2); }
+    .layer-db    .layer-dot { background: var(--accent-3); }
+    .layer-adapt .layer-dot { background: var(--accent-4); }
+
+    .arch-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .arch-chip {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .layer-ui    .arch-chip { background: rgba(100,210,255,0.10); color: var(--accent-6); border-color: rgba(100,210,255,0.20); }
+    .layer-api   .arch-chip { background: rgba(0,102,204,0.10);   color: var(--accent);   border-color: rgba(0,102,204,0.20); }
+    .layer-svc   .arch-chip { background: rgba(88,86,214,0.10);   color: var(--accent-2); border-color: rgba(88,86,214,0.20); }
+    .layer-db    .arch-chip { background: rgba(48,209,88,0.10);   color: var(--accent-3); border-color: rgba(48,209,88,0.20); }
+    .layer-adapt .arch-chip { background: rgba(255,159,10,0.10);  color: var(--accent-4); border-color: rgba(255,159,10,0.20); }
+
+    .arch-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--text-tertiary);
+      font-size: 11px;
+      padding: 4px 0;
+    }
+
+    .arch-connector-line {
+      width: 1px;
+      height: 20px;
+      background: var(--border-strong);
+      margin: 0 auto;
+    }
+
+    /* ─── Lifecycle ───────────────────────────────────── */
+    .lifecycle {
+      padding: 96px 0;
+      background: var(--bg-secondary);
+    }
+
+    .lifecycle-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0;
+      position: relative;
+    }
+
+    .lifecycle-steps::before {
+      content: '';
+      position: absolute;
+      top: 36px;
+      left: calc(100% / 10);
+      right: calc(100% / 10);
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
+      opacity: 0.3;
+      border-radius: 1px;
+    }
+
+    @media (max-width: 800px) {
+      .lifecycle-steps::before { display: none; }
+      .lifecycle-steps { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 420px) {
+      .lifecycle-steps { grid-template-columns: 1fr; }
+    }
+
+    .lifecycle-step {
+      padding: 24px 16px;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 auto 14px;
+      position: relative;
+      z-index: 1;
+      border: 2px solid transparent;
+    }
+
+    .step-1 .step-number { background: rgba(0,102,204,0.12);  color: var(--accent);   border-color: rgba(0,102,204,0.25); }
+    .step-2 .step-number { background: rgba(88,86,214,0.12);  color: var(--accent-2); border-color: rgba(88,86,214,0.25); }
+    .step-3 .step-number { background: rgba(255,159,10,0.12); color: var(--accent-4); border-color: rgba(255,159,10,0.25); }
+    .step-4 .step-number { background: rgba(48,209,88,0.12);  color: var(--accent-3); border-color: rgba(48,209,88,0.25); }
+    .step-5 .step-number { background: rgba(100,210,255,0.12);color: var(--accent-6); border-color: rgba(100,210,255,0.25); }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ─── Feature Deep-Dives ──────────────────────────── */
+    .features {
+      padding: 96px 0;
+    }
+
+    .feature-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-bottom: 96px;
+    }
+
+    .feature-row:last-child { margin-bottom: 0; }
+
+    .feature-row.reverse { direction: rtl; }
+    .feature-row.reverse > * { direction: ltr; }
+
+    @media (max-width: 768px) {
+      .feature-row, .feature-row.reverse {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        gap: 32px;
+        margin-bottom: 64px;
+      }
+    }
+
+    .feature-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .feature-eyebrow.blue   { color: var(--accent); }
+    .feature-eyebrow.purple { color: var(--accent-2); }
+    .feature-eyebrow.green  { color: var(--accent-3); }
+    .feature-eyebrow.orange { color: var(--accent-4); }
+    .feature-eyebrow.teal   { color: var(--accent-6); }
+
+    .feature-title {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .feature-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .feature-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feature-points li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .feature-points li::before {
+      content: '✓';
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-3);
+      flex-shrink: 0;
+      margin-top: 2px;
+      width: 18px; height: 18px;
+      background: rgba(48,209,88,0.12);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Visual Cards (Feature Graphics) ────────────── */
+    .feature-visual {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+    }
+
+    .visual-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-secondary);
+    }
+
+    .visual-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red    { background: #ff5f57; }
+    .dot-yellow { background: #febc2e; }
+    .dot-green  { background: #28c840; }
+
+    .visual-title-bar {
+      flex: 1;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .visual-body {
+      background: var(--card-bg);
+      padding: 20px;
+    }
+
+    /* ─── Org Chart Visual ────────────────────────────── */
+    .org-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 0;
+    }
+
+    .org-node {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      min-width: 180px;
+      transition: border-color 0.2s;
+    }
+
+    .org-node.is-ceo { border-color: var(--accent); background: var(--accent-light); }
+    .org-node.is-active { border-color: var(--accent-3); background: rgba(48,209,88,0.06); }
+
+    .org-node-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .org-children {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .org-children::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: calc(50% - 0.5px);
+      width: 1px;
+      height: 20px;
+      background: var(--border-strong);
+    }
+
+    .org-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .org-branch::before {
+      content: '';
+      width: 1px;
+      height: 20px;
+      background: var(--border-strong);
+    }
+
+    .org-tag {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 500;
+      background: rgba(0,102,204,0.10);
+      color: var(--accent);
+    }
+
+    /* ─── Task Pipeline Visual ────────────────────────── */
+    .pipeline-visual {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .pipeline-col {
+      flex: 0 0 110px;
+    }
+
+    .pipeline-col-header {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-tertiary);
+      padding: 0 0 8px 4px;
+    }
+
+    .pipeline-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .pipeline-card-title { font-weight: 500; margin-bottom: 4px; color: var(--text-primary); }
+    .pipeline-card-meta  { color: var(--text-tertiary); font-size: 10px; }
+
+    .pipeline-card.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .pipeline-card.done {
+      border-color: var(--accent-3);
+      background: rgba(48,209,88,0.06);
+      opacity: 0.7;
+    }
+
+    /* ─── Budget Visual ───────────────────────────────── */
+    .budget-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .budget-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .budget-label {
+      font-size: 13px;
+      font-weight: 500;
+      width: 80px;
+      flex-shrink: 0;
+      color: var(--text-secondary);
+    }
+
+    .budget-bar-wrap {
+      flex: 1;
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .budget-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+
+    .bar-blue   { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .bar-green  { background: linear-gradient(90deg, var(--accent-3), #00c72c); }
+    .bar-orange { background: linear-gradient(90deg, var(--accent-4), #ff7b00); }
+    .bar-red    { background: linear-gradient(90deg, var(--accent-5), #ff2d20); }
+
+    .budget-value {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ─── Heartbeat Visual ────────────────────────────── */
+    .heartbeat-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hb-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .hb-time {
+      width: 44px;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .hb-bar-outer {
+      flex: 1;
+      height: 28px;
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .hb-bar-inner {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: white;
+      white-space: nowrap;
+      transition: width 0.8s ease;
+    }
+
+    .hb-blue   { background: var(--accent); }
+    .hb-purple { background: var(--accent-2); }
+    .hb-green  { background: var(--accent-3); }
+    .hb-orange { background: var(--accent-4); }
+
+    /* ─── Plugin System ───────────────────────────────── */
+    .plugins-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .plugin-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .plugin-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .plugin-icon {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .plugin-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+    }
+
+    .plugin-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ─── Code Block ──────────────────────────────────── */
+    .code-block {
+      background: #1a1a2e;
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    }
+
+    .code-block code {
+      color: #e2e8f0;
+    }
+
+    .tok-keyword  { color: #ff79c6; }
+    .tok-string   { color: #f1fa8c; }
+    .tok-comment  { color: #6272a4; }
+    .tok-value    { color: #bd93f9; }
+    .tok-fn       { color: #50fa7b; }
+    .tok-type     { color: #8be9fd; }
+    .tok-op       { color: #ff79c6; }
+    .tok-number   { color: #bd93f9; }
+
+    /* ─── Data Flow ───────────────────────────────────── */
+    .flow-diagram {
+      padding: 96px 0;
+      background: var(--bg-secondary);
+    }
+
+    .flow-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .flow-node {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .flow-node-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .flow-node-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+
+    .flow-node-line {
+      width: 2px;
+      flex: 1;
+      min-height: 24px;
+      background: linear-gradient(180deg, var(--border-strong) 0%, transparent 100%);
+      margin: 4px 0;
+    }
+
+    .flow-node-body {
+      flex: 1;
+      padding-bottom: 28px;
+    }
+
+    .flow-node-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+      margin-top: 8px;
+    }
+
+    .flow-node-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .flow-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .tag-atomic  { background: rgba(255,159,10,0.12); color: var(--accent-4); }
+    .tag-secure  { background: rgba(48,209,88,0.12);  color: var(--accent-3); }
+    .tag-async   { background: rgba(88,86,214,0.12);  color: var(--accent-2); }
+    .tag-control { background: rgba(0,102,204,0.12);  color: var(--accent); }
+
+    /* ─── Concepts Grid ───────────────────────────────── */
+    .concepts {
+      padding: 96px 0;
+    }
+
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .concept-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .concept-card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .concept-term {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .concept-def {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .concept-note {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ─── Stats Bar ───────────────────────────────────── */
+    .stats {
+      padding: 64px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 32px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* ─── Footer ──────────────────────────────────────── */
+    footer {
+      padding: 48px 0 calc(48px + env(safe-area-inset-bottom));
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer .footer-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    footer p {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* ─── Utility ─────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0;
+    }
+
+    .text-accent   { color: var(--accent); }
+    .text-green    { color: var(--accent-3); }
+    .text-orange   { color: var(--accent-4); }
+    .text-purple   { color: var(--accent-2); }
+
+    /* ─── Scroll Animations ───────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* stagger children */
+    .stagger > * { transition-delay: calc(var(--i, 0) * 80ms); }
+
+    /* ─── Scrollbar ───────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+    /* ─── Selection ───────────────────────────────────── */
+    ::selection { background: rgba(0,102,204,0.20); }
+
+    /* ─── Print ───────────────────────────────────────── */
+    @media print {
+      nav { display: none; }
+      .hero { padding-top: 40px; }
+    }
+
+    /* ─── Reduced Motion ──────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───── NAV ─────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="nav-logo-icon">📎</span>
+    Paperclip
+  </a>
+  <ul class="nav-links">
+    <li><a href="#architecture">架构</a></li>
+    <li><a href="#lifecycle">生命周期</a></li>
+    <li><a href="#features">核心特性</a></li>
+    <li><a href="#concepts">术语表</a></li>
+  </ul>
+</nav>
+
+<!-- ───── HERO ────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge fade-up">
+      <span>🚀</span>
+      开源 · AI 智能体编排平台
+    </div>
+    <h1 class="fade-up">AI 智能体公司<br>的控制平面</h1>
+    <p class="hero-tagline fade-up">
+      Paperclip 让你像运营一家真实公司一样管理 AI 智能体团队——
+      任务分配、预算控制、审批治理，一切尽在掌控。
+    </p>
+    <a href="#architecture" class="hero-cta fade-up">
+      深入了解
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </a>
+
+    <!-- Mini architecture diagram -->
+    <div class="hero-arch-diagram fade-up" style="transition-delay:200ms">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:18px 12px;box-shadow:var(--card-shadow)">
+          <div style="font-size:28px;margin-bottom:8px">🏢</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">公司</div>
+          <div style="font-size:11px;color:var(--text-tertiary)">顶层组织单元</div>
+        </div>
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:18px 12px;box-shadow:var(--card-shadow)">
+          <div style="font-size:28px;margin-bottom:8px">🤖</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">智能体</div>
+          <div style="font-size:11px;color:var(--text-tertiary)">AI 员工</div>
+        </div>
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:18px 12px;box-shadow:var(--card-shadow)">
+          <div style="font-size:28px;margin-bottom:8px">📋</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">任务</div>
+          <div style="font-size:11px;color:var(--text-tertiary)">工作单元</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px;margin-top:8px;font-size:12px;color:var(--text-tertiary)">
+        <span>心跳调度</span>
+        <span>·</span>
+        <span>预算管控</span>
+        <span>·</span>
+        <span>治理审批</span>
+        <span>·</span>
+        <span>插件扩展</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── OVERVIEW CARDS ──────────────────────────────── -->
+<section class="overview">
+  <div class="container">
+    <div class="section-header fade-up">
+      <p class="section-eyebrow">为什么选择 Paperclip</p>
+      <h2 class="section-title">不只是单个智能体，<br>而是一家 AI 公司</h2>
+      <p class="section-subtitle">
+        Paperclip 提供了管理 AI 智能体团队所需的一切基础设施——
+        就像为真实员工搭建的公司运营体系。
+      </p>
+    </div>
+
+    <div class="overview-grid stagger">
+      <div class="overview-card fade-up" style="--i:0">
+        <div class="card-icon icon-blue">🏗️</div>
+        <h3>多公司隔离</h3>
+        <p>单个 Paperclip 实例可运行无限个公司，数据完全隔离，各自拥有独立的智能体、任务和预算。</p>
+      </div>
+      <div class="overview-card fade-up" style="--i:1">
+        <div class="card-icon icon-purple">🤝</div>
+        <h3>自带智能体</h3>
+        <p>任何能接收心跳信号的工具都可以被"雇用"——Claude Code、Codex、Cursor、HTTP Bot，乃至自定义脚本。</p>
+      </div>
+      <div class="overview-card fade-up" style="--i:2">
+        <div class="card-icon icon-orange">💰</div>
+        <h3>精准预算管控</h3>
+        <p>在公司、智能体、项目三个维度追踪 Token 消耗和美元花费，硬上限自动暂停超支智能体。</p>
+      </div>
+      <div class="overview-card fade-up" style="--i:3">
+        <div class="card-icon icon-green">🔒</div>
+        <h3>治理与审批</h3>
+        <p>董事会审批门控——雇佣、战略规划、高影响变更均需批准。人类始终保持对 AI 行为的控制权。</p>
+      </div>
+      <div class="overview-card fade-up" style="--i:4">
+        <div class="card-icon icon-teal">⚡</div>
+        <h3>心跳执行引擎</h3>
+        <p>智能体按计划或事件触发而唤醒，跨心跳周期持久化执行状态，无需从零重启上下文。</p>
+      </div>
+      <div class="overview-card fade-up" style="--i:5">
+        <div class="card-icon icon-pink">🔌</div>
+        <h3>插件生态</h3>
+        <p>通过插件 SDK 无需 Fork 核心即可扩展——注册新适配器、挂载生命周期钩子、贡献 UI 组件。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── ARCHITECTURE ────────────────────────────────── -->
+<section class="architecture" id="architecture">
+  <div class="container">
+    <div class="section-header fade-up">
+      <p class="section-eyebrow">系统架构</p>
+      <h2 class="section-title">分层设计，职责清晰</h2>
+      <p class="section-subtitle">Paperclip 由五个核心层组成，每层各司其职，共同构成完整的智能体公司控制平面。</p>
+    </div>
+
+    <div class="arch-layers fade-up">
+
+      <!-- UI Layer -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">
+          <div class="arch-layer-name">前端</div>
+          <div class="arch-layer-desc">React + Vite</div>
+        </div>
+        <div class="arch-layer-content layer-ui">
+          <div class="arch-layer-title">
+            <span class="layer-dot"></span>
+            UI 层 — 控制台与可视化
+          </div>
+          <div class="arch-chips">
+            <span class="arch-chip">组织架构图</span>
+            <span class="arch-chip">任务看板</span>
+            <span class="arch-chip">成本仪表盘</span>
+            <span class="arch-chip">智能体详情</span>
+            <span class="arch-chip">审批工作流</span>
+            <span class="arch-chip">实时更新</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector"><div class="arch-connector-line"></div></div>
+
+      <!-- API Layer -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">
+          <div class="arch-layer-name">接口层</div>
+          <div class="arch-layer-desc">Express REST</div>
+        </div>
+        <div class="arch-layer-content layer-api">
+          <div class="arch-layer-title">
+            <span class="layer-dot"></span>
+            API 层 — 45+ 路由模块
+          </div>
+          <div class="arch-chips">
+            <span class="arch-chip">agents</span>
+            <span class="arch-chip">issues</span>
+            <span class="arch-chip">costs</span>
+            <span class="arch-chip">approvals</span>
+            <span class="arch-chip">routines</span>
+            <span class="arch-chip">plugins</span>
+            <span class="arch-chip">secrets</span>
+            <span class="arch-chip">companies</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector"><div class="arch-connector-line"></div></div>
+
+      <!-- Service Layer -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">
+          <div class="arch-layer-name">服务层</div>
+          <div class="arch-layer-desc">核心业务逻辑</div>
+        </div>
+        <div class="arch-layer-content layer-svc">
+          <div class="arch-layer-title">
+            <span class="layer-dot"></span>
+            服务层 — 心跳引擎、预算执行、恢复机制
+          </div>
+          <div class="arch-chips">
+            <span class="arch-chip">心跳服务</span>
+            <span class="arch-chip">任务原子检出</span>
+            <span class="arch-chip">预算原子执行</span>
+            <span class="arch-chip">活跃性校验</span>
+            <span class="arch-chip">看门狗</span>
+            <span class="arch-chip">成本追踪</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector"><div class="arch-connector-line"></div></div>
+
+      <!-- DB Layer -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">
+          <div class="arch-layer-name">数据层</div>
+          <div class="arch-layer-desc">PostgreSQL + Drizzle</div>
+        </div>
+        <div class="arch-layer-content layer-db">
+          <div class="arch-layer-title">
+            <span class="layer-dot"></span>
+            数据库层 — 90+ 张表，自动迁移
+          </div>
+          <div class="arch-chips">
+            <span class="arch-chip">companies</span>
+            <span class="arch-chip">agents</span>
+            <span class="arch-chip">issues</span>
+            <span class="arch-chip">heartbeat_runs</span>
+            <span class="arch-chip">cost_events</span>
+            <span class="arch-chip">approvals</span>
+            <span class="arch-chip">routines</span>
+            <span class="arch-chip">plugin_jobs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector"><div class="arch-connector-line"></div></div>
+
+      <!-- Adapter Layer -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">
+          <div class="arch-layer-name">适配器层</div>
+          <div class="arch-layer-desc">智能体接口</div>
+        </div>
+        <div class="arch-layer-content layer-adapt">
+          <div class="arch-layer-title">
+            <span class="layer-dot"></span>
+            适配器层 — 连接各类 AI 智能体
+          </div>
+          <div class="arch-chips">
+            <span class="arch-chip">Claude Code</span>
+            <span class="arch-chip">Codex</span>
+            <span class="arch-chip">Cursor</span>
+            <span class="arch-chip">HTTP Webhook</span>
+            <span class="arch-chip">Process</span>
+            <span class="arch-chip">OpenClaw Gateway</span>
+            <span class="arch-chip">插件自定义</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ───── LIFECYCLE ───────────────────────────────────── -->
+<section class="lifecycle" id="lifecycle">
+  <div class="container">
+    <div class="section-header fade-up">
+      <p class="section-eyebrow">执行语义</p>
+      <h2 class="section-title">任务的一生</h2>
+      <p class="section-subtitle">从创建到完成，每个任务都遵循严格的状态机流转，确保不会出现遗漏或重复执行。</p>
+    </div>
+
+    <div class="lifecycle-steps stagger">
+      <div class="lifecycle-step step-1 fade-up" style="--i:0">
+        <div class="step-number">1</div>
+        <div class="step-title">创建</div>
+        <div class="step-desc">在目标层级下创建任务，关联描述、文档、阻塞关系</div>
+      </div>
+      <div class="lifecycle-step step-2 fade-up" style="--i:1">
+        <div class="step-number">2</div>
+        <div class="step-title">分配</div>
+        <div class="step-desc">指定唯一负责人（智能体或人类），进入 Todo 状态</div>
+      </div>
+      <div class="lifecycle-step step-3 fade-up" style="--i:2">
+        <div class="step-number">3</div>
+        <div class="step-title">检出</div>
+        <div class="step-desc">智能体原子性独占任务，预算检查与检出一次性完成</div>
+      </div>
+      <div class="lifecycle-step step-4 fade-up" style="--i:3">
+        <div class="step-number">4</div>
+        <div class="step-title">执行</div>
+        <div class="step-desc">心跳唤醒智能体，注入上下文、秘钥和 Skill 文档</div>
+      </div>
+      <div class="lifecycle-step step-5 fade-up" style="--i:4">
+        <div class="step-number">5</div>
+        <div class="step-title">完成</div>
+        <div class="step-desc">智能体标记完成/阻塞/取消，触发下游阻塞任务唤醒</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── FEATURE: ORG ────────────────────────────────── -->
+<section class="features" id="features">
+  <div class="container">
+
+    <!-- Feature 1: Org Chart & Agents -->
+    <div class="feature-row fade-up">
+      <div class="feature-text-col">
+        <p class="feature-eyebrow blue">组织架构</p>
+        <h3 class="feature-title">像真实公司一样<br>管理你的 AI 团队</h3>
+        <p class="feature-text">每个智能体都有姓名、职责、上下级关系和月度预算。组织架构图清晰呈现汇报关系，让 AI 团队不再是散乱的工具集合。</p>
+        <ul class="feature-points">
+          <li>单一上级制，责任链清晰不模糊</li>
+          <li>角色与能力描述注入到每次执行上下文</li>
+          <li>智能体可被暂停、激活或终止</li>
+          <li>会话状态跨心跳持久化，无需重建上下文</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="visual-header">
+          <div class="visual-dot dot-red"></div>
+          <div class="visual-dot dot-yellow"></div>
+          <div class="visual-dot dot-green"></div>
+          <div class="visual-title-bar">组织架构图</div>
+        </div>
+        <div class="visual-body">
+          <div class="org-visual">
+            <div class="org-node is-ceo">
+              <div class="org-node-avatar" style="background:rgba(0,102,204,0.15)">👑</div>
+              <div>
+                <div style="font-weight:600">CEO Agent</div>
+                <div style="font-size:11px;color:var(--text-tertiary)">首席执行官</div>
+              </div>
+              <span class="org-tag" style="margin-left:auto">董事会</span>
+            </div>
+            <div style="width:1px;height:16px;background:var(--border-strong);margin:0 auto"></div>
+            <div class="org-children">
+              <div class="org-branch">
+                <div class="org-node is-active">
+                  <div class="org-node-avatar" style="background:rgba(48,209,88,0.15)">💻</div>
+                  <div>
+                    <div style="font-weight:600">Dev Agent</div>
+                    <div style="font-size:11px;color:var(--text-tertiary)">首席工程师</div>
+                  </div>
+                </div>
+              </div>
+              <div class="org-branch">
+                <div class="org-node">
+                  <div class="org-node-avatar" style="background:rgba(255,159,10,0.15)">📊</div>
+                  <div>
+                    <div style="font-weight:600">PM Agent</div>
+                    <div style="font-size:11px;color:var(--text-tertiary)">产品经理</div>
+                  </div>
+                </div>
+              </div>
+              <div class="org-branch">
+                <div class="org-node">
+                  <div class="org-node-avatar" style="background:rgba(88,86,214,0.15)">🔍</div>
+                  <div>
+                    <div style="font-weight:600">QA Agent</div>
+                    <div style="font-size:11px;color:var(--text-tertiary)">质量工程师</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 2: Task System -->
+    <div class="feature-row reverse fade-up">
+      <div class="feature-text-col">
+        <p class="feature-eyebrow purple">任务系统</p>
+        <h3 class="feature-title">层级化任务，<br>目标全程可溯源</h3>
+        <p class="feature-text">从公司愿景到具体子任务，每项工作都能追溯到顶层目标。智能体知道自己在做"什么"，更知道"为什么"。</p>
+        <ul class="feature-points">
+          <li>五级层次：目标 → 项目 → 里程碑 → 任务 → 子任务</li>
+          <li>单一负责人模型，原子性检出防重复执行</li>
+          <li>显式阻塞关系，解除时自动唤醒下游任务</li>
+          <li>评论线程作为智能体间通信的主要渠道</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="visual-header">
+          <div class="visual-dot dot-red"></div>
+          <div class="visual-dot dot-yellow"></div>
+          <div class="visual-dot dot-green"></div>
+          <div class="visual-title-bar">任务看板</div>
+        </div>
+        <div class="visual-body">
+          <div class="pipeline-visual">
+            <div class="pipeline-col">
+              <div class="pipeline-col-header">待处理</div>
+              <div class="pipeline-card">
+                <div class="pipeline-card-title">设计 API 文档</div>
+                <div class="pipeline-card-meta">📝 PM Agent</div>
+              </div>
+              <div class="pipeline-card">
+                <div class="pipeline-card-title">性能测试报告</div>
+                <div class="pipeline-card-meta">🔍 QA Agent</div>
+              </div>
+            </div>
+            <div class="pipeline-col">
+              <div class="pipeline-col-header">进行中</div>
+              <div class="pipeline-card active">
+                <div class="pipeline-card-title">实现用户认证</div>
+                <div class="pipeline-card-meta">💻 Dev Agent · 进行中</div>
+              </div>
+            </div>
+            <div class="pipeline-col">
+              <div class="pipeline-col-header">已完成</div>
+              <div class="pipeline-card done">
+                <div class="pipeline-card-title">搭建 CI/CD</div>
+                <div class="pipeline-card-meta">✅ Dev Agent</div>
+              </div>
+              <div class="pipeline-card done">
+                <div class="pipeline-card-title">数据库建模</div>
+                <div class="pipeline-card-meta">✅ Dev Agent</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 3: Budget -->
+    <div class="feature-row fade-up">
+      <div class="feature-text-col">
+        <p class="feature-eyebrow orange">预算管控</p>
+        <h3 class="feature-title">精准的成本控制，<br>零超支风险</h3>
+        <p class="feature-text">预算检查与任务检出是原子操作——要么同时成功，要么一起回滚，从根本上杜绝超支和重复消费。</p>
+        <ul class="feature-points">
+          <li>Token 和美元双维度追踪</li>
+          <li>80% 阈值软警告，100% 硬停止</li>
+          <li>按公司、智能体、项目、目标多维度汇总</li>
+          <li>超支时自动暂停智能体并创建董事会事件</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="visual-header">
+          <div class="visual-dot dot-red"></div>
+          <div class="visual-dot dot-yellow"></div>
+          <div class="visual-dot dot-green"></div>
+          <div class="visual-title-bar">本月预算使用情况</div>
+        </div>
+        <div class="visual-body">
+          <div class="budget-visual">
+            <div class="budget-item">
+              <div class="budget-label">CEO Agent</div>
+              <div class="budget-bar-wrap">
+                <div class="budget-bar bar-blue" style="width:38%"></div>
+              </div>
+              <div class="budget-value">38%</div>
+            </div>
+            <div class="budget-item">
+              <div class="budget-label">Dev Agent</div>
+              <div class="budget-bar-wrap">
+                <div class="budget-bar bar-orange" style="width:82%"></div>
+              </div>
+              <div class="budget-value" style="color:var(--accent-4)">82%</div>
+            </div>
+            <div class="budget-item">
+              <div class="budget-label">PM Agent</div>
+              <div class="budget-bar-wrap">
+                <div class="budget-bar bar-green" style="width:51%"></div>
+              </div>
+              <div class="budget-value">51%</div>
+            </div>
+            <div class="budget-item">
+              <div class="budget-label">QA Agent</div>
+              <div class="budget-bar-wrap">
+                <div class="budget-bar bar-red" style="width:97%"></div>
+              </div>
+              <div class="budget-value" style="color:var(--accent-5)">97%</div>
+            </div>
+            <div style="margin-top:12px;padding:10px;background:rgba(255,69,58,0.08);border:1px solid rgba(255,69,58,0.2);border-radius:8px;font-size:12px;color:var(--accent-5)">
+              ⚠️ QA Agent 已达预算上限，自动暂停中
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 4: Heartbeat -->
+    <div class="feature-row reverse fade-up">
+      <div class="feature-text-col">
+        <p class="feature-eyebrow teal">心跳引擎</p>
+        <h3 class="feature-title">精确的调度与执行，<br>智能体永不迷失</h3>
+        <p class="feature-text">心跳是智能体的执行节拍。Paperclip 控制"何时"唤醒，智能体决定"怎么做"——两者职责清晰分离。</p>
+        <ul class="feature-points">
+          <li>三步适配器契约：invoke / status / cancel</li>
+          <li>执行状态跨周期持久化，断点续传</li>
+          <li>自动重试一次停滞任务，再次失败则上报</li>
+          <li>活跃性合约：非终止任务必须有明确推进路径</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="visual-header">
+          <div class="visual-dot dot-red"></div>
+          <div class="visual-dot dot-yellow"></div>
+          <div class="visual-dot dot-green"></div>
+          <div class="visual-title-bar">心跳执行时间线</div>
+        </div>
+        <div class="visual-body">
+          <div class="heartbeat-visual">
+            <div class="hb-row">
+              <div class="hb-time">09:00</div>
+              <div class="hb-bar-outer">
+                <div class="hb-bar-inner hb-blue" style="width:70%">预算检查 → 检出任务</div>
+              </div>
+            </div>
+            <div class="hb-row">
+              <div class="hb-time">09:02</div>
+              <div class="hb-bar-outer">
+                <div class="hb-bar-inner hb-purple" style="width:85%">注入上下文 / Skill → 唤醒智能体</div>
+              </div>
+            </div>
+            <div class="hb-row">
+              <div class="hb-time">09:05</div>
+              <div class="hb-bar-outer">
+                <div class="hb-bar-inner hb-orange" style="width:60%">智能体执行中…</div>
+              </div>
+            </div>
+            <div class="hb-row">
+              <div class="hb-time">09:18</div>
+              <div class="hb-bar-outer">
+                <div class="hb-bar-inner hb-green" style="width:50%">完成 → 记录成本</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ───── EXECUTION FLOW ──────────────────────────────── -->
+<section class="flow-diagram">
+  <div class="container">
+    <div class="section-header fade-up">
+      <p class="section-eyebrow">执行流程</p>
+      <h2 class="section-title">一次心跳的内部旅程</h2>
+      <p class="section-subtitle">从调度触发到任务完成，Paperclip 在每个关键节点保证原子性、安全性和可追溯性。</p>
+    </div>
+
+    <div class="flow-chart">
+
+      <div class="flow-node fade-up">
+        <div class="flow-node-left">
+          <div class="flow-node-icon">⏰</div>
+          <div class="flow-node-line"></div>
+        </div>
+        <div class="flow-node-body">
+          <div class="flow-node-title">调度触发</div>
+          <div class="flow-node-desc">Cron 定时器或事件（任务创建、阻塞解除、Webhook）触发唤醒请求，写入 <code style="font-size:12px;background:var(--bg-secondary);padding:1px 5px;border-radius:4px">agent_wakeup_requests</code> 队列。</div>
+          <span class="flow-tag tag-async">异步队列</span>
+        </div>
+      </div>
+
+      <div class="flow-node fade-up">
+        <div class="flow-node-left">
+          <div class="flow-node-icon">🔍</div>
+          <div class="flow-node-line"></div>
+        </div>
+        <div class="flow-node-body">
+          <div class="flow-node-title">前置检查</div>
+          <div class="flow-node-desc">校验智能体状态（非暂停/终止）、工作区一致性（正确的 cwd 和分支）、是否存在锁冲突。任何失败均短路返回。</div>
+          <span class="flow-tag tag-secure">安全门控</span>
+        </div>
+      </div>
+
+      <div class="flow-node fade-up">
+        <div class="flow-node-left">
+          <div class="flow-node-icon">⚛️</div>
+          <div class="flow-node-line"></div>
+        </div>
+        <div class="flow-node-body">
+          <div class="flow-node-title">原子检出 + 预算验证</div>
+          <div class="flow-node-desc">在单个数据库事务中：检查预算余量 → 独占锁定任务 → 扣减预留额度。三步原子完成，杜绝竞态条件。</div>
+          <span class="flow-tag tag-atomic">原子事务</span>
+        </div>
+      </div>
+
+      <div class="flow-node fade-up">
+        <div class="flow-node-left">
+          <div class="flow-node-icon">💉</div>
+          <div class="flow-node-line"></div>
+        </div>
+        <div class="flow-node-body">
+          <div class="flow-node-title">上下文注入</div>
+          <div class="flow-node-desc">将任务层级、公司目标、组织架构、相关评论、加密秘钥和 Paperclip Skill 文档打包注入执行环境。</div>
+          <span class="flow-tag tag-secure">秘钥加密</span>
+        </div>
+      </div>
+
+      <div class="flow-node fade-up">
+        <div class="flow-node-left">
+          <div class="flow-node-icon">🤖</div>
+          <div class="flow-node-line"></div>
+        </div>
+        <div class="flow-node-body">
+          <div class="flow-node-title">适配器调用</div>
+          <div class="flow-node-desc">通过对应适配器（Claude Code CLI、HTTP Webhook、子进程等）启动智能体，监控输出流，实时收集 Token 消耗数据。</div>
+          <span class="flow-tag tag-async">非阻塞监控</span>
+        </div>
+      </div>
+
+      <div class="flow-node fade-up">
+        <div class="flow-node-left">
+          <div class="flow-node-icon">✅</div>
+        </div>
+        <div class="flow-node-body">
+          <div class="flow-node-title">结算与后续触发</div>
+          <div class="flow-node-desc">记录实际成本、写入活动日志、更新任务状态。若有被此任务阻塞的下游任务，自动将其加入唤醒队列。</div>
+          <span class="flow-tag tag-control">自动级联</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ───── ADAPTER CONTRACT ────────────────────────────── -->
+<section style="padding:96px 0">
+  <div class="container">
+    <div class="section-header fade-up">
+      <p class="section-eyebrow">适配器契约</p>
+      <h2 class="section-title">三个方法，接入任意智能体</h2>
+      <p class="section-subtitle">Paperclip 对智能体的唯一要求：实现三个方法。内部逻辑完全自由。</p>
+    </div>
+
+    <div class="fade-up">
+      <div class="code-block">
+        <code>
+<span class="tok-comment">// 适配器契约 — 三个方法，最小接入成本</span>
+<span class="tok-keyword">interface</span> <span class="tok-type">Adapter</span> {
+  <span class="tok-comment">/** 启动智能体的一次执行周期 */</span>
+  <span class="tok-fn">invoke</span>(config: <span class="tok-type">AdapterConfig</span>, ctx?: <span class="tok-type">RunContext</span>): <span class="tok-type">Promise</span>&lt;<span class="tok-type">void</span>&gt;;
+
+  <span class="tok-comment">/** 查询当前运行状态 */</span>
+  <span class="tok-fn">status</span>(config: <span class="tok-type">AdapterConfig</span>): <span class="tok-type">Promise</span>&lt;<span class="tok-type">AgentStatus</span>&gt;;
+
+  <span class="tok-comment">/** 优雅停止（暂停/取消时调用） */</span>
+  <span class="tok-fn">cancel</span>(config: <span class="tok-type">AdapterConfig</span>): <span class="tok-type">Promise</span>&lt;<span class="tok-type">void</span>&gt;;
+}
+
+<span class="tok-comment">// 内置适配器类型</span>
+<span class="tok-keyword">type</span> <span class="tok-type">AdapterType</span> =
+  | <span class="tok-string">'claude-code'</span>   <span class="tok-comment">// 本地 Claude Code CLI</span>
+  | <span class="tok-string">'codex'</span>         <span class="tok-comment">// 本地 Codex</span>
+  | <span class="tok-string">'cursor'</span>        <span class="tok-comment">// Cursor API/CLI</span>
+  | <span class="tok-string">'http'</span>          <span class="tok-comment">// HTTP Webhook（任意外部服务）</span>
+  | <span class="tok-string">'process'</span>       <span class="tok-comment">// 本地子进程</span>
+  | <span class="tok-string">'openclaw'</span>      <span class="tok-comment">// OpenClaw 网关</span>
+  | <span class="tok-string">'plugin:custom'</span> <span class="tok-comment">// 插件注册的自定义类型</span>
+        </code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── PLUGINS ─────────────────────────────────────── -->
+<section style="padding:0 0 96px;background:var(--bg-secondary)">
+  <div style="padding-top:96px">
+    <div class="container">
+      <div class="section-header fade-up">
+        <p class="section-eyebrow">插件系统</p>
+        <h2 class="section-title">无需 Fork，按需扩展</h2>
+        <p class="section-subtitle">插件 SDK 让任何人都能在不修改核心代码的前提下，为 Paperclip 添加新能力。</p>
+      </div>
+
+      <div class="plugins-grid stagger">
+        <div class="plugin-card fade-up" style="--i:0">
+          <div class="plugin-icon">🔌</div>
+          <div class="plugin-name">自定义适配器</div>
+          <div class="plugin-desc">注册全新的智能体类型，接入任意 AI 工具或服务</div>
+        </div>
+        <div class="plugin-card fade-up" style="--i:1">
+          <div class="plugin-icon">🪝</div>
+          <div class="plugin-name">生命周期钩子</div>
+          <div class="plugin-desc">挂载 issue.created、agent.paused 等事件，实现自定义逻辑</div>
+        </div>
+        <div class="plugin-card fade-up" style="--i:2">
+          <div class="plugin-icon">🎨</div>
+          <div class="plugin-name">UI 扩展组件</div>
+          <div class="plugin-desc">在控制台中注入自定义界面，展示插件专属数据</div>
+        </div>
+        <div class="plugin-card fade-up" style="--i:3">
+          <div class="plugin-icon">☁️</div>
+          <div class="plugin-name">沙箱执行环境</div>
+          <div class="plugin-desc">E2B、Cloudflare Workers、Kubernetes、Modal 等隔离执行环境</div>
+        </div>
+        <div class="plugin-card fade-up" style="--i:4">
+          <div class="plugin-icon">🔧</div>
+          <div class="plugin-name">自定义 MCP 工具</div>
+          <div class="plugin-desc">为智能体注入额外的工具调用能力，扩展行动空间</div>
+        </div>
+        <div class="plugin-card fade-up" style="--i:5">
+          <div class="plugin-icon">⚙️</div>
+          <div class="plugin-name">Worker 进程</div>
+          <div class="plugin-desc">在后台运行持久化工作进程，处理异步任务和数据流</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── STATS ───────────────────────────────────────── -->
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid stagger">
+      <div class="fade-up" style="--i:0">
+        <div class="stat-value">90+</div>
+        <div class="stat-label">数据库表</div>
+      </div>
+      <div class="fade-up" style="--i:1">
+        <div class="stat-value">45+</div>
+        <div class="stat-label">API 路由模块</div>
+      </div>
+      <div class="fade-up" style="--i:2">
+        <div class="stat-value">10+</div>
+        <div class="stat-label">内置适配器类型</div>
+      </div>
+      <div class="fade-up" style="--i:3">
+        <div class="stat-value">∞</div>
+        <div class="stat-label">可运行公司数量</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── CONCEPTS ────────────────────────────────────── -->
+<section class="concepts" id="concepts">
+  <div class="container">
+    <div class="section-header fade-up">
+      <p class="section-eyebrow">核心概念</p>
+      <h2 class="section-title">术语词典</h2>
+      <p class="section-subtitle">理解 Paperclip 的核心词汇，快速建立系统认知。</p>
+    </div>
+
+    <div class="concepts-grid stagger">
+
+      <div class="concept-card fade-up" style="--i:0">
+        <div class="concept-term">Company</div>
+        <div class="concept-def">公司</div>
+        <div class="concept-note">顶层组织单元。一个 Paperclip 实例可运行多个完全数据隔离的公司，各自拥有独立的智能体、任务和预算。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:1">
+        <div class="concept-term">Agent</div>
+        <div class="concept-def">智能体（AI 员工）</div>
+        <div class="concept-note">有名字、职责、适配器类型、汇报关系和月度预算的执行单元。可以是任何能接收心跳的 AI 工具。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:2">
+        <div class="concept-term">Issue / Task</div>
+        <div class="concept-def">任务</div>
+        <div class="concept-note">工作的最小单元。单一负责人，有状态机流转、阻塞关系、评论线程和文档附件。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:3">
+        <div class="concept-term">Heartbeat</div>
+        <div class="concept-def">心跳</div>
+        <div class="concept-note">调度触发的一次执行周期。Paperclip 控制"何时"，智能体决定"怎么做"。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:4">
+        <div class="concept-term">Adapter</div>
+        <div class="concept-def">适配器</div>
+        <div class="concept-note">定义如何 invoke/status/cancel 一个智能体的接口实现，是 Paperclip 与具体 AI 工具之间的桥梁。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:5">
+        <div class="concept-term">Atomic Checkout</div>
+        <div class="concept-def">原子检出</div>
+        <div class="concept-note">预算检查和任务占用在单个数据库事务中完成，防止并发重复执行和超支问题。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:6">
+        <div class="concept-term">Blocker</div>
+        <div class="concept-def">阻塞关系</div>
+        <div class="concept-note">显式的任务依赖声明。被阻塞任务的负责人在阻塞解除时会自动收到唤醒信号。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:7">
+        <div class="concept-term">Budget Policy</div>
+        <div class="concept-def">预算策略</div>
+        <div class="concept-note">月度 Token/美元限额，含软警告阈值（80%）和硬停止（100%），支持公司、智能体、项目三级设置。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:8">
+        <div class="concept-term">Approval Gate</div>
+        <div class="concept-def">审批门控</div>
+        <div class="concept-note">雇佣新智能体、CEO 战略规划等高影响决策需要董事会批准，确保人类始终保有最终控制权。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:9">
+        <div class="concept-term">Routine</div>
+        <div class="concept-def">例行任务</div>
+        <div class="concept-note">按 Cron 计划或 Webhook 触发的重复性工作。每次执行自动创建追踪任务并唤醒指定智能体。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:10">
+        <div class="concept-term">Skill</div>
+        <div class="concept-def">技能文档</div>
+        <div class="concept-note">运行时注入给智能体的 Markdown 文档，教会其如何调用 Paperclip API、报告进度和读取公司上下文。</div>
+      </div>
+
+      <div class="concept-card fade-up" style="--i:11">
+        <div class="concept-term">Watchdog</div>
+        <div class="concept-def">看门狗</div>
+        <div class="concept-note">验证停止工作是否合法的监控代理，检测长时间沉默的活跃运行，防止任务被悄悄遗弃。</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ───── FOOTER ──────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">
+      <span style="font-size:22px">📎</span>
+      Paperclip
+    </div>
+    <p>AI 智能体公司的控制平面</p>
+    <p style="margin-top:8px">
+      <a href="https://github.com/paperclipai/paperclip">GitHub</a>
+      &nbsp;·&nbsp;
+      <span style="color:var(--text-tertiary)">开源 · 自托管 · 可扩展</span>
+    </p>
+    <p style="margin-top:20px;font-size:12px;color:var(--text-tertiary)">
+      本文档由 Claude 根据源代码自动生成 · 2026
+    </p>
+  </div>
+</footer>
+
+<!-- ───── SCROLL ANIMATION ────────────────────────────── -->
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    },
+    { threshold: 0.08, rootMargin: '0px 0px -48px 0px' }
+  );
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

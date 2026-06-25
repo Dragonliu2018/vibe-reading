@@ -28,6 +28,16 @@ export const CATEGORY_COLOR: Record<Category, { text: string; bg: string; border
 // ────────────────────────────────────────────────────
 export const articles: Article[] = [
   {
+    slug:        'paperclip-intro',
+    title:       'Paperclip — AI 智能体公司控制平面',
+    date:        '2026-06-25',
+    category:    'system',
+    tags:        ['AI Agent', 'MCP', 'Claude', 'Kubernetes', 'PostgreSQL', '系统设计'],
+    description: '像运营一家真实公司一样管理 AI 智能体团队——任务分配、预算控制、审批治理，Paperclip 开源 AI 智能体编排平台全景解读。',
+    readingTime: '12 min',
+    aiModel:     'Claude Opus 4.8',
+  },
+  {
     slug:        'markdown-demo',
     title:       'Markdown 文章示例',
     date:        '2026-06-24',

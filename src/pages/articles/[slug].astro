@@ -1,0 +1,64 @@
+---
+/**
+ * 统一文章路由
+ *
+ * 源文件目录（_ 前缀 = Astro 不自动建路由）：
+ *   _html/  HTML 文章（渲染为 HtmlArticleLayout + iframe）
+ *   _md/    Markdown 文章（import.meta.glob 渲染为 ArticleLayout）
+ *
+ * 最终 URL 全部统一为 /articles/[slug]
+ */
+import { readdirSync } from 'fs';
+import HtmlArticleLayout from '../../layouts/HtmlArticleLayout.astro';
+import ArticleLayout     from '../../layouts/ArticleLayout.astro';
+import { articles as articlesMeta } from '../../data/articles';
+
+// 所有 MD 模块（Astro 在构建期静态分析 import.meta.glob）
+const mdModules = import.meta.glob('./_md/*.md');
+
+export function getStaticPaths() {
+  const htmlSlugs = readdirSync('./src/pages/articles/html')
+    .filter(f => f.endsWith('.html'))
+    .map(f => f.slice(0, -5));
+
+  const mdSlugs = readdirSync('./src/pages/articles/_md')
+    .filter(f => f.endsWith('.md'))
+    .map(f => f.slice(0, -3));
+
+  return [
+    ...htmlSlugs.map(slug => ({ params: { slug }, props: { format: 'html' } })),
+    ...mdSlugs.map(slug  => ({ params: { slug }, props: { format: 'md'   } })),
+  ];
+}
+
+const { slug }   = Astro.params;
+const { format } = Astro.props;
+const base       = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// MD：通过 import.meta.glob 加载模块，渲染 Content 组件
+let Content:     any;
+let headings:    any[] = [];
+let frontmatter: any   = {};
+
+if (format === 'md') {
+  const loader = mdModules[`./_md/${slug}.md`];
+  if (loader) {
+    const mod  = await loader() as any;
+    Content    = mod.default;
+    headings   = mod.getHeadings?.() ?? [];
+    // 用 articles.ts 补齐 category / readingTime / aiModel（MD frontmatter 不含这些）
+    const meta = articlesMeta.find(a => a.slug === slug);
+    frontmatter = {
+      ...mod.frontmatter,
+      category:    mod.frontmatter?.category    ?? meta?.category,
+      readingTime: mod.frontmatter?.readingTime ?? meta?.readingTime,
+      aiModel:     mod.frontmatter?.aiModel     ?? meta?.aiModel,
+    };
+  }
+}
+---
+
+{format === 'html'
+  ? <HtmlArticleLayout slug={slug} iframeSrc={`${base}/articles/html/${slug}`} />
+  : <ArticleLayout frontmatter={frontmatter} headings={headings}><Content /></ArticleLayout>
+}

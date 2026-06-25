@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/ArticleLayout.astro
 title: "mycli 架构解析"
 date: "2026-06-24"
 tags: ["Python", "MySQL", "CLI", "代码解读"]

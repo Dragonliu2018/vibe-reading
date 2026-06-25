@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "rm -rf public/pagefind && astro build && node scripts/mark-html-raw-ignore.mjs && pagefind --site dist --output-path public/pagefind",
+    "build": "astro build && pagefind --site dist --output-path public/pagefind",
     "preview": "astro preview"
   },
   "engines": {

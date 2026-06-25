@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/ArticleLayout.astro
 title: "Markdown 文章示例"
 date: "2026-06-24"
 category: paper

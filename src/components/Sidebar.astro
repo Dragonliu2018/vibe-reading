@@ -1,67 +1,69 @@
 ---
-import { articles, CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
+import type { TreeNode } from '../data/categories';
+import { articles } from '../data/articles';
+import { categoryTree, findActivePath } from '../data/categories';
 
 export interface Props {
   currentSlug?: string;
 }
 
 const { currentSlug } = Astro.props;
+const base        = import.meta.env.BASE_URL.replace(/\/$/, '');
+const activePath  = findActivePath(categoryTree, currentSlug);
 
-const sorted = [...articles].sort(
-  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-);
+/** HTML 转义，防止文章标题里的特殊字符破坏 HTML 结构 */
+function esc(s: string): string {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const chevron = `<svg class="tree-chevron" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+  <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.3"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
 
-const categories = (['code', 'paper', 'system'] as Category[])
-  .map(cat => ({
-    key:      cat,
-    label:    CATEGORY_LABEL[cat],
-    color:    CATEGORY_COLOR[cat],
-    articles: sorted.filter(a => a.category === cat),
-  }))
-  .filter(c => c.articles.length > 0);
+/** 递归渲染分类节点，支持任意深度 */
+function renderNode(node: TreeNode, depth: number = 0): string {
+  const isOpen   = activePath.has(node.key);
+  const catClass = `tree-cat${depth > 0 ? ' tree-cat-sub' : ''}${isOpen ? ' open' : ''}`;
+  const divClass = `tree-children${isOpen ? ' open' : ''}`;
+
+  // 子分类递归
+  const childHtml = (node.children ?? []).map(c => renderNode(c, depth + 1)).join('');
+
+  // 当前节点的直属文章
+  const articleHtml = (node.slugs ?? []).map(slug => {
+    const title    = articles.find(a => a.slug === slug)?.title ?? slug;
+    const active   = slug === currentSlug ? ' active' : '';
+    return `<a class="tree-article${active}" href="${base}/articles/${slug}" title="${esc(title)}">${esc(title)}</a>`;
+  }).join('');
+
+  return `<div class="tree-node">
+  <button class="${catClass}" data-key="${esc(node.key)}">
+    ${chevron}
+    <span class="tree-cat-name">${esc(node.label)}</span>
+  </button>
+  <div class="${divClass}">${childHtml}${articleHtml}</div>
+</div>`;
+}
+
+const treeHtml = categoryTree.map(n => renderNode(n)).join('');
 ---
 
-<!-- Sidebar -->
+<!-- Sidebar：递归渲染，支持任意深度 -->
 <aside class="sidebar" id="g-sidebar" data-pagefind-ignore="all">
   <p class="tree-label">Categories</p>
-  {categories.map(cat => {
-    const hasActive = cat.articles.some(a => a.slug === currentSlug);
-    return (
-      <div class="tree-node">
-        <button class="tree-cat" data-cat={cat.key} class:list={[{ open: hasActive }]}>
-          <span class="tree-dot" style={`background:${cat.color.text};`}></span>
-          <span class="tree-cat-name">{cat.label}</span>
-          <span class="tree-cat-count">{cat.articles.length}</span>
-          <svg class="tree-chevron" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.3"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <div class:list={['tree-articles', { open: hasActive }]}>
-          {cat.articles.map(a => (
-            <a
-              class:list={['tree-article', { active: a.slug === currentSlug }]}
-              href={`${base}/articles/${a.slug}`}
-              title={a.title}
-            >{a.title}</a>
-          ))}
-        </div>
-      </div>
-    );
-  })}
+  <Fragment set:html={treeHtml} />
 </aside>
 
-<!-- 同步还原分类展开状态（is:inline = 不 defer，在首次绘制前执行，消除闪动）-->
+<!-- 同步还原分类展开状态（is:inline = 不 defer，首次绘制前执行，消除闪动）-->
 <script is:inline>
   (function () {
     try {
       var sidebar = document.getElementById('g-sidebar');
       if (!sidebar) return;
-      var cats = JSON.parse(localStorage.getItem('sidebar-open-cats') || '[]');
-      cats.forEach(function (key) {
-        var btn = sidebar.querySelector('[data-cat="' + key + '"]');
+      var keys = JSON.parse(localStorage.getItem('sidebar-open-cats') || '[]');
+      keys.forEach(function (key) {
+        var btn = sidebar.querySelector('[data-key="' + key + '"]');
         if (btn && !btn.classList.contains('open')) {
           btn.classList.add('open');
           var list = btn.nextElementSibling;
@@ -86,7 +88,7 @@ const categories = (['code', 'paper', 'system'] as Category[])
   </button>
 </div>
 
-<style>
+<style is:global>
   /* ── Sidebar — Mobile: slide-in overlay ── */
   .sidebar {
     position: fixed;
@@ -97,34 +99,24 @@ const categories = (['code', 'paper', 'system'] as Category[])
     background: #09090e;
     border-right: 1px solid rgba(255,255,255,0.08);
     overflow-y: auto;
-    padding: 24px 20px 40px 24px;
+    padding: 24px 12px 40px 24px;
     scrollbar-width: none;
     transform: translateX(-100%);
     transition: transform .28s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
   }
   .sidebar::-webkit-scrollbar { display: none; }
+  .sidebar.mob-open { transform: translateX(0); }
 
-  .sidebar.mob-open {
-    transform: translateX(0);
-  }
-
-  /* Mobile backdrop */
   .mob-backdrop {
     display: none;
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
     z-index: 5999;
-    opacity: 0;
-    transition: opacity .25s ease;
+    opacity: 0; transition: opacity .25s ease;
   }
-  .mob-backdrop.mob-open {
-    display: block;
-    opacity: 1;
-  }
+  .mob-backdrop.mob-open { display: block; opacity: 1; }
 
   /* ── Sidebar — Desktop: inline panel ── */
   @media (min-width: 960px) {
@@ -132,28 +124,19 @@ const categories = (['code', 'paper', 'system'] as Category[])
       position: relative;
       transform: none;
       flex-shrink: 0;
-      width: 220px;
-      min-width: 120px;
-      max-width: 480px;
+      width: 220px; min-width: 120px; max-width: 480px;
       height: 100%;
-      padding: 40px 28px 40px 48px;
-      background: transparent;
-      border-right: none;
-      z-index: auto;
+      padding: 40px 12px 40px 48px;
+      background: transparent; border-right: none; z-index: auto;
       transition:
         width .28s cubic-bezier(0.4, 0, 0.2, 1),
         padding .28s cubic-bezier(0.4, 0, 0.2, 1),
         min-width .28s;
     }
-
     .sidebar.collapsed {
-      width: 0 !important;
-      min-width: 0;
-      padding-left: 0;
-      padding-right: 0;
-      overflow: hidden;
+      width: 0 !important; min-width: 0;
+      padding-left: 0; padding-right: 0; overflow: hidden;
     }
-
     .mob-backdrop { display: none !important; }
   }
 
@@ -162,43 +145,22 @@ const categories = (['code', 'paper', 'system'] as Category[])
 
   @media (min-width: 960px) {
     .resize-handle {
-      display: block;
-      flex-shrink: 0;
-      width: 12px;
-      cursor: col-resize;
-      position: relative;
-      overflow: visible;
-      background: transparent;
+      display: block; flex-shrink: 0; width: 12px;
+      cursor: col-resize; position: relative;
+      overflow: visible; background: transparent;
     }
-
-    /* Separator line */
     .resize-handle::before {
-      content: '';
-      position: absolute;
-      left: 5px;
-      top: 0; bottom: 0;
-      width: 1px;
-      background: rgba(255,255,255,0.14);
-      transition: background .18s;
+      content: ''; position: absolute; left: 5px; top: 0; bottom: 0;
+      width: 1px; background: rgba(255,255,255,0.14); transition: background .18s;
     }
-
-    /* Pill grip */
     .resize-handle::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
+      content: ''; position: absolute; left: 50%; top: 50%;
       transform: translate(-50%, -50%);
-      width: 4px;
-      height: 48px;
-      border-radius: 2px;
-      background: rgba(255,255,255,0);
-      transition: background .18s, box-shadow .18s;
+      width: 4px; height: 48px; border-radius: 2px;
+      background: rgba(255,255,255,0); transition: background .18s, box-shadow .18s;
     }
-
     .resize-handle:hover::before  { background: rgba(255,255,255,0.28); }
     .resize-handle:hover::after   { background: rgba(255,255,255,0.20); }
-
     .resize-handle.dragging::before {
       background: rgba(41,151,255,0.7);
     }
@@ -209,32 +171,20 @@ const categories = (['code', 'paper', 'system'] as Category[])
 
     /* ── Toggle button ── */
     .sidebar-toggle {
-      position: absolute;
-      top: 48px;
-      left: 50%;
+      position: absolute; top: 48px; left: 50%;
       transform: translateX(-50%);
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: #0d0d12;
-      border: 1px solid rgba(255,255,255,0.14);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-dim);
-      z-index: 20;
-      padding: 0;
-      opacity: 0;
-      transition: opacity .18s, background .15s, border-color .15s, color .15s;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #0d0d12; border: 1px solid rgba(255,255,255,0.14);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--text-dim); z-index: 20; padding: 0;
+      opacity: 0; transition: opacity .18s, background .15s, border-color .15s, color .15s;
     }
-
     .resize-handle:hover .sidebar-toggle        { opacity: 1; }
     .sidebar.collapsed ~ .resize-handle .sidebar-toggle { opacity: 1; }
-
     .sidebar-toggle:hover {
       background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.28);
-      color: var(--text);
+      border-color: rgba(255,255,255,0.28); color: var(--text);
     }
-
     .sidebar-toggle svg {
       transition: transform .28s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -243,75 +193,74 @@ const categories = (['code', 'paper', 'system'] as Category[])
     }
   }
 
-  /* ── Tree ── */
+  /* ── Section label ── */
   .tree-label {
     font-size: 10px; font-weight: 700; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--text-dim);
+    text-transform: uppercase; color: var(--text-dim, #48484a);
     margin-bottom: 10px; padding-left: 8px;
   }
 
-  .tree-node { margin-bottom: 2px; }
+  /* ── Tree node wrapper ── */
+  .tree-node { margin-bottom: 1px; }
 
+  /* ── Category button（所有层级共用，sub 变体覆盖） ── */
   .tree-cat {
     width: 100%; display: flex; align-items: center;
-    padding: 6px 8px; border-radius: 8px;
+    padding: 7px 8px; border-radius: 8px;
     background: none; border: none; cursor: pointer;
     font-family: var(--font, -apple-system, sans-serif);
     font-size: 13px; font-weight: 500;
     color: rgba(245,245,247,0.45);
     letter-spacing: -0.15px;
     transition: background .15s, color .15s;
-    text-align: left; gap: 7px;
+    text-align: left; gap: 6px;
   }
-  .tree-cat:hover { background: rgba(255,255,255,0.05); color: rgba(245,245,247,0.75); }
-  .tree-cat.open  { color: var(--text, #f5f5f7); }
+  .tree-cat:hover  { background: rgba(255,255,255,0.05); color: rgba(245,245,247,0.75); }
+  .tree-cat.open   { color: var(--text, #f5f5f7); }
 
-  .tree-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    flex-shrink: 0; opacity: 0.7;
+  /* 二级及以下分类：字号稍小 */
+  .tree-cat-sub {
+    font-size: 12.5px; font-weight: 500;
+    color: rgba(245,245,247,0.38);
   }
+  .tree-cat-sub:hover { color: rgba(245,245,247,0.65); }
+  .tree-cat-sub.open  { color: rgba(245,245,247,0.85); }
 
-  .tree-cat-name { flex: 1; }
-
-  .tree-cat-count {
-    font-size: 11.5px; font-weight: 400;
-    color: var(--text-dim, #48484a);
-    font-variant-numeric: tabular-nums;
-  }
-
+  /* Chevron */
   .tree-chevron {
-    width: 12px; height: 12px; flex-shrink: 0;
+    width: 11px; height: 11px; flex-shrink: 0;
     color: var(--text-dim, #48484a);
     transition: transform .2s ease;
   }
   .tree-cat.open .tree-chevron { transform: rotate(90deg); }
 
-  .tree-articles {
+  .tree-cat-name { flex: 1; }
+
+  /* ── 可折叠容器（子分类 + 文章） ── */
+  .tree-children {
     overflow: hidden;
     max-height: 0;
     transition: max-height .25s ease;
-    margin-left: 19px;
-    padding-left: 12px;
+    /* 缩进轨道线 */
+    margin-left: 15px;
+    padding-left: 10px;
     border-left: 1px solid rgba(255,255,255,0.07);
   }
-  .tree-articles.open { max-height: 800px; }
+  .tree-children.open { max-height: 2000px; }
 
+  /* ── 文章链接 ── */
   .tree-article {
     display: block;
     font-size: 12.5px; color: var(--text-dim, #48484a);
     padding: 4.5px 6px; border-radius: 6px;
     line-height: 1.45;
     transition: color .15s, background .12s;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .tree-article:hover {
     color: var(--accent, #2997ff);
     background: rgba(41,151,255,0.06);
   }
-
-  /* Active article (current page) */
   .tree-article.active {
     color: var(--accent, #2997ff) !important;
     background: rgba(41,151,255,0.08);
@@ -320,8 +269,9 @@ const categories = (['code', 'paper', 'system'] as Category[])
 
   /* ── Mobile: larger touch targets ── */
   @media (max-width: 959px) {
-    .tree-cat    { padding: 10px 8px; font-size: 14px; }
-    .tree-article{ padding: 9px 8px; font-size: 13px; }
+    .tree-cat     { padding: 10px 8px; font-size: 14px; }
+    .tree-cat-sub { font-size: 13px; }
+    .tree-article { padding: 9px 8px; font-size: 13px; }
   }
 </style>
 
@@ -344,38 +294,29 @@ const categories = (['code', 'paper', 'system'] as Category[])
     backdrop?.classList.remove('mob-open');
     document.body.style.overflow = '';
   }
-
-  // Expose so nav hamburger buttons can call it
   (window as any).openMobileSidebar  = openMobile;
   (window as any).closeMobileSidebar = closeMobile;
 
-  // Backdrop click closes the sidebar
   backdrop?.addEventListener('click', closeMobile);
-
-  // ESC key closes the sidebar
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape') closeMobile();
   });
-
-  // Clicking a link inside sidebar closes it on mobile
   sidebar?.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => { if (!isDesktop()) closeMobile(); });
   });
 
-  // ── Always-on: category expand / collapse + scroll-to-active ──────
+  // ── Always-on: category expand / collapse ─────────────────────────
   if (sidebar) {
-
     // 展开状态已由 <script is:inline> 在首次绘制前同步还原，此处只处理交互
 
-    // 将当前展开状态写入 localStorage（供下次页面加载还原）
     function saveOpenCats() {
       const open = Array.from(
         sidebar!.querySelectorAll<HTMLButtonElement>('.tree-cat.open')
-      ).map(b => b.dataset.cat ?? '').filter(Boolean);
+      ).map(b => b.dataset.key ?? '').filter(Boolean);
       localStorage.setItem('sidebar-open-cats', JSON.stringify(open));
     }
 
-    // 点击分类独立展开/折叠，不影响其他分类
+    // 各分类独立展开/折叠
     sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat').forEach(btn => {
       btn.addEventListener('click', () => {
         const isOpen = btn.classList.contains('open');
@@ -395,19 +336,16 @@ const categories = (['code', 'paper', 'system'] as Category[])
 
   // ── Desktop only: collapse toggle + drag to resize ───────────────
   if (sidebar && handle && toggle && isDesktop()) {
-    // Restore collapse state
     if (localStorage.getItem('sidebar-collapsed') === 'true') {
       sidebar.classList.add('collapsed');
       toggle.title = '展开侧边栏';
       toggle.setAttribute('aria-label', '展开侧边栏');
     }
-    // Restore width
     const savedW = localStorage.getItem('sidebar-width');
     if (savedW && !sidebar.classList.contains('collapsed')) {
       sidebar.style.width = savedW;
     }
 
-    // ── Toggle collapse ──
     toggle.addEventListener('click', (e) => {
       e.stopPropagation();
       const nowCollapsed = sidebar.classList.toggle('collapsed');
@@ -419,37 +357,28 @@ const categories = (['code', 'paper', 'system'] as Category[])
       }
     });
 
-    // ── Drag to resize ──
-    let dragging = false;
-    let startX   = 0;
-    let startW   = 0;
-
+    let dragging = false, startX = 0, startW = 0;
     handle.addEventListener('mousedown', (e: MouseEvent) => {
       if ((e.target as HTMLElement).closest('.sidebar-toggle')) return;
       if (sidebar.classList.contains('collapsed')) {
         sidebar.classList.remove('collapsed');
         localStorage.setItem('sidebar-collapsed', 'false');
       }
-      dragging = true;
-      startX   = e.clientX;
-      startW   = sidebar.offsetWidth;
+      dragging = true; startX = e.clientX; startW = sidebar.offsetWidth;
       handle.classList.add('dragging');
-      document.body.style.cursor     = 'col-resize';
+      document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
       e.preventDefault();
     });
-
     document.addEventListener('mousemove', (e: MouseEvent) => {
       if (!dragging) return;
-      const w = Math.min(480, Math.max(120, startW + e.clientX - startX));
-      sidebar.style.width = w + 'px';
+      sidebar.style.width = Math.min(480, Math.max(120, startW + e.clientX - startX)) + 'px';
     });
-
     document.addEventListener('mouseup', () => {
       if (!dragging) return;
       dragging = false;
       handle.classList.remove('dragging');
-      document.body.style.cursor     = '';
+      document.body.style.cursor = '';
       document.body.style.userSelect = '';
       localStorage.setItem('sidebar-width', sidebar.style.width);
     });

@@ -195,83 +195,84 @@ const treeHtml = categoryTree.map(n => renderNode(n)).join('');
 
   /* ── Section label ── */
   .tree-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--text-dim, #48484a);
-    margin-bottom: 10px; padding-left: 8px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase; color: rgba(235,235,245,0.28);
+    margin-bottom: 6px; padding: 0 6px;
   }
 
-  /* ── Tree node wrapper ── */
+  /* ── 顶级分类之间留间隙 ── */
   .tree-node { margin-bottom: 1px; }
+  /* 顶级节点（直接子元素）之间多留空气感 */
+  #g-sidebar > .tree-label ~ .tree-node + .tree-node { margin-top: 4px; }
 
-  /* ── Category button（所有层级共用，sub 变体覆盖） ── */
+  /* ── Category button（一级分类）── */
   .tree-cat {
     width: 100%; display: flex; align-items: center;
-    padding: 7px 8px; border-radius: 8px;
+    padding: 5px 8px; border-radius: 6px;
     background: none; border: none; cursor: pointer;
     font-family: var(--font, -apple-system, sans-serif);
-    font-size: 13px; font-weight: 500;
-    color: rgba(245,245,247,0.45);
-    letter-spacing: -0.15px;
-    transition: background .15s, color .15s;
+    font-size: 13px; font-weight: 600;               /* 一级：semibold */
+    color: rgba(235,235,245,0.55);
+    letter-spacing: -0.1px;
+    transition: background .12s, color .12s;
     text-align: left; gap: 6px;
   }
-  .tree-cat:hover  { background: rgba(255,255,255,0.05); color: rgba(245,245,247,0.75); }
-  .tree-cat.open   { color: var(--text, #f5f5f7); }
+  .tree-cat:hover { background: rgba(255,255,255,0.06); color: rgba(235,235,245,0.80); }
+  .tree-cat.open  { color: rgba(235,235,245,0.90); }
 
-  /* 二级及以下分类：字号稍小 */
+  /* 二级及以下：常规字重，更淡 */
   .tree-cat-sub {
     font-size: 12.5px; font-weight: 500;
-    color: rgba(245,245,247,0.38);
+    color: rgba(235,235,245,0.40);
   }
-  .tree-cat-sub:hover { color: rgba(245,245,247,0.65); }
-  .tree-cat-sub.open  { color: rgba(245,245,247,0.85); }
+  .tree-cat-sub:hover { color: rgba(235,235,245,0.65); }
+  .tree-cat-sub.open  { color: rgba(235,235,245,0.78); }
 
-  /* Chevron */
+  /* Chevron：与文字同色，更有整体感 */
   .tree-chevron {
-    width: 11px; height: 11px; flex-shrink: 0;
-    color: var(--text-dim, #48484a);
-    transition: transform .2s ease;
+    width: 10px; height: 10px; flex-shrink: 0;
+    color: currentColor; opacity: 0.5;
+    transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .tree-cat.open .tree-chevron { transform: rotate(90deg); }
+  .tree-cat.open .tree-chevron { transform: rotate(90deg); opacity: 0.7; }
 
   .tree-cat-name { flex: 1; }
 
-  /* ── 可折叠容器（子分类 + 文章） ── */
+  /* ── 可折叠容器：无轨道线，纯缩进（Apple Finder 风格）── */
   .tree-children {
     overflow: hidden;
     max-height: 0;
-    transition: max-height .25s ease;
-    /* 缩进轨道线 */
-    margin-left: 15px;
-    padding-left: 10px;
-    border-left: 1px solid rgba(255,255,255,0.07);
+    transition: max-height .26s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-left: 18px;   /* 纯缩进，不用 border-left */
   }
   .tree-children.open { max-height: 2000px; }
 
   /* ── 文章链接 ── */
   .tree-article {
     display: block;
-    font-size: 12.5px; color: var(--text-dim, #48484a);
-    padding: 4.5px 6px; border-radius: 6px;
-    line-height: 1.45;
-    transition: color .15s, background .12s;
+    font-size: 12px; font-weight: 400;
+    color: rgba(235,235,245,0.38);
+    padding: 4px 6px; border-radius: 5px;
+    line-height: 1.4;
+    transition: color .12s, background .12s;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .tree-article:hover {
-    color: var(--accent, #2997ff);
-    background: rgba(41,151,255,0.06);
+    color: rgba(235,235,245,0.70);
+    background: rgba(255,255,255,0.05);
   }
+  /* active：蓝底 + 白字（Xcode/Finder 选中标准） */
   .tree-article.active {
-    color: var(--accent, #2997ff) !important;
-    background: rgba(41,151,255,0.08);
+    color: #ffffff !important;
+    background: rgba(41,151,255,0.22);
     font-weight: 500;
   }
 
-  /* ── Mobile: larger touch targets ── */
+  /* ── Mobile: 触控目标 ≥ 44px（iOS HIG 建议）── */
   @media (max-width: 959px) {
-    .tree-cat     { padding: 10px 8px; font-size: 14px; }
-    .tree-cat-sub { font-size: 13px; }
-    .tree-article { padding: 9px 8px; font-size: 13px; }
+    .tree-cat     { padding: 12px 8px; font-size: 14px; }  /* ~44px */
+    .tree-cat-sub { padding: 11px 8px; font-size: 13px; }  /* ~42px */
+    .tree-article { padding: 11px 8px; font-size: 13px; }  /* ~42px */
   }
 </style>
 

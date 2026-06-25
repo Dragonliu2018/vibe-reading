@@ -62,11 +62,18 @@
 
 ```html
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-pagefind-ignore="all">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>文章标题</title>
+<!-- ─── 博客元信息（articles.ts 自动读取，必填）─── -->
+<meta name="description" content="一句话描述">
+<meta name="article:date" content="YYYY-MM-DD">
+<meta name="article:category" content="code">
+<meta name="article:tags" content="Tag1,Tag2,Tag3">
+<meta name="article:readingTime" content="N min">
+<meta name="article:aiModel" content="Claude Opus 4.8">
   <!-- Google Fonts（可选，如无网络环境去掉） -->
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>

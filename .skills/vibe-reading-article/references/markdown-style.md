@@ -4,15 +4,21 @@
 
 ```yaml
 ---
-layout: ../../layouts/ArticleLayout.astro
 title: "文章标题（双引号包裹）"
 date: "YYYY-MM-DD"
+category: code
 tags: ["Tag1", "Tag2", "Tag3"]
 description: "一句话描述，出现在文章卡片和 SEO meta 中"
+readingTime: "N min"
+aiModel: "Claude Opus 4.8"
 ---
 ```
 
-**category 由 `articles.ts` 注册时指定，不写在 frontmatter 里。**
+**所有字段必须填写。不要加 `layout:` 行（由 `[slug].astro` 统一处理）。**
+
+`category` 取值：`code`（代码解读）| `paper`（论文解读）| `system`（系统设计）
+
+这些字段会被 `articles.ts` 自动读取，**无需手动注册**。
 
 ## 导言段落（frontmatter 之后立即写）
 

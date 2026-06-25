@@ -15,10 +15,10 @@ description: >
 
 ## 格式选择
 
-| 格式 | 适用 | 产物 |
+| 格式 | 适用 | 放置位置 |
 |---|---|---|
-| **HTML** | 需要复杂视觉布局（架构图、分层、卡片组） | `public/html-raw/<slug>.html` + `.astro` 包装页 |
-| **Markdown** | 以文字/代码为主，标准结构 | `src/pages/articles/<slug>.md` |
+| **HTML** | 需要复杂视觉布局（架构图、分层、卡片组） | `src/pages/articles/html/<slug>.html` |
+| **Markdown** | 以文字/代码为主，标准结构 | `src/pages/articles/_md/<slug>.md` |
 
 **默认选 HTML**（视觉效果更丰富，与现有文章一致）。用户明确要求 Markdown、或内容以代码块/列表为主时选 Markdown。
 
@@ -43,31 +43,25 @@ description: >
 - **HTML 格式**：读 `assets/html-base.html`（完整基础模板），按 `references/html-style.md`（CSS 组件库）填充内容
 - **Markdown 格式**：读 `references/markdown-style.md`，按 frontmatter 格式和 prose 规范写作
 
-### 4. 注册到博客（用户确认满意后）
+### 4. 发布到博客（用户确认满意后）
 
-**HTML 文章：**
+博客通过文件内嵌的元信息自动注册，**无需修改 `articles.ts`**。
+
+**HTML 文章** → 复制到 `src/pages/articles/html/<slug>.html`
+
+文件必须满足：
+- `<html>` 标签含 `data-pagefind-ignore="all"`（避免搜索重复索引）
+- `<head>` 含完整 article meta 标签（见下方模板）
+
+**Markdown 文章** → 复制到 `src/pages/articles/_md/<slug>.md`
+
+文件必须满足：
+- frontmatter 含所有字段（见 `references/markdown-style.md`）
+- **不要** `layout:` 行（由 `[slug].astro` 统一处理）
+
+**发布后运行：**
 ```bash
-cp <输出文件> /path/to/vibe-reading/public/html-raw/<slug>.html
-```
-在 `src/pages/articles/<slug>.astro` 创建包装页（参照现有同类文件）。
-
-**Markdown 文章：**
-```bash
-cp <输出文件> /path/to/vibe-reading/src/pages/articles/<slug>.md
-```
-
-两种格式都需要在 `src/data/articles.ts` 添加条目：
-```typescript
-{
-  slug:        '<slug>',
-  title:       '<标题>',
-  date:        'YYYY-MM-DD',
-  category:    'code' | 'paper' | 'system',
-  tags:        ['Tag1', 'Tag2'],
-  description: '<一句话描述>',
-  readingTime: 'N min',
-  aiModel:     'Claude Opus 4.8',
-}
+npm run build   # 更新 pagefind 搜索索引
 ```
 
 ---

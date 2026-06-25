@@ -212,6 +212,15 @@
   }
   .srch-brand { margin-left: auto; color: #2a2a2c; }
   .hidden { display: none !important; }
+
+  /* ── 分组标签 ── */
+  .srch-group {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.7px;
+    text-transform: uppercase; color: #3a3a3c;
+    padding: 10px 12px 3px;
+    user-select: none;
+  }
+  .srch-group + .srch-group { padding-top: 6px; }
 </style>
 
 <script>
@@ -291,21 +300,47 @@
       return;
     }
 
-    /* 加载最多 20 条，然后按 URL 去重，保留每篇文章最佳摘录 */
+    /* ① 加载最多 20 条原始结果 */
     const raw: any[] = await Promise.all(
       search.results.slice(0, 20).map((r: any) => r.data())
     );
 
+    /* ② 按 URL 去重（去锚点），保留 pagefind 排在最前的摘录 */
     const seen = new Map<string, any>();
     for (const item of raw) {
-      const key = item.url.replace(/#.*$/, ''); // 去掉锚点
-      if (!seen.has(key)) seen.set(key, item);  // 保留首个（相关度最高）
+      const key = item.url.replace(/#.*$/, '');
+      if (!seen.has(key)) seen.set(key, item);
+    }
+    const deduped = [...seen.values()].slice(0, 10);
+
+    /* ③ 按优先级分组：标题命中 > 正文命中 */
+    const ql = q.toLowerCase();
+    const titleHits: any[] = [];
+    const bodyHits:  any[] = [];
+    for (const item of deduped) {
+      const title = (item.meta?.title ?? '').toLowerCase();
+      (title.includes(ql) ? titleHits : bodyHits).push(item);
     }
 
-    const deduped = [...seen.values()].slice(0, 8);
+    /* ④ 渲染：标题匹配组在前，正文匹配组在后，组间有标签 */
+    const hasBoth = titleHits.length > 0 && bodyHits.length > 0;
+    let idx = 0;
+    let html = '';
+
+    if (titleHits.length) {
+      if (hasBoth) html += `<div class="srch-group">标题匹配</div>`;
+      html += titleHits.map(item => renderItem(item, idx++)).join('');
+    }
+    if (bodyHits.length) {
+      // 只展示到总数 8 篇
+      const remaining = 8 - titleHits.length;
+      if (hasBoth) html += `<div class="srch-group">正文匹配</div>`;
+      html += bodyHits.slice(0, remaining).map(item => renderItem(item, idx++)).join('');
+    }
+
     activeIdx = -1;
     footer.classList.remove('hidden');
-    results.innerHTML = deduped.map((item, i) => renderItem(item, i)).join('');
+    results.innerHTML = html;
   }
 
   /* ── 渲染单条结果 ────────────────────────────────────────────── */

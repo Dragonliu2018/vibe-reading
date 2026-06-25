@@ -24,7 +24,7 @@ const categories = (['code', 'paper', 'system'] as Category[])
 ---
 
 <!-- Sidebar -->
-<aside class="sidebar" id="g-sidebar">
+<aside class="sidebar" id="g-sidebar" data-pagefind-ignore="all">
   <p class="tree-label">Categories</p>
   {categories.map(cat => {
     const hasActive = cat.articles.some(a => a.slug === currentSlug);

@@ -373,9 +373,9 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 </head>
 <body>
 
-  <div id="progress-bar"></div>
+  <div id="progress-bar" data-pagefind-ignore="all"></div>
 
-  <nav class="nav">
+  <nav class="nav" data-pagefind-ignore="all">
     <a href={`${base}/`} class="nav-logo">
       <span class="nav-logo-icon">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -427,7 +427,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
               {aiModel     && <><span class="meta-sep">·</span><span class="meta-item">{aiModel}</span></>}
             </div>
 
-            <h1 class="article-title">{title}</h1>
+            <h1 class="article-title" data-pagefind-meta="title">{title}</h1>
             {description && <p class="article-desc">{description}</p>}
 
             {tags.length > 0 && (
@@ -447,7 +447,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
         <!-- Right TOC (h2 + h3) -->
         {tocHeadings.length > 0 && (
-          <aside class="toc-panel">
+          <aside class="toc-panel" data-pagefind-ignore="all">
             <p class="toc-heading">目录</p>
             <ul class="toc-list">
               {tocHeadings.map(h => (
@@ -465,7 +465,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
       </div>
 
-      <footer class="footer">
+      <footer class="footer" data-pagefind-ignore="all">
         Vibe Reading · AI-drafted · Human-reviewed &nbsp;·&nbsp;
         <a href={`${base}/`}>← 返回首页</a> &nbsp;·&nbsp;
         <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener">GitHub</a>

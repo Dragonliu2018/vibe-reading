@@ -1,8 +1,11 @@
 ---
-title: "mycli 架构解析"
+title: "mycli 架构解析（Markdown 版）"
 date: "2026-06-24"
-tags: ["Python", "MySQL", "CLI", "代码解读"]
-description: "mycli v1.73.0 源码架构全面拆解，涵盖补全引擎、连接层、配置管理、REPL、批量执行等核心模块"
+category: code
+tags: ["Python", "MySQL", "CLI", "prompt_toolkit", "Pygments"]
+description: "MySQL/MariaDB 命令行客户端 mycli v1.73.0 源码全面拆解——自动补全、语法高亮、SSH 隧道、LLM 集成的架构设计解读。"
+readingTime: "20 min"
+aiModel: "Claude Opus 4.8"
 ---
 
 > **版本** v1.73.0 · **协议** BSD-3-Clause · **Python** ≥ 3.10 · **代码量** ~18,000 行 · **维护** dbcli 社区

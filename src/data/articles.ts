@@ -1,14 +1,16 @@
+import { readdirSync, readFileSync } from 'fs';
+
 export type Category = 'code' | 'paper' | 'system';
 
 export interface Article {
-  slug: string;        // 对应 /articles/{slug} 路径
-  title: string;
-  date: string;        // YYYY-MM-DD
-  category: Category;
-  tags: string[];
-  description: string;
+  slug:         string;
+  title:        string;
+  date:         string;   // YYYY-MM-DD
+  category:     Category;
+  tags:         string[];
+  description:  string;
   readingTime?: string;
-  aiModel?: string;    // 生成该文章的 AI 模型
+  aiModel?:     string;
 }
 
 export const CATEGORY_LABEL: Record<Category, string> = {
@@ -23,78 +25,60 @@ export const CATEGORY_COLOR: Record<Category, { text: string; bg: string; border
   system: { text: '#3fb950', bg: 'rgba(63,185,80,.1)',   border: 'rgba(63,185,80,.28)'   },
 };
 
-// ────────────────────────────────────────────────────
-// 在这里添加新文章：复制一条记录并填写对应字段即可
-// ────────────────────────────────────────────────────
-export const articles: Article[] = [
-  {
-    slug:        'paperclip-intro',
-    title:       'Paperclip — AI 智能体公司控制平面',
-    date:        '2026-06-25',
-    category:    'system',
-    tags:        ['AI Agent', 'MCP', 'Claude', 'Kubernetes', 'PostgreSQL', '系统设计'],
-    description: '像运营一家真实公司一样管理 AI 智能体团队——任务分配、预算控制、审批治理，Paperclip 开源 AI 智能体编排平台全景解读。',
-    readingTime: '12 min',
-    aiModel:     'Claude Opus 4.8',
-  },
-  {
-    slug:        'markdown-demo',
-    title:       'Markdown 文章示例',
-    date:        '2026-06-24',
-    category:    'paper',
-    tags:        ['Markdown', 'Astro', 'Demo'],
-    description: '这是一篇用于测试 Markdown 渲染效果的示例文章，覆盖常用语法元素。',
-    readingTime: '2 min',
-    aiModel:     'Claude Opus 4.8',
-  },
-  {
-    slug:        'multica-codebase-overview',
-    title:       'Multica 源码全景解读',
-    date:        '2026-06-24',
-    category:    'code',
-    tags:        ['Go', 'Next.js', 'Electron', 'PostgreSQL', 'AI Agent'],
-    description: 'AI 原生任务管理平台 Multica 的源码全景解读——Go 后端、Next.js 前端、Electron 桌面端、iOS 移动端的跨端架构深度剖析。',
-    readingTime: '18 min',
-    aiModel:     'Claude Opus 4.8',
-  },
-  {
-    slug:        'mycli-architecture',
-    title:       'mycli 架构解析（Markdown 版）',
-    date:        '2026-06-24',
-    category:    'code',
-    tags:        ['Python', 'MySQL', 'CLI', 'prompt_toolkit', 'Pygments'],
-    description: 'MySQL/MariaDB 命令行客户端 mycli v1.73.0 源码全面拆解——自动补全、语法高亮、SSH 隧道、LLM 集成的架构设计解读。',
-    readingTime: '20 min',
-    aiModel:     'Claude Opus 4.8',
-  },
-  {
-    slug:        'mycli-architecture-html',
-    title:       'mycli 架构解析（HTML 版）',
-    date:        '2026-06-24',
-    category:    'code',
-    tags:        ['Python', 'MySQL', 'CLI', 'prompt_toolkit', 'Pygments'],
-    description: '原始 HTML 版本，保留完整自定义样式——与 Markdown 版对比展示两种发布格式的渲染效果差异。',
-    readingTime: '20 min',
-    aiModel:     'Claude Opus 4.8',
-  },
-  {
-    slug:        'langfuse-codebase-overview',
-    title:       'Langfuse 源码深度解析',
-    date:        '2026-06-24',
-    category:    'code',
-    tags:        ['Langfuse', 'Next.js', 'tRPC', 'ClickHouse', 'TypeScript'],
-    description: '开源 LLM 工程平台 Langfuse v3.194.1 的完整源码解析——追踪、评估、提示词管理到自动化集成的全栈深度解读。',
-    readingTime: '25 min',
-    aiModel:     'Claude Opus 4.8',
-  },
-  {
-    slug:        'litefuse-codebase-overview',
-    title:       'Litefuse 代码库深度解读',
-    date:        '2026-06-23',
-    category:    'code',
-    tags:        ['Next.js', 'tRPC', 'ClickHouse', 'BullMQ', 'TypeScript'],
-    description: '开源 LLM 工程平台 Litefuse 的完整技术架构解析——从数据注入到评估、从提示词管理到自动化集成的全栈深度解读。',
-    readingTime: '20 min',
-    aiModel:     'Claude Opus 4.8',
-  },
-];
+// ── MD 文章：从 frontmatter 自动读取 ──────────────────────────────
+const mdModules = import.meta.glob<{
+  frontmatter: {
+    title:        string;
+    date:         string;
+    category?:    Category;
+    tags?:        string[];
+    description?: string;
+    readingTime?: string;
+    aiModel?:     string;
+  };
+}>('../pages/articles/_md/*.md', { eager: true });
+
+const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
+  const slug = path.split('/').pop()!.replace(/\.md$/, '');
+  const fm   = mod.frontmatter;
+  return {
+    slug,
+    title:       fm.title,
+    date:        fm.date,
+    category:    fm.category ?? 'code',
+    tags:        fm.tags        ?? [],
+    description: fm.description ?? '',
+    readingTime: fm.readingTime  || undefined,
+    aiModel:     fm.aiModel      || undefined,
+  };
+});
+
+// ── HTML 文章：从 <meta name="article:*"> 自动读取 ────────────────
+function metaContent(html: string, name: string): string {
+  return html.match(
+    new RegExp(`<meta[^>]+name="${name}"[^>]+content="([^"]*)"`, 'i')
+  )?.[1] ?? '';
+}
+
+const htmlDir    = './src/pages/articles/html';
+const htmlArticles: Article[] = readdirSync(htmlDir)
+  .filter(f => f.endsWith('.html'))
+  .map(file => {
+    const slug = file.slice(0, -5);
+    const html = readFileSync(`${htmlDir}/${file}`, 'utf-8');
+    const rawTags = metaContent(html, 'article:tags');
+    return {
+      slug,
+      title:       (html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? slug).trim(),
+      date:        metaContent(html, 'article:date'),
+      category:    (metaContent(html, 'article:category') || 'code') as Category,
+      tags:        rawTags ? rawTags.split(',').map(t => t.trim()) : [],
+      description: metaContent(html, 'description'),
+      readingTime: metaContent(html, 'article:readingTime') || undefined,
+      aiModel:     metaContent(html, 'article:aiModel')     || undefined,
+    };
+  });
+
+// ── 合并，按日期降序排列 ──────────────────────────────────────────
+export const articles: Article[] = [...mdArticles, ...htmlArticles]
+  .sort((a, b) => b.date.localeCompare(a.date));

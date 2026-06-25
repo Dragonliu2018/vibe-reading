@@ -83,11 +83,12 @@ const meta = articles.find(a => a.slug === slug);
     .nav-right { display: flex; gap: 6px; }
 
     .nav-pill {
-      font-size: 13px; color: rgba(245,245,247,0.6);
+      font-size: 13px; font-family: var(--font); color: rgba(245,245,247,0.6);
       padding: 5px 14px; border-radius: 20px;
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.03);
       transition: color .15s, border-color .15s, background .15s;
+      cursor: pointer; text-decoration: none;
     }
     .nav-pill:hover {
       color: var(--text); border-color: rgba(255,255,255,0.18);
@@ -176,7 +177,7 @@ const meta = articles.find(a => a.slug === slug);
           <path d="M1 1h16M1 7h16M1 13h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </button>
-      <a href={`${base}/`} class="nav-pill">← 返回</a>
+      <button class="nav-pill" onclick="history.back()">← 返回</button>
       <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener" class="nav-pill">GitHub</a>
     </div>
   </nav>

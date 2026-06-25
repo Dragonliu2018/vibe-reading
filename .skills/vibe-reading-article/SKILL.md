@@ -51,13 +51,34 @@ description: >
 
 文件必须满足：
 - `<html>` 标签含 `data-pagefind-ignore="all"`（避免搜索重复索引）
-- `<head>` 含完整 article meta 标签（见下方模板）
+- `<head>` 含完整 article meta 标签，包括 `article:category-path`（见下方模板）
 
 **Markdown 文章** → 复制到 `src/pages/articles/_md/<slug>.md`
 
 文件必须满足：
-- frontmatter 含所有字段（见 `references/markdown-style.md`）
+- frontmatter 含所有字段（见 `references/markdown-style.md`），包括 `category_path`
 - **不要** `layout:` 行（由 `[slug].astro` 统一处理）
+
+**`category_path` 规范（两种格式均需填写）：**
+
+定义文章在左侧侧边栏的分类层级，支持任意深度，侧边栏自动派生树形结构。
+
+```yaml
+# MD frontmatter（YAML 数组）
+category_path: [一级分类, 二级分类, 三级分类, 源码解读]
+```
+
+```html
+<!-- HTML meta（逗号分隔字符串）-->
+<meta name="article:category-path" content="一级分类,二级分类,三级分类,源码解读">
+```
+
+现有分类参考（请与已有结构保持一致，避免创建重复分类）：
+- `[Database, 生态, mycli, 源码解读]`
+- `[AI, 可观测性, Litefuse, 源码解读]`
+- `[AI, 可观测性, Langfuse, 源码解读]`
+- `[AI, AI应用, Multica, 源码解读]`
+- `[AI, AI应用, Paperclip, 源码解读]`
 
 **发布后运行：**
 ```bash

@@ -7,6 +7,7 @@
 title: "文章标题（双引号包裹）"
 date: "YYYY-MM-DD"
 category: code
+category_path: [一级分类, 二级分类, 三级分类]
 tags: ["Tag1", "Tag2", "Tag3"]
 description: "一句话描述，出现在文章卡片和 SEO meta 中"
 readingTime: "N min"
@@ -17,8 +18,12 @@ aiModel: "Claude Opus 4.8"
 **所有字段必须填写。不要加 `layout:` 行（由 `[slug].astro` 统一处理）。**
 
 `category` 取值：`code`（代码解读）| `paper`（论文解读）| `system`（系统设计）
+  → 用于首页文章卡片的分类筛选和 badge 颜色
 
-这些字段会被 `articles.ts` 自动读取，**无需手动注册**。
+`category_path`：YAML 数组，定义左侧侧边栏的分类层级路径（支持任意深度）
+  → 侧边栏自动从此字段派生树形结构，**无需手动注册**
+  → 示例：`[Database, 生态, mycli, 源码解读]`、`[AI, 可观测性, Litefuse, 源码解读]`
+  → 最后一级下挂文章链接，中间级别为折叠/展开的分类节点
 
 ## 导言段落（frontmatter 之后立即写）
 

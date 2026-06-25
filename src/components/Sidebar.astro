@@ -53,6 +53,25 @@ const categories = (['code', 'paper', 'system'] as Category[])
   })}
 </aside>
 
+<!-- 同步还原分类展开状态（is:inline = 不 defer，在首次绘制前执行，消除闪动）-->
+<script is:inline>
+  (function () {
+    try {
+      var sidebar = document.getElementById('g-sidebar');
+      if (!sidebar) return;
+      var cats = JSON.parse(localStorage.getItem('sidebar-open-cats') || '[]');
+      cats.forEach(function (key) {
+        var btn = sidebar.querySelector('[data-cat="' + key + '"]');
+        if (btn && !btn.classList.contains('open')) {
+          btn.classList.add('open');
+          var list = btn.nextElementSibling;
+          if (list) list.classList.add('open');
+        }
+      });
+    } catch (_) {}
+  })();
+</script>
+
 <!-- Mobile backdrop (click to close) -->
 <div class="mob-backdrop" id="g-mob-backdrop" aria-hidden="true"></div>
 
@@ -346,19 +365,9 @@ const categories = (['code', 'paper', 'system'] as Category[])
   // ── Always-on: category expand / collapse + scroll-to-active ──────
   if (sidebar) {
 
-    // 1. 还原上次展开的分类（跨页面保持状态）
-    const savedCats: string[] = JSON.parse(
-      localStorage.getItem('sidebar-open-cats') ?? '[]'
-    );
-    savedCats.forEach(key => {
-      const btn = sidebar.querySelector<HTMLButtonElement>(`.tree-cat[data-cat="${key}"]`);
-      if (btn && !btn.classList.contains('open')) {
-        btn.classList.add('open');
-        (btn.nextElementSibling as HTMLElement | null)?.classList.add('open');
-      }
-    });
+    // 展开状态已由 <script is:inline> 在首次绘制前同步还原，此处只处理交互
 
-    // 2. 将当前展开状态写入 localStorage（供下次页面加载还原）
+    // 将当前展开状态写入 localStorage（供下次页面加载还原）
     function saveOpenCats() {
       const open = Array.from(
         sidebar!.querySelectorAll<HTMLButtonElement>('.tree-cat.open')
@@ -366,7 +375,7 @@ const categories = (['code', 'paper', 'system'] as Category[])
       localStorage.setItem('sidebar-open-cats', JSON.stringify(open));
     }
 
-    // 3. 点击分类独立展开/折叠，不影响其他分类
+    // 点击分类独立展开/折叠，不影响其他分类
     sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat').forEach(btn => {
       btn.addEventListener('click', () => {
         const isOpen = btn.classList.contains('open');
@@ -377,7 +386,7 @@ const categories = (['code', 'paper', 'system'] as Category[])
       });
     });
 
-    // 4. 滚动当前文章进视口
+    // 滚动当前文章进视口
     const activeLink = sidebar.querySelector<HTMLElement>('.tree-article.active');
     if (activeLink) {
       requestAnimationFrame(() => activeLink.scrollIntoView({ block: 'nearest' }));

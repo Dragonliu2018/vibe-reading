@@ -1,19 +1,18 @@
 ---
 /**
- * Pagefind 全文搜索模态框 — Apple 风格
- * 触发：⌘K / Ctrl+K 或 window.openSearch()
+ * Pagefind 全文搜索 — 极简文字层级风格
+ * 参考 VitePress / Algolia DocSearch 的结果展示方式
  */
 ---
 
-<div class="srch-backdrop" id="srch-backdrop" aria-hidden="true"></div>
+<div class="srch-overlay" id="srch-backdrop" aria-hidden="true"></div>
 
-<div class="srch-dialog" id="srch-dialog" role="dialog" aria-modal="true" aria-label="搜索">
+<div class="srch-box" id="srch-dialog" role="dialog" aria-modal="true" aria-label="搜索">
 
-  <!-- 搜索输入行 -->
-  <div class="srch-input-row">
-    <svg class="srch-icon" width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
-      <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/>
-      <path d="M11.5 11.5L15 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  <div class="srch-head">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="srch-head-icon">
+      <circle cx="6.5" cy="6.5" r="4.75" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M10.75 10.75L14.25 14.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <input
       id="srch-input"
@@ -21,223 +20,204 @@
       placeholder="搜索文章..."
       autocomplete="off"
       spellcheck="false"
+      aria-label="搜索"
     />
-    <kbd class="srch-esc-key" id="srch-esc-key">ESC</kbd>
+    <button class="srch-esc" id="srch-esc" aria-label="关闭搜索">ESC</button>
   </div>
 
-  <!-- 结果列表 -->
-  <div class="srch-results" id="srch-results" role="listbox"></div>
+  <div class="srch-body" id="srch-results" role="listbox">
+    <p class="srch-placeholder">输入关键词搜索文章…</p>
+  </div>
 
-  <!-- 底部提示 -->
-  <div class="srch-footer hidden" id="srch-footer">
-    <span><kbd>↑↓</kbd>导航</span>
-    <span><kbd>↵</kbd>打开</span>
-    <span><kbd>esc</kbd>关闭</span>
-    <span class="srch-brand">Pagefind</span>
+  <div class="srch-foot hidden" id="srch-footer">
+    <span class="srch-hint"><kbd>↑</kbd><kbd>↓</kbd> 导航</span>
+    <span class="srch-hint"><kbd>↵</kbd> 打开</span>
+    <span class="srch-hint"><kbd>esc</kbd> 关闭</span>
+    <span class="srch-powered">Pagefind</span>
   </div>
 
 </div>
 
 <style>
-  /* ── 遮罩 ── */
-  .srch-backdrop {
-    display: none; position: fixed; inset: 0; z-index: 9000;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  /* ── 遮罩 ──────────────────────────────────────────────────── */
+  .srch-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.50);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
-  .srch-backdrop.open { display: block; }
+  .srch-overlay.open { display: block; }
 
-  /* ── 对话框 ── */
-  .srch-dialog {
+  /* ── 对话框 ─────────────────────────────────────────────────── */
+  .srch-box {
     display: none;
     position: fixed;
-    top: 14vh; left: 50%; transform: translateX(-50%);
-    width: min(620px, 92vw);
+    top: 13vh; left: 50%; transform: translateX(-50%);
+    width: min(660px, 94vw);
     z-index: 9001;
-    background: #111113;
-    border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 18px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 24px 64px rgba(0,0,0,0.65);
-    overflow: hidden;
+    background: #0f0f11;
+    border: 1px solid rgba(255,255,255,0.11);
+    border-radius: 14px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 8px 24px rgba(0,0,0,0.45),
+      0 32px 80px rgba(0,0,0,0.55);
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', sans-serif;
+    overflow: hidden;
+    flex-direction: column;
   }
-  .srch-dialog.open { display: flex; flex-direction: column; }
+  .srch-box.open { display: flex; }
 
-  /* ── 输入行 ── */
-  .srch-input-row {
-    display: flex; align-items: center; gap: 11px;
-    padding: 16px 20px;
+  /* ── 输入行 ─────────────────────────────────────────────────── */
+  .srch-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
     flex-shrink: 0;
   }
-  .srch-icon { color: #636366; flex-shrink: 0; }
+  .srch-head-icon { color: #48484a; flex-shrink: 0; }
 
   #srch-input {
     flex: 1; min-width: 0;
     background: none; border: none; outline: none;
-    font-size: 17px; font-weight: 400;
-    color: #f5f5f7; font-family: inherit;
+    font-size: 16px; color: #f2f2f7;
+    font-family: inherit; letter-spacing: -0.15px;
     caret-color: #2997ff;
-    letter-spacing: -0.2px;
     -webkit-appearance: none;
   }
-  #srch-input::placeholder { color: #3a3a3c; }
+  #srch-input::placeholder { color: #38383a; }
   #srch-input::-webkit-search-cancel-button { display: none; }
 
-  .srch-esc-key {
+  .srch-esc {
     flex-shrink: 0;
-    font-size: 11px; color: #48484a;
-    border: 1px solid rgba(255,255,255,0.10);
     padding: 3px 8px; border-radius: 6px;
-    font-family: inherit; cursor: pointer;
-    user-select: none;
+    border: 1px solid rgba(255,255,255,0.09);
+    background: none; cursor: pointer;
+    font-size: 11px; color: #48484a;
+    font-family: inherit; letter-spacing: 0.2px;
+    transition: border-color .15s, color .15s;
   }
+  .srch-esc:hover { border-color: rgba(255,255,255,0.2); color: #86868b; }
 
-  /* ── 结果容器 ── */
-  .srch-results {
+  /* ── 结果区 ─────────────────────────────────────────────────── */
+  .srch-body {
     overflow-y: auto;
-    max-height: min(440px, 48vh);
-    padding: 6px 8px;
+    max-height: min(460px, 50vh);
+    padding: 8px 10px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.08) transparent;
+    scrollbar-color: rgba(255,255,255,0.07) transparent;
   }
-  .srch-results::-webkit-scrollbar { width: 4px; }
-  .srch-results::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+  .srch-body::-webkit-scrollbar { width: 3px; }
+  .srch-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
 
-  /* ── 状态提示（空态 / 无结果） ── */
-  .srch-state {
-    padding: 44px 20px; text-align: center;
-    color: #3a3a3c; font-size: 14px; line-height: 1.65;
+  /* 空态 / 提示 */
+  .srch-placeholder, .srch-empty {
+    padding: 40px 10px; text-align: center;
+    font-size: 14px; color: #38383a; line-height: 1.7;
   }
-  .srch-state code {
+  .srch-empty code {
     font-family: ui-monospace, 'SF Mono', monospace;
-    font-size: 12.5px; color: #636366;
-    background: rgba(255,255,255,0.06);
+    font-size: 12px; color: #48484a;
+    background: rgba(255,255,255,0.05);
     padding: 1px 6px; border-radius: 4px;
   }
 
-  /* ── 结果条目 ── */
-  .srch-item {
-    display: flex; align-items: center; gap: 13px;
-    padding: 11px 12px;
-    border-radius: 10px;
-    text-decoration: none; color: inherit;
-    cursor: pointer;
-    transition: background .12s;
-    outline: none;
-    position: relative;
-  }
-  .srch-item + .srch-item { margin-top: 2px; }
-
-  .srch-item:hover   { background: rgba(255,255,255,0.05); }
-  .srch-item.active  {
-    background: rgba(41,151,255,0.12);
-  }
-  .srch-item.active .srch-item-icon { color: #2997ff; }
-  .srch-item.active .srch-item-title { color: #2997ff; }
-
-  /* 左侧图标 */
-  .srch-item-icon {
-    flex-shrink: 0;
-    width: 34px; height: 34px;
+  /* ── 每个搜索结果条目 ────────────────────────────────────────── */
+  .srch-hit {
+    display: block;
+    padding: 11px 14px;
     border-radius: 8px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
-    display: flex; align-items: center; justify-content: center;
-    color: #636366;
-    transition: color .12s, background .12s;
+    text-decoration: none; color: inherit;
+    cursor: pointer; outline: none;
+    border-left: 2px solid transparent;
+    transition: background .12s, border-color .12s;
   }
-  .srch-item.active .srch-item-icon {
-    background: rgba(41,151,255,0.15);
-    border-color: rgba(41,151,255,0.25);
+  .srch-hit + .srch-hit { margin-top: 1px; }
+
+  .srch-hit:hover {
+    background: rgba(255,255,255,0.04);
+  }
+  /* 键盘 active 状态：蓝色左边框 + 极淡蓝底 */
+  .srch-hit.active {
+    background: rgba(41,151,255,0.08);
+    border-left-color: #2997ff;
   }
 
-  /* 中间文本 */
-  .srch-item-body { flex: 1; min-width: 0; }
-
-  .srch-item-title {
-    font-size: 14px; font-weight: 600;
-    color: #e8e8ed; letter-spacing: -0.3px;
+  /* 标题 */
+  .srch-hit-title {
+    font-size: 14.5px; font-weight: 600;
+    color: #e5e5ea; letter-spacing: -0.3px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     transition: color .12s;
   }
+  .srch-hit.active .srch-hit-title { color: #2997ff; }
 
-  .srch-item-excerpt {
-    font-size: 12px; color: #636366; line-height: 1.5;
+  /* 摘录 */
+  .srch-hit-excerpt {
+    font-size: 12.5px; color: #636366; line-height: 1.6;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    margin-bottom: 6px;
   }
 
-  /* 匹配词高亮 */
-  .srch-results mark {
-    background: rgba(41,151,255,0.20);
+  /* 高亮匹配词 */
+  .srch-body mark {
+    background: none;
     color: #79c0ff;
-    border-radius: 2px;
-    padding: 0 1px;
-    font-style: normal;
+    font-weight: 600;
   }
 
-  .srch-item-path {
+  /* 路径面包屑 */
+  .srch-hit-path {
     font-size: 11px; color: #3a3a3c;
-    margin-top: 4px; letter-spacing: 0.1px;
+    letter-spacing: 0.1px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .srch-hit-path span { opacity: 0.6; margin: 0 3px; }   /* › 分隔符 */
 
-  /* 右侧箭头 */
-  .srch-item-arrow {
-    flex-shrink: 0; color: #3a3a3c;
-    transition: color .12s, transform .12s;
-  }
-  .srch-item.active .srch-item-arrow {
-    color: #2997ff;
-    transform: translateX(2px);
-  }
-
-  /* ── 底部提示栏 ── */
-  .srch-footer {
-    display: flex; align-items: center; gap: 12px;
-    padding: 8px 20px;
+  /* ── 底部提示 ───────────────────────────────────────────────── */
+  .srch-foot {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 8px 18px;
     border-top: 1px solid rgba(255,255,255,0.06);
-    font-size: 11px; color: #48484a;
     flex-shrink: 0;
   }
-  .srch-footer kbd {
+  .srch-hint {
+    display: flex; align-items: center; gap: 3px;
+    font-size: 11px; color: #48484a;
+  }
+  .srch-hint kbd {
+    display: inline-flex; align-items: center; justify-content: center;
     border: 1px solid rgba(255,255,255,0.10);
-    padding: 1px 5px; border-radius: 4px;
-    font-family: inherit; font-size: 10.5px;
-    margin-right: 2px;
+    border-radius: 4px; padding: 1px 5px;
+    font-size: 10.5px; font-family: inherit;
+    min-width: 18px;
+    color: #3a3a3c;
   }
-  .srch-brand { margin-left: auto; color: #2a2a2c; }
+  .srch-powered { margin-left: auto; font-size: 11px; color: #28282a; }
   .hidden { display: none !important; }
-
-  /* ── 分组标签 ── */
-  .srch-group {
-    font-size: 10.5px; font-weight: 600; letter-spacing: 0.7px;
-    text-transform: uppercase; color: #3a3a3c;
-    padding: 10px 12px 3px;
-    user-select: none;
-  }
-  .srch-group + .srch-group { padding-top: 6px; }
 </style>
 
 <script>
   const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-  const backdrop = document.getElementById('srch-backdrop')!;
-  const dialog   = document.getElementById('srch-dialog')!;
+  const overlay  = document.getElementById('srch-backdrop')!;
+  const box      = document.getElementById('srch-dialog')!;
   const input    = document.getElementById('srch-input') as HTMLInputElement;
-  const results  = document.getElementById('srch-results')!;
-  const footer   = document.getElementById('srch-footer')!;
+  const body     = document.getElementById('srch-results')!;
+  const foot     = document.getElementById('srch-footer')!;
+  const escBtn   = document.getElementById('srch-esc')!;
 
   let pf: any   = null;
   let pfReady   = false;
   let activeIdx = -1;
   let debounce: ReturnType<typeof setTimeout>;
 
-  /* ── Pagefind 懒加载 ─────────────────────────────────────────── */
+  /* ── Pagefind 懒加载 ──────────────────────────────────────── */
   async function loadPf() {
     if (pfReady) return pf;
     try {
@@ -249,139 +229,114 @@
     return pf;
   }
 
-  /* ── 打开 / 关闭 ─────────────────────────────────────────────── */
-  function openSearch() {
-    backdrop.classList.add('open');
-    dialog.classList.add('open');
-    footer.classList.add('hidden');
-    results.innerHTML = hint('输入关键词搜索文章…');
+  /* ── 打开 / 关闭 ─────────────────────────────────────────── */
+  function open() {
+    overlay.classList.add('open');
+    box.classList.add('open');
+    foot.classList.add('hidden');
+    body.innerHTML = '<p class="srch-placeholder">输入关键词搜索文章…</p>';
     requestAnimationFrame(() => input.focus());
     loadPf();
   }
-  function closeSearch() {
-    backdrop.classList.remove('open');
-    dialog.classList.remove('open');
+  function close() {
+    overlay.classList.remove('open');
+    box.classList.remove('open');
     input.value = '';
-    results.innerHTML = '';
+    body.innerHTML = '';
     activeIdx = -1;
   }
-  (window as any).openSearch = openSearch;
+  (window as any).openSearch = open;
 
-  backdrop.addEventListener('click', closeSearch);
-  document.getElementById('srch-esc-key')?.addEventListener('click', closeSearch);
-
+  overlay.addEventListener('click', close);
+  escBtn.addEventListener('click', close);
   document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); dialog.classList.contains('open') ? closeSearch() : openSearch(); }
-    if (e.key === 'Escape' && dialog.classList.contains('open')) closeSearch();
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); box.classList.contains('open') ? close() : open(); }
+    if (e.key === 'Escape' && box.classList.contains('open')) close();
   });
 
-  /* ── 搜索 ────────────────────────────────────────────────────── */
+  /* ── 搜索 ──────────────────────────────────────────────────── */
   input.addEventListener('input', () => {
     clearTimeout(debounce);
-    debounce = setTimeout(doSearch, 200);
+    debounce = setTimeout(search, 200);
   });
 
-  async function doSearch() {
+  async function search() {
     const q = input.value.trim();
-    if (!q) { results.innerHTML = hint('输入关键词搜索文章…'); footer.classList.add('hidden'); return; }
-
-    const engine = await loadPf();
-    if (!engine) {
-      results.innerHTML = hint('搜索索引尚未生成，请先执行 <code>npm run build</code>');
-      footer.classList.add('hidden');
+    if (!q) {
+      body.innerHTML = '<p class="srch-placeholder">输入关键词搜索文章…</p>';
+      foot.classList.add('hidden');
       return;
     }
 
-    const search = await engine.search(q);
-    if (!search.results.length) {
-      results.innerHTML = hint(`没有找到与「${q}」相关的文章`);
-      footer.classList.add('hidden');
+    const engine = await loadPf();
+    if (!engine) {
+      body.innerHTML = '<p class="srch-empty">请先执行 <code>npm run build</code> 生成搜索索引</p>';
+      foot.classList.add('hidden');
+      return;
+    }
+
+    const res = await engine.search(q);
+    if (!res.results.length) {
+      body.innerHTML = `<p class="srch-empty">未找到「${q}」相关文章</p>`;
+      foot.classList.add('hidden');
       activeIdx = -1;
       return;
     }
 
-    /* ① 加载最多 20 条原始结果 */
-    const raw: any[] = await Promise.all(
-      search.results.slice(0, 20).map((r: any) => r.data())
-    );
-
-    /* ② 按 URL 去重（去锚点），保留 pagefind 排在最前的摘录 */
+    /* 加载 24 条原始结果，按 URL 去重，每篇文章保留相关度最高的摘录 */
+    const raw: any[] = await Promise.all(res.results.slice(0, 24).map((r: any) => r.data()));
     const seen = new Map<string, any>();
     for (const item of raw) {
-      const key = item.url.replace(/#.*$/, '');
-      if (!seen.has(key)) seen.set(key, item);
+      const url = item.url.replace(/#.*$/, '');
+      if (!seen.has(url)) seen.set(url, item);
     }
-    const deduped = [...seen.values()].slice(0, 10);
+    const deduped = [...seen.values()];
 
-    /* ③ 按优先级分组：标题命中 > 正文命中 */
+    /* 标题命中的排在前面，正文命中的排后面，各自保持 pagefind 原始顺序 */
     const ql = q.toLowerCase();
-    const titleHits: any[] = [];
-    const bodyHits:  any[] = [];
-    for (const item of deduped) {
-      const title = (item.meta?.title ?? '').toLowerCase();
-      (title.includes(ql) ? titleHits : bodyHits).push(item);
-    }
-
-    /* ④ 渲染：标题匹配组在前，正文匹配组在后，组间有标签 */
-    const hasBoth = titleHits.length > 0 && bodyHits.length > 0;
-    let idx = 0;
-    let html = '';
-
-    if (titleHits.length) {
-      if (hasBoth) html += `<div class="srch-group">标题匹配</div>`;
-      html += titleHits.map(item => renderItem(item, idx++)).join('');
-    }
-    if (bodyHits.length) {
-      // 只展示到总数 8 篇
-      const remaining = 8 - titleHits.length;
-      if (hasBoth) html += `<div class="srch-group">正文匹配</div>`;
-      html += bodyHits.slice(0, remaining).map(item => renderItem(item, idx++)).join('');
-    }
+    const titleHits = deduped.filter(i => (i.meta?.title ?? '').toLowerCase().includes(ql));
+    const bodyHits  = deduped.filter(i => !(i.meta?.title ?? '').toLowerCase().includes(ql));
+    const ordered   = [...titleHits, ...bodyHits].slice(0, 8);
 
     activeIdx = -1;
-    footer.classList.remove('hidden');
-    results.innerHTML = html;
+    foot.classList.remove('hidden');
+    body.innerHTML = ordered.map((item, i) => render(item, i)).join('');
   }
 
-  /* ── 渲染单条结果 ────────────────────────────────────────────── */
-  function renderItem(item: any, i: number): string {
-    const title   = item.meta?.title ?? '无标题';
-    const excerpt = item.excerpt ?? '';
-    // 路径展示：去掉 base 前缀，截取 /articles/xxx
-    const path    = item.url.replace(BASE, '').replace(/\/$/, '') || '/';
+  /* ── 渲染单条结果 ─────────────────────────────────────────── */
+  function render(item: any, i: number): string {
+    const title   = escHtml(item.meta?.title ?? '未知文章');
+    const excerpt = item.excerpt ?? '';   // pagefind 已处理 <mark>
 
-    return `<a class="srch-item" href="${item.url}" data-idx="${i}" role="option" tabindex="-1">
-      <div class="srch-item-icon" aria-hidden="true">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-          <rect x="2" y="1" width="9" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M4 5h5M4 7.5h5M4 10h3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="srch-item-body">
-        <div class="srch-item-title">${title}</div>
-        <div class="srch-item-excerpt">${excerpt}</div>
-        <div class="srch-item-path">${path}</div>
-      </div>
-      <svg class="srch-item-arrow" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-        <path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+    /* 面包屑：/articles/mycli-architecture → articles › mycli-architecture */
+    const raw  = item.url.replace(BASE, '').replace(/^\/|\/$/g, '');
+    const crumbs = raw.split('/').filter(Boolean);
+    const pathHtml = crumbs
+      .map((c, j) => j < crumbs.length - 1
+        ? `${escHtml(c)}<span aria-hidden="true"> › </span>`
+        : `<strong>${escHtml(c)}</strong>`)
+      .join('');
+
+    return `<a class="srch-hit" href="${item.url}" data-idx="${i}" role="option" tabindex="-1">
+      <div class="srch-hit-title">${title}</div>
+      <div class="srch-hit-excerpt">${excerpt}</div>
+      <div class="srch-hit-path">${pathHtml}</div>
     </a>`;
   }
 
-  /* ── 键盘导航 ────────────────────────────────────────────────── */
-  input.addEventListener('keydown', (e: KeyboardEvent) => {
-    const items = results.querySelectorAll<HTMLElement>('.srch-item');
-    if (!items.length) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx + 1, items.length - 1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); }
-    else if (e.key === 'Enter')  { e.preventDefault(); (activeIdx >= 0 ? items[activeIdx] : items[0])?.click(); return; }
-    else return;
-    items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
-    items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-  });
-
-  /* ── 工具函数 ────────────────────────────────────────────────── */
-  function hint(msg: string) {
-    return `<div class="srch-state">${msg}</div>`;
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  /* ── 键盘导航 ─────────────────────────────────────────────── */
+  input.addEventListener('keydown', (e: KeyboardEvent) => {
+    const hits = body.querySelectorAll<HTMLElement>('.srch-hit');
+    if (!hits.length) return;
+    if      (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx + 1, hits.length - 1); }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); }
+    else if (e.key === 'Enter')     { e.preventDefault(); (activeIdx >= 0 ? hits[activeIdx] : hits[0])?.click(); return; }
+    else return;
+    hits.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+    hits[activeIdx]?.scrollIntoView({ block: 'nearest' });
+  });
 </script>

@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[TODO: 文章标题]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════════ */
+:root {
+  --bg:        #0b0d14;
+  --surface:   #13162a;
+  --surface2:  #1d2138;
+  --surface3:  #252840;
+  --border:    #2a2e50;
+  --border2:   #363b62;
+  --accent:    #6c8ef5;
+  --accent2:   #4ecdc4;
+  --accent3:   #f9ca24;
+  --accent4:   #ff6b9d;
+  --text:      #e2e8f0;
+  --text-muted:#7a85a3;
+  --code-bg:   #090c14;
+  --green:     #64ffda;
+  --orange:    #f0a500;
+  --red:       #ff6b6b;
+  --purple:    #c792ea;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 20px rgba(108,142,245,0.18);
+  --nav-w: 260px;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Menlo', monospace;
+  --sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ════════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════════════════════════════════════════════
+   READING PROGRESS BAR
+════════════════════════════════════════════ */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 999;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px rgba(108,142,245,0.6);
+}
+
+/* ════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--nav-w);
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 0 0 24px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(108,142,245,0.06) 0%, transparent 100%);
+}
+
+.nav-logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(108,142,245,0.4);
+}
+
+.nav-logo h2 {
+  font-size: 17px;
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.nav-logo p {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 5px;
+  font-family: var(--mono);
+}
+
+nav ul { list-style: none; padding: 0 8px; }
+
+.nav-section {
+  padding: 10px 12px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  margin: 1px 0;
+}
+
+nav a:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
+}
+
+nav a.active {
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  border-left-color: var(--accent);
+}
+
+nav a .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--border2);
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+
+nav a:hover .dot { background: var(--text-muted); }
+nav a.active .dot { background: var(--accent); transform: scale(1.4); }
+
+/* ════════════════════════════════════════════
+   MAIN CONTENT
+════════════════════════════════════════════ */
+main {
+  margin-left: var(--nav-w);
+  padding: 48px 60px 80px;
+  max-width: calc(var(--nav-w) + 860px);
+}
+
+section {
+  margin-bottom: 80px;
+  scroll-margin-top: 40px;
+}
+
+/* ════════════════════════════════════════════
+   TYPOGRAPHY
+════════════════════════════════════════════ */
+h1 {
+  font-size: 38px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--green) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+/* CSS counter for auto section numbers */
+body { counter-reset: section; }
+section { counter-increment: section; }
+
+h2 {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+h2::before {
+  content: "§" counter(section);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  border: 1px solid rgba(108,142,245,0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+h2 .icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: rgba(108,142,245,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent2);
+  margin: 28px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+h3::before {
+  content: '';
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  background: var(--accent2);
+  flex-shrink: 0;
+}
+
+h4 {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--accent3);
+  margin: 16px 0 8px;
+}
+
+p { margin-bottom: 12px; color: var(--text-muted); }
+p strong { color: var(--text); font-weight: 600; }
+
+/* ════════════════════════════════════════════
+   CODE BLOCKS
+════════════════════════════════════════════ */
+.code-block {
+  margin: 14px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.code-header {
+  background: var(--surface2);
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.code-dots { display: flex; gap: 5px; }
+.code-dots span {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.dot-red   { background: #ff5f57; }
+.dot-yellow{ background: #ffbd2e; }
+.dot-green { background: #28ca41; }
+
+.code-lang {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text-muted);
+  margin-left: auto;
+  background: rgba(255,255,255,0.04);
+  padding: 1px 7px;
+  border-radius: 3px;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.65;
+  font-family: var(--mono);
+  color: #abb2bf;
+  margin: 0;
+}
+
+/* standalone pre (not in .code-block) */
+section > pre,
+.two-col pre,
+.callout pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 14px 0;
+  font-family: var(--mono);
+  box-shadow: var(--shadow-sm);
+}
+
+code {
+  background: rgba(108,142,245,0.1);
+  color: var(--accent2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-family: var(--mono);
+}
+
+pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* syntax colors */
+pre .k  { color: #c792ea; }
+pre .s  { color: #c3e88d; }
+pre .c  { color: #4a5568; font-style: italic; }
+pre .f  { color: #82aaff; }
+pre .n  { color: #f78c6c; }
+pre .t  { color: #89ddff; }
+pre .cm { color: #ffcb6b; }
+
+/* ════════════════════════════════════════════
+   INLINE CODE IN TABLE CELLS
+════════════════════════════════════════════ */
+td code { font-size: 12px; }
+
+/* ════════════════════════════════════════════
+   CARDS
+════════════════════════════════════════════ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(108,142,245,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(108,142,245,0.15), var(--shadow-md);
+}
+
+.card-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 7px;
+  font-family: var(--mono);
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+/* ════════════════════════════════════════════
+   BADGES
+════════════════════════════════════════════ */
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 2px;
+  font-family: var(--mono);
+  letter-spacing: 0.2px;
+}
+
+.badge-blue   { background: rgba(108,142,245,0.15); color: #8aabff; border: 1px solid rgba(108,142,245,0.2); }
+.badge-teal   { background: rgba(78,205,196,0.15);  color: #5ee8df; border: 1px solid rgba(78,205,196,0.2); }
+.badge-yellow { background: rgba(249,202,36,0.15);  color: #fcd53a; border: 1px solid rgba(249,202,36,0.2); }
+.badge-pink   { background: rgba(255,107,157,0.15); color: #ff85b3; border: 1px solid rgba(255,107,157,0.2); }
+.badge-green  { background: rgba(100,255,218,0.12); color: #64ffda; border: 1px solid rgba(100,255,218,0.2); }
+.badge-purple { background: rgba(199,146,234,0.15); color: #d4a8f0; border: 1px solid rgba(199,146,234,0.2); }
+.badge-orange { background: rgba(240,165,0,0.15);   color: #ffbe40; border: 1px solid rgba(240,165,0,0.2); }
+
+/* ════════════════════════════════════════════
+   TABLES
+════════════════════════════════════════════ */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+th {
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  vertical-align: top;
+}
+
+td:first-child {
+  color: var(--accent2);
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.018); }
+
+/* ════════════════════════════════════════════
+   FLOW DIAGRAMS
+════════════════════════════════════════════ */
+.flow {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 22px;
+  margin: 14px 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.flow-step {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.flow-box {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 4px 12px;
+  color: var(--text);
+  font-size: 12.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.flow-box.highlight {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  box-shadow: 0 0 0 1px rgba(108,142,245,0.15);
+}
+
+.flow-box.green {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(100,255,218,0.07);
+}
+
+.flow-box.orange {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(240,165,0,0.07);
+}
+
+.flow-box.purple {
+  border-color: var(--purple);
+  color: var(--purple);
+  background: rgba(199,146,234,0.08);
+}
+
+.arrow { color: var(--border2); font-size: 14px; flex-shrink: 0; }
+
+.flow-indent  { margin-left: 28px; }
+.flow-indent2 { margin-left: 56px; }
+.flow-indent3 { margin-left: 84px; }
+
+/* ════════════════════════════════════════════
+   CALLOUTS
+════════════════════════════════════════════ */
+.callout {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.callout-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  line-height: 1;
+}
+
+.callout-body strong {
+  color: var(--text);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13.5px;
+}
+
+.callout.tip  { border-left-color: var(--green); }
+.callout.warn { border-left-color: var(--orange); }
+.callout.tip  .callout-icon::after { content: "💡"; }
+.callout.warn .callout-icon::after { content: "⚠️"; }
+.callout:not(.tip):not(.warn) .callout-icon::after { content: "ℹ️"; }
+
+/* ════════════════════════════════════════════
+   LAYER STACK
+════════════════════════════════════════════ */
+.layer-stack {
+  margin: 20px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.layer {
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.layer:hover { background: rgba(255,255,255,0.015); }
+.layer:last-child { border-bottom: none; }
+
+.layer-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  font-family: var(--mono);
+}
+
+.layer-name { font-weight: 700; font-size: 14px; width: 170px; flex-shrink: 0; }
+.layer-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* ════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 40px 44px;
+  margin-bottom: 48px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(108,142,245,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(78,205,196,0.05) 0%, transparent 50%),
+    repeating-linear-gradient(
+      0deg, transparent, transparent 29px,
+      rgba(255,255,255,0.012) 29px, rgba(255,255,255,0.012) 30px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 29px,
+      rgba(255,255,255,0.012) 29px, rgba(255,255,255,0.012) 30px
+    );
+  pointer-events: none;
+}
+
+.hero > * { position: relative; }
+
+.hero .subtitle {
+  font-size: 15.5px;
+  color: var(--text-muted);
+  margin-top: 12px;
+  max-width: 620px;
+  line-height: 1.7;
+}
+
+.hero .meta {
+  display: flex;
+  gap: 20px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.hero .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+
+.hero .meta-item .val {
+  color: var(--text);
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
+/* ════════════════════════════════════════════
+   TREE
+════════════════════════════════════════════ */
+.tree {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.9;
+  overflow-x: auto;
+  white-space: pre;          /* CRITICAL: preserve indentation */
+  box-shadow: var(--shadow-sm);
+}
+
+.tree .dir     { color: var(--accent); font-weight: 600; }
+.tree .file    { color: #abb2bf; }
+.tree .comment { color: #3d4a5c; }
+
+/* ════════════════════════════════════════════
+   TWO-COL LAYOUT
+════════════════════════════════════════════ */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+  align-items: start;
+}
+
+/* ════════════════════════════════════════════
+   PILL LIST
+════════════════════════════════════════════ */
+.pill-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+
+/* ════════════════════════════════════════════
+   ORDERED LIST
+════════════════════════════════════════════ */
+ol.styled {
+  padding-left: 0;
+  counter-reset: ol-counter;
+  list-style: none;
+}
+
+ol.styled li {
+  counter-increment: ol-counter;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 5px 0;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+ol.styled li::before {
+  content: counter(ol-counter, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(108,142,245,0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════════
+   BACK TO TOP
+════════════════════════════════════════════ */
+#back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 40px; height: 40px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.25s, transform 0.25s, border-color 0.15s;
+  z-index: 200;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+}
+
+#back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#back-to-top:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════ */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ════════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  nav { display: none; }
+  main { margin-left: 0; padding: 24px 20px 60px; max-width: 100%; }
+  .two-col { grid-template-columns: 1fr; }
+  .hero { padding: 28px 24px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── 进度条（必须有）─── -->
+<div id="progress-bar" style="position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:999;transition:width 0.1s linear;box-shadow:0 0 8px rgba(108,142,245,0.6);"></div>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-title">
+      <div class="nav-logo-icon">[EMOJI]</div>
+      <div>
+        <h2>[项目名称简称]</h2>
+        <p>[版本] · [语言]</p>
+      </div>
+    </div>
+  </div>
+  <ul>
+    <div class="nav-section">核心</div>
+    <li><a href="#overview">§1 项目简介</a></li>
+    <li><a href="#structure">§2 目录结构</a></li>
+    <li><a href="#layers">§3 分层架构</a></li>
+    <li><a href="#entry">§4 入口与启动</a></li>
+    <div class="nav-section">模块</div>
+    <li><a href="#module1">§5 [核心模块A]</a></li>
+    <li><a href="#module2">§6 [核心模块B]</a></li>
+    <li><a href="#module3">§7 [核心模块C]</a></li>
+    <div class="nav-section">设计</div>
+    <li><a href="#patterns">§8 核心设计模式</a></li>
+    <li><a href="#deps">§9 依赖总览</a></li>
+    <li><a href="#flow">§10 全局数据流</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════ MAIN ════════════ -->
+<main>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>[TODO: 文章完整标题]</h1>
+  <p class="subtitle">
+    [TODO: 一句话描述，说明这篇文章的内容和目标]
+  </p>
+  <div class="meta">
+    <div class="meta-item">版本 <span class="val">[v1.0.0]</span></div>
+    <div class="meta-item">协议 <span class="val">[MIT]</span></div>
+    <div class="meta-item">语言 <span class="val">[Python ≥ 3.10]</span></div>
+    <div class="meta-item">代码量 <span class="val">[~10,000 行]</span></div>
+    <div class="meta-item">维护 <span class="val">[维护者/社区]</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     §1  项目简介
+══════════════════════════════════════════ -->
+<section id="overview">
+  <h2><span class="icon">🧭</span>项目简介</h2>
+
+  <p>[TODO: 1-2 段项目背景和定位介绍]</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">功能名称</div>
+      <div class="card-desc">功能描述，简洁直接说明该功能做什么</div>
+      <span class="badge badge-blue">核心文件.py</span>
+    </div>
+    <div class="card">
+      <div class="card-title">功能名称</div>
+      <div class="card-desc">功能描述</div>
+      <span class="badge badge-teal">相关文件</span>
+    </div>
+    <div class="card">
+      <div class="card-title">功能名称</div>
+      <div class="card-desc">功能描述</div>
+      <span class="badge badge-yellow">相关文件</span>
+    </div>
+    <div class="card">
+      <div class="card-title">功能名称</div>
+      <div class="card-desc">功能描述</div>
+      <span class="badge badge-pink">相关文件</span>
+    </div>
+    <div class="card">
+      <div class="card-title">功能名称</div>
+      <div class="card-desc">功能描述</div>
+      <span class="badge badge-green">相关文件</span>
+    </div>
+    <div class="card">
+      <div class="card-title">功能名称</div>
+      <div class="card-desc">功能描述</div>
+      <span class="badge badge-purple">相关文件</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §2  目录结构
+══════════════════════════════════════════ -->
+<section id="structure">
+  <h2><span class="icon">📁</span>目录结构</h2>
+
+  <div class="two-col">
+    <div>
+      <h3>顶层结构</h3>
+      <div class="tree"><span class="dir">project/</span>    <span class="comment"># 主包</span>
+<span class="dir">tests/</span>      <span class="comment"># 测试套件</span>
+<span class="file">README.md</span>
+<span class="file">pyproject.toml</span> <span class="comment"># 元数据</span></div>
+    </div>
+    <div>
+      <h3>核心包结构</h3>
+      <div class="tree"><span class="dir">project/</span>
+  <span class="file">main.py</span>       <span class="comment"># 入口</span>
+  <span class="file">core.py</span>       <span class="comment"># 核心逻辑</span>
+  <span class="file">config.py</span>     <span class="comment"># 配置</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §3  分层架构
+══════════════════════════════════════════ -->
+<section id="layers">
+  <h2><span class="icon">🏗️</span>分层架构</h2>
+
+  <p>[TODO: 1-2 句话概述架构分层思路]</p>
+
+  <div class="layer-stack">
+    <div class="layer" style="background: rgba(108,142,245,0.06)">
+      <div class="layer-num" style="background:#6c8ef5; color:#fff">5</div>
+      <div class="layer-name" style="color:#8aabff">UI 交互层</div>
+      <div class="layer-desc">具体组件列举 · 用 · 中点分隔</div>
+    </div>
+    <div class="layer" style="background: rgba(78,205,196,0.05)">
+      <div class="layer-num" style="background:#4ecdc4; color:#0b0d14">4</div>
+      <div class="layer-name" style="color:#5ee8df">应用编排层</div>
+      <div class="layer-desc">具体组件</div>
+    </div>
+    <div class="layer" style="background: rgba(249,202,36,0.04)">
+      <div class="layer-num" style="background:#f9ca24; color:#0b0d14">3</div>
+      <div class="layer-name" style="color:#fcd53a">业务逻辑层</div>
+      <div class="layer-desc">具体组件</div>
+    </div>
+    <div class="layer" style="background: rgba(255,107,157,0.04)">
+      <div class="layer-num" style="background:#ff6b9d; color:#fff">2</div>
+      <div class="layer-name" style="color:#ff85b3">数据访问层</div>
+      <div class="layer-desc">具体组件</div>
+    </div>
+    <div class="layer" style="background: rgba(100,255,218,0.03)">
+      <div class="layer-num" style="background:#64ffda; color:#0b0d14">1</div>
+      <div class="layer-name" style="color:#64ffda">传输/安全层</div>
+      <div class="layer-desc">具体组件</div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>核心设计原则</strong>
+      [TODO: 一句话总结架构设计原则]
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §4  入口与启动流程
+══════════════════════════════════════════ -->
+<section id="entry">
+  <h2><span class="icon">🚀</span>入口与启动流程</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">Python · main.py</span>
+    </div>
+    <pre><code>[TODO: 入口代码片段]</code></pre>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §5  [核心模块A]
+══════════════════════════════════════════ -->
+<section id="module1">
+  <h2><span class="icon">🗄️</span>[核心模块A名称]</h2>
+
+  <p>[TODO: 模块功能概述]</p>
+
+  <div class="two-col">
+    <div>
+      <h3>核心属性</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">Python</span>
+        </div>
+        <pre><code>[TODO: 核心 class 定义]</code></pre>
+      </div>
+    </div>
+    <div>
+      <h3>[子模块]</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">Python</span>
+        </div>
+        <pre><code>[TODO: 相关代码]</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>[接口/方法总览]</h3>
+  <table>
+    <thead>
+      <tr><th>方法</th><th>说明</th><th>用途</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>method()</code></td><td>查询目标</td><td>用途说明</td></tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §8  核心设计模式
+══════════════════════════════════════════ -->
+<section id="patterns">
+  <h2><span class="icon">🧩</span>核心设计模式</h2>
+
+  <p>[TODO: 总结 3-5 个核心设计模式]</p>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §9  依赖总览
+══════════════════════════════════════════ -->
+<section id="deps">
+  <h2><span class="icon">📦</span>依赖总览</h2>
+
+  <h3>核心依赖</h3>
+  <table>
+    <thead>
+      <tr><th>包名</th><th>版本</th><th>用途</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>package</code></td><td>&gt;= 1.0</td><td>用途</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer style="margin-top:80px;padding:32px 40px;border-top:1px solid var(--border);text-align:center;color:var(--text-muted);font-size:13px;line-height:1.8;">
+  <p>[TODO: 项目名称] 架构解析 · 解读文档</p>
+  <p>基于 <a href="[TODO: 仓库URL]" style="color:var(--accent)">源仓库</a> · AI 生成初稿 · 人工 Review</p>
+</footer>
+
+<!-- ─── BACK TO TOP ─── -->
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="position:fixed;bottom:24px;right:24px;width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border2);color:var(--text-muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;" title="返回顶部">↑</button>
+
+<script>
+  // 进度条
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    document.getElementById('progress-bar').style.width = (pct * 100) + '%';
+  });
+
+  // 导航高亮
+  const navLinks = document.querySelectorAll('nav a');
+  const sections = document.querySelectorAll('section[id]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

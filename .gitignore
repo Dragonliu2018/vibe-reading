@@ -1,5 +1,6 @@
 dist/
 node_modules/
+public/pagefind/
 .astro/
 .env
 .DS_Store

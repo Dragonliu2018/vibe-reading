@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "rm -rf public/pagefind && astro build && pagefind --site dist --output-path public/pagefind",
     "preview": "astro preview"
   },
   "engines": {

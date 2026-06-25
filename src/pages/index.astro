@@ -1,7 +1,11 @@
 ---
 import { articles, CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
+import { quotes } from '../data/quotes';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
+
+// 构建时嵌入，无运行时请求
+const quotesJson = JSON.stringify(quotes);
 
 const sorted = [...articles].sort(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -152,7 +156,7 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
 
     /* ── Hero ── */
     .hero {
-      padding: 72px 10% 56px;   /* ↑ 呼吸空间：Paperclip 120px → 我们 72px（有侧边栏） */
+      padding: 44px 10% 48px;
       text-align: center;
     }
     .hero-eyebrow {
@@ -172,12 +176,45 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 18px;
     }
-    .hero-sub {
-      font-size: clamp(15px, 2vw, 17px); font-weight: 400; color: var(--text-muted);
-      line-height: 1.55; margin: 0 auto 20px; letter-spacing: -0.3px;
+    /* ── 哲理语句区 ── */
+    .quote-wrap {
+      position: relative;
+      height: 92px;              /* 固定高度：内容变化不传导到外部，消灭抖动 */
+      max-width: 480px;
+      margin: 20px auto 18px;
+      overflow: hidden;
     }
-    .hero-stats { font-size: 13px; color: var(--text-dim); }
-    .hero-stats strong { color: #86868b; font-weight: 500; }
+    @media (max-width: 680px) {
+      .quote-wrap { height: 118px; }     /* 窄屏长句可能多折一行 */
+      .quote-text { font-size: 13.5px; } /* 略缩字号，每行多容纳几个字符 */
+      .hero h1    { letter-spacing: -1.5px; } /* 小尺寸下 -2px 偏紧 */
+    }
+    .quote-inner {
+      position: absolute;        /* 脱离文档流，高度变化不影响容器 */
+      inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity .5s cubic-bezier(0.4,0,0.2,1),
+                  transform .5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .quote-inner.out {
+      opacity: 0;
+      transform: translateY(-7px);
+    }
+    .quote-inner.in {
+      opacity: 0;
+      transform: translateY(7px);
+    }
+    .quote-text {
+      font-size: 14.5px; font-style: italic; font-weight: 400;
+      color: rgba(245,245,247,0.62);
+      line-height: 1.65; letter-spacing: -0.05px;
+    }
+    .quote-author {
+      font-size: 11.5px; margin-top: 7px;
+      color: rgba(245,245,247,0.28); letter-spacing: 0.1px;
+    }
+
 
     /* ── Main content col ── */
     .main-col { min-width: 0; padding: 0 10% 120px 52px; }
@@ -296,7 +333,7 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
     /* ── Responsive ── */
     @media (max-width: 680px) {
       .nav { padding: 0 20px; }
-      .hero { padding: 48px 6% 32px; }
+      .hero { padding: 28px 6% 28px; }
       .card-inner { grid-template-columns: 1fr; gap: 10px; }
       .card-aside { text-align: left; }
       .footer { padding: 28px 6%; }
@@ -345,13 +382,15 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
       <section class="hero">
         <span class="hero-eyebrow fade-up">AI-drafted · Human-reviewed</span>
         <h1 class="fade-up" style="transition-delay:80ms">Vibe Reading</h1>
-        <p class="hero-sub fade-up" style="transition-delay:160ms">技术文档深度解读——代码库架构、论文精读。</p>
-        <p class="hero-stats fade-up" style="transition-delay:240ms">
-          <strong>{sorted.length}</strong> 篇文章
-          {Object.entries(totalByCategory).map(([cat, count]) => (
-            <span> · <strong>{count}</strong> {CATEGORY_LABEL[cat as Category]}</span>
-          ))}
-        </p>
+
+        <!-- 哲理语句：构建时嵌入数据，运行时轮播 -->
+        <div class="quote-wrap fade-up" style="transition-delay:160ms">
+          <div class="quote-inner" id="quote-inner">
+            <p class="quote-text" id="quote-text"></p>
+            <p class="quote-author" id="quote-author"></p>
+          </div>
+        </div>
+
       </section>
 
       <div class="main-col">
@@ -413,6 +452,51 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
 
     </div>
   </div>
+
+  <!-- 哲理语句轮播：数据在构建时嵌入，无运行时请求 -->
+  <script define:vars={{ quotes }}>
+    const inner  = document.getElementById('quote-inner');
+    const textEl = document.getElementById('quote-text');
+    const authEl = document.getElementById('quote-author');
+
+    if (inner && textEl && authEl && quotes.length) {
+      const SHOW_MS = 12000;   // 每句展示 12 秒
+      const FADE_MS = 500;     // 淡入淡出 0.5 秒
+
+      // 第一条固定展示博客主旨，之后随机轮播其余语句
+      let idx = 0;
+
+      function setQuote(q) {
+        textEl.textContent = '“' + q.text + '”';
+        authEl.textContent = q.author ? '— ' + q.author : '';
+      }
+
+      function cycle() {
+        // 淡出：向上飘走
+        inner.classList.add('out');
+
+        setTimeout(() => {
+          idx = (idx + 1) % quotes.length;
+          setQuote(quotes[idx]);
+
+          // 重置到下方（无动画）
+          inner.classList.remove('out');
+          inner.classList.add('in');
+
+          // 双帧确保浏览器渲染 in 状态后再触发淡入
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            inner.classList.remove('in');   // 触发 transition → 正常显示
+          }));
+
+          setTimeout(cycle, SHOW_MS);
+        }, FADE_MS);
+      }
+
+      // 首屏立即显示第一句
+      setQuote(quotes[idx]);
+      setTimeout(cycle, SHOW_MS);
+    }
+  </script>
 
   <script>
     const tabs  = document.querySelectorAll<HTMLButtonElement>('.filter-tab');

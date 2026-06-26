@@ -1,0 +1,107 @@
+---
+export const toolMeta = {
+  categoryPath: ['单位', '存储换算'],
+  description:  'B / KB / MB / GB / TB 互换',
+};
+import ToolLayout from '../../layouts/ToolLayout.astro';
+---
+
+<ToolLayout title="存储单位换算" description="B · KB · MB · GB · TB · PB 任意互换" toolHref="/tools/units">
+  <style>
+    .unit-input-row {
+      display: flex; gap: 10px; align-items: flex-end; margin-bottom: 24px;
+    }
+    .unit-input-row input[type="number"] {
+      flex: 1; min-height: 44px; font-size: 18px;
+      -moz-appearance: textfield;
+    }
+    .unit-input-row input::-webkit-outer-spin-button,
+    .unit-input-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .unit-select {
+      background: #141416; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; color: #f5f5f7;
+      font-family: var(--font, sans-serif); font-size: 14px;
+      padding: 10px 12px; cursor: pointer; outline: none;
+      transition: border-color .15s; min-width: 80px; min-height: 44px;
+    }
+    .unit-select:focus { border-color: #2997ff; }
+
+    .results-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 14px;
+    }
+    .results-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      vertical-align: middle;
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table td:first-child {
+      color: #636366; font-size: 12px;
+      font-weight: 600; letter-spacing: 0.3px;
+      width: 60px;
+    }
+    .results-table td:last-child {
+      font-family: var(--mono, monospace); font-size: 14px;
+      color: #f5f5f7; text-align: right;
+    }
+    .results-table tr.active-unit td { color: #2997ff; }
+    .results-table tr.active-unit td:first-child { color: #2997ff; }
+    .results-wrap {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; overflow: hidden;
+    }
+  </style>
+
+  <div class="unit-input-row">
+    <input type="number" id="amount" value="1" min="0" step="any" placeholder="输入数值" />
+    <select class="unit-select" id="unit">
+      <option value="0">B</option>
+      <option value="1">KB</option>
+      <option value="2" selected>MB</option>
+      <option value="3">GB</option>
+      <option value="4">TB</option>
+      <option value="5">PB</option>
+    </select>
+  </div>
+
+  <div class="results-wrap">
+    <table class="results-table" id="results"></table>
+  </div>
+</ToolLayout>
+
+<script>
+  const UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const amountEl = document.getElementById('amount') as HTMLInputElement;
+  const unitEl   = document.getElementById('unit')   as HTMLSelectElement;
+  const table    = document.getElementById('results')!;
+
+  function fmt(n: number): string {
+    if (n === 0) return '0';
+    if (n >= 1e15) return n.toExponential(4);
+    // show up to 10 significant digits, remove trailing zeros
+    const s = n.toPrecision(10).replace(/\.?0+$/, '');
+    // add thousands separator
+    const parts = s.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+  }
+
+  function update() {
+    const v    = parseFloat(amountEl.value) || 0;
+    const exp  = parseInt(unitEl.value);
+    const bytes = v * Math.pow(1024, exp);
+    const activeExp = exp;
+
+    table.innerHTML = UNITS.map((u, i) => {
+      const val = bytes / Math.pow(1024, i);
+      const active = i === activeExp ? ' class="active-unit"' : '';
+      return `<tr${active}><td>${u}</td><td>${fmt(val)}</td></tr>`;
+    }).join('');
+  }
+
+  amountEl.addEventListener('input', update);
+  unitEl.addEventListener('change', update);
+  update();
+</script>

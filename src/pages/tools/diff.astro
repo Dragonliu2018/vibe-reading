@@ -1,0 +1,109 @@
+---
+export const toolMeta = {
+  categoryPath: ['文本', 'Text Diff'],
+  description:  '对比两段文本，逐行高亮差异',
+};
+import ToolLayout from '../../layouts/ToolLayout.astro';
+---
+
+<ToolLayout title="Text Diff" description="对比两段文本，逐行高亮差异" toolHref="/tools/diff">
+  <style>
+    .diff-output {
+      background: #0d1117;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 16px;
+      font-family: var(--mono, monospace);
+      font-size: 13px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-all;
+      min-height: 120px;
+      max-height: 480px;
+      overflow-y: auto;
+      color: #e6edf3;
+    }
+    .diff-line { display: block; padding: 1px 8px; border-radius: 3px; }
+    .diff-add  { background: rgba(63,185,80,0.15); color: #3fb950; }
+    .diff-del  { background: rgba(248,81,73,0.15);  color: #f85149; }
+    .diff-eq   { color: #8b949e; }
+    .diff-prefix { user-select: none; opacity: 0.5; margin-right: 6px; }
+    .diff-count {
+      font-size: 12px; color: #48484a;
+      margin-top: 10px; text-align: right;
+    }
+  </style>
+
+  <div class="tool-row">
+    <div>
+      <p class="tool-label">原文</p>
+      <textarea id="text-a" placeholder="粘贴原始文本…" spellcheck="false"></textarea>
+    </div>
+    <div>
+      <p class="tool-label">修改后</p>
+      <textarea id="text-b" placeholder="粘贴修改后文本…" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <div class="tool-actions">
+    <button class="tool-btn tool-btn-primary" id="btn-diff">对比</button>
+    <button class="tool-btn tool-btn-secondary" id="btn-clear">清空</button>
+  </div>
+
+  <div class="tool-divider"></div>
+
+  <p class="tool-label">差异结果</p>
+  <div class="diff-output" id="diff-output"><span style="color:#48484a">点击「对比」查看差异…</span></div>
+  <p class="diff-count" id="diff-count"></p>
+</ToolLayout>
+
+<script>
+  const btnDiff  = document.getElementById('btn-diff')!;
+  const btnClear = document.getElementById('btn-clear')!;
+  const textA    = document.getElementById('text-a') as HTMLTextAreaElement;
+  const textB    = document.getElementById('text-b') as HTMLTextAreaElement;
+  const output   = document.getElementById('diff-output')!;
+  const count    = document.getElementById('diff-count')!;
+
+  // 简单 LCS diff
+  function diff(a: string[], b: string[]) {
+    const m = a.length, n = b.length;
+    // dp[i][j] = LCS length of a[0..i-1], b[0..j-1]
+    const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = 1; i <= m; i++)
+      for (let j = 1; j <= n; j++)
+        dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+
+    const result: { type: 'eq'|'add'|'del', text: string }[] = [];
+    let i = m, j = n;
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && a[i-1] === b[j-1]) { result.unshift({ type: 'eq', text: a[i-1] }); i--; j--; }
+      else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) { result.unshift({ type: 'add', text: b[j-1] }); j--; }
+      else { result.unshift({ type: 'del', text: a[i-1] }); i--; }
+    }
+    return result;
+  }
+
+  function esc(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  btnDiff.addEventListener('click', () => {
+    const linesA = textA.value.split('\n');
+    const linesB = textB.value.split('\n');
+    const result = diff(linesA, linesB);
+    let adds = 0, dels = 0;
+    output.innerHTML = result.map(r => {
+      if (r.type === 'add') { adds++; return `<span class="diff-line diff-add"><span class="diff-prefix">+</span>${esc(r.text)}</span>`; }
+      if (r.type === 'del') { dels++; return `<span class="diff-line diff-del"><span class="diff-prefix">−</span>${esc(r.text)}</span>`; }
+      return `<span class="diff-line diff-eq"><span class="diff-prefix"> </span>${esc(r.text)}</span>`;
+    }).join('');
+    count.textContent = adds === 0 && dels === 0 ? '两段文本完全相同' : `+${adds} 行新增　−${dels} 行删除`;
+  });
+
+  btnClear.addEventListener('click', () => {
+    textA.value = textB.value = '';
+    output.innerHTML = '<span style="color:#48484a">点击「对比」查看差异…</span>';
+    count.textContent = '';
+  });
+</script>

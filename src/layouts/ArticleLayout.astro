@@ -2,6 +2,7 @@
 import { CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
+import NavBar from '../components/NavBar.astro';
 
 export interface Props {
   frontmatter: {
@@ -88,63 +89,6 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
       position: fixed; top: 0; left: 0; height: 2px; width: 0%;
       background: var(--accent); z-index: 200; transition: width .1s linear;
     }
-
-    /* ── Nav ── */
-    .nav {
-      flex-shrink: 0;
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 9px;
-      font-size: 15px; font-weight: 600; letter-spacing: -0.3px;
-    }
-    .nav-logo-icon {
-      width: 22px; height: 22px; border-radius: 7px;
-      background: linear-gradient(135deg, #2997ff 0%, #30d158 100%);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .nav-right { display: flex; gap: 6px; }
-    .nav-pill {
-      font-size: 13px; font-family: var(--font); color: var(--text-muted);
-      padding: 5px 14px; border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      transition: color .15s, border-color .15s, background .15s;
-      display: flex; align-items: center; gap: 5px;
-      cursor: pointer; text-decoration: none;
-    }
-    .nav-pill:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); }
-
-    .mob-menu-btn {
-      display: none; align-items: center; justify-content: center;
-      width: 40px; height: 40px; border-radius: 10px;
-      background: none; border: none; cursor: pointer;
-      color: var(--text-muted); transition: color .15s, background .15s;
-      flex-shrink: 0;
-    }
-    .mob-menu-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-    @media (max-width: 959px) { .mob-menu-btn { display: flex; } }
-
-    .search-btn {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 13px; color: var(--text-muted);
-      padding: 5px 12px; border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      cursor: pointer; white-space: nowrap;
-      transition: color .15s, border-color .15s, background .15s;
-      font-family: var(--font);
-    }
-    .search-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); }
-    .search-btn-hint { font-size: 11px; color: var(--text-dim); }
-    @media (max-width: 680px) { .search-btn-hint { display: none; } }
 
     /* ── Two-column layout ── */
     .layout {
@@ -367,10 +311,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     .footer a:hover { color: var(--text-muted); }
 
     @media (max-width: 680px) {
-      .nav { padding: 0 20px; }
       .footer { padding: 28px 6%; max-width: none; }
-      /* 移动端隐藏文字导航 pill，只保留图标按钮（搜索 + 汉堡） */
-      .nav-pill { display: none; }
     }
   </style>
 </head>
@@ -378,33 +319,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
   <div id="progress-bar" data-pagefind-ignore="all"></div>
 
-  <nav class="nav" data-pagefind-ignore="all">
-    <a href={`${base}/`} class="nav-logo">
-      <span class="nav-logo-icon">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M2 10L6 2L10 10" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3.5 7.5H8.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </span>
-      Vibe Reading
-    </a>
-    <div class="nav-right">
-      <button class="search-btn" onclick="window.openSearch?.()" aria-label="搜索">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-          <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        <span class="search-btn-hint">⌘K</span>
-      </button>
-      <button class="mob-menu-btn" onclick="window.openMobileSidebar?.()" aria-label="打开菜单">
-        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
-          <path d="M1 1h16M1 7h16M1 13h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <button class="nav-pill" onclick="history.back()">← 返回</button>
-      <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener" class="nav-pill">GitHub</a>
-    </div>
-  </nav>
+  <NavBar mode="articles" showBack={true} />
 
   <div class="layout">
 

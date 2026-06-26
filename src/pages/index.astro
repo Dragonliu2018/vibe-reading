@@ -3,6 +3,7 @@ import { articles, CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data
 import { quotes } from '../data/quotes';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
+import NavBar from '../components/NavBar.astro';
 
 // 构建时嵌入，无运行时请求
 const quotesJson = JSON.stringify(quotes);
@@ -71,64 +72,6 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
     a { text-decoration: none; color: inherit; }
-
-    /* ── Nav ── */
-    .nav {
-      flex-shrink: 0;
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: saturate(180%) blur(24px);
-      -webkit-backdrop-filter: saturate(180%) blur(24px);
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-      height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 9px;
-      font-size: 15px; font-weight: 600; letter-spacing: -0.3px;
-    }
-    .nav-logo-icon {
-      width: 22px; height: 22px; border-radius: 7px;
-      background: linear-gradient(135deg, #2997ff 0%, #30d158 100%);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .nav-pill {
-      font-size: 13px; color: var(--text-muted);
-      padding: 5px 14px; border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      transition: color .15s, border-color .15s, background .15s;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .nav-pill:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); }
-
-    /* Search button */
-    .search-btn {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 13px; color: var(--text-muted);
-      padding: 5px 12px; border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      cursor: pointer; white-space: nowrap;
-      transition: color .15s, border-color .15s, background .15s;
-      font-family: var(--font);
-    }
-    .search-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); }
-    .search-btn-hint { font-size: 11px; color: var(--text-dim); }
-    @media (max-width: 680px) { .search-btn-hint { display: none; } }
-
-    /* Hamburger — mobile only */
-    .mob-menu-btn {
-      display: none;
-      align-items: center; justify-content: center;
-      width: 40px; height: 40px; border-radius: 10px;
-      background: none; border: none; cursor: pointer;
-      color: var(--text-muted); transition: color .15s, background .15s;
-      flex-shrink: 0;
-    }
-    .mob-menu-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-    @media (max-width: 959px) { .mob-menu-btn { display: flex; } }
 
     /* ── Two-column layout ── */
     .layout {
@@ -333,7 +276,6 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
 
     /* ── Responsive ── */
     @media (max-width: 680px) {
-      .nav { padding: 0 20px; }
       .card-inner { grid-template-columns: 1fr; gap: 10px; }
       .card-aside { text-align: left; }
       .footer { padding: 28px 6%; }
@@ -342,37 +284,7 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
 </head>
 <body>
 
-  <nav class="nav" data-pagefind-ignore="all">
-    <a href={base} class="nav-logo">
-      <span class="nav-logo-icon">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M2 10L6 2L10 10" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3.5 7.5H8.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </span>
-      Vibe Reading
-    </a>
-    <div style="display:flex;align-items:center;gap:6px;">
-      <button class="search-btn" onclick="window.openSearch?.()" aria-label="搜索">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-          <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        <span class="search-btn-hint">⌘K</span>
-      </button>
-      <button class="mob-menu-btn" onclick="window.openMobileSidebar?.()" aria-label="打开菜单">
-        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
-          <path d="M1 1h16M1 7h16M1 13h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener" class="nav-pill">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-        </svg>
-        GitHub
-      </a>
-    </div>
-  </nav>
+  <NavBar mode="articles" />
 
   <div class="layout">
     <Sidebar />

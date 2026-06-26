@@ -1,17 +1,21 @@
 ---
 import type { TreeNode } from '../data/categories';
+import type { ToolNode } from '../data/tools-tree';
 import { articles } from '../data/articles';
 import { categoryTree, findActivePath } from '../data/categories';
+import { toolsTree } from '../data/tools-tree';
 
 export interface Props {
-  currentSlug?: string;
+  currentSlug?: string;               // 文章模式：当前文章 slug
+  mode?:        'articles' | 'tools'; // 默认 articles
+  currentHref?: string;               // 工具模式：当前工具路径（如 /tools/diff）
 }
 
-const { currentSlug } = Astro.props;
+const { currentSlug, mode = 'articles', currentHref } = Astro.props;
 const base        = import.meta.env.BASE_URL.replace(/\/$/, '');
 const activePath  = findActivePath(categoryTree, currentSlug);
 
-/** HTML 转义，防止文章标题里的特殊字符破坏 HTML 结构 */
+/** HTML 转义 */
 function esc(s: string): string {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -21,38 +25,78 @@ const chevron = `<svg class="tree-chevron" viewBox="0 0 12 12" fill="none" aria-
         stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
-/** 递归渲染分类节点，支持任意深度 */
+// ── 文章模式：递归渲染分类树 ──────────────────────────────────────
 function renderNode(node: TreeNode, depth: number = 0): string {
   const isOpen   = activePath.has(node.key);
   const catClass = `tree-cat${depth > 0 ? ' tree-cat-sub' : ''}${isOpen ? ' open' : ''}`;
   const divClass = `tree-children${isOpen ? ' open' : ''}`;
 
-  // 子分类递归
-  const childHtml = (node.children ?? []).map(c => renderNode(c, depth + 1)).join('');
-
-  // 当前节点的直属文章
+  const childHtml   = (node.children ?? []).map(c => renderNode(c, depth + 1)).join('');
   const articleHtml = (node.slugs ?? []).map(slug => {
-    const title    = articles.find(a => a.slug === slug)?.title ?? slug;
-    const active   = slug === currentSlug ? ' active' : '';
+    const title  = articles.find(a => a.slug === slug)?.title ?? slug;
+    const active = slug === currentSlug ? ' active' : '';
     return `<a class="tree-article${active}" href="${base}/articles/${slug}" title="${esc(title)}">${esc(title)}</a>`;
   }).join('');
 
   return `<div class="tree-node">
   <button class="${catClass}" data-key="${esc(node.key)}">
-    ${chevron}
-    <span class="tree-cat-name">${esc(node.label)}</span>
+    ${chevron}<span class="tree-cat-name">${esc(node.label)}</span>
   </button>
   <div class="${divClass}">${childHtml}${articleHtml}</div>
 </div>`;
 }
 
-const treeHtml = categoryTree.map(n => renderNode(n)).join('');
+// ── 工具模式：渲染工具树 ──────────────────────────────────────────
+function renderToolNode(node: ToolNode, depth: number = 0): string {
+  // 叶节点：直接链接到工具页
+  if (node.href) {
+    const fullHref = `${base}${node.href}`;
+    const active   = currentHref === node.href ? ' active' : '';
+    return `<a class="tree-article${active}" href="${fullHref}">${esc(node.label)}</a>`;
+  }
+
+  // 中间节点：可折叠分组（工具较少，默认展开）
+  const catClass = `tree-cat${depth > 0 ? ' tree-cat-sub' : ''} open`;
+  const childHtml = (node.children ?? []).map(c => renderToolNode(c, depth + 1)).join('');
+
+  return `<div class="tree-node">
+  <button class="${catClass}" data-key="${esc(node.key)}">
+    ${chevron}<span class="tree-cat-name">${esc(node.label)}</span>
+  </button>
+  <div class="tree-children open">${childHtml}</div>
+</div>`;
+}
+
+const treeHtml     = categoryTree.map(n => renderNode(n)).join('');
+const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
 ---
 
-<!-- Sidebar：递归渲染，支持任意深度 -->
+<!-- Sidebar：文章/工具双模式 -->
 <aside class="sidebar" id="g-sidebar" data-pagefind-ignore="all">
-  <p class="tree-label">Categories</p>
-  <Fragment set:html={treeHtml} />
+
+  <!-- 移动端模式切换（桌面端在 nav 里，移动端在侧边栏顶部）-->
+  <div class="mob-mode-toggle">
+    <a href={`${base}/`}
+       class:list={['mob-mode-btn', { active: mode !== 'tools' }]}>
+      Articles
+    </a>
+    <a href={`${base}/tools`}
+       class:list={['mob-mode-btn', { active: mode === 'tools' }]}>
+      Tools
+    </a>
+  </div>
+
+  {mode === 'tools' ? (
+    <>
+      <p class="tree-label">Tools</p>
+      <Fragment set:html={toolTreeHtml} />
+    </>
+  ) : (
+    <>
+      <p class="tree-label">Categories</p>
+      <Fragment set:html={treeHtml} />
+    </>
+  )}
 </aside>
 
 <!-- 同步还原分类展开状态（is:inline = 不 defer，首次绘制前执行，消除闪动）-->
@@ -190,6 +234,34 @@ const treeHtml = categoryTree.map(n => renderNode(n)).join('');
     }
     .sidebar.collapsed ~ .resize-handle .sidebar-toggle svg {
       transform: rotate(180deg);
+    }
+  }
+
+  /* ── 移动端模式切换（桌面端隐藏，手机端侧边栏顶部显示）── */
+  .mob-mode-toggle {
+    display: none;   /* 桌面端不需要，nav 里已有分段控件 */
+  }
+  @media (max-width: 959px) {
+    .mob-mode-toggle {
+      display: flex;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 10px;
+      padding: 3px; gap: 2px;
+      margin-bottom: 18px;
+    }
+    .mob-mode-btn {
+      flex: 1; text-align: center;
+      font-size: 13px; font-weight: 500;
+      padding: 7px 12px; border-radius: 8px;
+      color: rgba(235,235,245,0.45);
+      text-decoration: none;
+      transition: color .15s, background .15s;
+    }
+    .mob-mode-btn:hover  { color: rgba(235,235,245,0.75); }
+    .mob-mode-btn.active {
+      background: rgba(255,255,255,0.12);
+      color: rgba(235,235,245,0.90);
     }
   }
 

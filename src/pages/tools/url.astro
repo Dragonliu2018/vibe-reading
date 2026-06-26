@@ -1,0 +1,70 @@
+---
+export const toolMeta = {
+  categoryPath: ['编码', 'URL 编解码'],
+  description:  '对 URL 进行编码或解码',
+};
+import ToolLayout from '../../layouts/ToolLayout.astro';
+---
+
+<ToolLayout title="URL 编解码" description="对 URL 或字符串进行 encodeURIComponent / decode 转换" toolHref="/tools/url">
+  <div>
+    <p class="tool-label">输入</p>
+    <textarea id="input" placeholder="输入 URL 或已编码字符串…" spellcheck="false" style="min-height:120px"></textarea>
+  </div>
+
+  <div class="tool-actions">
+    <button class="tool-btn tool-btn-primary" id="btn-encode">编码 →</button>
+    <button class="tool-btn tool-btn-primary" id="btn-decode">← 解码</button>
+    <button class="tool-btn tool-btn-secondary" id="btn-swap">⇅ 互换</button>
+    <button class="tool-btn tool-btn-secondary" id="btn-clear">清空</button>
+  </div>
+
+  <div class="tool-divider"></div>
+
+  <div>
+    <p class="tool-label">输出</p>
+    <textarea id="output" placeholder="结果将显示在此处…" spellcheck="false" style="min-height:120px" readonly></textarea>
+  </div>
+
+  <div class="tool-actions" style="margin-top:10px">
+    <button class="tool-btn tool-btn-secondary" id="btn-copy">复制结果</button>
+  </div>
+
+  <p id="status" style="font-size:12.5px;color:#48484a;margin-top:8px;min-height:18px"></p>
+</ToolLayout>
+
+<script>
+  const inp    = document.getElementById('input')  as HTMLTextAreaElement;
+  const out    = document.getElementById('output') as HTMLTextAreaElement;
+  const status = document.getElementById('status')!;
+
+  function setStatus(msg: string, ok = true) {
+    status.textContent = msg;
+    status.style.color = ok ? '#3fb950' : '#f85149';
+  }
+
+  document.getElementById('btn-encode')!.addEventListener('click', () => {
+    try { out.value = encodeURIComponent(inp.value); setStatus('编码成功'); }
+    catch { setStatus('编码失败', false); }
+  });
+
+  document.getElementById('btn-decode')!.addEventListener('click', () => {
+    try { out.value = decodeURIComponent(inp.value); setStatus('解码成功'); }
+    catch { setStatus('解码失败：包含无效编码序列', false); }
+  });
+
+  document.getElementById('btn-swap')!.addEventListener('click', () => {
+    [inp.value, out.value] = [out.value, inp.value];
+    status.textContent = '';
+  });
+
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    inp.value = out.value = '';
+    status.textContent = '';
+  });
+
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    if (!out.value) return;
+    navigator.clipboard.writeText(out.value).then(() => setStatus('已复制到剪贴板'));
+  });
+</script>

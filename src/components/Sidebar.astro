@@ -168,7 +168,7 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
       position: relative;
       transform: none;
       flex-shrink: 0;
-      width: 220px; min-width: 120px; max-width: 480px;
+      width: 240px; min-width: 120px; max-width: 480px;
       height: 100%;
       padding: 40px 12px 40px 20px;
       background: transparent; border-right: none; z-index: auto;
@@ -426,7 +426,7 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
       toggle.setAttribute('aria-label', nowCollapsed ? '展开侧边栏' : '折叠侧边栏');
       localStorage.setItem('sidebar-collapsed', String(nowCollapsed));
       if (!nowCollapsed) {
-        sidebar.style.width = localStorage.getItem('sidebar-width') ?? '220px';
+        sidebar.style.width = localStorage.getItem('sidebar-width') ?? '240px';
       }
     });
 

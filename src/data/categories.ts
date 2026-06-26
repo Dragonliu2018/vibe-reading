@@ -1,12 +1,12 @@
 /**
  * 侧边栏分类树 — 从文章的 categoryPath 字段自动派生
  *
- * MD 文章：frontmatter 中的 category_path（YAML 数组）
- *   category_path: [AI, 可观测性, Litefuse]
+ * MD 文章：frontmatter 中的 category（YAML 数组，内部映射为 categoryPath）
+ *   category: [AI, 可观测性, Litefuse]
  *
- * HTML 文章：<meta name="article:category-path" content="AI,可观测性,Litefuse">
+ * HTML 文章：<meta name="article:category" content="AI,可观测性,Litefuse">
  *
- * 新增文章只需在文件里写 category_path，无需改此文件。
+ * 新增文章只需在文件里写 category，无需改此文件。
  */
 
 import { articles } from './articles';

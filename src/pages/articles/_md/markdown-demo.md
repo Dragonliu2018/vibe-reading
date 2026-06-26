@@ -1,7 +1,7 @@
 ---
 title: "Markdown 文章示例"
 date: "2026-06-24"
-category: paper
+category: [论文解读]
 tags: [Markdown, Astro, Demo]
 description: "这是一篇用于测试 Markdown 渲染效果的示例文章，覆盖常用语法元素。"
 readingTime: "2 min"

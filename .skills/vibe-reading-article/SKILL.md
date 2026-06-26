@@ -51,26 +51,28 @@ description: >
 
 文件必须满足：
 - `<html>` 标签含 `data-pagefind-ignore="all"`（避免搜索重复索引）
-- `<head>` 含完整 article meta 标签，包括 `article:category-path`（见下方模板）
+- `<head>` 含完整 article meta 标签，包括 `article:category`（见下方模板）
 
 **Markdown 文章** → 复制到 `src/pages/articles/_md/<slug>.md`
 
 文件必须满足：
-- frontmatter 含所有字段（见 `references/markdown-style.md`），包括 `category_path`
+- frontmatter 含所有字段（见 `references/markdown-style.md`），包括 `category`
 - **不要** `layout:` 行（由 `[slug].astro` 统一处理）
 
-**`category_path` 规范（两种格式均需填写）：**
+**`category` 规范（两种格式均需填写）：**
 
-定义文章在左侧侧边栏的分类层级，支持任意深度，侧边栏自动派生树形结构。
+YAML 数组 / 逗号分隔字符串，定义文章的分类层级路径，支持任意深度。
+- **最后一项**自动作为首页卡片 badge 标签（如 `源码解读`、`论文解读`）
+- 完整路径用于左侧侧边栏树形结构，侧边栏自动派生，**无需手动注册**
 
 ```yaml
 # MD frontmatter（YAML 数组）
-category_path: [一级分类, 二级分类, 三级分类, 源码解读]
+category: [一级分类, 二级分类, 三级分类, 源码解读]
 ```
 
 ```html
 <!-- HTML meta（逗号分隔字符串）-->
-<meta name="article:category-path" content="一级分类,二级分类,三级分类,源码解读">
+<meta name="article:category" content="一级分类,二级分类,三级分类,源码解读">
 ```
 
 现有分类参考（请与已有结构保持一致，避免创建重复分类）：

@@ -1,5 +1,5 @@
 ---
-import { articles, CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
+import { articles } from '../data/articles';
 import { quotes } from '../data/quotes';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
@@ -14,10 +14,30 @@ const sorted = [...articles].sort(
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
-  acc[a.category] = (acc[a.category] ?? 0) + 1;
-  return acc;
-}, {});
+// 取每篇文章 category 数组的最后一项作为徽章标签，汇总过滤器计数
+const lastCatOf = (a: typeof sorted[0]) => a.category[a.category.length - 1] ?? '';
+const filterCats: [string, number][] = Object.entries(
+  sorted.reduce<Record<string, number>>((acc, a) => {
+    const label = lastCatOf(a);
+    if (label) acc[label] = (acc[label] ?? 0) + 1;
+    return acc;
+  }, {})
+).sort((a, b) => b[1] - a[1]);
+
+// 按首次出现顺序顺序分配颜色，保证不同标签必然不同色
+const BADGE_PALETTE = [
+  { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },
+  { text: '#bc8cff', bg: 'rgba(188,140,255,.12)', border: 'rgba(188,140,255,.30)' },
+  { text: '#3fb950', bg: 'rgba(63,185,80,.12)',   border: 'rgba(63,185,80,.30)'   },
+  { text: '#ff9f0a', bg: 'rgba(255,159,10,.12)',  border: 'rgba(255,159,10,.30)'  },
+] as const;
+const catColorMap = new Map(
+  filterCats.map(([label], i) => [label, BADGE_PALETTE[i % BADGE_PALETTE.length]])
+);
+function badgeStyle(label: string): string {
+  const col = catColorMap.get(label) ?? BADGE_PALETTE[0];
+  return `color:${col.text};background:${col.bg};border:1px solid ${col.border};`;
+}
 ---
 
 <!DOCTYPE html>
@@ -310,15 +330,11 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
           <button class="filter-tab active" data-filter="all">
             全部 <span class="filter-count">{sorted.length}</span>
           </button>
-          {(['code', 'paper', 'system'] as Category[]).map(cat => {
-            const count = totalByCategory[cat] ?? 0;
-            if (count === 0) return null;
-            return (
-              <button class="filter-tab" data-filter={cat}>
-                {CATEGORY_LABEL[cat]} <span class="filter-count">{count}</span>
-              </button>
-            );
-          })}
+          {filterCats.map(([label, count]) => (
+            <button class="filter-tab" data-filter={label}>
+              {label} <span class="filter-count">{count}</span>
+            </button>
+          ))}
         </div>
 
         <div class="section-label">
@@ -328,15 +344,17 @@ const totalByCategory = sorted.reduce<Record<string, number>>((acc, a) => {
 
         <main class="articles stagger" id="article-list">
           {sorted.map((article) => {
-            const color = CATEGORY_COLOR[article.category];
+            const catLabel = lastCatOf(article);
             return (
-              <a class="article-card fade-up" href={`${base}/articles/${article.slug}`} data-category={article.category}>
+              <a class="article-card fade-up" href={`${base}/articles/${article.slug}`} data-category={catLabel}>
                 <div class="card-inner">
                   <div>
                     <div class="card-meta">
-                      <span class="cat-badge" style={`color:${color.text};background:${color.bg};border:1px solid ${color.border};`}>
-                        {CATEGORY_LABEL[article.category]}
-                      </span>
+                      {catLabel && (
+                        <span class="cat-badge" style={badgeStyle(catLabel)}>
+                          {catLabel}
+                        </span>
+                      )}
                     </div>
                     <div class="card-title">{article.title}</div>
                     <div class="card-desc">{article.description}</div>

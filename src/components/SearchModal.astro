@@ -17,7 +17,7 @@
     <input
       id="srch-input"
       type="search"
-      placeholder="搜索文章..."
+      placeholder="搜索..."
       autocomplete="off"
       spellcheck="false"
       aria-label="搜索"
@@ -26,7 +26,7 @@
   </div>
 
   <div class="srch-body" id="srch-results" role="listbox">
-    <p class="srch-placeholder">输入关键词搜索文章…</p>
+    <p class="srch-placeholder">输入关键词搜索…</p>
   </div>
 
   <div class="srch-foot hidden" id="srch-footer">
@@ -237,7 +237,7 @@
     overlay.classList.add('open');
     box.classList.add('open');
     foot.classList.add('hidden');
-    body.innerHTML = '<p class="srch-placeholder">输入关键词搜索文章…</p>';
+    body.innerHTML = '<p class="srch-placeholder">输入关键词搜索…</p>';
     requestAnimationFrame(() => input.focus());
     loadPf();
   }
@@ -266,7 +266,7 @@
   async function search() {
     const q = input.value.trim();
     if (!q) {
-      body.innerHTML = '<p class="srch-placeholder">输入关键词搜索文章…</p>';
+      body.innerHTML = '<p class="srch-placeholder">输入关键词搜索…</p>';
       foot.classList.add('hidden');
       return;
     }

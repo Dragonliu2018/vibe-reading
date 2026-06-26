@@ -1,5 +1,5 @@
 ---
-import { CATEGORY_LABEL, CATEGORY_COLOR, type Category } from '../data/articles';
+import { articles } from '../data/articles';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
@@ -8,7 +8,7 @@ export interface Props {
   frontmatter: {
     title:        string;
     date:         string;
-    category?:    Category;
+    category?:    string[];   // 层级路径；最后一项用作徽章
     tags?:        string[];
     description?: string;
     readingTime?: string;
@@ -20,8 +20,28 @@ export interface Props {
 const { frontmatter, headings = [] } = Astro.props;
 const { title, date, category, tags = [], description, readingTime, aiModel } = frontmatter;
 
-const base  = import.meta.env.BASE_URL.replace(/\/$/, '');
-const color = category ? CATEGORY_COLOR[category] : null;
+const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
+const catLabel = category?.length ? category[category.length - 1] : '';
+
+// 与首页保持一致：按全站标签首次出现顺序分配颜色，保证相同标签全站同色
+const BADGE_PALETTE = [
+  { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },
+  { text: '#bc8cff', bg: 'rgba(188,140,255,.12)', border: 'rgba(188,140,255,.30)' },
+  { text: '#3fb950', bg: 'rgba(63,185,80,.12)',   border: 'rgba(63,185,80,.30)'   },
+  { text: '#ff9f0a', bg: 'rgba(255,159,10,.12)',  border: 'rgba(255,159,10,.30)'  },
+] as const;
+// 收集全站唯一标签（按出现频率降序，与首页过滤器一致）
+const catCountMap = articles.reduce<Record<string, number>>((acc, a) => {
+  const last = a.category[a.category.length - 1];
+  if (last) acc[last] = (acc[last] ?? 0) + 1;
+  return acc;
+}, {});
+const allCats = Object.entries(catCountMap).sort((a, b) => b[1] - a[1]).map(([l]) => l);
+const catColorMap = new Map(allCats.map((label, i) => [label, BADGE_PALETTE[i % BADGE_PALETTE.length]]));
+function badgeStyle(label: string): string {
+  const col = catColorMap.get(label) ?? BADGE_PALETTE[0];
+  return `color:${col.text};background:${col.bg};border:1px solid ${col.border};`;
+}
 
 // Derive slug from URL to highlight current article in sidebar
 const pathname    = Astro.url.pathname;
@@ -335,9 +355,9 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
           <header class="article-header">
             <div class="article-meta">
-              {color && category && (
-                <span class="cat-badge" style={`color:${color.text};background:${color.bg};border:1px solid ${color.border};`}>
-                  {CATEGORY_LABEL[category]}
+              {catLabel && (
+                <span class="cat-badge" style={badgeStyle(catLabel)}>
+                  {catLabel}
                 </span>
               )}
               {date        && <><span class="meta-sep">·</span><span class="meta-item">{date}</span></>}

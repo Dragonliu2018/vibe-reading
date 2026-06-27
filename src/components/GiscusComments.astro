@@ -1,0 +1,10 @@
+---
+/**
+ * Giscus 评论组件（MD 文章用）
+ * 评论配置统一在 public/giscus-loader.js 中，无需改此文件。
+ * DOM 由 giscus-loader.js 自动创建并插入，无需在模板里写结构。
+ */
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<script src={`${base}/giscus-loader.js`} defer></script>

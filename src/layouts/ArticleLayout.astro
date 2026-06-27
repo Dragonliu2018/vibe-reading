@@ -3,6 +3,7 @@ import { articles } from '../data/articles';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
+import GiscusComments from '../components/GiscusComments.astro';
 
 export interface Props {
   frontmatter: {
@@ -380,6 +381,8 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
           <article class="prose">
             <slot />
           </article>
+
+          <GiscusComments />
 
         </div>
 

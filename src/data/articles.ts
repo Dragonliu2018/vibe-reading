@@ -49,11 +49,16 @@ function metaContent(html: string, name: string): string {
   )?.[1] ?? '';
 }
 
-const htmlDir    = './src/pages/articles/html';
+const htmlDir  = './src/pages/articles/html';
+// MD slugs 集合：用于检测 HTML 文章是否与 MD 文章同名
+const mdSlugSet = new Set(mdArticles.map(a => a.slug));
+
 const htmlArticles: Article[] = readdirSync(htmlDir)
   .filter(f => f.endsWith('.html'))
   .map(file => {
-    const slug = file.slice(0, -5);
+    const base = file.slice(0, -5);
+    // 若与 MD 文章同名，自动追加 -html 后缀，文件名保持不变
+    const slug = mdSlugSet.has(base) ? `${base}-html` : base;
     const html = readFileSync(`${htmlDir}/${file}`, 'utf-8');
     const rawTags = metaContent(html, 'article:tags');
     const rawCat  = metaContent(html, 'article:category');

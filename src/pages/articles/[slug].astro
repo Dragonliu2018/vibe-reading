@@ -17,22 +17,29 @@ import { articles as articlesMeta } from '../../data/articles';
 const mdModules = import.meta.glob('./_md/*.md');
 
 export function getStaticPaths() {
-  const htmlSlugs = readdirSync('./src/pages/articles/html')
+  const htmlFiles = readdirSync('./src/pages/articles/html')
     .filter(f => f.endsWith('.html'))
-    .map(f => f.slice(0, -5));
+    .map(f => f.slice(0, -5));           // 真实文件名（不含扩展名）
 
-  const mdSlugs = readdirSync('./src/pages/articles/_md')
-    .filter(f => f.endsWith('.md'))
-    .map(f => f.slice(0, -3));
+  const mdSlugs = new Set(
+    readdirSync('./src/pages/articles/_md')
+      .filter(f => f.endsWith('.md'))
+      .map(f => f.slice(0, -3))
+  );
 
   return [
-    ...htmlSlugs.map(slug => ({ params: { slug }, props: { format: 'html' } })),
-    ...mdSlugs.map(slug  => ({ params: { slug }, props: { format: 'md'   } })),
+    // HTML 文章：与 MD 同名时自动追加 -html，文件名保持不变
+    ...htmlFiles.map(file => {
+      const slug = mdSlugs.has(file) ? `${file}-html` : file;
+      return { params: { slug }, props: { format: 'html', htmlFile: file } };
+    }),
+    // MD 文章：slug 直接等于文件名
+    ...[...mdSlugs].map(slug => ({ params: { slug }, props: { format: 'md', htmlFile: '' } })),
   ];
 }
 
-const { slug }   = Astro.params;
-const { format } = Astro.props;
+const { slug }              = Astro.params;
+const { format, htmlFile } = Astro.props;
 const base       = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // MD：通过 import.meta.glob 加载模块，渲染 Content 组件
@@ -59,6 +66,6 @@ if (format === 'md') {
 ---
 
 {format === 'html'
-  ? <HtmlArticleLayout slug={slug} iframeSrc={`${base}/articles/html/${slug}`} />
+  ? <HtmlArticleLayout slug={htmlFile} iframeSrc={`${base}/articles/html/${htmlFile}`} />
   : <ArticleLayout frontmatter={frontmatter} headings={headings}><Content /></ArticleLayout>
 }

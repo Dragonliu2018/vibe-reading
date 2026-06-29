@@ -16,6 +16,13 @@ export default defineConfig({
   base: '/vibe-reading',
   output: 'static',
 
+  markdown: {
+    shikiConfig: {
+      // github-dark-dimmed 背景色 #161b22 与博客 --code-bg 一致
+      theme: 'github-dark-dimmed',
+    },
+  },
+
   integrations: [{
     /**
      * 构建后自动往 HTML 文章页注入 giscus-loader.js

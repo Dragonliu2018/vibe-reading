@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-pagefind-ignore="all">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[PR-26133] 为 Apache Doris Status 类实现 fmt 格式化支持</title>
+<!-- ─── 博客元信息 ─── -->
+<meta name="description" content="通过 fmt::formatter 模板特化，让 Status 类原生支持 fmt::format，消除 BE 代码中繁琐的 .to_string() 调用。">
+<meta name="article:date" content="2026-06-29">
+<meta name="article:category" content="Database,Apache Doris,BE,源码解读">
+<meta name="article:tags" content="Apache Doris,C++,fmt,Status,BE">
+<meta name="article:readingTime" content="6 min">
+<meta name="article:aiModel" content="Claude Opus 4.8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #0b0d14;
+  --surface:   #13162a;
+  --surface2:  #1d2138;
+  --surface3:  #252840;
+  --border:    #2a2e50;
+  --border2:   #363b62;
+  --accent:    #6c8ef5;
+  --accent2:   #4ecdc4;
+  --accent3:   #f9ca24;
+  --accent4:   #ff6b9d;
+  --text:      #e2e8f0;
+  --text-muted:#7a85a3;
+  --code-bg:   #090c14;
+  --green:     #64ffda;
+  --orange:    #f0a500;
+  --red:       #ff6b6b;
+  --purple:    #c792ea;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+  --nav-w: 260px;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Menlo', monospace;
+  --sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+#progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 999; transition: width 0.1s linear;
+  box-shadow: 0 0 8px rgba(108,142,245,0.6);
+}
+nav {
+  position: fixed; top: 0; left: 0;
+  width: var(--nav-w); height: 100vh;
+  background: var(--surface); border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 0 0 24px;
+  z-index: 100; display: flex; flex-direction: column;
+}
+.nav-logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border); margin-bottom: 8px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(108,142,245,0.06) 0%, transparent 100%);
+}
+.nav-logo-title { display: flex; align-items: center; gap: 10px; }
+.nav-logo-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(108,142,245,0.4);
+}
+.nav-logo h2 { font-size: 17px; color: var(--text); font-weight: 700; letter-spacing: 0.3px; }
+.nav-logo p { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; font-family: var(--mono); }
+nav ul { list-style: none; padding: 0 8px; }
+.nav-section {
+  padding: 10px 12px 4px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--text-muted); opacity: 0.6;
+}
+nav a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px; color: var(--text-muted); text-decoration: none;
+  font-size: 13px; border-radius: 6px;
+  border-left: 2px solid transparent; transition: all 0.15s; margin: 1px 0;
+}
+nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+nav a.active { color: var(--accent); background: rgba(108,142,245,0.1); border-left-color: var(--accent); }
+nav a .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--border2); flex-shrink: 0; transition: background 0.15s, transform 0.15s;
+}
+nav a:hover .dot { background: var(--text-muted); }
+nav a.active .dot { background: var(--accent); transform: scale(1.4); }
+main {
+  margin-left: var(--nav-w);
+  padding: 48px 60px 80px;
+  max-width: calc(var(--nav-w) + 860px);
+}
+section { margin-bottom: 80px; scroll-margin-top: 40px; }
+h1 {
+  font-size: 36px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--green) 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 12px; letter-spacing: -0.5px;
+}
+body { counter-reset: section; }
+section { counter-increment: section; }
+h2 {
+  font-size: 21px; font-weight: 700; color: var(--text);
+  margin-bottom: 22px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+h2::before {
+  content: "§" counter(section);
+  font-size: 11px; font-weight: 700; font-family: var(--mono);
+  color: var(--accent); background: rgba(108,142,245,0.1);
+  border: 1px solid rgba(108,142,245,0.2); border-radius: 4px;
+  padding: 2px 6px; letter-spacing: 0.5px; flex-shrink: 0;
+}
+h2 .icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(108,142,245,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0; line-height: 1;
+}
+h3 {
+  font-size: 15px; font-weight: 600; color: var(--accent2);
+  margin: 28px 0 10px; display: flex; align-items: center; gap: 7px;
+}
+h3::before {
+  content: ''; width: 3px; height: 14px; border-radius: 2px;
+  background: var(--accent2); flex-shrink: 0;
+}
+h4 { font-size: 13.5px; font-weight: 600; color: var(--accent3); margin: 16px 0 8px; }
+p { margin-bottom: 12px; color: var(--text-muted); }
+p strong { color: var(--text); font-weight: 600; }
+.code-block {
+  margin: 14px 0; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+}
+.code-header {
+  background: var(--surface2); padding: 7px 14px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.code-dots { display: flex; gap: 5px; }
+.code-dots span { width: 10px; height: 10px; border-radius: 50%; }
+.dot-red   { background: #ff5f57; }
+.dot-yellow{ background: #ffbd2e; }
+.dot-green { background: #28ca41; }
+.code-label { font-size: 13px; color: var(--text); font-weight: 600; }
+.code-lang {
+  font-size: 11px; font-family: var(--mono); color: var(--text-muted);
+  margin-left: auto; background: rgba(255,255,255,0.04);
+  padding: 1px 7px; border-radius: 3px;
+}
+pre {
+  background: var(--code-bg); padding: 16px 20px; overflow-x: auto;
+  font-size: 13px; line-height: 1.65; font-family: var(--mono); color: #abb2bf; margin: 0;
+}
+code {
+  background: rgba(108,142,245,0.1); color: var(--accent2);
+  padding: 1px 6px; border-radius: 4px;
+  font-size: 12.5px; font-family: var(--mono);
+}
+pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px; margin: 18px 0;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 20px;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(108,142,245,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.card:hover {
+  border-color: var(--accent); transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(108,142,245,0.15), var(--shadow-md);
+}
+.card-title { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 7px; font-family: var(--mono); }
+.card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 10px; }
+.badge {
+  display: inline-block; padding: 2px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; margin: 2px; font-family: var(--mono); letter-spacing: 0.2px;
+}
+.badge-blue   { background: rgba(108,142,245,0.15); color: #8aabff; border: 1px solid rgba(108,142,245,0.2); }
+.badge-teal   { background: rgba(78,205,196,0.15);  color: #5ee8df; border: 1px solid rgba(78,205,196,0.2); }
+.badge-yellow { background: rgba(249,202,36,0.15);  color: #fcd53a; border: 1px solid rgba(249,202,36,0.2); }
+.badge-pink   { background: rgba(255,107,157,0.15); color: #ff85b3; border: 1px solid rgba(255,107,157,0.2); }
+.badge-green  { background: rgba(100,255,218,0.12); color: #64ffda; border: 1px solid rgba(100,255,218,0.2); }
+.badge-purple { background: rgba(199,146,234,0.15); color: #d4a8f0; border: 1px solid rgba(199,146,234,0.2); }
+.table-wrap {
+  overflow-x: auto; border-radius: 10px;
+  border: 1px solid var(--border); margin: 16px 0; box-shadow: var(--shadow-sm);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th {
+  background: var(--surface2); color: var(--text-muted); font-weight: 600;
+  padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border);
+  font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap;
+}
+td { padding: 9px 16px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+td:first-child { color: var(--accent2); font-family: var(--mono); font-weight: 600; font-size: 13px; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.018); }
+.flow {
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 22px; margin: 14px 0;
+  font-family: var(--mono); font-size: 12.5px; overflow-x: auto; box-shadow: var(--shadow-sm);
+}
+.flow-step { display: flex; align-items: center; margin: 6px 0; gap: 10px; flex-wrap: nowrap; }
+.flow-box {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 5px 14px; color: var(--text);
+  font-size: 12.5px; white-space: nowrap; flex-shrink: 0;
+}
+.flow-box.highlight { border-color: var(--accent); color: var(--accent); background: rgba(108,142,245,0.1); }
+.flow-box.green     { border-color: var(--green);  color: var(--green);  background: rgba(100,255,218,0.07); }
+.flow-box.orange    { border-color: var(--orange); color: var(--orange); background: rgba(240,165,0,0.07); }
+.flow-box.purple    { border-color: var(--purple); color: var(--purple); background: rgba(199,146,234,0.08); }
+.arrow { color: var(--border2); font-size: 14px; flex-shrink: 0; }
+.callout {
+  background: var(--surface); border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 16px 0;
+  font-size: 13.5px; color: var(--text-muted);
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; line-height: 1; }
+.callout-body strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 13.5px; }
+.callout.tip  { border-left-color: var(--green); }
+.callout.warn { border-left-color: var(--orange); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; align-items: start; }
+.hero {
+  position: relative; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 40px 44px; margin-bottom: 48px;
+  overflow: hidden; box-shadow: var(--shadow-md);
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(108,142,245,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(78,205,196,0.05) 0%, transparent 50%),
+    repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(255,255,255,0.012) 29px, rgba(255,255,255,0.012) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(255,255,255,0.012) 29px, rgba(255,255,255,0.012) 30px);
+  pointer-events: none;
+}
+.hero > * { position: relative; }
+.hero .subtitle { font-size: 15.5px; color: var(--text-muted); margin-top: 12px; max-width: 640px; line-height: 1.7; }
+.hero .meta { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+.hero .meta-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--text-muted);
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px;
+}
+.hero .meta-item .val { color: var(--text); font-weight: 700; font-family: var(--mono); }
+ol.styled { padding-left: 0; counter-reset: ol-counter; list-style: none; }
+ol.styled li {
+  counter-increment: ol-counter; display: flex; align-items: baseline;
+  gap: 10px; padding: 5px 0; color: var(--text-muted); font-size: 13.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+ol.styled li::before {
+  content: counter(ol-counter, decimal-leading-zero);
+  font-family: var(--mono); font-size: 11px; color: var(--accent);
+  background: rgba(108,142,245,0.1); padding: 1px 6px; border-radius: 4px;
+  flex-shrink: 0; font-weight: 600;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+@media (max-width: 900px) {
+  nav { display: none; }
+  main { margin-left: 0; padding: 24px 20px 60px; max-width: 100%; }
+  .two-col { grid-template-columns: 1fr; }
+  .hero { padding: 28px 24px; }
+  h1 { font-size: 26px; }
+  h2 { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-title">
+      <div class="nav-logo-icon">🔧</div>
+      <div>
+        <h2>PR-26133</h2>
+        <p>Apache Doris · BE</p>
+      </div>
+    </div>
+  </div>
+  <ul>
+    <div class="nav-section">背景</div>
+    <li><a href="#background"><span class="dot"></span>问题背景</a></li>
+    <li><a href="#fmt-intro"><span class="dot"></span>fmt 格式化机制</a></li>
+    <div class="nav-section">实现</div>
+    <li><a href="#impl"><span class="dot"></span>核心实现</a></li>
+    <li><a href="#test"><span class="dot"></span>单元测试</a></li>
+    <div class="nav-section">总结</div>
+    <li><a href="#review"><span class="dot"></span>Review 讨论</a></li>
+    <li><a href="#impact"><span class="dot"></span>效果与影响</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════ MAIN ════════════ -->
+<main>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>[PR-26133] 为 Status 类实现 fmt 格式化支持</h1>
+  <p class="subtitle">
+    通过 <code>fmt::formatter&lt;doris::Status&gt;</code> 模板特化，让 Apache Doris BE 的核心错误类型
+    原生支持 <code>fmt::format("{}", status)</code>，消除 BE 代码中无处不在的 <code>.to_string()</code> 样板调用。
+  </p>
+  <div class="meta">
+    <div class="meta-item">PR <span class="val">#26133</span></div>
+    <div class="meta-item">Issue <span class="val">#25974</span></div>
+    <div class="meta-item">合并分支 <span class="val">dev/2.0.4</span></div>
+    <div class="meta-item">变更行数 <span class="val">+24 行</span></div>
+    <div class="meta-item">合并时间 <span class="val">2023-11-01</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     §1  问题背景
+══════════════════════════════════════════ -->
+<section id="background">
+  <h2><span class="icon">🐛</span>问题背景</h2>
+
+  <p>
+    在 Apache Doris 的 BE（Backend）层，<strong>Status</strong> 是贯穿整个执行链路的核心错误处理类型——
+    查询执行、存储读写、内存管理等几乎所有组件都返回 <code>Status</code> 以传递成功或失败信息。
+    然而，当开发者需要将 <code>Status</code> 对象格式化进日志或错误消息时，却必须手写一个令人烦躁的转换调用。
+  </p>
+
+  <div class="two-col">
+    <div>
+      <h3>旧写法（繁琐）</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">C++ · 问题写法</span>
+        </div>
+        <pre><code>// 每次都要手动调用 to_string()
+LOG(WARNING) &lt;&lt; fmt::format(
+    "operation failed: {}",
+    status.to_string()  // ← 样板代码
+);
+
+// 或者更冗长的形式
+std::string msg = fmt::format(
+    "scan error: {}",
+    status.to_string()
+);</code></pre>
+      </div>
+    </div>
+    <div>
+      <h3>期望写法（简洁）</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">C++ · 目标写法</span>
+        </div>
+        <pre><code>// 直接传 status，像 int/string 一样自然
+LOG(WARNING) &lt;&lt; fmt::format(
+    "operation failed: {}",
+    status  // ← 简洁直观
+);
+
+// 格式化进任意字符串
+std::string msg = fmt::format(
+    "scan error: {}",
+    status
+);</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Issue <a href="https://github.com/apache/doris/issues/25974" style="color:var(--accent)">#25974</a>
+    由社区成员 <strong>platoneko</strong> 提出，核心诉求是：为 <code>Status</code> 类注册 <code>fmt</code> 格式化器，
+    使其像内置类型一样可以直接传入 <code>fmt::format</code>，无需每次额外调用 <code>.to_string()</code>。
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>为什么 .to_string() 是问题？</strong>
+      BE 代码中 <code>Status</code> 出现频率极高，每一处日志、错误传播都要写 <code>.to_string()</code>，
+      这不仅增加了代码噪声，更容易因为遗漏而导致日志中出现无法解析的对象地址。
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §2  fmt 格式化机制
+══════════════════════════════════════════ -->
+<section id="fmt-intro">
+  <h2><span class="icon">📐</span>fmt 格式化机制</h2>
+
+  <p>
+    <strong>{fmt}</strong> 是 Apache Doris BE 层采用的高性能格式化库（C++20 <code>std::format</code> 的前身）。
+    它通过 <strong>模板特化</strong> 机制支持用户自定义类型：只需在 <code>fmt</code> 命名空间下特化
+    <code>fmt::formatter&lt;T&gt;</code> 结构体，该类型就能在所有 <code>fmt::format / fmt::print</code> 调用中被识别。
+  </p>
+
+  <h3>formatter&lt;T&gt; 的两个必须方法</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>方法</th><th>签名</th><th>职责</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>parse()</code></td>
+          <td><code>auto parse(ParseContext&amp; ctx)</code></td>
+          <td>解析格式说明符（<code>{:xxx}</code> 中的 <code>xxx</code>）。不需要额外选项时直接返回 <code>ctx.begin()</code>。</td>
+        </tr>
+        <tr>
+          <td><code>format()</code></td>
+          <td><code>auto format(T const&amp; val, FormatContext&amp; ctx)</code></td>
+          <td>执行实际格式化，将结果写入 <code>ctx.out()</code> 迭代器并返回新位置。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>编译期解析流程</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-box highlight">fmt::format("{}", status)</div>
+      <span class="arrow">→</span>
+      <div class="flow-box">编译器查找 fmt::formatter&lt;doris::Status&gt;</div>
+    </div>
+    <div class="flow-step" style="margin-left:28px">
+      <span class="arrow">→</span>
+      <div class="flow-box green">特化存在 → 调用 parse() 验证格式说明符</div>
+    </div>
+    <div class="flow-step" style="margin-left:28px">
+      <span class="arrow">→</span>
+      <div class="flow-box green">运行时调用 format() → status.to_string() → 写入输出</div>
+    </div>
+    <div class="flow-step" style="margin-left:28px">
+      <span class="arrow">→</span>
+      <div class="flow-box orange">编译期完成类型检查，无运行时虚函数开销</div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body">
+      <strong>特化必须放在全局命名空间</strong>
+      <code>fmt::formatter</code> 的特化需要写在 <code>doris</code> 命名空间之外（即全局作用域或 <code>fmt</code> 命名空间内），
+      否则 ADL（Argument-Dependent Lookup）无法找到它。
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §3  核心实现
+══════════════════════════════════════════ -->
+<section id="impl">
+  <h2><span class="icon">⚙️</span>核心实现</h2>
+
+  <p>
+    PR #26133 的改动极为精简：在 <code>be/src/common/status.h</code> 文件的命名空间闭合括号之后，
+    追加了 14 行 <code>fmt::formatter</code> 特化代码。选择放在 <code>status.h</code> 末尾是因为：
+    任何 <code>#include "common/status.h"</code> 的翻译单元都会自动获得格式化能力，无需额外引入新头文件。
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-label">be/src/common/status.h</span>
+      <span class="code-lang">C++ · +14 行</span>
+    </div>
+    <pre><code>// } // namespace doris  ← 命名空间在此闭合
+
+// specify formatter for Status
+template &lt;&gt;
+struct fmt::formatter&lt;doris::Status&gt; {
+    // parse() — 解析格式说明符
+    // 返回 ctx.begin() 表示不支持 {:xxx} 形式的额外选项
+    template &lt;typename ParseContext&gt;
+    constexpr auto parse(ParseContext&amp; ctx) {
+        return ctx.begin();
+    }
+
+    // format() — 执行实际格式化
+    // 委托给 Status::to_string()，写入 ctx.out() 输出迭代器
+    template &lt;typename FormatContext&gt;
+    auto format(doris::Status const&amp; status, FormatContext&amp; ctx) {
+        return fmt::format_to(ctx.out(), "{}", status.to_string());
+    }
+};</code></pre>
+  </div>
+
+  <h3>关键设计决策解析</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">template&lt;&gt; 全特化</div>
+      <div class="card-desc">
+        使用 <code>template &lt;&gt;</code> 对 <code>doris::Status</code> 进行完全特化，
+        而不是偏特化。精确匹配，不会与其他类型产生歧义。
+      </div>
+      <span class="badge badge-blue">零歧义</span>
+    </div>
+    <div class="card">
+      <div class="card-title">constexpr parse()</div>
+      <div class="card-desc">
+        <code>parse()</code> 被标记为 <code>constexpr</code>，允许编译器在编译期完成格式串验证，
+        非法格式说明符直接报编译错误而非运行时崩溃。
+      </div>
+      <span class="badge badge-teal">编译期安全</span>
+    </div>
+    <div class="card">
+      <div class="card-title">委托 to_string()</div>
+      <div class="card-desc">
+        <code>format()</code> 内部调用 <code>status.to_string()</code>，复用已有实现，
+        保证格式化结果与现有日志系统完全一致，不引入新的行为差异。
+      </div>
+      <span class="badge badge-yellow">行为一致</span>
+    </div>
+    <div class="card">
+      <div class="card-title">放置于 status.h 末尾</div>
+      <div class="card-desc">
+        特化代码跟随头文件一起传播，任何已经 include status.h 的文件无需额外改动即可获得格式化能力。
+      </div>
+      <span class="badge badge-green">零侵入</span>
+    </div>
+  </div>
+
+  <h3>fmt::format_to 的作用</h3>
+  <p>
+    <code>fmt::format_to(ctx.out(), "{}", status.to_string())</code> 将格式化结果直接写入
+    <code>FormatContext</code> 提供的输出迭代器 <code>ctx.out()</code>，避免创建临时 <code>std::string</code>，
+    与 fmt 库的整体设计哲学一致——<strong>按需写入，不做多余分配</strong>。
+  </p>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §4  单元测试
+══════════════════════════════════════════ -->
+<section id="test">
+  <h2><span class="icon">🧪</span>单元测试</h2>
+
+  <p>
+    PR 在 <code>be/test/common/status_test.cpp</code> 中新增了一个 <code>Format</code> 测试用例，
+    覆盖两种基本场景：<strong>Status::OK()</strong> 和 <strong>Status::InternalError()</strong>。
+    测试逻辑非常直观——验证 <code>fmt::format("{}", status)</code> 的结果与
+    <code>fmt::format("{}", status.to_string())</code> 完全一致。
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-label">be/test/common/status_test.cpp</span>
+      <span class="code-lang">C++ · +10 行</span>
+    </div>
+    <pre><code>TEST_F(StatusTest /*unused*/, Format /*unused*/) {
+    // 场景 1：status == OK
+    Status st_ok = Status::OK();
+    EXPECT_TRUE(
+        fmt::format("{}", st_ok).compare(
+            fmt::format("{}", st_ok.to_string())
+        ) == 0
+    );
+
+    // 场景 2：status == error（InternalError）
+    Status st_error = Status::InternalError("123");
+    EXPECT_TRUE(
+        fmt::format("{}", st_error).compare(
+            fmt::format("{}", st_error.to_string())
+        ) == 0
+    );
+}</code></pre>
+  </div>
+
+  <h3>Reviewer 要求的测试场景</h3>
+  <p>
+    Review 过程中，<strong>yiguolei</strong> 提出应补充三种测试：
+    OK 状态、带栈追踪的错误状态、不带栈追踪的错误状态。
+    对此，作者作了说明：
+  </p>
+
+  <div class="callout">
+    <div class="callout-icon">ℹ️</div>
+    <div class="callout-body">
+      <strong>关于栈追踪测试</strong>
+      栈追踪的开启由编译期宏 <code>ENABLE_STACKTRACE</code> 控制，属于编译时行为差异而非运行时状态分支。
+      在单个 CI 编译目标中无法同时覆盖两种场景，因此未单独添加栈追踪相关测试用例，
+      仅保留 OK 和 InternalError 两个核心场景。
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>测试用例</th><th>覆盖场景</th><th>断言逻辑</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>Status::OK()</code></td>
+          <td>成功状态格式化</td>
+          <td><code>fmt::format("{}", st)</code> == <code>fmt::format("{}", st.to_string())</code></td>
+        </tr>
+        <tr>
+          <td><code>Status::InternalError("123")</code></td>
+          <td>带错误码的失败状态</td>
+          <td>同上</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §5  Review 讨论
+══════════════════════════════════════════ -->
+<section id="review">
+  <h2><span class="icon">💬</span>Review 讨论</h2>
+
+  <p>此 PR 经历了简洁而高效的 Review 流程，主要讨论集中在测试覆盖度上：</p>
+
+  <ol class="styled">
+    <li>
+      <strong>platoneko</strong> 在 Issue #25974 提出需求，同时参与了 PR 的 Review 和 Approve。
+    </li>
+    <li>
+      <strong>yiguolei</strong> 要求补充 OK / 有栈追踪错误 / 无栈追踪错误 三种测试场景。
+    </li>
+    <li>
+      <strong>Dragonliu2018</strong> 解释了栈追踪由编译期宏控制、无法在运行时测试的原因，提交补充了 error 场景的测试。
+    </li>
+    <li>
+      <strong>github-actions bot</strong> 代码格式检查通过，输出 "All clean, LGTM! 👍"。
+    </li>
+    <li>
+      <strong>dataroaring</strong> 最终 Approve 并合入，整个周期约 3 天。
+    </li>
+  </ol>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     §6  效果与影响
+══════════════════════════════════════════ -->
+<section id="impact">
+  <h2><span class="icon">✨</span>效果与影响</h2>
+
+  <p>
+    这是一个典型的"小改动，大收益"的工程改进。24 行代码带来的是整个 BE 代码库格式化体验的系统性改善。
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">📝 代码可读性提升</div>
+      <div class="card-desc">
+        日志、错误消息中的 <code>status.to_string()</code> 调用可以全部简化为直接传入 <code>status</code>，
+        减少视觉噪声，让业务逻辑更突出。
+      </div>
+      <span class="badge badge-green">开发体验</span>
+    </div>
+    <div class="card">
+      <div class="card-title">🔒 类型安全保障</div>
+      <div class="card-desc">
+        通过 fmt 的编译期格式串验证，错误的格式说明符直接在编译阶段报错，
+        而不是在运行时产生未定义行为或静默错误。
+      </div>
+      <span class="badge badge-blue">编译期安全</span>
+    </div>
+    <div class="card">
+      <div class="card-title">⚡ 零运行时开销</div>
+      <div class="card-desc">
+        模板特化在编译期完成分发，无虚函数调用、无额外堆分配，
+        格式化路径与直接调用 <code>to_string()</code> 等价。
+      </div>
+      <span class="badge badge-teal">性能无损</span>
+    </div>
+    <div class="card">
+      <div class="card-title">🔌 无缝向后兼容</div>
+      <div class="card-desc">
+        特化随 <code>status.h</code> 自动生效，现有 <code>.to_string()</code> 调用无需立即修改，
+        新旧写法可共存，渐进迁移。
+      </div>
+      <span class="badge badge-purple">零破坏性</span>
+    </div>
+  </div>
+
+  <h3>使用方式对比总结</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>场景</th><th>PR 前</th><th>PR 后</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>fmt::format</td>
+          <td><code>fmt::format("{}", st.to_string())</code></td>
+          <td><code>fmt::format("{}", st)</code></td>
+        </tr>
+        <tr>
+          <td>fmt::print</td>
+          <td><code>fmt::print("{}", st.to_string())</code></td>
+          <td><code>fmt::print("{}", st)</code></td>
+        </tr>
+        <tr>
+          <td>结构化日志</td>
+          <td><code>LOG(WARNING) &lt;&lt; st.to_string()</code></td>
+          <td><code>LOG(WARNING) &lt;&lt; fmt::format("{}", st)</code></td>
+        </tr>
+        <tr>
+          <td>字符串拼接</td>
+          <td><code>"error: " + st.to_string()</code></td>
+          <td><code>fmt::format("error: {}", st)</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>扩展性</strong>
+      如果未来需要支持更丰富的格式选项（如 <code>{:short}</code> 只显示错误码、<code>{:full}</code> 显示完整栈追踪），
+      只需扩展 <code>parse()</code> 方法解析自定义格式说明符，完全不影响现有调用点。
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer style="margin-left:var(--nav-w);padding:32px 60px;border-top:1px solid var(--border);color:var(--text-muted);font-size:13px;line-height:1.8;">
+  <p>Apache Doris · BE · Status 格式化改进解析</p>
+  <p>
+    <a href="https://github.com/apache/doris/pull/26133" style="color:var(--accent)">PR #26133</a> ·
+    <a href="https://github.com/apache/doris/issues/25974" style="color:var(--accent)">Issue #25974</a> ·
+    AI 生成初稿 · 人工 Review
+  </p>
+</footer>
+
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+  style="position:fixed;bottom:24px;right:24px;width:36px;height:36px;border-radius:50%;
+         background:var(--surface2);border:1px solid var(--border2);color:var(--text-muted);
+         cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;"
+  title="返回顶部">↑</button>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    document.getElementById('progress-bar').style.width = (pct * 100) + '%';
+  });
+  const navLinks = document.querySelectorAll('nav a');
+  const sections = document.querySelectorAll('section[id]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

@@ -335,6 +335,72 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     }
     .prose pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
 
+    /* ── 代码块 macOS 窗口风格（:global 绕开 Astro 作用域）── */
+    :global(.prose-code-block) {
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 28px 0;
+      background: var(--code-bg);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20);
+    }
+    :global(.prose-code-block) pre {
+      margin: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+    }
+    /* 标题栏 */
+    :global(.code-header) {
+      display: flex; align-items: center;
+      padding: 0 14px; height: 40px; gap: 0;
+      background: #1c2333;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      user-select: none;
+    }
+    /* 红黄绿三点 */
+    :global(.code-lights) {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    :global(.code-dot) {
+      width: 12px; height: 12px; border-radius: 50%;
+      border: none; padding: 0; cursor: default; flex-shrink: 0;
+      transition: filter .15s;
+    }
+    :global(.code-dot-red)    { background: #FF5F57; cursor: pointer; }
+    :global(.code-dot-yellow) { background: #FFBD2E; }
+    :global(.code-dot-green)  { background: #28C840; }
+    :global(.code-lights:hover .code-dot) { filter: brightness(1.12); }
+    /* 折叠状态：红点变暗（已关闭），绿点变亮（可展开） */
+    :global(.prose-code-block.is-collapsed .code-dot-red)   { filter: brightness(0.50); cursor: default; }
+    :global(.prose-code-block.is-collapsed .code-dot-green) { filter: brightness(1.20); box-shadow: 0 0 5px rgba(40,200,64,0.45); }
+    /* 展开状态：绿点正常，红点可点击 */
+    :global(.prose-code-block:not(.is-collapsed) .code-dot-green) { cursor: default; }
+    /* 语言标签居中 */
+    :global(.code-lang) {
+      flex: 1; text-align: center;
+      font-family: var(--mono);
+      font-size: 11px; font-weight: 500; letter-spacing: 0.4px;
+      color: rgba(235,235,245,0.28);
+    }
+    /* 右侧操作区 */
+    :global(.code-actions) { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+    :global(.code-btn) {
+      display: flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 6px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: rgba(235,235,245,0.38);
+      transition: background .12s, color .12s;
+    }
+    :global(.code-btn:hover)  { background: rgba(255,255,255,0.08); color: rgba(235,235,245,0.78); }
+    :global(.code-btn:active) { background: rgba(255,255,255,0.12); }
+    /* 代码体 */
+    :global(.code-body) {
+      overflow: hidden;
+      transition: max-height .28s cubic-bezier(0.4,0,0.2,1);
+    }
+
     .prose blockquote {
       border-left: 3px solid var(--accent);
       background: rgba(41,151,255,0.05);
@@ -795,6 +861,107 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
       headingEls.forEach(h => obs.observe(h));
     }
+
+    // ── 代码块增强：语言标签 + 折叠 + 一键复制 ─────────────────
+    (function enhanceCodeBlocks() {
+      const COLLAPSED_H = 0;     // 折叠后完全隐藏代码内容
+
+      const SVG_COPY = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <rect x="5" y="5" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M5 4V3a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 14 3v8.5"
+              stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>`;
+      const SVG_CHECK = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <path d="M2 8l4.5 4.5 8-8" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+
+      document.querySelectorAll<HTMLElement>('.prose pre').forEach(pre => {
+        const code = pre.querySelector('code');
+        const lang = pre.getAttribute('data-language')
+          ?? [...(code?.classList ?? [])].find(c => c.startsWith('language-'))?.slice(9)
+          ?? '';
+
+        // ── DOM 结构 ──
+        const wrapper = document.createElement('div');
+        wrapper.className = 'prose-code-block';
+
+        // 标题栏
+        const header = document.createElement('div');
+        header.className = 'code-header';
+
+        // 红黄绿三点
+        const lights = document.createElement('div');
+        lights.className = 'code-lights';
+        const dotRed    = document.createElement('button');
+        const dotYellow = document.createElement('span');
+        const dotGreen  = document.createElement('button');
+        dotRed.className    = 'code-dot code-dot-red';
+        dotYellow.className = 'code-dot code-dot-yellow';
+        dotGreen.className  = 'code-dot code-dot-green';
+        dotRed.title        = '折叠代码';
+        dotGreen.title      = '展开代码';
+        lights.append(dotRed, dotYellow, dotGreen);
+
+        // 语言标签（居中）
+        const langEl = document.createElement('span');
+        langEl.className  = 'code-lang';
+        langEl.textContent = lang || 'plaintext';
+
+        // 右侧：复制按钮
+        const actions = document.createElement('div');
+        actions.className = 'code-actions';
+        const cpBtn = document.createElement('button');
+        cpBtn.className = 'code-btn';
+        cpBtn.title     = '复制代码';
+        cpBtn.innerHTML = SVG_COPY;
+        actions.appendChild(cpBtn);
+
+        header.append(lights, langEl, actions);
+
+        // 代码体
+        const body = document.createElement('div');
+        body.className = 'code-body';
+
+        pre.parentNode!.insertBefore(wrapper, pre);
+        body.appendChild(pre);
+        wrapper.append(header, body);
+        pre.style.background = 'transparent';
+
+        // ── 红点 = 折叠（关闭），绿点 = 展开（还原）──
+        let collapsed = false;
+
+        const collapse = () => {
+          if (collapsed) return;
+          collapsed = true;
+          wrapper.classList.add('is-collapsed');
+          body.style.maxHeight = body.scrollHeight + 'px';
+          requestAnimationFrame(() => { body.style.maxHeight = COLLAPSED_H + 'px'; });
+        };
+
+        const expand = () => {
+          if (!collapsed) return;
+          collapsed = false;
+          wrapper.classList.remove('is-collapsed');
+          body.style.maxHeight = body.scrollHeight + 'px';
+          body.addEventListener('transitionend', () => {
+            if (!collapsed) body.style.maxHeight = '';
+          }, { once: true });
+        };
+
+        dotRed.addEventListener('click', collapse);
+        dotGreen.addEventListener('click', expand);
+
+        // ── 复制 ──
+        cpBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.innerText);
+            cpBtn.innerHTML = SVG_CHECK;
+            cpBtn.style.color = '#3fb950';
+            setTimeout(() => { cpBtn.innerHTML = SVG_COPY; cpBtn.style.color = ''; }, 1800);
+          } catch { cpBtn.title = '复制失败'; }
+        });
+      });
+    })();
   </script>
 
   <!-- 桌面端：回到顶部 -->

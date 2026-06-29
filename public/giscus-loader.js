@@ -48,10 +48,15 @@
   section.appendChild(label);
   section.appendChild(mount);
 
-  // 优先插到第一个 <footer> 之前，否则 append 到 body
-  var footer = document.querySelector('footer, .page-footer, [class*="footer"]');
-  if (footer) footer.insertAdjacentElement('beforebegin', section);
-  else document.body.appendChild(section);
+  // 插入策略（依次尝试，兼容各种 HTML 文章布局）：
+  // 1. <main> 内部末尾 — 自动继承文章的 margin-left（适用于有 fixed sidebar 的文章）
+  // 2. <footer> 之前  — 适用于有全局 footer 的文章
+  // 3. <body> 末尾    — 兜底
+  var main   = document.querySelector('main');
+  var footer = document.querySelector('footer, .page-footer');
+  if (main)        main.appendChild(section);
+  else if (footer) footer.insertAdjacentElement('beforebegin', section);
+  else             document.body.appendChild(section);
 
   // 加载 Giscus iframe
   var s = document.createElement('script');

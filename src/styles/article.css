@@ -211,6 +211,14 @@ a { color: inherit; text-decoration: none; }
   font-weight: 700; letter-spacing: -0.8px; line-height: 1.18;
   color: var(--text); margin-bottom: 16px;
 }
+/* 来源标识 [Doris PR-26133]，与标题同字体同颜色 */
+.article-title .source-label {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  margin-right: 0.2em;
+}
 .article-desc {
   font-size: 16px; color: var(--text-muted);
   line-height: 1.65; margin-bottom: 20px; letter-spacing: -0.1px;

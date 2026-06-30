@@ -5,6 +5,11 @@
 ```yaml
 ---
 title: "文章标题（双引号包裹）"
+source:                    # 可选：文章来源，渲染为 [Project Type-Id] title
+  project: "Doris"         # 项目名，如 Doris / ClickHouse / RocksDB
+  type: "PR"               # 引用类型：PR / Issue / RFC / arxiv / commit
+  id: "26133"              # 编号
+  url: "https://..."       # 可选：原始链接（标识可点击跳转）
 date: "YYYY-MM-DD"
 category: [一级分类, 二级分类, 三级分类]
 tags: ["Tag1", "Tag2", "Tag3"]
@@ -14,7 +19,16 @@ aiModel: "Claude Opus 4.8"
 ---
 ```
 
-**所有字段必须填写。不要加 `layout:` 行（由 `[slug].astro` 统一处理）。**
+**所有字段必须填写（`source` 可选）。不要加 `layout:` 行（由 `[slug].astro` 统一处理）。**
+
+`source`：可选字段，文章来源结构化信息，渲染为 `[Project Type-Id] title`。
+
+| 字段 | 必填 | 示例 |
+|------|------|------|
+| `project` | ✅ | `Doris` / `ClickHouse` / `RocksDB` |
+| `type` | ✅ | `PR` / `Issue` / `RFC` / `arxiv` / `commit` |
+| `id` | ✅ | `26133` / `0001` / `2301.07041` |
+| `url` | 可选 | 原始链接，有则标识可点击跳转 |
 
 `category`：YAML 数组，定义文章的分类层级路径（支持任意深度）
   → **最后一项**自动作为首页卡片 badge 标签和过滤器选项（如 `源码解读`、`论文解读`）
@@ -24,10 +38,24 @@ aiModel: "Claude Opus 4.8"
 
 ## 导言段落（frontmatter 之后立即写）
 
+只写引用块元信息，**不写额外的导言文字**——导言文字通常与第一个 `##` 节重复，直接省略。
+
 ```markdown
 > **版本** v1.73.0 · **协议** BSD-3-Clause · **Python** ≥ 3.10 · **代码量** ~18,000 行
 
-第一段：1-2 句话概括这篇文章的内容和目标读者。不需要标题。
+---
+
+## 第一节
+```
+
+PR / Issue 类文章用 PR 元信息替代版本行：
+
+```markdown
+> **PR** [#26133](url) · **Issue** [#25974](url) · **合并分支** dev/2.0.4 · **变更行数** +24 行 · **合并时间** 2023-11-01
+
+---
+
+## 问题背景
 ```
 
 ## 标题层级

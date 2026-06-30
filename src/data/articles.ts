@@ -1,8 +1,16 @@
 import { readdirSync, readFileSync } from 'fs';
 
+export interface ArticleSource {
+  project: string;   // 项目名，如 Doris / ClickHouse
+  type:    string;   // 引用类型，如 PR / Issue / RFC / arxiv / commit
+  id:      string;   // 编号，如 26133
+  url?:    string;   // 可选：原始链接
+}
+
 export interface Article {
   slug:         string;
   title:        string;
+  source?:      ArticleSource;
   date:         string;        // YYYY-MM-DD
   category:     string[];      // 层级路径；最后一项用作首页徽章
   categoryPath: string[];      // 同 category，供侧边栏树使用（别名，保持侧边栏逻辑不变）
@@ -22,6 +30,7 @@ const mdModules = import.meta.glob<{
     description?: string;
     readingTime?: string;
     aiModel?:     string;
+    source?:      ArticleSource;
   };
 }>('../pages/articles/_md/*.md', { eager: true });
 
@@ -32,6 +41,7 @@ const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
   return {
     slug,
     title:        fm.title,
+    source:       fm.source       || undefined,
     date:         fm.date,
     category:     cat,
     categoryPath: cat,

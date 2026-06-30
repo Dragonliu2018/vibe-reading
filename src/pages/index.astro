@@ -250,6 +250,7 @@ function badgeStyle(label: string): string {
     .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
     .cat-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
     .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
+    .card-source-label { color: inherit; margin-right: 0.2em; }
     .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
     .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .tag {
@@ -356,7 +357,13 @@ function badgeStyle(label: string): string {
                         </span>
                       )}
                     </div>
-                    <div class="card-title">{article.title}</div>
+                    <div class="card-title">
+                      {article.source && (
+                        <span class="card-source-label">
+                          [{article.source.project} {article.source.type}-{article.source.id}]
+                        </span>
+                      )}{article.source ? ` ${article.title}` : article.title}
+                    </div>
                     <div class="card-desc">{article.description}</div>
                     <div class="card-tags">
                       {article.tags.map(tag => <span class="tag">{tag}</span>)}

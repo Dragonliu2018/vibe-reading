@@ -33,9 +33,14 @@ function renderNode(node: TreeNode, depth: number = 0): string {
 
   const childHtml   = (node.children ?? []).map(c => renderNode(c, depth + 1)).join('');
   const articleHtml = (node.slugs ?? []).map(slug => {
-    const title  = articles.find(a => a.slug === slug)?.title ?? slug;
+    const article = articles.find(a => a.slug === slug);
+    const { source } = article ?? {};
+    const baseTitle    = article?.title ?? slug;
+    const displayTitle = source
+      ? `[${source.project} ${source.type}-${source.id}] ${baseTitle}`
+      : baseTitle;
     const active = slug === currentSlug ? ' active' : '';
-    return `<a class="tree-article${active}" href="${base}/articles/${slug}" title="${esc(title)}">${esc(title)}</a>`;
+    return `<a class="tree-article${active}" href="${base}/articles/${slug}" title="${esc(displayTitle)}">${esc(displayTitle)}</a>`;
   }).join('');
 
   return `<div class="tree-node">

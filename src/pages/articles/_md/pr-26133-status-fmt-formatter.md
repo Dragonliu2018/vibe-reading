@@ -1,16 +1,19 @@
 ---
-title: "[PR-26133] 为 Apache Doris Status 类实现 fmt 格式化支持"
+title: "为 BE Status 类实现 fmt 格式化支持"
+source:
+  project: "Doris"
+  type: "PR"
+  id: "26133"
+  url: "https://github.com/apache/doris/pull/26133"
 date: "2026-06-29"
-category: [Database, Apache Doris, BE, 源码解读]
-tags: ["Apache Doris", "C++", "fmt", "Status", "BE"]
+category: [Database, Apache Doris, PRs]
+tags: ["Apache Doris", "C++", "fmt"]
 description: "通过 fmt::formatter 模板特化，让 Status 类原生支持 fmt::format，消除 BE 代码中繁琐的 .to_string() 样板调用。"
 readingTime: "6 min"
 aiModel: "Claude Opus 4.8"
 ---
 
 > **PR** [#26133](https://github.com/apache/doris/pull/26133) · **Issue** [#25974](https://github.com/apache/doris/issues/25974) · **合并分支** dev/2.0.4 · **变更行数** +24 行 · **合并时间** 2023-11-01
-
-Apache Doris BE 层的 `Status` 类是贯穿整个执行链路的核心错误类型，但在 PR #26133 合并前，它不支持 `fmt` 库的格式化接口，导致开发者每次都要手写 `.to_string()` 转换。本文解析这次改动的背景、实现思路与效果。
 
 ---
 

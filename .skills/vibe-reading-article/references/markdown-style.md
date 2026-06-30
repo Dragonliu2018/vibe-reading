@@ -54,17 +54,37 @@ mycli 属于 **dbcli** 家族——一组基于 `prompt_toolkit` 构建的工具
 
 ## 代码块
 
+代码块支持通过 `title="..."` 指定标题，会显示在代码框左上角，**每个代码块都应当有标题**。
+
+**标题选取优先级（由高到低）：**
+
+| 优先级 | 场景 | 示例 title |
+|---|---|---|
+| **1. 文件路径** | 代码来自具体文件 | `"sqlexecute.py"` / `"src/main.rs"` |
+| **2. 有意义的名称** | 描述代码用途/概念 | `"fmt::formatter 特化"` / `"自动补全流程"` |
+| **3. 默认** | 实在无合适标题 | 不写 title（自动显示"代码块"）|
+
 ````markdown
-```python
-# sqlexecute.py
+```python title="sqlexecute.py"
 class SQLExecute:
     conn: pymysql.Connection
     dbname: str
 ```
+
+```cpp title="fmt::formatter<Status> 特化"
+template <typename Char>
+struct fmt::formatter<Status, Char> {
+  auto format(const Status& s, auto& ctx) const;
+};
+```
+
+```bash title="构建命令"
+cargo build --release
+```
 ````
 
-- 语言标识必须标注（`python` / `bash` / `typescript` / `go` / `text` / `ini` 等）
-- 若代码来自特定文件，首行加 `# 文件路径.py` 注释
+- 语言标识必须标注（`python` / `cpp` / `bash` / `typescript` / `go` / `rust` / `text` 等）
+- **不再在代码首行加 `# 文件路径` 注释**，改用 `title=` 属性代替
 
 ## 表格
 

@@ -60,7 +60,7 @@ fmt::format("{}", status)
 
 PR #26133 的改动极为精简：在 `be/src/common/status.h` 的命名空间闭合括号之后，追加了 14 行特化代码。
 
-```cpp
+```cpp title="be/src/common/status.h"
 // be/src/common/status.h
 // } // namespace doris  ← 命名空间在此闭合
 
@@ -103,7 +103,7 @@ struct fmt::formatter<doris::Status> {
 
 PR 在 `be/test/common/status_test.cpp` 中新增了 `Format` 测试用例，覆盖两种基本场景：`Status::OK()` 和 `Status::InternalError()`。
 
-```cpp
+```cpp title="be/test/common/status_test.cpp"
 // be/test/common/status_test.cpp
 TEST_F(StatusTest /*unused*/, Format /*unused*/) {
     // 场景 1：status == OK

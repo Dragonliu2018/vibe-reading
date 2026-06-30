@@ -18,8 +18,16 @@ export default defineConfig({
 
   markdown: {
     shikiConfig: {
-      // github-dark-dimmed 背景色 #161b22 与博客 --code-bg 一致
       theme: 'github-dark-dimmed',
+      transformers: [{
+        // 把代码围栏的 meta 字符串（如 title="xxx"）写入 data-meta 属性
+        // 供客户端 enhanceCodeBlocks() 读取
+        name: 'expose-meta',
+        pre(node) {
+          const raw = this.options?.meta?.__raw ?? '';
+          if (raw) node.properties['data-meta'] = raw;
+        },
+      }],
     },
   },
 

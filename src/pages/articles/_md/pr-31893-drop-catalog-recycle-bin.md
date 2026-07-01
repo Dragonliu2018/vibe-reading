@@ -9,102 +9,79 @@ date: "2026-07-01"
 category: [Database, Apache Doris, PRs]
 tags: ["Apache Doris", "Java", "Recycle Bin", "DDL", "Nereids"]
 description: "新增 DROP CATALOG RECYCLE BIN 命令，支持按 DbId/TableId/PartitionId 立即清除回收站条目，无需等待后台定时任务。"
-readingTime: "8 min"
+readingTime: "10 min"
 aiModel: "Claude Opus 4.8"
 ---
 
-> **PR** [#31893](https://github.com/apache/doris/pull/31893) · **Issue** [#31348](https://github.com/apache/doris/issues/31348) · **合并分支** 3.0.0 · **变更行数** +345 行 · **合并时间** 2024-05-30
+> **PR** [#31893](https://github.com/apache/doris/pull/31893) · **Issue** [#31348](https://github.com/apache/doris/issues/31348) · **commit** [5c747be](https://github.com/apache/doris/commit/5c747be63468c35459b0b3b4977f17be906b4dc7) · **合并分支** 3.0.0 · **变更行数** +345 行 · **合并时间** 2024-05-30
 
 ---
 
-## 背景：CatalogRecycleBin 的工作方式
+## 背景
 
-`CatalogRecycleBin` 继承自 `MasterDaemon`，是一个只在 FE Master 节点运行的后台服务。`DROP DATABASE / TABLE / PARTITION` 执行后，对象不会立即物理删除，而是连同时间戳写入内存 Map，等后台线程扫描超过保留时长（默认 1 天）后才真正擦除。其核心数据结构：
+执行 `DROP DATABASE / TABLE / PARTITION` 后，对象不会立即删除，而是进入 **Catalog 回收站**，由后台守护线程按保留时长（由 `catalog_trash_expire_second` 配置，默认 1 天）定期扫描清除。这个机制有效防止误删，但带来一个运维困境：
+
+**管理员明确要立刻清除某个条目时，无路可走。** 不管是大表占满磁盘、ID 需要复用，还是测试环境堆积了大量垃圾条目，都只能修改超时配置或等待后台任务。
+
+Issue [#31348](https://github.com/apache/doris/issues/31348) 由团队成员 **mymeiyi** 提出，建议新增按 ID 主动删除的命令，使 DBA 能精确控制回收站内容。由于回收站中名称可能重复（同名表可以被 DROP 多次），建议按内部 ID 而非名称进行操作。
+
+---
+
+## 前置知识
+
+`CatalogRecycleBin` 继承自 `MasterDaemon`，只在 FE Master 节点运行。其核心是三张 `Long → Info` 的 Map，分别存储回收站中的数据库、表和分区信息，外加一张时间戳索引：
 
 ```java title="CatalogRecycleBin.java — 核心数据结构"
 public class CatalogRecycleBin extends MasterDaemon implements Writable {
-    private Map<Long, RecycleDatabaseInfo>  idToDatabase;  // dbId  → DB 信息
-    private Map<Long, RecycleTableInfo>     idToTable;     // tableId → 表信息
-    private Map<Long, RecyclePartitionInfo> idToPartition; // partitionId → 分区信息
-
-    private Map<Long, Long> idToRecycleTime; // id → 进入回收站的时间戳
+    private Map<Long, RecycleDatabaseInfo>  idToDatabase;   // dbId → DB 信息
+    private Map<Long, RecycleTableInfo>     idToTable;      // tableId → 表信息
+    private Map<Long, RecyclePartitionInfo> idToPartition;  // partitionId → 分区信息
+    private Map<Long, Long>                 idToRecycleTime; // id → 进站时间戳
 }
 ```
 
-用户可以通过 `SHOW CATALOG RECYCLE BIN` 查询当前回收站内容，结果列为 `Type | DbName | DbId | TableId | PartitionId | Name | ...`：
-
-```sql title="查询回收站示例"
-SHOW CATALOG RECYCLE BIN WHERE NAME = "my_table";
-```
-
-**问题在于**：PR #31893 之前，没有任何 SQL 命令能主动触发清除——即便管理员明确知道某个 DbId，也只能修改保留时长配置或干等。
+用户可通过 `SHOW CATALOG RECYCLE BIN WHERE NAME = "..."` 查询当前回收站内容，结果列包含 `DbId / TableId / PartitionId`——这些 ID 即为新命令的操作目标。
 
 ---
 
-## 新增命令语法
+## 实现
 
-PR #31893 新增了 `DROP CATALOG RECYCLE BIN` 命令，支持按三种粒度立即清除：
+整个实现沿 Nereids 命令框架的标准路径展开，9 个文件，+345 行。
 
-```sql title="DROP CATALOG RECYCLE BIN 用法"
--- 按 DB ID 清除（同时级联清除该 DB 下所有表和分区）
-DROP CATALOG RECYCLE BIN WHERE 'DbId' = 12345;
+### 语法层（DorisParser.g4）
 
--- 按 Table ID 清除（同时级联清除该表的所有分区）
-DROP CATALOG RECYCLE BIN WHERE 'TableId' = 67890;
-
--- 按 Partition ID 清除（只清除该分区）
-DROP CATALOG RECYCLE BIN WHERE 'PartitionId' = 11111;
-```
-
-`idType` 合法值为 `'DbId'`、`'TableId'`、`'PartitionId'`（不区分大小写），`id` 为整型。
-
----
-
-## 实现路径解析
-
-整个实现沿着 Nereids 命令框架的标准路径展开，从语法定义到执行共经过 5 层。
-
-### 第一层：语法文法（DorisParser.g4）
-
-在 `statementBase` 产生式中新增一条规则：
+在 `statementBase` 产生式末尾追加一条规则：
 
 ```antlr4 title="DorisParser.g4 — 新增产生式"
 statementBase
     | DROP CATALOG RECYCLE BIN WHERE idType=STRING_LITERAL EQ id=INTEGER_VALUE
         #dropCatalogRecycleBin
-    | unsupportedStatement
-        #unsupported
     ;
 ```
 
-- `STRING_LITERAL`：捕获带引号的 `'DbId'` / `'TableId'` / `'PartitionId'`
-- `INTEGER_VALUE`：捕获目标 ID 的数值
-- `#dropCatalogRecycleBin`：为该产生式命名，ANTLR 自动生成对应的 `DropCatalogRecycleBinContext` 类和 `visitDropCatalogRecycleBin` 回调
+`STRING_LITERAL` 捕获带引号的类型字符串（`'DbId'` / `'TableId'` / `'PartitionId'`），`INTEGER_VALUE` 捕获整型 ID，`#dropCatalogRecycleBin` 使 ANTLR 自动生成对应的 Context 类和 Visitor 回调。
 
-### 第二层：AST 节点（DropCatalogRecycleBinCommand.java）
+### 命令对象（DropCatalogRecycleBinCommand.java）
 
-新增命令类，实现 Nereids 命令框架的 `Command` 接口，同时标记为 `ForwardWithSync`（表示该命令需要转发给 FE Master 同步执行）：
+新增命令类实现 `Command` 接口，同时标记为 `ForwardWithSync`——确保命令被转发给 FE Master 节点同步执行。内嵌枚举 `IdType` 在解析阶段完成合法性校验：
 
 ```java title="DropCatalogRecycleBinCommand.java"
 public class DropCatalogRecycleBinCommand extends Command implements ForwardWithSync {
 
     public enum IdType {
-        DATABASE_ID,
-        TABLE_ID,
-        PARTITION_ID;
+        DATABASE_ID, TABLE_ID, PARTITION_ID;
 
-        public static IdType fromString(String idTypeStr) {
-            if (idTypeStr.equalsIgnoreCase("DbId"))        return DATABASE_ID;
-            if (idTypeStr.equalsIgnoreCase("TableId"))     return TABLE_ID;
-            if (idTypeStr.equalsIgnoreCase("PartitionId")) return PARTITION_ID;
+        public static IdType fromString(String s) {
+            if (s.equalsIgnoreCase("DbId"))        return DATABASE_ID;
+            if (s.equalsIgnoreCase("TableId"))     return TABLE_ID;
+            if (s.equalsIgnoreCase("PartitionId")) return PARTITION_ID;
             throw new AnalysisException(
-                "DROP CATALOG RECYCLE BIN: " + idTypeStr
-                + " should be 'DbId', 'TableId' or 'PartitionId'.");
+                "DROP CATALOG RECYCLE BIN: " + s + " should be 'DbId', 'TableId' or 'PartitionId'.");
         }
     }
 
     private final IdType idType;
-    private long id = -1;
+    private final long id;
 
     @Override
     public void run(ConnectContext ctx, StmtExecutor executor) throws Exception {
@@ -113,11 +90,9 @@ public class DropCatalogRecycleBinCommand extends Command implements ForwardWith
 }
 ```
 
-`IdType.fromString()` 在解析阶段就完成合法性校验，非法 `idType` 字符串立即抛出 `AnalysisException`，不会传递到执行层。
+### 解析层（LogicalPlanBuilder）
 
-### 第三层：访问者注册（LogicalPlanBuilder + CommandVisitor）
-
-`LogicalPlanBuilder.visitDropCatalogRecycleBin` 将语法树节点转换为命令对象：
+`visitDropCatalogRecycleBin` 去掉 `idType` 两端的引号后，交给 `IdType.fromString()` 解析——非法字符串在此抛出 `AnalysisException`，不会进入执行层：
 
 ```java title="LogicalPlanBuilder.java — visitDropCatalogRecycleBin"
 @Override
@@ -130,204 +105,82 @@ public LogicalPlan visitDropCatalogRecycleBin(DropCatalogRecycleBinContext ctx) 
 }
 ```
 
-`CommandVisitor` 接口新增默认方法，完成 Visitor 模式的闭环注册：
+### 路由层（Env → InternalCatalog）
 
-```java title="CommandVisitor.java — 新增默认方法"
-default R visitDropCatalogRecycleBinCommand(
-        DropCatalogRecycleBinCommand cmd, C context) {
-    return visitCommand(cmd, context);
-}
-```
-
-### 第四层：路由层（Env → InternalCatalog）
-
-`Env.dropCatalogRecycleBin` 作为门面转发给 `InternalCatalog`，后者按 `idType` 分发：
+`Env` 作为门面，将调用透传给 `InternalCatalog`，后者按 `idType` switch 分发到 `CatalogRecycleBin` 的三个新方法：
 
 ```java title="InternalCatalog.java — dropCatalogRecycleBin"
 public void dropCatalogRecycleBin(IdType idType, long id) throws DdlException {
     switch (idType) {
-        case DATABASE_ID:
-            Env.getCurrentRecycleBin().eraseDatabaseInstantly(id);
-            break;
-        case TABLE_ID:
-            Env.getCurrentRecycleBin().eraseTableInstantly(id);
-            break;
-        case PARTITION_ID:
-            Env.getCurrentRecycleBin().erasePartitionInstantly(id);
-            break;
-        default:
-            throw new DdlException(
-                "DROP CATALOG RECYCLE BIN: idType should be 'DbId', 'TableId' or 'PartitionId'.");
+        case DATABASE_ID:  Env.getCurrentRecycleBin().eraseDatabaseInstantly(id);  break;
+        case TABLE_ID:     Env.getCurrentRecycleBin().eraseTableInstantly(id);     break;
+        case PARTITION_ID: Env.getCurrentRecycleBin().erasePartitionInstantly(id); break;
+        default: throw new DdlException("idType should be 'DbId', 'TableId' or 'PartitionId'.");
     }
 }
 ```
 
-### 第五层：核心执行（CatalogRecycleBin 三个 Instantly 方法）
+### 执行层（CatalogRecycleBin）
 
-这一层是真正的"物理删除"，PR 在 `CatalogRecycleBin` 中新增了三个 `synchronized` 方法。
+PR 在 `CatalogRecycleBin` 中新增三个 `synchronized` 方法，物理擦除回收站条目并写 EditLog。三者之间存在**级联关系**：
 
-#### `erasePartitionInstantly`（基础单元）
-
-```java title="CatalogRecycleBin.java — erasePartitionInstantly"
-public synchronized void erasePartitionInstantly(long partitionId) throws DdlException {
-    // 1. 查找，不存在即报错
-    RecyclePartitionInfo partitionInfo = idToPartition.get(partitionId);
-    if (partitionInfo == null) {
-        throw new DdlException("No partition id '" + partitionId + "'");
-    }
-    // 2. 物理擦除（清理 tablet 数据、BE 侧存储）
-    Partition partition = partitionInfo.getPartition();
-    Env.getCurrentEnv().onErasePartition(partition);
-    // 3. 从回收站 Map 中移除
-    idToPartition.remove(partitionId);
-    idToRecycleTime.remove(partitionId);
-    // 4. 记录 EditLog + 打印日志
-    Env.getCurrentEnv().getEditLog().logErasePartition(partitionId);
-    LOG.info("erase table[{}]'s partition[{}]: {}", tableId, partitionId, partitionName);
-}
+```text title="三个方法的级联调用关系"
+eraseDatabaseInstantly(dbId)
+  ├─ eraseDatabase(dbId)           物理擦除 DB
+  ├─ eraseTableInstantly(tableId)  ← 该 DB 下的所有 Table（递归）
+  │    ├─ onEraseOlapTable(...)    物理擦除 OLAP/MV 表
+  │    └─ erasePartitionInstantly  ← 该 Table 下的所有 Partition
+  └─ erasePartitionInstantly(...)  ← 直接挂在该 DB 下的孤立 Partition
 ```
 
-#### `eraseTableInstantly`（级联分区）
-
-表的擦除先处理自身，再扫描 `idToPartition` 找出所有属于该表的分区逐一调用 `erasePartitionInstantly`：
-
-```java title="CatalogRecycleBin.java — eraseTableInstantly"
-public synchronized void eraseTableInstantly(long tableId) throws DdlException {
-    RecycleTableInfo tableInfo = idToTable.get(tableId);
-    if (tableInfo == null) throw new DdlException("Unknown table id '" + tableId + "'");
-
-    // 物理擦除 OLAP/MV 表（清理底层 tablet）
-    Table table = tableInfo.getTable();
-    if (table.getType() == TableType.OLAP || table.getType() == TableType.MATERIALIZED_VIEW) {
-        Env.getCurrentEnv().onEraseOlapTable((OlapTable) table, false);
-    }
-    idToTable.remove(tableId);
-    idToRecycleTime.remove(tableId);
-    Env.getCurrentEnv().getEditLog().logEraseTable(tableId);
-
-    // 级联删除：同 tableId 下的所有分区
-    List<Long> partitionIdToErase = idToPartition.entrySet().stream()
-        .filter(e -> e.getValue().getTableId() == tableId)
-        .map(Map.Entry::getKey)
-        .collect(toList());
-    for (Long partitionId : partitionIdToErase) {
-        erasePartitionInstantly(partitionId);
-    }
-}
-```
-
-#### `eraseDatabaseInstantly`（双层级联）
-
-库的擦除最为彻底——先擦库本身，再级联擦除所有属于该 DB 的表（表又会继续级联擦除其分区），最后再扫一遍清理直接挂在该 DB 下的孤立分区：
-
-```java title="CatalogRecycleBin.java — eraseDatabaseInstantly"
-public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
-    RecycleDatabaseInfo dbInfo = idToDatabase.get(dbId);
-    if (dbInfo == null) throw new DdlException("Unknown database id '" + dbId + "'");
-
-    // 擦除 DB 本体
-    Env.getCurrentEnv().eraseDatabase(dbId, true);
-    idToDatabase.remove(dbId);
-    idToRecycleTime.remove(dbId);
-
-    // 级联擦除：该 DB 下所有表（表内部再级联分区）
-    List<Long> tableIdToErase = idToTable.entrySet().stream()
-        .filter(e -> e.getValue().getDbId() == dbId)
-        .map(Map.Entry::getKey)
-        .collect(toList());
-    for (Long tableId : tableIdToErase) {
-        eraseTableInstantly(tableId);
-    }
-
-    // 级联擦除：直接挂在该 DB 下的孤立分区（先于 DB 被 DROP 的分区）
-    List<Long> partitionIdToErase = idToPartition.entrySet().stream()
-        .filter(e -> e.getValue().getDbId() == dbId)
-        .map(Map.Entry::getKey)
-        .collect(toList());
-    for (Long partitionId : partitionIdToErase) {
-        erasePartitionInstantly(partitionId);
-    }
-}
-```
-
----
-
-## 级联删除语义
-
-三个粒度的级联行为汇总：
+级联语义汇总：
 
 | 命令 | 直接删除 | 级联删除 |
 | --- | --- | --- |
-| `DROP ... WHERE 'DbId' = X` | 该 DB | 该 DB 下的所有 Table + 所有 Partition |
-| `DROP ... WHERE 'TableId' = X` | 该 Table | 该 Table 下的所有 Partition |
-| `DROP ... WHERE 'PartitionId' = X` | 该 Partition | 无 |
-
-> **注意**：`eraseDatabaseInstantly` 在清完库内所有表之后，还会再扫一遍 `idToPartition`，清理"直接挂在该 DB 下的孤立分区"——即先于数据库被单独 DROP 的分区，避免遗漏。
+| `'DbId' = X` | 该 DB | 该 DB 下所有 Table + 所有 Partition |
+| `'TableId' = X` | 该 Table | 该 Table 下所有 Partition |
+| `'PartitionId' = X` | 该 Partition | 无 |
 
 ---
 
-## 回归测试
+## 测试
 
-PR 在 `regression-test/suites/catalog_recycle_bin_p0/` 下新增了完整的 Groovy 测试套件，覆盖三个粒度的场景：
+在 `regression-test/suites/catalog_recycle_bin_p0/test_drop_catalog_recycle_bin.groovy` 中新增完整测试套件，覆盖三个粒度的清除场景。断言采用"操作前后 size 差值"模式，避免并发测试环境中其他条目干扰结果：
 
-```groovy title="test_drop_catalog_recycle_bin.groovy"
-// 1. DROP PARTITION → 按 PartitionId 立即清除
+```groovy title="test_drop_catalog_recycle_bin.groovy — 三个粒度的核心断言"
+// 1. PartitionId 清除
 sql "ALTER TABLE tb1 DROP PARTITION p1000;"
 pre_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p1000" """
 partition_id = pre_res[0][4]
 sql "DROP CATALOG RECYCLE BIN WHERE 'PartitionId' = ${partition_id};"
 cur_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p1000" """
-assertTrue(pre_res.size() - cur_res.size() == 1)   // 确认减少 1 条
+assertTrue(pre_res.size() - cur_res.size() == 1)    // p1000 消失
 
-// 2. DROP TABLE → 按 TableId 清除，同时验证分区级联消失
+// 2. TableId 清除：验证分区也级联消失
 sql "DROP TABLE tb1;"
-pre_tb_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "tb1" """
 table_id = pre_tb_res[0][3]
 sql "DROP CATALOG RECYCLE BIN WHERE 'TableId' = ${table_id};"
-cur_tb_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "tb1" """
-assertTrue(pre_tb_res.size() - cur_tb_res.size() == 1)
-cur_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 分区也消失
+assertTrue(pre_tb_res.size() - cur_tb_res.size() == 1)  // tb1 消失
+assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // p111 也消失
 
-// 3. DROP DATABASE → 按 DbId 清除，三层全验证
+// 3. DbId 清除：三层全验证（DB + Table + Partition 均消失）
 sql "DROP DATABASE test_db;"
 db_id = pre_db_res[0][2]
 sql "DROP CATALOG RECYCLE BIN WHERE 'DbId' = ${db_id};"
-// DB 消失、Table 消失、Partition 消失
-```
-
-测试逻辑遵循"操作前后 size 差值"断言模式，而非全量比较，避免并发测试环境中其他条目干扰结果。
-
----
-
-## 调用链总结
-
-```text title="TableId 清除的完整调用链"
-SQL: DROP CATALOG RECYCLE BIN WHERE 'TableId' = 123
-  ↓ DorisParser.g4（ANTLR 语法规则）
-  ↓ LogicalPlanBuilder.visitDropCatalogRecycleBin()
-      去掉引号、解析 IdType、构造命令对象
-  ↓ DropCatalogRecycleBinCommand.run()
-  ↓ Env.dropCatalogRecycleBin(TABLE_ID, 123)
-  ↓ InternalCatalog.dropCatalogRecycleBin()  — switch(idType)
-  ↓ CatalogRecycleBin.eraseTableInstantly(123)
-      物理擦除 Table → 级联 erasePartitionInstantly(各分区)
-      写 EditLog → 打印日志
+// DB、Table、Partition 同步验证
 ```
 
 ---
 
-## 效果与影响
+## 意义与影响
 
 | 对比维度 | PR 前 | PR 后 |
 | --- | --- | --- |
 | 立即清除 | 不支持，只能等后台任务 | `DROP CATALOG RECYCLE BIN WHERE ...` |
 | 清除粒度 | — | DB / Table / Partition 三级 |
-| 级联行为 | — | 删 DB 自动清表和分区，删表自动清分区 |
-| ID 获取方式 | — | `SHOW CATALOG RECYCLE BIN WHERE NAME = "..."` 查询结果 |
+| 级联行为 | — | 删 DB 自动清所有子 Table 和 Partition |
+| ID 获取 | — | `SHOW CATALOG RECYCLE BIN WHERE NAME = "..."` |
 
-对于 DBA 来说，这个命令在以下场景特别实用：
+典型使用场景：大表误删后占满磁盘需紧急释放空间、回收特定 ID 避免与新对象冲突、测试环境清理堆积的垃圾条目。
 
-- **紧急释放存储**：某个误删的大表占用大量空间，不能等 1 天保留期
-- **ID 复用场景**：需要回收特定 ID 以避免与新创建对象冲突
-- **测试/开发环境**：频繁建删操作导致回收站条目堆积，需要快速清理
+这个 PR 同时为后续 PR [#35750](https://github.com/apache/doris/pull/35750) 提供了基础——#35750 修复了当 DB 不在回收站但其子条目仍存在时命令会报错的问题。

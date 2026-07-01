@@ -7,106 +7,81 @@ source:
   url: "https://github.com/apache/doris/pull/35750"
 date: "2026-07-01"
 category: [Database, Apache Doris, PRs]
-tags: ["Apache Doris", "Java"]
-description: "将 eraseDatabaseInstantly / eraseTableInstantly 从早失败改为延迟报错，确保 DbId/TableId 对应的孤立表和分区能被一并清除。"
+tags: ["Apache Doris", "Java", "Recycle Bin", "Bug Fix"]
+description: "将 eraseDatabaseInstantly / eraseTableInstantly 从早失败改为延迟报错，确保孤立的子条目能被一并清除。"
 readingTime: "6 min"
 aiModel: "Claude Opus 4.8"
 ---
 
-> **PR** [#35750](https://github.com/apache/doris/pull/35750) · **Issue** [#35748](https://github.com/apache/doris/issues/35748) · **合并分支** 3.0.0 · **变更行数** +69 行 · **合并时间** 2024-06-02
+> **PR** [#35750](https://github.com/apache/doris/pull/35750) · **Issue** [#35748](https://github.com/apache/doris/issues/35748) · **commit** [67f1ae8](https://github.com/apache/doris/commit/67f1ae8a12f18615ecee185ccaf1694f543d0e0b) · **合并分支** 3.0.0 · **变更行数** +69 行 · **合并时间** 2024-06-02
 
 ---
 
-## 问题背景
+## 背景
 
-PR [#31893](https://github.com/apache/doris/pull/31893) 为 `DROP CATALOG RECYCLE BIN` 命令奠定了基础，但其实现中存在一个隐蔽的场景遗漏。
+PR [#31893](https://github.com/apache/doris/pull/31893) 于 2024-05-30 引入 `DROP CATALOG RECYCLE BIN` 命令后的第二天，Issue [#35748](https://github.com/apache/doris/issues/35748) 随即被提出，描述了一个命令无法处理的场景。
 
-`CatalogRecycleBin` 的三张 Map 相互独立：
+`CatalogRecycleBin` 的三张 Map（`idToDatabase` / `idToTable` / `idToPartition`）**独立维护**，各自有不同的生命周期。当执行 `ALTER TABLE t DROP PARTITION p` 时，**只有分区条目进入 `idToPartition`**，DB 和 Table 条目并不一定存在于回收站中。
 
-```text title="回收站三张 Map 的独立生命周期"
-idToDatabase   → { DbId: RecycleDatabaseInfo }
-idToTable      → { TableId: RecycleTableInfo }    含 DbId 字段
-idToPartition  → { PartitionId: RecyclePartitionInfo }  含 DbId / TableId 字段
+此时若按 DbId 触发清除，会命中 PR #31893 实现中的早失败逻辑：
+
+```sql title="Issue #35748 的复现步骤"
+-- 只 DROP PARTITION，回收站只有分区条目
+mysql> SHOW CATALOG RECYCLE BIN;
++-----------+------+-------+---------+-------------+---------------------+
+| Type      | Name | DbId  | TableId | PartitionId | DropTime            |
++-----------+------+-------+---------+-------------+---------------------+
+| Partition | p30  | 12056 | 12258   | 12257       | 2024-05-31 22:36:45 |
++-----------+------+-------+---------+-------------+---------------------+
+
+-- 尝试按 DbId 清除 → 报错，分区 p30 留在回收站无法被清除
+mysql> DROP CATALOG RECYCLE BIN WHERE 'DbId' = 12056;
+ERROR 1105 (HY000): errCode = 2, detailMessage = Unknown database id '12056'
 ```
 
-当用户执行 `ALTER TABLE t DROP PARTITION p` 后，只有分区条目进入 `idToPartition`；DB 条目并不一定在 `idToDatabase` 中。以下场景可以复现问题：
-
-```sql title="触发问题的操作序列"
--- 只 DROP PARTITION，DB 和 Table 并未进入回收站
-ALTER TABLE t DROP PARTITION p30;
-
--- 回收站此时只有分区条目
-SHOW CATALOG RECYCLE BIN;
--- | Partition | p30 | DbId=12056 | TableId=12258 | PartitionId=12257 |
-
--- 尝试按 DbId 清除 —— 旧行为直接报错
-DROP CATALOG RECYCLE BIN WHERE 'DbId' = 12056;
--- ERROR: Unknown database id '12056'
--- 结果：p30 依然留在回收站，无法被清除
-```
-
-原因在于 PR #31893 的实现采用了**早失败（fail-fast）**模式：一旦 `idToDatabase.get(dbId)` 返回 `null`，立即抛出异常，后续对 `idToTable` 和 `idToPartition` 的级联清理代码根本不会执行。
+相同问题也存在于 TableId 场景：Table 本身不在回收站，但其孤立分区依然无法被清除。
 
 ---
 
-## 根因：早失败的错误位置
+## 前置知识
 
-回顾 PR #31893 中 `eraseDatabaseInstantly` 的原始逻辑：
+理解此问题需要明确三张 Map 的**独立写入时机**：
 
-```java title="CatalogRecycleBin.java — 旧实现（早失败）"
+| 操作 | 写入哪张 Map |
+| --- | --- |
+| `DROP DATABASE db` | `idToDatabase` + `idToTable`（db 下所有表）+ `idToPartition`（表下所有分区） |
+| `DROP TABLE t` | `idToTable` + `idToPartition`（表下所有分区） |
+| `ALTER TABLE t DROP PARTITION p` | 仅 `idToPartition` |
+
+因此，单独 DROP PARTITION 后，回收站里只有分区条目，对应的 DB 和 Table 条目**根本不存在**于 `idToDatabase` / `idToTable` 中。
+
+---
+
+## 实现
+
+### 根因：入口处的早失败
+
+PR #31893 的 `eraseDatabaseInstantly` 在**方法入口**检查 DB 是否存在，不存在就立即抛出异常，后续的级联清理代码永远不会执行：
+
+```java title="旧实现：入口处早失败（PR #31893）"
 public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
-    // ❌ 在入口处检查 DB 是否存在，不存在就直接抛出
     RecycleDatabaseInfo dbInfo = idToDatabase.get(dbId);
     if (dbInfo == null) {
         throw new DdlException("Unknown database id '" + dbId + "'");
+        // ↑ 提前退出，以下级联清理代码永远不执行
     }
-
-    // 以下代码在 DB 不存在时永远不会执行
     Env.getCurrentEnv().eraseDatabase(dbId, true);
-    idToDatabase.remove(dbId);
-    idToRecycleTime.remove(dbId);
-    // ... 清理 tables 和 partitions
+    // ... 清理同 dbId 的 tables 和 partitions
 }
 ```
 
-`eraseTableInstantly` 存在完全一致的问题：若 `idToTable.get(tableId)` 为 `null`，同样提前抛出，遗留的孤立分区无法被清除。
+### 修复：出口处的延迟报错
 
----
-
-## 修复策略：延迟报错
-
-PR #35750 将校验时机从**入口**移到**出口**：先尝试清理所有相关条目，最后再判断是否真的什么都没找到。
-
-```text title="控制流对比"
-旧逻辑（早失败）              新逻辑（延迟报错）
-─────────────────────        ─────────────────────
-get(dbId) → null?            get(dbId) → null?
-     │ yes                        │ yes
-     ▼                            ▼
- throw Error              （跳过 DB 擦除，继续向下）
-                                  │
-                                  ▼
-                          清理同 DbId 的所有 Tables
-                                  │
-                                  ▼
-                          清理同 DbId 的所有 Partitions
-                                  │
-                                  ▼
-                          全部为空？→ throw Error
-                          否则成功返回
-```
-
-这一改动使命令的语义从"必须精确匹配 DB 条目"升级为"清除所有与该 DbId 相关的回收站记录"。
-
----
-
-## 代码实现
-
-### eraseDatabaseInstantly
+将"是否找到任何条目"的判断移到**方法出口**：先无条件扫描并清理所有关联条目，最后再决定是否报错：
 
 ```java title="CatalogRecycleBin.java — eraseDatabaseInstantly（修复后）"
 public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
-    // 1. 若 DB 条目存在则擦除，不存在则跳过（不再提前报错）
+    // 1. DB 条目若存在则擦除，否则跳过（不再提前报错）
     RecycleDatabaseInfo dbInfo = idToDatabase.get(dbId);
     if (dbInfo != null) {
         Env.getCurrentEnv().eraseDatabase(dbId, true);
@@ -115,112 +90,70 @@ public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
         LOG.info("erase db[{}]: {}", dbId, dbInfo.getDb().getName());
     }
 
-    // 2. 始终清理同 DbId 下的所有孤立 Table 条目
+    // 2. 无论 DB 是否存在，始终清理同 DbId 下的所有 Table 条目
     List<Long> tableIdToErase = Lists.newArrayList();
-    Iterator<Map.Entry<Long, RecycleTableInfo>> tableIterator = idToTable.entrySet().iterator();
-    while (tableIterator.hasNext()) {
-        Map.Entry<Long, RecycleTableInfo> entry = tableIterator.next();
-        if (entry.getValue().getDbId() == dbId) {
-            tableIdToErase.add(entry.getKey());
-        }
+    for (Map.Entry<Long, RecycleTableInfo> e : idToTable.entrySet()) {
+        if (e.getValue().getDbId() == dbId) tableIdToErase.add(e.getKey());
     }
-    for (Long tableId : tableIdToErase) {
-        eraseTableInstantly(tableId);
-    }
+    for (Long tableId : tableIdToErase) eraseTableInstantly(tableId);
 
-    // 3. 始终清理同 DbId 下的所有孤立 Partition 条目
+    // 3. 无论 DB 是否存在，始终清理同 DbId 下的所有孤立 Partition 条目
     List<Long> partitionIdToErase = Lists.newArrayList();
-    Iterator<Map.Entry<Long, RecyclePartitionInfo>> partitionIterator =
-            idToPartition.entrySet().iterator();
-    while (partitionIterator.hasNext()) {
-        Map.Entry<Long, RecyclePartitionInfo> entry = partitionIterator.next();
-        if (entry.getValue().getDbId() == dbId) {
-            partitionIdToErase.add(entry.getKey());
-        }
+    for (Map.Entry<Long, RecyclePartitionInfo> e : idToPartition.entrySet()) {
+        if (e.getValue().getDbId() == dbId) partitionIdToErase.add(e.getKey());
     }
-    for (Long partitionId : partitionIdToErase) {
-        erasePartitionInstantly(partitionId);
-    }
+    for (Long partitionId : partitionIdToErase) erasePartitionInstantly(partitionId);
 
-    // 4. 延迟报错：三者均为空才说明真的找不到
+    // 4. 延迟报错：三者均为空，说明该 DbId 在回收站中完全没有记录
     if (dbInfo == null && tableIdToErase.isEmpty() && partitionIdToErase.isEmpty()) {
         throw new DdlException("Unknown database id '" + dbId + "'");
     }
 }
 ```
 
-### eraseTableInstantly
+`eraseTableInstantly` 采用完全对称的模式：Table 条目不存在时不报错，仍扫描并清理同 `tableId` 下的所有孤立 Partition；只有 Table 和 Partition 均未找到时才报错。
 
-`eraseTableInstantly` 采用完全对称的修复模式：
-
-```java title="CatalogRecycleBin.java — eraseTableInstantly（修复后，关键差异）"
-public synchronized void eraseTableInstantly(long tableId) throws DdlException {
-    // 1. 若 Table 条目存在则擦除，否则跳过
-    RecycleTableInfo tableInfo = idToTable.get(tableId);
-    if (tableInfo != null) {
-        // ... 擦除 OLAP/MV 表、从 Map 中移除、写 EditLog
-    }
-
-    // 2. 始终清理同 tableId 下的所有孤立 Partition 条目
-    List<Long> partitionIdToErase = ...;
-    for (Long partitionId : partitionIdToErase) {
-        erasePartitionInstantly(partitionId);
-    }
-
-    // 3. 延迟报错：Table 和 Partition 均未找到才报错
-    if (tableInfo == null && partitionIdToErase.isEmpty()) {
-        throw new DdlException("Unknown table id '" + tableId + "'");
-    }
-}
-```
-
-> `erasePartitionInstantly` 无需改动——分区是叶节点，没有下级需要级联清理，原有的"找不到就报错"逻辑依然正确。
+> `erasePartitionInstantly` 无需改动——分区是叶节点，没有下级需要级联，原有"找不到就报错"的逻辑完全正确。
 
 ---
 
-## 回归测试：新增两个场景
+## 测试
 
-PR #35750 在原有测试套件中补充了两个**"目标不在回收站但其子条目在"**的覆盖场景：
+在原有回归测试基础上补充两个"目标本身不在回收站、但其子条目在"的场景：
 
-```groovy title="test_drop_catalog_recycle_bin.groovy — 新增测试场景"
-// 场景 A：Table 不在回收站，但其孤立 Partition 在
+```groovy title="test_drop_catalog_recycle_bin.groovy — 新增场景"
+// 场景 A：Table 不在回收站，但孤立 Partition 在
+//（先 DROP PARTITION，不 DROP TABLE）
 sql "ALTER TABLE tb1 DROP PARTITION p111;"
 pre_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() > 0)
+assertTrue(pre_pt_res.size() > 0)     // 确认分区在回收站
 
-// 用 TableId 执行清除（Table 本身不在回收站）
-table_id = pre_res[0][3]
+// 用 TableId 清除（Table 本身不在回收站）
 sql "DROP CATALOG RECYCLE BIN WHERE 'TableId' = ${table_id};"
-
-// 验证孤立分区被成功清除
 cur_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)
+assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 孤立分区被清除 ✓
 
-// 场景 B：DB 不在回收站，但其孤立 Partition 在
-sql "ALTER TABLE tb2 DROP PARTITION p111;"
+// 场景 B：DB 不在回收站，但孤立 Partition 在
 pre_db_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "test_db" """
-assertTrue(pre_db_res.size() == 0)  // DB 确认不在回收站
+assertTrue(pre_db_res.size() == 0)     // 确认 DB 不在回收站
 pre_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() > 0)
+assertTrue(pre_pt_res.size() > 0)      // 确认孤立分区在回收站
 
-// 用 DbId 执行清除（DB 本身不在回收站）
-db_id = pre_res[0][2]
+// 用 DbId 清除（DB 本身不在回收站）
 sql "DROP CATALOG RECYCLE BIN WHERE 'DbId' = ${db_id};"
-
-// 验证孤立分区被成功清除
 cur_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)
+assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 孤立分区被清除 ✓
 ```
 
 ---
 
-## 效果对比
+## 意义与影响
 
 | 场景 | PR #31893（旧） | PR #35750（新） |
 | --- | --- | --- |
-| DB 在回收站，子条目也在 | ✅ 正常清除 | ✅ 正常清除 |
-| DB **不在**回收站，子 Table/Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有子条目 |
-| Table **不在**回收站，子 Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有子条目 |
-| DB / Table / Partition 均不存在 | ❌ 报错 | ❌ 报错（行为不变） |
+| DB / Table / Partition 均在回收站 | ✅ 正常清除 | ✅ 正常清除 |
+| DB 不在，但子 Table / Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有子条目 |
+| Table 不在，但子 Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有子条目 |
+| DbId / TableId 在回收站中无任何记录 | ❌ 报错 | ❌ 报错（行为不变） |
 
-这次修复让 `DROP CATALOG RECYCLE BIN` 真正做到了"按 ID 清除所有关联记录"，而不仅仅是"必须精确匹配顶层条目"。
+将错误检查从"入口前置"改为"出口兜底"，用最小改动（2 文件，+69 行）完成语义升级：命令从"必须精确匹配顶层条目"变为"清除所有与该 ID 关联的回收站记录"，彻底消除了孤立条目无法清除的死角。

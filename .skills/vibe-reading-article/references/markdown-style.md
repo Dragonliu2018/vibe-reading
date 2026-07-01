@@ -1,5 +1,16 @@
 # Markdown 文章规范
 
+## 文件命名
+
+文件放在 `src/pages/articles/_md/` 目录下，命名规则：
+
+| 文章类型 | 格式 | 示例 |
+|---------|------|------|
+| 有 `source` 字段（PR/commit/Issue 等）| `{project}-{type}-{id}-{slug}.md` | `doris-pr-26133-status-fmt-formatter.md` |
+| 无 `source` 字段（源码解读、论文等）| `{kebab-case-description}.md` | `mycli-architecture.md` |
+
+`{project}`、`{type}` 均小写（`doris`、`pr`、`commit`、`issue`）；`{slug}` 为简短英文描述，用 `-` 分隔。
+
 ## Frontmatter（必填）
 
 ```yaml

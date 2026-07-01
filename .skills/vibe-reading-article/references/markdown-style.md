@@ -83,7 +83,7 @@ PR / Issue 类文章用 PR 元信息替代版本行：
 | `PR` | PR 编号 + URL |
 | `Issue` | PR body 中的 `Closes #XXXXX` / `Fix #XXXXX` |
 | `commit` | PR 页面底部 **"merged commit `xxxxxxx` into `owner:master`"** 区域的合并 commit hash，链接到 `github.com/{owner}/{repo}/commit/{hash}` |
-| `合并分支` | PR 页面 **Labels** 中形如 `dev/x.x.x-merged` 的 label，去掉 `dev/` 前缀只保留版本号（如 `dev/3.0.0-merged` → `3.0.0`）（⚠️ 不是 GitHub 页面显示的 target branch） |
+| `合并分支` | PR 页面 **Labels** 中形如 `dev/x.x.x-merged` 的 label，去掉 `dev/` 前缀只保留版本号（如 `dev/3.0.0-merged` → `3.0.0`）（⚠️ 不是 GitHub 页面显示的 target branch）；多个 `dev/x.x.x-merged` label 时用 ` / ` 连接，如 `2.1.5 / 3.0.0`（小版本在前，大版本在后） |
 | `变更行数` | commit `--stat` 最后一行的 `+N` |
 | `合并时间` | PR merge 时间，格式 `YYYY-MM-DD` |
 

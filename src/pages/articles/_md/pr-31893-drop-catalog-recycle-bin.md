@@ -7,7 +7,7 @@ source:
   url: "https://github.com/apache/doris/pull/31893"
 date: "2026-07-01"
 category: [Database, Apache Doris, PRs]
-tags: ["Apache Doris", "Java", "Recycle Bin", "DDL", "Nereids"]
+tags: ["Apache Doris", "Java", "DDL", "Nereids"]
 description: "新增 DROP CATALOG RECYCLE BIN 命令，支持按 DbId/TableId/PartitionId 立即清除回收站条目，无需等待后台定时任务。"
 readingTime: "10 min"
 aiModel: "Claude Opus 4.8"

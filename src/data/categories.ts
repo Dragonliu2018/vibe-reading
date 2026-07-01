@@ -18,6 +18,15 @@ export interface TreeNode {
   slugs?:    string[];     // 当前节点直属文章 slug
 }
 
+// ── 计算文章在侧边栏的展示标题（含 source 前缀）──────────────────
+function displayTitle(slug: string): string {
+  const a = articles.find(a => a.slug === slug);
+  if (!a) return slug;
+  return a.source
+    ? `[${a.source.project} ${a.source.type}-${a.source.id}] ${a.title}`
+    : a.title;
+}
+
 // ── 从 articles 自动构建分类树 ──────────────────────────────────────
 function buildTree(): TreeNode[] {
   const roots: TreeNode[] = [];
@@ -47,6 +56,17 @@ function buildTree(): TreeNode[] {
       }
     });
   }
+
+  // 叶节点内的文章按展示标题字母序升序排列
+  function sortSlugs(nodes: TreeNode[]) {
+    for (const node of nodes) {
+      if (node.slugs) {
+        node.slugs.sort((a, b) => displayTitle(a).localeCompare(displayTitle(b)));
+      }
+      if (node.children) sortSlugs(node.children);
+    }
+  }
+  sortSlugs(roots);
 
   return roots;
 }

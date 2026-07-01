@@ -30,6 +30,13 @@ aiModel: "Claude Opus 4.8"
 | `id` | ✅ | `26133` / `0001` / `2301.07041` |
 | `url` | 可选 | 原始链接，有则标识可点击跳转 |
 
+> ⚠️ **`title` 不要重复 `source` 的任何信息**：UI 最终拼接为 `[Doris PR-31893] title`，因此：
+> - **不写** `[PR-XXXXX]` 前缀（`type-id` 已由 `source` 提供）
+> - **不写** project 名称，如 `Apache Doris` / `Doris`（`project` 已由 `source` 提供）
+> - ✅ `"支持主动清理 Catalog 回收站"`
+> - ❌ `"Apache Doris 支持主动清理 Catalog 回收站"`
+> - ❌ `"[PR-31893] Apache Doris 支持主动清理 Catalog 回收站"`
+
 `category`：YAML 数组，定义文章的分类层级路径（支持任意深度）
   → **最后一项**自动作为首页卡片 badge 标签和过滤器选项（如 `源码解读`、`论文解读`）
   → 完整路径用于左侧侧边栏树形结构，**无需手动注册**
@@ -51,12 +58,22 @@ aiModel: "Claude Opus 4.8"
 PR / Issue 类文章用 PR 元信息替代版本行：
 
 ```markdown
-> **PR** [#26133](url) · **Issue** [#25974](url) · **合并分支** dev/2.0.4 · **变更行数** +24 行 · **合并时间** 2023-11-01
+> **PR** [#26133](url) · **Issue** [#25974](url) · **合并分支** 2.0.4 · **变更行数** +24 行 · **合并时间** 2023-11-01
 
 ---
 
 ## 问题背景
 ```
+
+各字段取数方式：
+
+| 字段 | 来源 |
+|---|---|
+| `PR` | PR 编号 + URL |
+| `Issue` | PR body 中的 `Closes #XXXXX` / `Fix #XXXXX` |
+| `合并分支` | PR 页面 **Labels** 中形如 `dev/x.x.x-merged` 的 label，去掉 `dev/` 前缀只保留版本号（如 `dev/3.0.0-merged` → `3.0.0`）（⚠️ 不是 GitHub 页面显示的 target branch） |
+| `变更行数` | commit `--stat` 最后一行的 `+N` |
+| `合并时间` | PR merge 时间，格式 `YYYY-MM-DD` |
 
 ## 标题层级
 

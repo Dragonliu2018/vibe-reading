@@ -47,8 +47,6 @@ LOG(WARNING) << fmt::format("scan failed: {}", status);
 
 整个流程在编译期完成类型检查，非法格式说明符直接报编译错误。
 
-> ⚠️ 特化必须写在 `doris` 命名空间**之外**（全局作用域或 `fmt` 命名空间内），否则 ADL（Argument-Dependent Lookup）找不到它。
-
 ---
 
 ## 实现
@@ -72,13 +70,17 @@ struct fmt::formatter<doris::Status> {
 };
 ```
 
-三个关键决策：
+四个关键决策：
 
-**`template<>` 全特化**：精确匹配 `doris::Status`，不与其他类型产生歧义。若用偏特化，模板参数匹配规则更复杂，此处无必要。
+* **`template<>` 全特化**：精确匹配 `doris::Status`，不与其他类型产生歧义。若用偏特化，模板参数匹配规则更复杂，此处无必要。
 
-**`constexpr parse()`**：标记为 `constexpr` 后，编译器在编译期验证格式串，错误的格式说明符（如 `{:d}`）直接报编译错而非运行时崩溃。
+* **`constexpr parse()`**：标记为 `constexpr` 后，编译器在编译期验证格式串，错误的格式说明符（如 `{:d}`）直接报编译错而非运行时崩溃。
 
-**写在 `status.h` 末尾**：特化随头文件传播，所有已 `#include "common/status.h"` 的翻译单元自动获得格式化能力，无需修改任何调用点。
+* **写在 `status.h` 末尾**：特化随头文件传播，所有已 `#include "common/status.h"` 的翻译单元自动获得格式化能力，无需修改任何调用点。
+
+* **特化必须在全局作用域**：`fmt::formatter` 定义在 `fmt` 命名空间，C++ 规定显式特化只能位于**全局命名空间**或**与主模板相同的命名空间**（即 `fmt::`）。若将特化写在 `doris` 命名空间内，编译器不会将其识别为对 `fmt::formatter` 的特化，而是当作一个全新的类模板——`fmt::format("{}", status)` 实例化时找不到特化，直接报编译错。
+
+  > **ADL（Argument-Dependent Lookup）补充**：调用 `fmt::format("{}", status)` 时，编译器通过 ADL 在实参类型 `doris::Status` 所属的 `doris` 命名空间额外搜索候选函数。但对于类模板特化，ADL 不参与查找——特化的可见性由命名空间嵌套规则决定，不受实参类型影响。因此，即使 `doris` 中存在一个"长得像"特化的类，`fmt` 内部的模板实例化机制也找不到它。
 
 `fmt::format_to(ctx.out(), "{}", status.to_string())` 将结果直接写入输出迭代器，不创建临时 `std::string`，与 fmt 库"按需写入，不做多余分配"的设计一致。
 

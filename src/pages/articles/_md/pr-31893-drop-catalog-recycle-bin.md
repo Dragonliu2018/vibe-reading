@@ -182,5 +182,3 @@ sql "DROP CATALOG RECYCLE BIN WHERE 'DbId' = ${db_id};"
 | ID 获取 | — | `SHOW CATALOG RECYCLE BIN WHERE NAME = "..."` |
 
 典型使用场景：大表误删后占满磁盘需紧急释放空间、回收特定 ID 避免与新对象冲突、测试环境清理堆积的垃圾条目。
-
-这个 PR 同时为后续 PR [#35750](https://github.com/apache/doris/pull/35750) 提供了基础——#35750 修复了当 DB 不在回收站但其子条目仍存在时命令会报错的问题。

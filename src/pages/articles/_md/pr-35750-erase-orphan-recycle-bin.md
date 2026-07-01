@@ -1,5 +1,5 @@
 ---
-title: "修复 DROP CATALOG RECYCLE BIN 无法清理孤立条目的缺陷"
+title: "修复按 DbId/TableId 清除回收站时未级联清理子分区的缺陷"
 source:
   project: "Doris"
   type: "PR"
@@ -8,7 +8,7 @@ source:
 date: "2026-07-01"
 category: [Database, Apache Doris, PRs]
 tags: ["Apache Doris", "Java", "Recycle Bin", "Bug Fix"]
-description: "将 eraseDatabaseInstantly / eraseTableInstantly 从早失败改为延迟报错，确保孤立的子条目能被一并清除。"
+description: "将 eraseDatabaseInstantly / eraseTableInstantly 从早失败改为延迟报错，确保顶层对象（DB/Table）本身不在回收站时，其下的子条目也能被一并清除。"
 readingTime: "6 min"
 aiModel: "Claude Opus 4.8"
 ---
@@ -26,7 +26,7 @@ PR [#31893](https://github.com/apache/doris/pull/31893) 于 2024-05-30 引入 `D
 此时若按 DbId 触发清除，会命中 PR #31893 实现中的早失败逻辑：
 
 ```sql title="Issue #35748 的复现步骤"
--- 只 DROP PARTITION，回收站只有分区条目
+-- 只 DROP PARTITION，回收站里只有分区条目，DB 本身不在回收站
 mysql> SHOW CATALOG RECYCLE BIN;
 +-----------+------+-------+---------+-------------+---------------------+
 | Type      | Name | DbId  | TableId | PartitionId | DropTime            |
@@ -39,7 +39,7 @@ mysql> DROP CATALOG RECYCLE BIN WHERE 'DbId' = 12056;
 ERROR 1105 (HY000): errCode = 2, detailMessage = Unknown database id '12056'
 ```
 
-相同问题也存在于 TableId 场景：Table 本身不在回收站，但其孤立分区依然无法被清除。
+相同问题也存在于 TableId 场景：Table 本身不在回收站，但其下仍有分区条目时，按 TableId 清除同样报错。
 
 ---
 
@@ -53,7 +53,7 @@ ERROR 1105 (HY000): errCode = 2, detailMessage = Unknown database id '12056'
 | `DROP TABLE t` | `idToTable` + `idToPartition`（表下所有分区） |
 | `ALTER TABLE t DROP PARTITION p` | 仅 `idToPartition` |
 
-因此，单独 DROP PARTITION 后，回收站里只有分区条目，对应的 DB 和 Table 条目**根本不存在**于 `idToDatabase` / `idToTable` 中。
+因此，单独 DROP PARTITION 后，回收站里只有分区条目，对应的 DB 和 Table 条目**根本不存在**于 `idToDatabase` / `idToTable` 中——这就是"DB 不在回收站但其分区仍在"的根本原因。
 
 ---
 
@@ -97,7 +97,7 @@ public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
     }
     for (Long tableId : tableIdToErase) eraseTableInstantly(tableId);
 
-    // 3. 无论 DB 是否存在，始终清理同 DbId 下的所有孤立 Partition 条目
+    // 3. 无论 DB 是否存在，始终清理同 DbId 下的所有分区条目（含 DB 不在回收站的情形）
     List<Long> partitionIdToErase = Lists.newArrayList();
     for (Map.Entry<Long, RecyclePartitionInfo> e : idToPartition.entrySet()) {
         if (e.getValue().getDbId() == dbId) partitionIdToErase.add(e.getKey());
@@ -111,7 +111,7 @@ public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
 }
 ```
 
-`eraseTableInstantly` 采用完全对称的模式：Table 条目不存在时不报错，仍扫描并清理同 `tableId` 下的所有孤立 Partition；只有 Table 和 Partition 均未找到时才报错。
+`eraseTableInstantly` 采用完全对称的模式：Table 条目不存在时不报错，仍扫描并清理同 `tableId` 下所有属于该表的分区条目（包括 Table 本身不在回收站的情形）；只有 Table 和分区均未找到时才报错。
 
 > `erasePartitionInstantly` 无需改动——分区是叶节点，没有下级需要级联，原有"找不到就报错"的逻辑完全正确。
 
@@ -119,10 +119,10 @@ public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
 
 ## 测试
 
-在原有回归测试基础上补充两个"目标本身不在回收站、但其子条目在"的场景：
+在原有回归测试基础上补充两个"按 ID 清除但顶层对象不在回收站"的场景：
 
 ```groovy title="test_drop_catalog_recycle_bin.groovy — 新增场景"
-// 场景 A：Table 不在回收站，但孤立 Partition 在
+// 场景 A：Table 不在回收站，但其下分区在
 //（先 DROP PARTITION，不 DROP TABLE）
 sql "ALTER TABLE tb1 DROP PARTITION p111;"
 pre_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
@@ -131,18 +131,18 @@ assertTrue(pre_pt_res.size() > 0)     // 确认分区在回收站
 // 用 TableId 清除（Table 本身不在回收站）
 sql "DROP CATALOG RECYCLE BIN WHERE 'TableId' = ${table_id};"
 cur_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 孤立分区被清除 ✓
+assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 分区被清除 ✓
 
-// 场景 B：DB 不在回收站，但孤立 Partition 在
+// 场景 B：DB 不在回收站，但其下分区在
 pre_db_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "test_db" """
-assertTrue(pre_db_res.size() == 0)     // 确认 DB 不在回收站
+assertTrue(pre_db_res.size() == 0)    // 确认 DB 不在回收站
 pre_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() > 0)      // 确认孤立分区在回收站
+assertTrue(pre_pt_res.size() > 0)     // 确认分区在回收站
 
 // 用 DbId 清除（DB 本身不在回收站）
 sql "DROP CATALOG RECYCLE BIN WHERE 'DbId' = ${db_id};"
 cur_pt_res = sql """ SHOW CATALOG RECYCLE BIN WHERE NAME = "p111" """
-assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 孤立分区被清除 ✓
+assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 分区被清除 ✓
 ```
 
 ---
@@ -152,8 +152,8 @@ assertTrue(pre_pt_res.size() - cur_pt_res.size() == 1)  // 孤立分区被清除
 | 场景 | PR #31893（旧） | PR #35750（新） |
 | --- | --- | --- |
 | DB / Table / Partition 均在回收站 | ✅ 正常清除 | ✅ 正常清除 |
-| DB 不在，但子 Table / Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有子条目 |
-| Table 不在，但子 Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有子条目 |
+| DB 不在回收站，但其下 Table / Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有关联条目 |
+| Table 不在回收站，但其下 Partition 在 | ❌ 报错，子条目遗留 | ✅ 清除所有关联条目 |
 | DbId / TableId 在回收站中无任何记录 | ❌ 报错 | ❌ 报错（行为不变） |
 
-将错误检查从"入口前置"改为"出口兜底"，用最小改动（2 文件，+69 行）完成语义升级：命令从"必须精确匹配顶层条目"变为"清除所有与该 ID 关联的回收站记录"，彻底消除了孤立条目无法清除的死角。
+将错误检查从"入口前置"改为"出口兜底"，用最小改动（2 文件，+69 行）完成语义升级：命令从"必须精确匹配顶层条目"变为"清除所有与该 ID 关联的回收站记录"。

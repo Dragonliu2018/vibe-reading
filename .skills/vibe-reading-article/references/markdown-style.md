@@ -270,12 +270,15 @@ npx skills add markdown-viewer/skills
 
 ## Markdown vs HTML 选择原则
 
+**PR / commit 类文章：默认 Markdown，除非人工明确指定 HTML。**
+
 **选 Markdown 当：**
+- PR / commit / Issue 类文章（默认）
 - 内容以文字解释、代码块、表格为主
 - 不需要复杂视觉组件（卡片组、分层图、双列布局）
 - 快速发布，不需要精细视觉设计
 
-**选 HTML 当：**
+**选 HTML 当（需人工明确指定）：**
 - 需要 card-grid 展示多个功能卡片
 - 需要 layer-stack 展示分层架构
 - 需要自定义导航、进度条、复杂布局

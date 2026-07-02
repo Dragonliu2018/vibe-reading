@@ -13,7 +13,7 @@ readingTime: "12 min"
 aiModel: "Claude Opus 4.8"
 ---
 
-> **PR** [#16631](https://github.com/databendlabs/databend/pull/16631) · **Issue** [#16556](https://github.com/databendlabs/databend/issues/16556) · **commit** [4557131](https://github.com/databendlabs/databend/commit/4557131b0ef4e37b9c76f7b8c27254b04378c58a) · **合并分支** v1.2.647-nightly · **变更行数** +1,389 / -187 行 · **合并时间** 2024-10-20
+> **PR** [#16631](https://github.com/databendlabs/databend/pull/16631) · **Issue** [#16556](https://github.com/databendlabs/databend/issues/16556) · **commit** [4557131](https://github.com/databendlabs/databend/commit/4557131b0ef4e37b9c76f7b8c27254b04378c58a) · **首发版本** v1.2.647-nightly · **变更行数** +1,389 / -187 行 · **合并时间** 2024-10-20
 
 ---
 

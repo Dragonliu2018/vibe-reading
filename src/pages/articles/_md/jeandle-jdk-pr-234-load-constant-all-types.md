@@ -13,7 +13,7 @@ readingTime: "12 min"
 aiModel: "Claude Opus 4.8"
 ---
 
-> **PR** [#234](https://github.com/jeandle/jeandle-jdk/pull/234) · **Issue** [#169](https://github.com/jeandle/jeandle-jdk/issues/169) · **commit** [9dda5eb](https://github.com/jeandle/jeandle-jdk/commit/9dda5eba9a3b5d901898f61feeeef67a4f6cbd0d) · **变更行数** +5 行 · **合并时间** 2025-12-06
+> **PR** [#234](https://github.com/jeandle/jeandle-jdk/pull/234) · **Issue** [#169](https://github.com/jeandle/jeandle-jdk/issues/169) · **commit** [9dda5eb](https://github.com/jeandle/jeandle-jdk/commit/9dda5eba9a3b5d901898f61feeeef67a4f6cbd0d) · **首发版本** - · **变更行数** +5 行 · **合并时间** 2025-12-06
 
 ---
 

@@ -69,23 +69,25 @@ aiModel: "Claude Opus 4.8"
 PR / Issue 类文章用 PR 元信息替代版本行：
 
 ```markdown
-> **PR** [#26133](url) · **Issue** [#25974](url) · **commit** [67f1ae8](url) · **合并分支** 2.0.4 · **变更行数** +24 行 · **合并时间** 2023-11-01
+> **PR** [#26133](url) · **Issue** [#25974](url) · **commit** [67f1ae8](url) · **首发版本** 2.0.4 · **变更行数** +24 行 · **合并时间** 2023-11-01
 
 ---
 
 ## 问题背景
 ```
 
+**元信息格式固定，所有字段必须出现。** 某个字段取不到值时，用 `-` 占位，不要省略该字段。
+
 各字段取数方式：
 
 | 字段 | 来源 |
 |---|---|
 | `PR` | PR 编号 + URL |
-| `Issue` | PR body 中的 `Closes #XXXXX` / `Fix #XXXXX` |
-| `commit` | PR 页面底部 **"merged commit `xxxxxxx` into `owner:master`"** 区域的合并 commit hash，链接到 `github.com/{owner}/{repo}/commit/{hash}` |
-| `合并分支` | PR 页面 **Labels** 中形如 `dev/x.x.x-merged` 的 label，去掉 `dev/` 前缀只保留版本号（如 `dev/3.0.0-merged` → `3.0.0`）（⚠️ 不是 GitHub 页面显示的 target branch）；多个 `dev/x.x.x-merged` label 时用 ` / ` 连接，如 `2.1.5 / 3.0.0`（小版本在前，大版本在后） |
-| `变更行数` | commit `--stat` 最后一行的 `+N` |
-| `合并时间` | PR merge 时间，格式 `YYYY-MM-DD` |
+| `Issue` | PR body 中的 `Closes #XXXXX` / `Fix #XXXXX`；找不到则填 `-` |
+| `commit` | PR 页面底部 **"merged commit `xxxxxxx` into `owner:master`"** 区域的合并 commit hash，链接到 `github.com/{owner}/{repo}/commit/{hash}`；找不到则填 `-` |
+| `首发版本` | **优先**：PR 页面 Labels 中形如 `dev/x.x.x-merged` 的 label，去掉 `dev/` 前缀只保留版本号（如 `dev/3.0.0-merged` → `3.0.0`）；多个时用 ` / ` 连接（小版本在前）。**备选**：若无此类 label，在本地仓库执行 `git tag --contains <merge-commit-hash> \| sort -V \| head -1` 取首个包含该 commit 的 tag。**兜底**：仍取不到则填 `-` |
+| `变更行数` | commit `--stat` 最后一行的 `+N`；找不到则填 `-` |
+| `合并时间` | PR merge 时间，格式 `YYYY-MM-DD`；找不到则填 `-` |
 
 ## 标题层级
 
@@ -316,7 +318,7 @@ npx skills add markdown-viewer/skills
 ### 文章骨架
 
 ```markdown
-> **PR** [#XXXXX](url) · **Issue** [#XXXXX](url) · **commit** [xxxxxxx](url) · **合并分支** x.x.x · **变更行数** +N 行 · **合并时间** YYYY-MM-DD
+> **PR** [#XXXXX](url) · **Issue** [#XXXXX](url) · **commit** [xxxxxxx](url) · **首发版本** x.x.x · **变更行数** +N 行 · **合并时间** YYYY-MM-DD
 
 ---
 

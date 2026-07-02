@@ -13,7 +13,7 @@ readingTime: "8 min"
 aiModel: "Claude Opus 4.8"
 ---
 
-> **PR** [#36150](https://github.com/apache/doris/pull/36150) · **Issue** [#35784](https://github.com/apache/doris/issues/35784) · **commit** [61857fe](https://github.com/apache/doris/commit/61857fec160de0858d8e8ee5ac02e9d111b9a7d0) · **合并分支** 2.1.5 / 3.0.0 · **变更行数** +133 行 · **合并时间** 2024-06-13
+> **PR** [#36150](https://github.com/apache/doris/pull/36150) · **Issue** [#35784](https://github.com/apache/doris/issues/35784) · **commit** [61857fe](https://github.com/apache/doris/commit/61857fec160de0858d8e8ee5ac02e9d111b9a7d0) · **首发版本** 2.1.5 / 3.0.0 · **变更行数** +133 行 · **合并时间** 2024-06-13
 
 ---
 

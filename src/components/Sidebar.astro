@@ -40,7 +40,7 @@ function renderNode(node: TreeNode, depth: number = 0): string {
       ? `[${source.project} ${source.type}-${source.id}] ${baseTitle}`
       : baseTitle;
     const active = slug === currentSlug ? ' active' : '';
-    return `<a class="tree-article${active}" href="${base}/articles/${slug}" title="${esc(displayTitle)}">${esc(displayTitle)}</a>`;
+    return `<a class="tree-article${active}" href="${base}/articles/${slug}" data-tip="${esc(displayTitle)}">${esc(displayTitle)}</a>`;
   }).join('');
 
   return `<div class="tree-node">
@@ -104,12 +104,17 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
   )}
 </aside>
 
-<!-- 同步还原分类展开状态（is:inline = 不 defer，首次绘制前执行，消除闪动）-->
+<!-- 同步还原所有侧边栏状态（is:inline = 首次绘制前执行，消除闪动）-->
 <script is:inline>
   (function () {
     try {
       var sidebar = document.getElementById('g-sidebar');
       if (!sidebar) return;
+
+      // 禁用所有过渡，防止箭头旋转、高度展开等动画在切换文章时触发
+      sidebar.classList.add('no-transition');
+
+      // 1. 还原分类展开状态
       var keys = JSON.parse(localStorage.getItem('sidebar-open-cats') || '[]');
       keys.forEach(function (key) {
         var btn = sidebar.querySelector('[data-key="' + key + '"]');
@@ -118,6 +123,22 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
           var list = btn.nextElementSibling;
           if (list) list.classList.add('open');
         }
+      });
+
+      // 2. 桌面端：还原宽度和折叠状态（首次绘制前完成，避免布局位移）
+      if (window.matchMedia('(min-width: 960px)').matches) {
+        if (localStorage.getItem('sidebar-collapsed') === 'true') {
+          sidebar.classList.add('collapsed');
+        }
+        var savedW = localStorage.getItem('sidebar-width');
+        if (savedW && !sidebar.classList.contains('collapsed')) {
+          sidebar.style.width = savedW;
+        }
+      }
+
+      // 还原完毕后移除禁用类，恢复正常交互过渡
+      requestAnimationFrame(function () {
+        sidebar.classList.remove('no-transition');
       });
     } catch (_) {}
   })();
@@ -313,6 +334,10 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
   }
   .tree-cat.open .tree-chevron { transform: rotate(90deg); opacity: 0.7; }
 
+  /* 状态还原期间禁用所有子元素过渡，防止箭头/高度动画在切换文章时触发 */
+  #g-sidebar.no-transition,
+  #g-sidebar.no-transition * { transition: none !important; }
+
   .tree-cat-name { flex: 1; }
 
   /* ── 可折叠容器：无轨道线，纯缩进（Apple Finder 风格）── */
@@ -350,6 +375,37 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
     .tree-cat     { padding: 12px 8px; font-size: 14px; }  /* ~44px */
     .tree-cat-sub { padding: 11px 8px; font-size: 13px; }  /* ~42px */
     .tree-article { padding: 11px 8px; font-size: 13px; }  /* ~42px */
+  }
+
+  /* ── 自定义文章标题悬浮提示 ── */
+  #g-sidebar-tip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    max-width: 360px;
+    padding: 7px 13px;
+    border-radius: 9px;
+    background: rgba(14, 18, 28, 0.95);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.60),
+                0 2px 8px rgba(0,0,0,0.30),
+                inset 0 1px 0 rgba(255,255,255,0.07);
+    font-size: 12.5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    color: rgba(235,235,245,0.92);
+    line-height: 1.5;
+    white-space: normal;
+    word-break: break-all;
+    opacity: 0;
+    transform: scale(0.96) translateY(-50%);
+    transition: opacity .14s cubic-bezier(0.2,0,0,1),
+                transform .14s cubic-bezier(0.2,0,0,1);
+  }
+  #g-sidebar-tip.visible {
+    opacity: 1;
+    transform: scale(1) translateY(-50%);
   }
 </style>
 
@@ -405,23 +461,17 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
       });
     });
 
-    // 滚动当前文章进视口
+    // 滚动当前文章进视口（同步执行，避免 rAF 延迟引起闪动）
     const activeLink = sidebar.querySelector<HTMLElement>('.tree-article.active');
-    if (activeLink) {
-      requestAnimationFrame(() => activeLink.scrollIntoView({ block: 'nearest' }));
-    }
+    if (activeLink) activeLink.scrollIntoView({ block: 'nearest' });
   }
 
   // ── Desktop only: collapse toggle + drag to resize ───────────────
   if (sidebar && handle && toggle && isDesktop()) {
-    if (localStorage.getItem('sidebar-collapsed') === 'true') {
-      sidebar.classList.add('collapsed');
+    // 宽度和折叠状态已由 is:inline 在首次绘制前还原，此处只需同步 toggle 文案
+    if (sidebar.classList.contains('collapsed')) {
       toggle.title = '展开侧边栏';
       toggle.setAttribute('aria-label', '展开侧边栏');
-    }
-    const savedW = localStorage.getItem('sidebar-width');
-    if (savedW && !sidebar.classList.contains('collapsed')) {
-      sidebar.style.width = savedW;
     }
 
     toggle.addEventListener('click', (e) => {
@@ -465,4 +515,42 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
       localStorage.setItem('sidebar-width', sidebar.style.width);
     });
   }
+
+  // ── 文章标题自定义悬浮提示 ──────────────────────────────────────
+  const tip = document.createElement('div');
+  tip.id = 'g-sidebar-tip';
+  document.body.appendChild(tip);
+
+  let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
+  document.querySelectorAll<HTMLElement>('.tree-article[data-tip]').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+
+      const text = el.dataset.tip ?? '';
+      tip.textContent = text;
+      tip.classList.remove('visible');   // 先隐藏，无动画，让浏览器计算位置
+
+      const rect    = el.getBoundingClientRect();
+      const tipTop  = rect.top + rect.height / 2;
+      let   tipLeft = rect.right + 10;
+
+      tip.style.top   = tipTop  + 'px';
+      tip.style.left  = tipLeft + 'px';
+      tip.style.right = '';
+
+      // 量出宽度判断是否越界，再触发入场动画
+      requestAnimationFrame(() => {
+        if (tipLeft + tip.offsetWidth > window.innerWidth - 12) {
+          tip.style.left  = '';
+          tip.style.right = (window.innerWidth - rect.left + 10) + 'px';
+        }
+        tip.classList.add('visible');
+      });
+    });
+
+    el.addEventListener('mouseleave', () => {
+      hideTimer = setTimeout(() => { tip.classList.remove('visible'); }, 80);
+    });
+  });
 </script>

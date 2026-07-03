@@ -44,16 +44,10 @@ const isDesktop = () => window.matchMedia('(min-width: 960px)').matches;
 const tocHandle = document.getElementById('g-toc-handle') as HTMLElement | null;
 
 if (tocPanel && tocHandle && tocToggle && isDesktop()) {
-  // 还原折叠状态
-  if (localStorage.getItem('toc-collapsed') === 'true') {
-    tocPanel.classList.add('collapsed');
+  // 宽度和折叠状态已由 is:inline 在首次绘制前还原，此处只需同步 toggle 文案
+  if (tocPanel.classList.contains('collapsed')) {
     tocToggle.title = '展开目录';
     tocToggle.setAttribute('aria-label', '展开目录');
-  }
-  // 还原宽度
-  const savedW = localStorage.getItem('toc-width');
-  if (savedW && !tocPanel.classList.contains('collapsed')) {
-    tocPanel.style.width = savedW;
   }
 
   // 折叠 / 展开按钮

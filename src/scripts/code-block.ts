@@ -6,14 +6,11 @@
 (function enhanceCodeBlocks() {
   const COLLAPSED_H = 0;     // 折叠后完全隐藏代码内容
 
-  const SVG_COPY = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-    <!-- 剪贴板主体 -->
-    <rect x="3" y="5" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
-    <!-- 顶部夹子 -->
-    <path d="M7 5V4a3 3 0 0 1 6 0v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-    <!-- 内容行 -->
-    <line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <line x1="7" y1="13" x2="11" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+  const SVG_COPY = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+    <!-- 后方方块 -->
+    <rect x="5" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+    <!-- 前方方块（填充 header 背景色，遮住交叠区域）-->
+    <rect x="1" y="5" width="10" height="10" rx="2" fill="#1c2333" stroke="currentColor" stroke-width="1.4"/>
   </svg>`;
   const SVG_CHECK = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none">
     <path d="M3 10l5 5 9-9" stroke="#3fb950" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -172,9 +169,49 @@
 
     langWrap.append(langBtn, langMenu);
 
-    // ③ 右侧：折行按钮 + 复制按钮
+    // ③ 右侧：行号 + 折行 + 复制
     const actions = document.createElement('div');
     actions.className = 'code-actions';
+
+    // 行号
+    const SVG_LINENO = `<svg width="14" height="12" viewBox="0 0 14 12" fill="none">
+      <path d="M1 2h2M1 6h2M1 10h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M6 2h8M6 6h6M6 10h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>`;
+
+    const lineNoBtn = document.createElement('button');
+    lineNoBtn.className = 'code-btn';
+    lineNoBtn.title     = '显示行号';
+    lineNoBtn.innerHTML = SVG_LINENO;
+
+    let lineNos = false;
+    let lineNoEl: HTMLElement | null = null;
+
+    const buildLineNums = () => {
+      const lines = rawCode.split('\n');
+      const count = lines[lines.length - 1] === '' ? lines.length - 1 : lines.length;
+      const el = document.createElement('div');
+      el.className = 'code-line-numbers';
+      el.textContent = Array.from({ length: count }, (_, i) => i + 1).join('\n');
+      return el;
+    };
+
+    lineNoBtn.addEventListener('click', () => {
+      lineNos = !lineNos;
+      if (lineNos) {
+        lineNoEl = buildLineNums();
+        pre.insertBefore(lineNoEl, pre.firstChild);
+        wrapper.classList.add('has-line-numbers');
+        lineNoBtn.classList.add('line-no-active');
+        lineNoBtn.title = '隐藏行号';
+      } else {
+        lineNoEl?.remove();
+        lineNoEl = null;
+        wrapper.classList.remove('has-line-numbers');
+        lineNoBtn.classList.remove('line-no-active');
+        lineNoBtn.title = '显示行号';
+      }
+    });
 
     // 折行
     const wrapBtn = document.createElement('button');
@@ -192,7 +229,7 @@
     cpBtn.title     = '复制代码';
     cpBtn.innerHTML = SVG_COPY;
 
-    actions.append(wrapBtn, cpBtn);
+    actions.append(lineNoBtn, wrapBtn, cpBtn);
     header.append(toggleBtn, spacer, langWrap, actions);
 
     // 代码体

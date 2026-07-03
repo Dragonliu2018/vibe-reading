@@ -412,8 +412,24 @@ a { color: inherit; text-decoration: none; }
   opacity: 0.9;
 }
 
-/* 右侧：折行按钮激活态 */
-.code-btn.wrap-active { color: var(--accent) !important; background: rgba(41,151,255,0.12) !important; }
+/* 右侧：折行 / 行号按钮激活态 */
+.code-btn.wrap-active,
+.code-btn.line-no-active { color: var(--accent) !important; background: rgba(41,151,255,0.12) !important; }
+
+/* 行号列 */
+.code-line-numbers {
+  position: absolute; left: 0; top: 0;
+  padding: 18px 10px 18px 0;
+  min-width: 2.8em; text-align: right;
+  font-family: var(--mono); font-size: 13px; line-height: 1.7;
+  color: rgba(255,255,255,0.18);
+  user-select: none; white-space: pre;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.prose-code-block.has-line-numbers pre {
+  position: relative;
+  padding-left: 4.2em !important;
+}
 
 /* 右侧：操作按钮 */
 .code-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }

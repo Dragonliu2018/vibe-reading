@@ -160,6 +160,23 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
 
   </div>
 
+  <!-- 首次绘制前还原目录栏宽度/折叠状态，避免布局位移 -->
+  <script is:inline>
+    (function () {
+      try {
+        var panel = document.getElementById('g-toc-panel');
+        if (!panel || !window.matchMedia('(min-width: 960px)').matches) return;
+        if (localStorage.getItem('toc-collapsed') === 'true') {
+          panel.classList.add('collapsed');
+        }
+        var savedW = localStorage.getItem('toc-width');
+        if (savedW && !panel.classList.contains('collapsed')) {
+          panel.style.width = savedW;
+        }
+      } catch (_) {}
+    })();
+  </script>
+
   <script>
     import '../scripts/article-toc';
   </script>

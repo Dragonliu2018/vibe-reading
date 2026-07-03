@@ -283,6 +283,8 @@ SELECT key, dict_get(d1, 'value', key) FROM test_table;
 - **安全**：`format_key` 修复了旧版字符串不加引号的 SQL 注入漏洞
 - **可维护性**：两组宏（`fetch_single_row_by_sqlx!` / `fetch_all_rows_by_sqlx!`）统一了类型分发逻辑，消除了大量重复的 match 分支
 
+> **后续**：本 PR 引入的宏在值列含 NULL 时会崩溃，在 [PR #16978](https://github.com/databendlabs/databend/pull/16978) 中修复，详见[修复 MySQL 字典值列含 NULL 时的解码崩溃](/vibe-reading/articles/databend-pr-16978-mysql-dict-null-fix。
+
 ---
 
 ## TODO

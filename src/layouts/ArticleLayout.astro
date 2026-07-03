@@ -58,8 +58,8 @@ function badgeStyle(label: string): string {
 const pathname    = Astro.url.pathname;
 const currentSlug = pathname.replace(/.*\/articles\//, '').replace(/\/$/, '');
 
-// TOC: h2 + h3 only
-const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+// TOC: h2 + h3 + h4 only
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.depth === 4);
 ---
 
 <!DOCTYPE html>

@@ -22,7 +22,7 @@ backToTop?.addEventListener('click', () => {
 
 // ── TOC：点击平滑滚动（TOC 在 main-scroll 外，需手动处理）──
 const tocLinks   = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
-const headingEls = document.querySelectorAll<HTMLElement>('article h2[id], article h3[id]');
+const headingEls = document.querySelectorAll<HTMLElement>('article h2[id], article h3[id], article h4[id]');
 
 tocLinks.forEach(link => {
   link.addEventListener('click', e => {

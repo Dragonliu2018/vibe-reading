@@ -172,6 +172,13 @@ a { color: inherit; text-decoration: none; }
 }
 .toc-link.depth-3:hover  { color: rgba(235,235,245,0.58); }
 .toc-link.depth-3.active { color: var(--accent); }
+.toc-link.depth-4 {
+  padding-left: 26px;
+  font-size: 11px;
+  color: rgba(235,235,245,0.28);
+}
+.toc-link.depth-4:hover  { color: rgba(235,235,245,0.52); }
+.toc-link.depth-4.active { color: var(--accent); }
 
 /* ── Article scroll panel ── */
 .main-scroll {
@@ -650,4 +657,10 @@ a { color: inherit; text-decoration: none; }
     color: rgba(235,235,245,0.42);
   }
   .mob-toc-link.depth-3.active { color: var(--accent); }
+  .mob-toc-link.depth-4 {
+    padding-left: 44px;
+    font-size: 12.5px;
+    color: rgba(235,235,245,0.35);
+  }
+  .mob-toc-link.depth-4.active { color: var(--accent); }
 }

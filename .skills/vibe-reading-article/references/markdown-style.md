@@ -49,10 +49,26 @@ aiModel: "Claude Opus 4.8"
 > - ❌ `"[PR-31893] Apache Doris 支持主动清理 Catalog 回收站"`
 
 `category`：YAML 数组，定义文章的分类层级路径（支持任意深度）
-  → **最后一项**自动作为首页卡片 badge 标签和过滤器选项（如 `源码解读`、`论文解读`）
+  → **最后一项**自动作为首页卡片 badge 标签和过滤器选项
   → 完整路径用于左侧侧边栏树形结构，**无需手动注册**
-  → 示例：`[Database, 生态, mycli, 源码解读]`、`[AI, 可观测性, Litefuse, 源码解读]`
   → 最后一级下挂文章链接，中间级别为折叠/展开的分类节点
+
+**文章类型（最后一级）约定：**
+
+| 类型 | Category 末项 | 说明 |
+|------|--------------|------|
+| 解读别人的 PR / commit | `PRs` | 分析他人贡献 |
+| 自己写的 PR / commit | `Contributions` | 自己提交的开源贡献 |
+| 源码架构解读 | `Internals` | 深入源码内部机制、架构分析 |
+| 技术文章 / 笔记 | `Notes` | 原理解析、经验总结 |
+| 论文解读 | `Papers` | 学术论文阅读 |
+
+**示例：**
+- `[Database, Apache Doris, PRs]` — Doris PR 解读
+- `[Database, Apache Doris, Contributions]` — 自己贡献的 Doris PR
+- `[Database, 生态, mycli, Internals]` — mycli 源码架构解读
+- `[AI, Papers]` — AI 论文解读
+- `[Database, Apache Doris, Notes]` — Doris 相关技术笔记
 
 ## 导言段落（frontmatter 之后立即写）
 

@@ -6,7 +6,7 @@ source:
   id: "234"
   url: "https://github.com/jeandle/jeandle-jdk/pull/234"
 date: "2026-07-01"
-category: [JVM, Jeandle-JDK, Contributions]
+category: [Languages, Java, Jeandle-JDK, Contributions]
 tags: ["JVM", "LLVM", "字节码", "BasicType", "Jeandle"]
 description: "Jeandle-JDK 的 load_constant 方法此前仅处理了部分 BasicType，本 PR 补全了 T_BOOLEAN/T_BYTE/T_CHAR/T_SHORT/T_ARRAY 五个缺失分支，使常量加载路径与 JVM 规范完全对齐。"
 readingTime: "12 min"
@@ -250,5 +250,3 @@ Java 中数组（如 `int[]`、`String[]`）本质上是对象，其引用在 Ho
 
 - [JVM 规范 §2.11.1：计算类型与实际类型](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html#jvms-2.11.1-320)
 - [JVM 规范 §6.5：ldc / ldc_w / ldc2_w 指令](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.ldc)
-- [Jeandle-JDK Issue #169](https://github.com/jeandle/jeandle-jdk/issues/169)
-- [PR #234 原始页面](https://github.com/jeandle/jeandle-jdk/pull/234)

@@ -5,6 +5,7 @@ source:
   type: "PR"
   id: "35760"
   url: "https://github.com/apache/doris/pull/35760"
+  prType: "fix"
 date: "2026-07-01"
 category: [Database, Apache Doris, Contributions]
 tags: ["Apache Doris", "Java", "FE", "DDL"]

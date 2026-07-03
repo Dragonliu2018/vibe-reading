@@ -1,10 +1,13 @@
 import { readdirSync, readFileSync } from 'fs';
 
+export type PrType = 'feat' | 'perf' | 'enhancement' | 'fix' | 'refactor';
+
 export interface ArticleSource {
   project: string;   // 项目名，如 Doris / ClickHouse
   type:    string;   // 引用类型，如 PR / Issue / RFC / arxiv / commit
   id:      string;   // 编号，如 26133
   url?:    string;   // 可选：原始链接
+  prType?: PrType;   // PR 类型（仅 type=PR/commit 时有效）
 }
 
 export interface Article {

@@ -5,6 +5,7 @@ source:
   type: "PR"
   id: "234"
   url: "https://github.com/jeandle/jeandle-jdk/pull/234"
+  prType: "fix"
 date: "2026-07-01"
 category: [Languages, Java, Jeandle-JDK, Contributions]
 tags: ["JVM", "LLVM", "字节码", "BasicType", "Jeandle"]

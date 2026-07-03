@@ -5,6 +5,7 @@ source:
   type: "PR"
   id: "16631"
   url: "https://github.com/databendlabs/databend/pull/16631"
+  prType: "feat"
 date: "2026-07-02"
 category: [Database, Databend, Contributions]
 tags: ["Databend", "SQL", "PIVOT", "子查询", "AST", "Binder"]

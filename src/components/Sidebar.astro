@@ -36,8 +36,9 @@ function renderNode(node: TreeNode, depth: number = 0): string {
     const article = articles.find(a => a.slug === slug);
     const { source } = article ?? {};
     const baseTitle    = article?.title ?? slug;
+    const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
     const displayTitle = source
-      ? `[${source.project} ${source.type}-${source.id}] ${baseTitle}`
+      ? `[${source.project} ${source.type}-${source.id}] ${prTypeLabel}${baseTitle}`
       : baseTitle;
     const active = slug === currentSlug ? ' active' : '';
     return `<a class="tree-article${active}" href="${base}/articles/${slug}" data-tip="${esc(displayTitle)}">${esc(displayTitle)}</a>`;

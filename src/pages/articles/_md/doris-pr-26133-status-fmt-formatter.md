@@ -5,6 +5,7 @@ source:
   type: "PR"
   id: "26133"
   url: "https://github.com/apache/doris/pull/26133"
+  prType: "enhancement"
 date: "2026-06-29"
 category: [Database, Apache Doris, Contributions]
 tags: ["Apache Doris", "C++", "fmt", "BE"]

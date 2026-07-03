@@ -20,6 +20,7 @@ export interface Props {
       type:    string;        // 引用类型，如 PR / Issue / RFC / arxiv / commit
       id:      string;        // 编号，如 26133
       url?:    string;        // 可选：原始链接
+      prType?: 'feat' | 'perf' | 'enhancement' | 'fix' | 'refactor';
     };
   };
   headings?: { depth: number; slug: string; text: string }[];
@@ -28,9 +29,10 @@ export interface Props {
 const { frontmatter, headings = [] } = Astro.props;
 const { title, date, category, tags = [], description, readingTime, aiModel, source } = frontmatter;
 
-// 有 source 时，<title> 渲染为 "[Project Type-Id] title"
-const sourceLabel   = source ? `[${source.project} ${source.type}-${source.id}]` : '';
-const displayTitle  = source ? `${sourceLabel} ${title}` : title;
+// 有 source 时，<title> 渲染为 "[Project Type-Id] prType: title"
+const sourceLabel  = source ? `[${source.project} ${source.type}-${source.id}]` : '';
+const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
+const displayTitle = source ? `${sourceLabel} ${prTypeLabel}${title}` : title;
 
 const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catLabel = category?.length ? category[category.length - 1] : '';
@@ -130,7 +132,9 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
           </div>
 
           <h1 class="article-title" data-pagefind-meta="title">
-            {source && <span class="source-label">{sourceLabel}</span>}{source ? ` ${title}` : title}
+            {source && <span class="source-label">{sourceLabel}</span>}
+            {source?.prType && <span class="pr-type-label"> {source.prType}:</span>}
+            {source ? ` ${title}` : title}
           </h1>
           {description && <p class="article-desc">{description}</p>}
 

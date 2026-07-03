@@ -5,6 +5,7 @@ source:
   type: "PR"
   id: "56919"
   url: "https://github.com/apache/doris/pull/56919"
+  prType: "enhancement"
 date: "2026-07-01"
 category: [Database, Apache Doris, Contributions]
 tags: ["Apache Doris", "Java", "Open API", "FE", "Schema"]

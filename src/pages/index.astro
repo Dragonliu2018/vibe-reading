@@ -38,6 +38,7 @@ function badgeStyle(label: string): string {
   const col = catColorMap.get(label) ?? BADGE_PALETTE[0];
   return `color:${col.text};background:${col.bg};border:1px solid ${col.border};`;
 }
+
 ---
 
 <!DOCTYPE html>
@@ -248,7 +249,7 @@ function badgeStyle(label: string): string {
 
     .card-inner { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
     .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
-    .cat-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
+    .cat-badge    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
     .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
     .card-source-label { color: inherit; margin-right: 0.2em; }
     .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
@@ -362,7 +363,9 @@ function badgeStyle(label: string): string {
                         <span class="card-source-label">
                           [{article.source.project} {article.source.type}-{article.source.id}]
                         </span>
-                      )}{article.source ? ` ${article.title}` : article.title}
+                      )}
+                      {article.source?.prType && <span class="card-pr-type"> {article.source.prType}:</span>}
+                      {article.source ? ` ${article.title}` : article.title}
                     </div>
                     <div class="card-desc">{article.description}</div>
                     <div class="card-tags">

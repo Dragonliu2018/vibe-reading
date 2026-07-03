@@ -40,6 +40,7 @@ aiModel: "Claude Opus 4.8"
 | `type` | ✅ | `PR` / `Issue` / `RFC` / `arxiv` / `commit` |
 | `id` | ✅ | `26133` / `0001` / `2301.07041` |
 | `url` | 可选 | 原始链接，有则标识可点击跳转 |
+| `prType` | 可选 | PR 类型，仅 `type: PR/commit` 时填写：`feat` / `perf` / `enhancement` / `fix` / `refactor`；渲染为标题前缀，如 `[Doris PR-36280] feat: 支持 PI 作为列默认值` |
 
 > ⚠️ **`title` 不要重复 `source` 的任何信息**：UI 最终拼接为 `[Doris PR-31893] title`，因此：
 > - **不写** `[PR-XXXXX]` 前缀（`type-id` 已由 `source` 提供）
@@ -345,7 +346,7 @@ npx skills add markdown-viewer/skills
 | 7 | 问题 | 可选 | 实现过程中的棘手问题及解决方案；无则省略 |
 | 8 | 意义与影响 | ✅ 必填 | 这个 PR/commit 的重要价值和影响范围 |
 | 9 | TODO | 可选 | 当前未解决、后续需跟进的问题；无则省略 |
-| 10 | 参考 | 可选 | 相关参考链接；无则省略 |
+| 10 | 参考 | 可选 | 相关参考链接；无则省略。**不包含**对应 Issue / PR 链接（元信息行已有）|
 
 ### 文章骨架
 
@@ -435,7 +436,8 @@ npx skills add markdown-viewer/skills
 
 ## 参考
 
-<!-- 可选：相关链接、RFC、论文、竞品文档等 -->
+<!-- 可选：相关参考链接，如 RFC、论文、竞品文档、官方规范等
+     ⚠️ 不要放 Issue / PR 链接——这两项已在元信息行（> **PR** · **Issue**）中包含 -->
 ```
 
 ### 写作要点

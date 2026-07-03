@@ -14,47 +14,37 @@
   var REPO_ID     = 'R_kgDOTD2Blw';
   var CATEGORY    = 'Announcements';
   var CATEGORY_ID = 'DIC_kwDOTD2Bl84DAAkz';
-  var THEME       = 'dark';
+  var THEME       = 'transparent_dark';
   var LANG        = 'zh-CN';
 
   if (!CATEGORY_ID) return;
 
-  // 自建评论容器，插到 <footer> 之前（或 body 末尾）
+  // 自建评论容器
   var section = document.createElement('section');
   section.id = 'giscus-section';
   section.setAttribute('data-pagefind-ignore', 'all');
   section.style.cssText = [
-    'margin: 64px auto 0',
-    'padding: 32px 5% 0',
-    'max-width: 900px',
+    'margin-top: 56px',
+    'padding-top: 32px',
     'border-top: 1px solid rgba(255,255,255,0.08)',
     'font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", sans-serif',
-  ].join(';');
-
-  var label = document.createElement('p');
-  label.textContent = '评论';
-  label.style.cssText = [
-    'font-size: 13px',
-    'font-weight: 600',
-    'letter-spacing: 0.4px',
-    'text-transform: uppercase',
-    'color: rgba(235,235,245,0.28)',
-    'margin: 0 0 20px',
   ].join(';');
 
   var mount = document.createElement('div');
   mount.id = 'giscus-mount';
 
-  section.appendChild(label);
   section.appendChild(mount);
 
-  // 插入策略（依次尝试，兼容各种 HTML 文章布局）：
-  // 1. <main> 内部末尾 — 自动继承文章的 margin-left（适用于有 fixed sidebar 的文章）
-  // 2. <footer> 之前  — 适用于有全局 footer 的文章
-  // 3. <body> 末尾    — 兜底
-  var main   = document.querySelector('main');
-  var footer = document.querySelector('footer, .page-footer');
-  if (main)        main.appendChild(section);
+  // 插入策略（优先级依次降低）：
+  // 1. .article-col — MD 文章正文列，自动继承列宽和 padding
+  // 2. <main>       — HTML 文章
+  // 3. <footer> 之前 — 兜底
+  // 4. <body> 末尾  — 最终兜底
+  var articleCol = document.querySelector('.article-col');
+  var main       = document.querySelector('main');
+  var footer     = document.querySelector('footer, .page-footer');
+  if (articleCol)  articleCol.appendChild(section);
+  else if (main)   main.appendChild(section);
   else if (footer) footer.insertAdjacentElement('beforebegin', section);
   else             document.body.appendChild(section);
 

@@ -6,7 +6,7 @@ source:
   id: "36150"
   url: "https://github.com/apache/doris/pull/36150"
 date: "2026-07-01"
-category: [Database, Apache Doris, PRs]
+category: [Database, Apache Doris, Contributions]
 tags: ["Apache Doris", "Java", "Nereids", "CTE", "SQL", "FE"]
 description: "在 Nereids 规划器中为 INSERT INTO 和 INSERT OVERWRITE 语句添加 CTE 支持。"
 readingTime: "8 min"

@@ -6,7 +6,7 @@ source:
   id: "26133"
   url: "https://github.com/apache/doris/pull/26133"
 date: "2026-06-29"
-category: [Database, Apache Doris, PRs]
+category: [Database, Apache Doris, Contributions]
 tags: ["Apache Doris", "C++", "fmt", "BE"]
 description: "通过 fmt::formatter 模板特化，让 Status 类原生支持 fmt::format，消除 BE 代码中繁琐的 .to_string() 样板调用。"
 readingTime: "6 min"

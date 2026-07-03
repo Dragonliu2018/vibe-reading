@@ -6,7 +6,7 @@ source:
   id: "36280"
   url: "https://github.com/apache/doris/pull/36280"
 date: "2026-07-01"
-category: [Database, Apache Doris, PRs]
+category: [Database, Apache Doris, Contributions]
 tags: ["Apache Doris", "Java", "DDL", "FE"]
 description: "新增 PI 关键字，允许 DOUBLE 类型列以圆周率作为默认值。"
 readingTime: "6 min"

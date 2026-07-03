@@ -6,7 +6,7 @@ source:
   id: "56919"
   url: "https://github.com/apache/doris/pull/56919"
 date: "2026-07-01"
-category: [Database, Apache Doris, PRs]
+category: [Database, Apache Doris, Contributions]
 tags: ["Apache Doris", "Java", "Open API", "FE", "Schema"]
 description: "在 Table Schema Open API 响应中新增 column_uid、schema_version 和 materialized_indexes，提升 Schema 演进的可观测性。"
 readingTime: "6 min"

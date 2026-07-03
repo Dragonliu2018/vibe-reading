@@ -359,11 +359,10 @@ SELECT key, dict_get(d1, 'value', key) FROM red_test_10000000;
 - **架构**：`dict_get` 接口从"逐行回调"升级为"整列批处理"，与 Databend 向量化执行的设计理念对齐
 - **依赖**：去掉对 OpenDAL Redis 适配器的依赖，直接使用功能更完整的 `redis` crate，为后续扩展（Pipeline、Pub/Sub 等）打开空间
 
----
-
 ## TODO
 
-MySQL 字典的批量查询（`WHERE key IN (...)`）尚未实现，由 sundy-li 在 Review 中提出，将在后续 PR 跟进。
+- [x] MySQL 字典的批量查询（`WHERE key IN (...)`），由 sundy-li 在 Review 中提出
+  - [[Databend PR-16948] 用 IN 批量查询加速 MySQL 字典读取](/vibe-reading/articles/databend-pr-16948-mysql-dict-batch)
 
 ---
 

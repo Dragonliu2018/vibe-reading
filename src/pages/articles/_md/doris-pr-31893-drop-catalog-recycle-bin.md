@@ -186,3 +186,5 @@ sql "DROP CATALOG RECYCLE BIN WHERE 'DbId' = ${db_id};"
 典型使用场景：回收特定 ID 避免与新对象冲突、测试环境清理堆积的垃圾条目。
 
 > **注意**：此命令仅清除 FE 的元数据回收站，**不能**用于紧急释放磁盘空间。FE 擦除元数据后，BE 会将 tablet 文件 rename 至本地 `trash/` 目录，物理磁盘空间须等到 `trash_file_expire_time_sec`（默认 86400s）到期后才真正回收。如需立即释放磁盘，应执行 `ADMIN CLEAN TRASH ON ("be_host:port")`。
+
+> **后续**：PR 合并 3 天后，发现当顶层 DB/Table 不在回收站但其子 Partition 仍存在时，`eraseDatabaseInstantly` 的早失败逻辑会导致孤立子条目无法清除。[PR #35750](https://github.com/apache/doris/pull/35750) 修复了这一场景，详见[修复按 DbId/TableId 清除回收站时未级联清理子分区的缺陷](/vibe-reading/articles/doris-pr-35750-erase-orphan-recycle-bin)。

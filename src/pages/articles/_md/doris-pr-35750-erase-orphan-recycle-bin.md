@@ -15,6 +15,8 @@ aiModel: "Claude Opus 4.8"
 
 > **PR** [#35750](https://github.com/apache/doris/pull/35750) · **Issue** [#35748](https://github.com/apache/doris/issues/35748) · **commit** [67f1ae8](https://github.com/apache/doris/commit/67f1ae8a12f18615ecee185ccaf1694f543d0e0b) · **首发版本** 3.0.0 · **变更行数** +69 行 · **合并时间** 2024-06-02
 
+> 📎 本文是 [支持主动清理 Catalog 回收站](/vibe-reading/articles/doris-pr-31893-drop-catalog-recycle-bin)（PR #31893）的后续修复，建议先阅读原文。
+
 ---
 
 ## 背景

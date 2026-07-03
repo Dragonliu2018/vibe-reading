@@ -137,6 +137,8 @@ new InsertIntoTableCommand(completeQueryPlan(ctx, logicalQuery),
 
 ## 测试
 
+### 回归测试
+
 新增 `regression-test/suites/nereids_p0/insert_into_table/insert_cte.groovy`，覆盖 6 个场景：
 
 ```groovy title="insert_cte.groovy — 6 个测试场景"

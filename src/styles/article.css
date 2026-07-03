@@ -133,7 +133,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ── TOC 内容 ── */
 .toc-heading {
-  font-size: 9.5px; font-weight: 700; letter-spacing: 0.9px;
+  font-size: 13.5px; font-weight: 700; letter-spacing: 0.4px;
   text-transform: uppercase; color: rgba(235,235,245,0.30);
   margin-bottom: 16px; padding-left: 10px;
 }
@@ -247,13 +247,13 @@ a { color: inherit; text-decoration: none; }
 /* divider 之后的第一个标题无需顶部大边距 */
 .prose > :first-child { margin-top: 0 !important; }
 .prose h3 {
-  font-size: 19px; letter-spacing: -0.3px;
+  font-size: 20px; letter-spacing: -0.3px;
   margin: 22px 0 10px;
 }
 .prose h4 {
-  font-size: 14px; font-weight: 600;
-  letter-spacing: 0.3px; text-transform: uppercase;
-  color: var(--text-dim); margin: 28px 0 10px;
+  font-size: 18px; font-weight: 600;
+  letter-spacing: -0.1px;
+  color: var(--text); margin: 20px 0 8px;
 }
 
 .prose p { margin-bottom: 18px; line-height: 1.8; }

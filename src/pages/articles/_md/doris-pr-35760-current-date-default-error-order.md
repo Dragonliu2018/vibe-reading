@@ -131,6 +131,8 @@ switch (primitiveType) {
 
 ## 测试
 
+### 回归测试
+
 在 `regression-test/suites/correctness_p0/test_current_date.groovy` 中补充三种非法类型的测试用例，覆盖字符串、整数、浮点数场景：
 
 ```groovy title="test_current_date.groovy — 新增三种非法类型测试"

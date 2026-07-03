@@ -88,6 +88,8 @@ struct fmt::formatter<doris::Status> {
 
 ## 测试
 
+### 单元测试
+
 在 `be/test/common/status_test.cpp` 新增 `Format` 测试用例，验证格式化器的输出与直接调用 `to_string()` 完全等价：
 
 ```cpp title="be/test/common/status_test.cpp — Format 测试用例（+10 行）"

@@ -120,6 +120,8 @@ public static DefaultValue PI_DEFAULT_VALUE =
 
 ## 测试
 
+### 回归测试
+
 `regression-test/suites/correctness_p0/test_default_pi.groovy` 覆盖四类场景：
 
 ```groovy title="test_default_pi.groovy — 核心测试场景"

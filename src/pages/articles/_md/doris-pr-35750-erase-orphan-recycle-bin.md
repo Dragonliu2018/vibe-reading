@@ -119,6 +119,8 @@ public synchronized void eraseDatabaseInstantly(long dbId) throws DdlException {
 
 ## 测试
 
+### 回归测试
+
 在原有回归测试基础上补充两个"按 ID 清除但顶层对象不在回收站"的场景：
 
 ```groovy title="test_drop_catalog_recycle_bin.groovy — 新增场景"

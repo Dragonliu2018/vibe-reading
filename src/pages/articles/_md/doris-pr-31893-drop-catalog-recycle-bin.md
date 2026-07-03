@@ -21,7 +21,7 @@ aiModel: "Claude Opus 4.8"
 
 执行 `DROP DATABASE / TABLE / PARTITION` 后，对象不会立即删除，而是进入 **Catalog 回收站**，由后台守护线程按保留时长（由 `catalog_trash_expire_second` 配置，默认 1 天）定期扫描清除。这个机制有效防止误删，但带来一个运维困境：
 
-**管理员明确要立刻清除某个条目时，无路可走。** 不管是大表占满磁盘、ID 需要复用，还是测试环境堆积了大量垃圾条目，都只能修改超时配置或等待后台任务。
+**管理员明确要立刻清除某个条目时，无路可走。** 不管是特定 ID 需要复用、还是测试环境堆积了大量垃圾条目，都只能修改超时配置或等待后台任务。
 
 Issue [#31348](https://github.com/apache/doris/issues/31348) 由团队成员 **mymeiyi** 提出，建议新增按 ID 主动删除的命令，使 DBA 能精确控制回收站内容。由于回收站中名称可能重复（同名表可以被 DROP 多次），建议按内部 ID 而非名称进行操作。
 
@@ -145,6 +145,8 @@ eraseDatabaseInstantly(dbId)
 
 ## 测试
 
+### 回归测试
+
 在 `regression-test/suites/catalog_recycle_bin_p0/test_drop_catalog_recycle_bin.groovy` 中新增完整测试套件，覆盖三个粒度的清除场景。断言采用"操作前后 size 差值"模式，避免并发测试环境中其他条目干扰结果：
 
 ```groovy title="test_drop_catalog_recycle_bin.groovy — 三个粒度的核心断言"
@@ -181,4 +183,6 @@ sql "DROP CATALOG RECYCLE BIN WHERE 'DbId' = ${db_id};"
 | 级联行为 | — | 删 DB 自动清所有子 Table 和 Partition |
 | ID 获取 | — | `SHOW CATALOG RECYCLE BIN WHERE NAME = "..."` |
 
-典型使用场景：大表误删后占满磁盘需紧急释放空间、回收特定 ID 避免与新对象冲突、测试环境清理堆积的垃圾条目。
+典型使用场景：回收特定 ID 避免与新对象冲突、测试环境清理堆积的垃圾条目。
+
+> **注意**：此命令仅清除 FE 的元数据回收站，**不能**用于紧急释放磁盘空间。FE 擦除元数据后，BE 会将 tablet 文件 rename 至本地 `trash/` 目录，物理磁盘空间须等到 `trash_file_expire_time_sec`（默认 86400s）到期后才真正回收。如需立即释放磁盘，应执行 `ADMIN CLEAN TRASH ON ("be_host:port")`。

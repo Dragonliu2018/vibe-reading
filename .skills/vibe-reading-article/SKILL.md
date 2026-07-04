@@ -33,6 +33,16 @@ description: >
 - **Markdown** → `src/pages/articles/_md/<slug>.md`，规范见加载的 references
 - **HTML** → `src/pages/articles/html/<slug>.html`，基础模板见 `assets/html-base.html`
 
+## Step 3.5 — 源码准确性验证（仅 PR / commit 文章）
+
+文章写完后，**重新获取 PR/commit 的实际变更**，逐项核对文章内容：
+
+```
+核对清单（见 references/markdown-pr.md#源码核验）
+```
+
+发现错误立即修正，再进入 Step 4。
+
 ## Step 4 — 合规检查
 
 ```bash

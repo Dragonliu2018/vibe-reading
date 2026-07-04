@@ -38,8 +38,7 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。
 | 末级 | 含义 |
 |------|------|
 | `Contributions` | 自己写的 PR / commit |
-| `PRs` | 解读他人的 PR |
-| `Internals` | 源码架构解读 |
+| `Internals` | 解读他人的 PR / commit，或源码架构解读 |
 | `Notes` | 技术笔记 |
 | `Papers` | 论文解读 |
 

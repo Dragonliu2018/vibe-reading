@@ -68,6 +68,14 @@ function buildTree(): TreeNode[] {
   }
   sortSlugs(roots);
 
+  // 分类节点按标签字母序排列（中英文混合，zh locale）
+  function sortLabels(nodes: TreeNode[]) {
+    // 英文分类在前（A-Z），中文分类在后
+    nodes.sort((a, b) => a.label.localeCompare(b.label, 'en'));
+    nodes.forEach(n => n.children && sortLabels(n.children));
+  }
+  sortLabels(roots);
+
   return roots;
 }
 

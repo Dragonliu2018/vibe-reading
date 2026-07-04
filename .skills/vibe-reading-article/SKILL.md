@@ -13,85 +13,41 @@ description: >
 
 # Vibe Reading Article Skill
 
-## 格式选择
+## Step 1 — 判断格式，加载参考
 
-| 格式 | 适用 | 放置位置 |
-|---|---|---|
-| **HTML** | 需要复杂视觉布局（架构图、分层、卡片组） | `src/pages/articles/html/<slug>.html` |
-| **Markdown** | 以文字/代码为主，标准结构 | `src/pages/articles/_md/<slug>.md` |
+| 来源类型 | 格式 | 加载文件 |
+|---------|------|---------|
+| PR / commit / Issue | **Markdown** | `references/markdown-pr.md` + `references/markdown-style.md` |
+| 代码库 Internals | **HTML** | `references/content-guide.md`（代码库节）+ `references/html-style.md` |
+| 论文 | **Markdown** | `references/content-guide.md`（论文节）+ `references/markdown-style.md` |
+| 产品 / 文档介绍 | **HTML** | `references/content-guide.md`（产品节）+ `references/html-style.md` |
 
-**默认选 HTML**（视觉效果更丰富，与现有文章一致）。用户明确要求 Markdown、或内容以代码块/列表为主时选 Markdown。
+人工明确指定格式时，以人工为准。
 
----
+## Step 2 — 阅读源材料
 
-## 工作流
+按加载的参考文件中的阅读顺序执行。
 
-### 1. 阅读分析源材料
+## Step 3 — 撰写文章
 
-先读 `references/content-guide.md` 了解针对不同来源的分析方法。
+- **Markdown** → `src/pages/articles/_md/<slug>.md`，规范见加载的 references
+- **HTML** → `src/pages/articles/html/<slug>.html`，基础模板见 `assets/html-base.html`
 
-**代码库：** 读 README + 目录树（2 层）+ 入口文件 → 识别语言/框架/架构/核心设计  
-**论文：** 读摘要/引言/方法/结论 → 提取研究问题/创新点/结果  
-**文档/产品：** 读核心概念/功能/架构 → 提取价值主张/用户场景/技术实现
+## Step 4 — 合规检查
 
-### 2. 规划文章结构
-
-从 `references/content-guide.md` 选用对应来源类型的结构模板。
-
-### 3. 撰写文章
-
-- **HTML 格式**：读 `assets/html-base.html`（完整基础模板），按 `references/html-style.md`（CSS 组件库）填充内容
-- **Markdown 格式**：读 `references/markdown-style.md`，按 frontmatter 格式和 prose 规范写作
-
-### 4. 发布到博客（用户确认满意后）
-
-博客通过文件内嵌的元信息自动注册，**无需修改 `articles.ts`**。
-
-**HTML 文章** → 复制到 `src/pages/articles/html/<slug>.html`
-
-文件必须满足：
-- `<html>` 标签含 `data-pagefind-ignore="all"`（避免搜索重复索引）
-- `<head>` 含完整 article meta 标签，包括 `article:category`（见下方模板）
-
-**Markdown 文章** → 复制到 `src/pages/articles/_md/<slug>.md`
-
-文件必须满足：
-- frontmatter 含所有字段（见 `references/markdown-style.md`），包括 `category`
-- **不要** `layout:` 行（由 `[slug].astro` 统一处理）
-
-**`category` 规范（两种格式均需填写）：**
-
-YAML 数组 / 逗号分隔字符串，定义文章的分类层级路径，支持任意深度。
-- **最后一项**自动作为首页卡片 badge 标签（如 `源码解读`、`论文解读`）
-- 完整路径用于左侧侧边栏树形结构，侧边栏自动派生，**无需手动注册**
-
-```yaml
-# MD frontmatter（YAML 数组）
-category: [一级分类, 二级分类, 三级分类, 源码解读]
-```
-
-```html
-<!-- HTML meta（逗号分隔字符串）-->
-<meta name="article:category" content="一级分类,二级分类,三级分类,源码解读">
-```
-
-现有分类参考（请与已有结构保持一致，避免创建重复分类）：
-- `[Database, 生态, mycli, 源码解读]`
-- `[AI, 可观测性, Litefuse, 源码解读]`
-- `[AI, 可观测性, Langfuse, 源码解读]`
-- `[AI, AI应用, Multica, 源码解读]`
-- `[AI, AI应用, Paperclip, 源码解读]`
-
-**发布后运行：**
 ```bash
-npm run build   # 更新 pagefind 搜索索引
+bash .skills/vibe-reading-article/scripts/check-article.sh <file>
 ```
 
----
+exit 0 = 通过；exit 1 = 输出具体错误，按提示修正后重跑。
+
+## Step 5 — 发布
+
+用户确认满意后：将文件放到对应目录，运行 `npm run build`。
 
 ## 写作规范
 
-**语言：** 正文中文，专有名词（框架名、函数名、文件路径）保留英文原文  
-**技术内容：** 引用源码中的真实路径和函数名，代码块必须标注语言，不编造 API  
-**内容密度：** 每个 h2 节有实质内容（代码/表格/流程图），不写空泛段落  
-**关键数据：** 版本号、代码行数、性能指标等数字尽量从源材料中提取
+- 正文中文，专有名词（框架名、函数名、路径）保留英文原文
+- 引用源码中真实的路径和函数名，不编造 API
+- 代码块必须标注语言和 `title=`
+- 每个 `##` 节有实质内容（代码 / 表格 / 流程图），不写空泛段落

@@ -125,6 +125,70 @@ aiModel: "Claude Opus 4.8"
 
 ---
 
+## PR / Issue 配图收集
+
+**在阅读 PR 和 Issue 时**（Step 2），同步识别并下载有意义的图片到博客本地，写作时直接引用。
+
+### 哪些图片值得保留
+
+| 值得保留 | 跳过 |
+|---------|------|
+| 架构图 / 流程图（说明设计思路）| 普通代码截图（用代码块代替）|
+| 性能 benchmark 对比图（有数字）| GitHub UI 截图（注释、审查界面）|
+| 问题复现 / 修复前后的对比图 | Bot 自动评论、CI 结果截图 |
+| Issue 中说明问题场景的截图 | 随意的个人测试截图（无说明）|
+
+### 下载与存放
+
+按 `markdown-style.md` 的图片规范执行：
+
+```bash
+# 路径格式
+public/images/articles/{article-slug}/{descriptive-name}.png
+
+# 下载
+mkdir -p public/images/articles/{slug}
+curl -sL "{pr-or-issue-image-url}" -o public/images/articles/{slug}/{name}.png
+```
+
+### 在文章中引用
+
+配图**不能作为唯一内容独立出现**，图前需有引导句，图后需有关键步骤的文字拆解。
+
+**原则：图是辅助，文字是主体。** 读者看完文字就能理解，图只是加速理解的工具。
+
+#### 架构图 / 流程图
+
+先用文字交代背景和全貌，放图，再按流程的**重要节点**逐步说明——至少覆盖「为什么这么设计」的关键决策点：
+
+```markdown
+新旧架构对比如下，核心变化是将内存高峰从 Leader 转移到 Follower：
+
+![旧版与新版架构对比](/vibe-reading/images/articles/{slug}/{name}.png)
+
+1. **CheckpointController（Leader 侧）** 只做调度：检测 journal 增量、
+   选择内存最低的 FE、触发 worker 执行并等待回调。
+2. **CheckpointWorker（所有 FE）** 只做执行：接收任务后独立完成
+   加载 image → 回放 journal → 写 image 的全过程，完成后通知 Leader。
+3. **image 下发**：若执行节点不是 Leader，Leader 从该节点下载 image
+   再广播到其他 FE——Leader 本身不再承担内存密集型的构建工作。
+```
+
+#### 性能对比图
+
+先说明测试场景和关注指标，放图，再点出关键数字和结论：
+
+```markdown
+在 10 万行数据、3 副本的测试场景下，优化前后延迟对比如下：
+
+![批量查询 vs 逐条查询性能对比](/vibe-reading/images/articles/{slug}/{name}.png)
+
+批量查询（`WHERE key IN (...)`）将 P99 延迟从 **320ms 降至 18ms**，
+降幅 94%，主要收益来自网络往返次数从 N 次压缩为 1 次。
+```
+
+---
+
 ## 源码核验
 
 文章写完后，**重新获取 PR/commit 的实际 diff**，逐项核对以下内容，发现错误立即修正。

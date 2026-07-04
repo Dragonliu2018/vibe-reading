@@ -80,9 +80,15 @@ StarRocks FE 的元数据持久化分两层：
     └── 通知 Leader 完成
 ```
 
-架构演进的直观对比：
+PR 描述中的 whiteboard 图直观呈现了旧版单体与新版分离架构的差异，以及内存高峰的转移路径：
 
 ![旧版与新版 Checkpoint 架构对比](/vibe-reading/images/articles/starrocks-pr-52103/checkpoint-architecture.png)
+
+图中有三个关键设计决策值得关注：
+
+1. **内存高峰转移**：旧版 `Checkpoint` daemon 的加载 image + 回放 journal + 写 image 三步全在 Leader 进程内完成，内存峰值固定叠加在 serving 流量之上；新版将这三步完整移到 `CheckpointWorker`，由 Leader 按堆内存使用率选出最空闲的 Follower 执行，Leader 本身只承担轻量的调度工作。
+2. **image 回传路径**：若 worker 是 Follower，image 生成后需先从 Follower 传回 Leader（HTTP GET `/image`），Leader 再通过 `/put` 通知其他 FE 拉取。这引入了一次额外的文件传输，是内存收益的直接代价。
+3. **Leader 自身也是候选**：当所有 Follower 内存都比 Leader 紧张，或配置 `checkpoint_only_on_leader=true` 时，Leader 仍可作为 worker 本地执行，退化为旧行为，保证了向下兼容。
 
 三个关键新类文件：
 
@@ -408,7 +414,7 @@ private void downloadImage() throws IOException {
 }
 ```
 
-下载完成后，Controller 继续执行 PR #40939 引入的 `pushImage()` 流程，将 image 推送给除 worker 以外的所有其他 FE 节点。
+下载完成后，Controller 继续执行 PR #40939 引入的 `pushImage()` 流程，将 image 推送给**除 worker 以外**的所有其他 FE 节点。
 
 ---
 

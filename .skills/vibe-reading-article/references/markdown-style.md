@@ -143,6 +143,39 @@ mycli/
 
 ---
 
+## 图片
+
+**禁止直接引用远程 URL**（GitHub user-attachments、CDN 等），图片必须先下载到博客本地再引用。
+
+### 存放路径
+
+```
+public/images/articles/{article-slug}/{filename}.png
+```
+
+示例（文章 slug 为 `starrocks-pr-52103-checkpoint-on-follower`）：
+
+```bash
+public/images/articles/starrocks-pr-52103/checkpoint-architecture.png
+```
+
+### 下载命令
+
+```bash
+mkdir -p public/images/articles/{slug}
+curl -sL "{remote-url}" -o public/images/articles/{slug}/{filename}.png
+```
+
+### Markdown 引用
+
+引用时加 `/vibe-reading` base 前缀（与 `astro.config.mjs` 的 `base` 一致）：
+
+```markdown
+![图片描述](/vibe-reading/images/articles/{slug}/{filename}.png)
+```
+
+---
+
 ## 分割线
 
 每个主要节之间（`##` 之前）可加 `---`，不强制要求。

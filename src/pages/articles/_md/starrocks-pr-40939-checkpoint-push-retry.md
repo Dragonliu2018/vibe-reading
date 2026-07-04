@@ -148,7 +148,7 @@ protected void runAfterCatalogReady() {
 
 ---
 
-### Step 1：按需创建 image
+#### Step 1：按需创建 image
 
 ```java title="Checkpoint.java — createImage()"
 private boolean createImage(long logVersion) {
@@ -181,7 +181,7 @@ public List<Frontend> getOtherFrontends() {
 
 ---
 
-### Step 2：`pushImage()` 重试逻辑
+#### Step 2：`pushImage()` 重试逻辑
 
 这是 PR 的核心实现，重点在于 **Iterator 安全删除**：
 
@@ -236,7 +236,7 @@ private void pushImage(long imageVersion) {
 
 ---
 
-### Step 3：Journal 安全删除
+#### Step 3：Journal 安全删除
 
 旧实现将"推送全部成功"作为删除 journal 的前置条件，逻辑在一个大方法中耦合。新版提取为独立方法，并明确了两种触发条件：
 
@@ -264,6 +264,21 @@ private void deleteOldJournals(long imageVersion) {
 
 `getMinReplayedJournalId()` 通过 HTTP 接口逐一查询各 Follower 的 `/journal_id` 端点获取其当前回放位点，取最小值。
 
+#### Step 4：清理本地旧 image 文件
+
+```java title="Checkpoint.java — Step 4"
+if (newImageCreated) {
+    MetaCleaner cleaner = new MetaCleaner(imageDir);
+    try {
+        cleaner.clean();
+    } catch (IOException e) {
+        LOG.error("Leader delete old image file fail.", e);
+    }
+}
+```
+
+`MetaCleaner` 扫描 `imageDir`，保留最新的 image 文件，删除历史旧版本，释放 Leader 本地磁盘空间。此步骤**仅在本轮生成了新 image 时执行**，与 journal 删除的触发条件（所有节点已同步）无关——新 image 已写成功，无论推送是否完成，本地旧 image 就可以清理。
+
 ---
 
 ### 代码结构对比
@@ -279,6 +294,8 @@ private void deleteOldJournals(long imageVersion) {
 ---
 
 ## 测试
+
+### 回归测试
 
 PR 新增了一个 SQL 集成测试：
 

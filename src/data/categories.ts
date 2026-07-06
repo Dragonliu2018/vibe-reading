@@ -57,11 +57,22 @@ function buildTree(): TreeNode[] {
     });
   }
 
-  // 叶节点内的文章按展示标题字母序升序排列
+  // 叶节点内的文章排序：
+  // 有 source.id（PR 号）→ 按数值升序（体现时间线）
+  // 无 source.id → 按展示标题字母序
   function sortSlugs(nodes: TreeNode[]) {
     for (const node of nodes) {
       if (node.slugs) {
-        node.slugs.sort((a, b) => displayTitle(a).localeCompare(displayTitle(b)));
+        node.slugs.sort((a, b) => {
+          const artA = articles.find(x => x.slug === a);
+          const artB = articles.find(x => x.slug === b);
+          const idA = artA?.source?.id ? parseInt(artA.source.id) : NaN;
+          const idB = artB?.source?.id ? parseInt(artB.source.id) : NaN;
+          if (!isNaN(idA) && !isNaN(idB)) return idA - idB;   // 都有 PR 号：数值升序
+          if (!isNaN(idA)) return -1;                           // 只 a 有：a 在前
+          if (!isNaN(idB)) return 1;                            // 只 b 有：b 在前
+          return displayTitle(a).localeCompare(displayTitle(b)); // 都没有：字母序
+        });
       }
       if (node.children) sortSlugs(node.children);
     }

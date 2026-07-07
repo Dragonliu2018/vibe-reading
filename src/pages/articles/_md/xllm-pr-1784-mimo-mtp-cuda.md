@@ -7,7 +7,7 @@ source:
   url: "https://github.com/jd-opensource/xllm/pull/1784"
   prType: "feat"
 date: "2026-07-06"
-category: [AI, 推理, XLLM, Contributions]
+category: [AI, 推理, xLLM, Contributions]
 tags: ["MiMo", "MTP", "推测解码", "Speculative Decoding", "FlashInfer", "thread_local", "Bug Fix"]
 description: "为 MiMo-7B 实现 MTP（Multi-Token Prediction）推测解码草稿模型：MiMoMtpDecoderLayer 的双流归一化 + 拼接投影架构、FlashInfer thread_local workspace 初始化漏洞修复、以及批解码验证阶段的 read-before-write 竞争条件分析。"
 readingTime: "15 min"

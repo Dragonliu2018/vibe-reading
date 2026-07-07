@@ -7,7 +7,7 @@ source:
   url: "https://github.com/jd-opensource/xllm/pull/957"
   prType: "feat"
 date: "2026-07-06"
-category: [AI, 推理, XLLM, Contributions]
+category: [AI, 推理, xLLM, Contributions]
 tags: ["DiT", "Image Editing", "Qwen2.5-VL", "FlashInfer", "CUDA", "FlowMatch", "MROPE"]
 description: "为 xLLM 实现 LongCat-Image-Edit CUDA 支持：图像编辑双流 latent 拼接、Qwen2.5-VL 多模态文本编码、CUDA vision attention 的 SDPA 回退、以及 bmm 优化的 eager attention。"
 readingTime: "18 min"

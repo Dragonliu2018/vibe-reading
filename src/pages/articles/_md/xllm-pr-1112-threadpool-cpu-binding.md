@@ -7,7 +7,7 @@ source:
   url: "https://github.com/jd-opensource/xllm/pull/1112"
   prType: "feat"
 date: "2026-07-06"
-category: [AI, 推理, XLLM, Contributions]
+category: [AI, 推理, xLLM, Contributions]
 tags: ["ThreadPool", "CPU Affinity", "NUMA", "性能优化", "pthread", "Linux"]
 description: "为 xLLM 的 ThreadPool 和 MPMCThreadPool 添加显式 cpu_cores 向量构造函数，支持调用方按线程下标精确指定绑定的 CPU 核心，并解析 initial_process_cpu_set 快照机制如何规避子线程亲和性继承问题。"
 readingTime: "12 min"

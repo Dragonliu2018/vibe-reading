@@ -7,7 +7,7 @@ source:
   url: "https://github.com/jd-opensource/xllm/pull/849"
   prType: "feat"
 date: "2026-07-06"
-category: [AI, 推理, XLLM, Contributions]
+category: [AI, 推理, xLLM, Contributions]
 tags: ["DiT", "FlashInfer", "Image Generation", "Qwen2.5-VL", "CUDA", "FlowMatch"]
 description: "为 xLLM 实现 LongCat-Image CUDA 支持：以 Qwen2.5-VL 做文本编码器，将 attn_mask 从 NPU 专属提升为通用字段，并为 FlashInfer FA2 后端实现 bit-packing 自定义掩码。"
 readingTime: "15 min"

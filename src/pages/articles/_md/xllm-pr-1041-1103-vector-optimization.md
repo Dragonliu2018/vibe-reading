@@ -7,7 +7,7 @@ source:
   url: "https://github.com/jd-opensource/xllm/pull/1041"
   prType: "perf"
 date: "2026-07-06"
-category: [AI, 推理, XLLM, Contributions]
+category: [AI, 推理, xLLM, Contributions]
 tags: ["C++ 性能优化", "容器", "unordered_map", "vector", "emplace_back", "move semantics"]
 description: "系统梳理 xLLM 六次容器性能优化：有序容器换无序、循环外复用 vector、提前 reserve、emplace_back 原位构造、移动迭代器——从原理到代码，附 quick-bench 实测数据。"
 readingTime: "16 min"

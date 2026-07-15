@@ -37,6 +37,11 @@ const displayTitle = source ? `${sourceLabel} ${prTypeLabel}${title}` : title;
 const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catLabel = category?.length ? category[category.length - 1] : '';
 
+// 沉浸式阅读模式：文学 / 电影 / 历史 等非技术题材使用衬线字体 + 疏朗排版
+const LITERARY_DOMAINS = ['Literature', 'Cinema', 'History'];
+const firstCat   = category?.[0] ?? '';
+const layoutMode = LITERARY_DOMAINS.includes(firstCat) ? 'literary' : 'default';
+
 // 与首页保持一致：按全站标签首次出现顺序分配颜色，保证相同标签全站同色
 const BADGE_PALETTE = [
   { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },
@@ -72,8 +77,18 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
   <title>{displayTitle} · Vibe Reading</title>
   {description && <meta name="description" content={description} />}
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  {layoutMode === 'literary' && (
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  )}
+  {layoutMode === 'literary' && (
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  )}
+  {layoutMode === 'literary' && (
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap" />
+  )}
 </head>
-<body>
+<body data-layout={layoutMode}>
 
   <div id="progress-bar" data-pagefind-ignore="all"></div>
 

@@ -727,3 +727,143 @@ a { color: inherit; text-decoration: none; }
   }
   .mob-toc-link.depth-4.active { color: var(--accent); }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   沉浸式阅读模式（literary）—— 文学 / 电影 / 历史
+   衬线字体 + 疏朗排版 + 首字下沉 + 花饰分隔，区别于技术文章
+   ════════════════════════════════════════════════════════════════ */
+
+body[data-layout="literary"] .article-col {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 56px 32px 120px;
+}
+
+body[data-layout="literary"] .article-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(28px, 4.5vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+}
+
+body[data-layout="literary"] .article-desc {
+  font-family: 'Noto Serif SC', serif;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+body[data-layout="literary"] .prose {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 17.5px;
+  line-height: 1.95;
+  color: var(--text);
+}
+
+body[data-layout="literary"] .prose p {
+  margin-bottom: 22px;
+  text-align: justify;
+  text-justify: inter-character;
+}
+
+/* 首字下沉：正文第一个段落 */
+body[data-layout="literary"] .prose > p:first-of-type::first-letter {
+  font-size: 3.4em;
+  float: left;
+  line-height: 0.82;
+  margin: 0.06em 0.12em 0 0;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* 标题：衬线 + 更舒展的间距 */
+body[data-layout="literary"] .prose h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 24px;
+  margin: 40px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+body[data-layout="literary"] .prose h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 20px;
+  margin: 32px 0 12px;
+}
+
+/* 引用块：左侧粗线 + 斜体，作为 pull quote */
+body[data-layout="literary"] .prose blockquote {
+  border-left: 3px solid var(--accent);
+  background: transparent;
+  font-style: italic;
+  font-size: 1.06em;
+  color: var(--text);
+  padding: 8px 22px;
+  margin: 28px 0;
+}
+
+/* 分割线：花饰符号代替直线 */
+body[data-layout="literary"] .prose hr {
+  border: none;
+  text-align: center;
+  margin: 40px 0;
+  height: auto;
+  background: transparent;
+}
+body[data-layout="literary"] .prose hr::before {
+  content: '❦';
+  color: var(--text-dim);
+  font-size: 1.3em;
+  letter-spacing: 0.5em;
+}
+
+/* 行内代码：弱化技术感 */
+body[data-layout="literary"] .prose :not(pre) > code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  padding: 1px 5px;
+}
+
+/* 配图：居中 + 圆角，作为视觉焦点 */
+body[data-layout="literary"] .prose img {
+  display: block;
+  margin: 28px auto;
+  border-radius: 10px;
+}
+
+/* 隐藏代码块 header 工具栏（保留 TOC） */
+body[data-layout="literary"] .prose-code-block .code-header {
+  display: none !important;
+}
+/* TOC 衬线字体，视觉与正文统一；字号放大更易读 */
+body[data-layout="literary"] .article-toc-panel,
+body[data-layout="literary"] .toc-panel-title,
+body[data-layout="literary"] .toc-link {
+  font-family: 'Noto Serif SC', serif;
+}
+body[data-layout="literary"] .toc-panel-title { font-size: 15px; }
+body[data-layout="literary"] .toc-link {
+  font-size: 14px;
+  padding: 6px 4px 6px 10px;
+  line-height: 1.5;
+}
+body[data-layout="literary"] .prose-code-block {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+}
+body[data-layout="literary"] .prose-code-block pre {
+  font-size: 13px;
+}
+
+/* 移动端：内边距收窄 */
+@media (max-width: 959px) {
+  body[data-layout="literary"] .article-col {
+    padding: 36px 20px 80px;
+  }
+  body[data-layout="literary"] .prose {
+    font-size: 16.5px;
+    line-height: 1.9;
+  }
+}

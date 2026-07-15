@@ -137,6 +137,12 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
         }
       }
 
+      // 3. 还原侧边栏滚动位置（首次绘制前完成，消除跨页滚动闪动）
+      var savedScroll = sessionStorage.getItem('sidebar-scroll');
+      if (savedScroll !== null) {
+        sidebar.scrollTop = parseInt(savedScroll, 10) || 0;
+      }
+
       // 还原完毕后移除禁用类，恢复正常交互过渡
       requestAnimationFrame(function () {
         sidebar.classList.remove('no-transition');
@@ -462,10 +468,18 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
       });
     });
 
-    // 滚动当前文章进视口（同步执行，避免 rAF 延迟引起闪动）
-    const activeLink = sidebar.querySelector<HTMLElement>('.tree-article.active');
-    if (activeLink) activeLink.scrollIntoView({ block: 'nearest' });
+    // 首次访问（无滚动记录）时把当前文章滚进视口；
+    // 跨页导航的滚动位置已由 is:inline 在首次绘制前还原，无需重复
+    if (sessionStorage.getItem('sidebar-scroll') === null) {
+      const activeLink = sidebar.querySelector<HTMLElement>('.tree-article.active');
+      if (activeLink) activeLink.scrollIntoView({ block: 'nearest' });
+    }
   }
+
+  // 导航前保存侧边栏滚动位置，使下一页侧边栏原位不动
+  window.addEventListener('pagehide', () => {
+    if (sidebar) sessionStorage.setItem('sidebar-scroll', String(sidebar.scrollTop));
+  });
 
   // ── Desktop only: collapse toggle + drag to resize ───────────────
   if (sidebar && handle && toggle && isDesktop()) {

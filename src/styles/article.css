@@ -213,6 +213,19 @@ a { color: inherit; text-decoration: none; }
 .meta-sep  { color: rgba(255,255,255,0.12); }
 .meta-item { font-size: 12.5px; color: var(--text-dim); }
 
+/* Reviewed 徽章：静态两态（pending 灰黄 / reviewed 绿），状态构建期由 reviewedSlugs 决定 */
+.review-badge {
+  font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px;
+  cursor: default; white-space: nowrap;
+  transition: color .2s, background .2s, border-color .2s;
+}
+.review-badge[data-review-state="pending"] {
+  color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30);
+}
+.review-badge[data-review-state="reviewed"] {
+  color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30);
+}
+
 .article-title {
   font-size: clamp(26px, 4vw, 38px);
   font-weight: 700; letter-spacing: -0.8px; line-height: 1.18;

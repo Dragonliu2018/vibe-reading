@@ -26,10 +26,13 @@ tags: ["Tag1", "Tag2"]
 description: "一句话描述，出现在文章卡片和 SEO meta 中"
 readingTime: "N min"
 aiModel: "Claude Opus 4.8"
+reviewed: false
 ---
 ```
 
 **所有字段必须填写。不要加 `layout:` 行（由 `[slug].astro` 统一处理）。**
+
+`reviewed`：是否经人工 review。AI 生成初稿时一律写 `false`；人工 review 通过后改为 `true`，提交重新构建后首页/文章页徽章由 `Draft`（灰黄）切为 `Reviewed`（绿）。省略时等同 `false`。
 
 PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。
 

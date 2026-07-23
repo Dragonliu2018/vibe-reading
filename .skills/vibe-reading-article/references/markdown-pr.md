@@ -40,10 +40,13 @@ tags: ["Tag1", "Tag2"]
 description: "一句话描述"
 readingTime: "N min"
 aiModel: "Claude Opus 4.8"
+reviewed: false
 ---
 ```
 
 **title 规则**：UI 自动拼接为 `[Doris PR-26133] feat: title`，因此 title 字段**不要**写 project 名或 PR 编号前缀。
+
+`reviewed`：是否经人工 review。AI 生成初稿时一律写 `false`；人工 review 通过后改为 `true`，提交重新构建后首页/文章页徽章由 `Draft`（灰黄）切为 `Reviewed`（绿）。省略时等同 `false`。
 
 ### 多 PR 合集
 

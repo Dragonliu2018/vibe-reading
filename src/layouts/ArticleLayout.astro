@@ -15,6 +15,7 @@ export interface Props {
     description?: string;
     readingTime?: string;
     aiModel?:     string;
+    reviewed?:    boolean;
     source?: {
       project: string;        // 项目名，如 Doris / ClickHouse
       type:    string;        // 引用类型，如 PR / Issue / RFC / arxiv / commit
@@ -27,7 +28,7 @@ export interface Props {
 }
 
 const { frontmatter, headings = [] } = Astro.props;
-const { title, date, category, tags = [], description, readingTime, aiModel, source } = frontmatter;
+const { title, date, category, tags = [], description, readingTime, aiModel, source, reviewed } = frontmatter;
 
 // 有 source 时，<title> 渲染为 "[Project Type-Id] prType: title"
 const sourceLabel  = source ? `[${source.project} ${source.type}-${source.id}]` : '';
@@ -64,6 +65,12 @@ function badgeStyle(label: string): string {
 // Derive slug from URL to highlight current article in sidebar
 const pathname    = Astro.url.pathname;
 const currentSlug = pathname.replace(/.*\/articles\//, '').replace(/\/$/, '');
+
+// Reviewed 徽章：静态判定，依据文章 frontmatter 的 reviewed 字段。构建期决定，无运行时。
+const isReviewed = !!reviewed;
+const reviewState = isReviewed ? 'reviewed' : 'pending';
+const reviewLabel = isReviewed ? 'Reviewed' : 'Draft';
+const reviewTitle = isReviewed ? '已人工 review' : 'AI 初稿，待人工 review';
 
 // TOC: h2 + h3 + h4 only
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.depth === 4);
@@ -141,6 +148,9 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
                 {catLabel}
               </span>
             )}
+            <span class="review-badge"
+                  data-review-state={reviewState}
+                  title={reviewTitle}>{reviewLabel}</span>
             {date        && <><span class="meta-sep">·</span><span class="meta-item">{date}</span></>}
             {readingTime && <><span class="meta-sep">·</span><span class="meta-item">{readingTime}</span></>}
             {aiModel     && <><span class="meta-sep">·</span><span class="meta-item">{aiModel}</span></>}

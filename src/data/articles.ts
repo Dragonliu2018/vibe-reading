@@ -21,6 +21,7 @@ export interface Article {
   description:  string;
   readingTime?: string;
   aiModel?:     string;
+  reviewed?:    boolean;     // frontmatter 显式声明已 review；与 src/data/reviewed.ts 数组取并集，构建期静态决定徽章状态
 }
 
 // ── MD 文章：从 frontmatter 自动读取 ──────────────────────────────
@@ -34,6 +35,7 @@ const mdModules = import.meta.glob<{
     readingTime?: string;
     aiModel?:     string;
     source?:      ArticleSource;
+    reviewed?:    boolean;
   };
 }>('../pages/articles/_md/*.md', { eager: true });
 
@@ -52,6 +54,7 @@ const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
     description:  fm.description  ?? '',
     readingTime:  fm.readingTime   || undefined,
     aiModel:      fm.aiModel       || undefined,
+    reviewed:     fm.reviewed      || undefined,
   };
 });
 

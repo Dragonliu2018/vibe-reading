@@ -25,11 +25,12 @@ const filterCats: [string, number][] = Object.entries(
 ).sort((a, b) => b[1] - a[1]);
 
 // 按首次出现顺序顺序分配颜色，保证不同标签必然不同色
+// 仅用蓝紫系——绿/橙黄留给 review-badge、粉/teal 留给 origin-badge，三类徽章色域不重合
 const BADGE_PALETTE = [
   { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },
   { text: '#bc8cff', bg: 'rgba(188,140,255,.12)', border: 'rgba(188,140,255,.30)' },
-  { text: '#3fb950', bg: 'rgba(63,185,80,.12)',   border: 'rgba(63,185,80,.30)'   },
-  { text: '#ff9f0a', bg: 'rgba(255,159,10,.12)',  border: 'rgba(255,159,10,.30)'  },
+  { text: '#7aa2f7', bg: 'rgba(122,162,247,.12)', border: 'rgba(122,162,247,.30)' },
+  { text: '#d2a8ff', bg: 'rgba(210,168,255,.12)', border: 'rgba(210,168,255,.30)' },
 ] as const;
 const catColorMap = new Map(
   filterCats.map(([label], i) => [label, BADGE_PALETTE[i % BADGE_PALETTE.length]])
@@ -253,6 +254,9 @@ function badgeStyle(label: string): string {
     .review-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
     .review-badge[data-review-state="pending"] { color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30); }
     .review-badge[data-review-state="reviewed"] { color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30); }
+    .origin-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
+    .origin-badge[data-origin="repost"] { color: #2dd4bf; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.30); }
+    .origin-badge[data-origin="original"] { color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30); }
     .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
     .card-source-label { color: inherit; margin-right: 0.2em; }
     .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
@@ -353,6 +357,9 @@ function badgeStyle(label: string): string {
             const isReviewed = !!article.reviewed;
             const reviewLabel = isReviewed ? 'Reviewed' : 'Draft';
             const reviewTitle = isReviewed ? '已人工 review' : 'AI 初稿，待人工 review';
+            const isRepost = article.source?.type === 'article';
+            const originLabel = isRepost ? '转载' : 'AI 生成';
+            const originTitle = isRepost ? '转载自外部文章' : 'AI 生成内容';
             return (
               <a class="article-card fade-up" href={`${base}/articles/${article.slug}`} data-category={catLabel}>
                 <div class="card-inner">
@@ -363,6 +370,9 @@ function badgeStyle(label: string): string {
                           {catLabel}
                         </span>
                       )}
+                      <span class="origin-badge"
+                            data-origin={isRepost ? 'repost' : 'original'}
+                            title={originTitle}>{originLabel}</span>
                       <span class="review-badge"
                             data-review-state={isReviewed ? 'reviewed' : 'pending'}
                             title={reviewTitle}>{reviewLabel}</span>

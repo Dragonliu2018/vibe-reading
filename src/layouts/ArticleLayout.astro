@@ -54,11 +54,12 @@ const firstCat   = category?.[0] ?? '';
 const layoutMode = LITERARY_DOMAINS.includes(firstCat) ? 'literary' : 'default';
 
 // 与首页保持一致：按全站标签首次出现顺序分配颜色，保证相同标签全站同色
+// 仅用蓝紫系——绿/橙黄留给 review-badge、粉/teal 留给 origin-badge，三类徽章色域不重合
 const BADGE_PALETTE = [
   { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },
   { text: '#bc8cff', bg: 'rgba(188,140,255,.12)', border: 'rgba(188,140,255,.30)' },
-  { text: '#3fb950', bg: 'rgba(63,185,80,.12)',   border: 'rgba(63,185,80,.30)'   },
-  { text: '#ff9f0a', bg: 'rgba(255,159,10,.12)',  border: 'rgba(255,159,10,.30)'  },
+  { text: '#7aa2f7', bg: 'rgba(122,162,247,.12)', border: 'rgba(122,162,247,.30)' },
+  { text: '#d2a8ff', bg: 'rgba(210,168,255,.12)', border: 'rgba(210,168,255,.30)' },
 ] as const;
 const catCountMap = articles.reduce<Record<string, number>>((acc, a) => {
   const last = a.category[a.category.length - 1];
@@ -81,6 +82,12 @@ const isReviewed = !!reviewed;
 const reviewState = isReviewed ? 'reviewed' : 'pending';
 const reviewLabel = isReviewed ? 'Reviewed' : 'Draft';
 const reviewTitle = isReviewed ? '已人工 review' : 'AI 初稿，待人工 review';
+
+// Origin 徽章：转载（source.type=article）vs AI 生成内容（PR 解读/源码解读/论文等）
+const isRepost = source?.type === 'article';
+const originState = isRepost ? 'repost' : 'original';
+const originLabel = isRepost ? '转载' : 'AI 生成';
+const originTitle = isRepost ? '转载自外部文章' : 'AI 生成内容';
 
 // TOC: h2 + h3 + h4 only
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.depth === 4);
@@ -158,6 +165,9 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
                 {catLabel}
               </span>
             )}
+            <span class="origin-badge"
+                  data-origin={originState}
+                  title={originTitle}>{originLabel}</span>
             <span class="review-badge"
                   data-review-state={reviewState}
                   title={reviewTitle}>{reviewLabel}</span>

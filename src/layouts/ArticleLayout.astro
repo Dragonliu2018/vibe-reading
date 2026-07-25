@@ -243,6 +243,60 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
         }
         p.replaceWith(fig);
       });
+      // 图片点击放大（lightbox）：滚轮/双指缩放图片本身（阻止页面缩放）、拖拽、ESC/空白关闭
+      function openLightbox(src, alt) {
+        var o = document.createElement('div');
+        o.className = 'img-lightbox';
+        var b = document.createElement('img');
+        b.src = src; if (alt) b.alt = alt;
+        o.appendChild(b);
+        var scale = 1, tx = 0, ty = 0, drag = false, sx, sy, ox, oy;
+        function apply() { b.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')'; }
+        function onMove(e) { if (!drag) return; tx = ox + e.clientX - sx; ty = oy + e.clientY - sy; apply(); }
+        function onUp() { drag = false; }
+        function onKey(e) { if (e.key === 'Escape') close(); }
+        function close() {
+          o.remove(); document.body.style.overflow = '';
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('mouseup', onUp);
+          window.removeEventListener('keydown', onKey);
+        }
+        o.addEventListener('wheel', function (e) {
+          e.preventDefault();
+          // 按 deltaY 对数衰减缩放：小滑小变、大滑衰减，避免一滑暴增
+          var factor = Math.exp(-e.deltaY * 0.012);
+          scale = Math.max(1, Math.min(8, scale * factor));
+          if (scale === 1) { tx = 0; ty = 0; }
+          apply();
+        }, { passive: false });
+        b.addEventListener('mousedown', function (e) { drag = true; sx = e.clientX; sy = e.clientY; ox = tx; oy = ty; e.preventDefault(); });
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        o.addEventListener('click', function (e) { if (e.target === o) close(); });
+        // 双击图片：以点击位置为锚放大到 2.5×，再次双击复原
+        b.addEventListener('dblclick', function (e) {
+          e.preventDefault(); e.stopPropagation();
+          if (scale === 1) {
+            var S = 2.5;
+            var r = o.getBoundingClientRect();
+            var dx = e.clientX - (r.left + r.width / 2);
+            var dy = e.clientY - (r.top + r.height / 2);
+            scale = S; tx = dx * (1 - S); ty = dy * (1 - S);
+          } else {
+            scale = 1; tx = 0; ty = 0;
+          }
+          apply();
+        });
+        window.addEventListener('keydown', onKey);
+        document.body.appendChild(o);
+        document.body.style.overflow = 'hidden';
+      }
+      document.querySelectorAll('.prose img').forEach(function (img) {
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', function () {
+          openLightbox(img.currentSrc || img.src, img.getAttribute('alt'));
+        });
+      });
     })();
   </script>
 

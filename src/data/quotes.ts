@@ -5,7 +5,7 @@ export interface Quote {
 
 export const quotes: Quote[] = [
   {
-    text:   '技术文档深度解读——代码库架构、论文精读。',
+    text:   'AI-drafted · Human-reviewed',
   },
   {
     text:   'Talk is cheap. Show me the code.',

@@ -143,8 +143,8 @@ function badgeStyle(label: string): string {
     /* ── 哲理语句区 ── */
     .quote-wrap {
       position: relative;
-      height: 88px;
-      max-width: 480px;
+      height: 100px;
+      max-width: 560px;
       margin: 14px auto 0;
       overflow: hidden;
     }
@@ -152,8 +152,8 @@ function badgeStyle(label: string): string {
       .hero         { padding: 12px 6% 16px; }
       .hero-eyebrow { margin-bottom: 10px; font-size: 11.5px; padding: 4px 11px; }
       .hero h1      { font-size: clamp(26px, 7vw, 36px); letter-spacing: -1px; margin-bottom: 10px; }
-      .quote-wrap   { height: 88px; margin-top: 10px; }
-      .quote-text   { font-size: 13px; }
+      .quote-wrap   { height: 92px; margin-top: 10px; }
+      .quote-text   { font-size: 14px; }
     }
     .quote-inner {
       position: absolute;        /* 脱离文档流，高度变化不影响容器 */
@@ -172,13 +172,13 @@ function badgeStyle(label: string): string {
       transform: translateY(7px);
     }
     .quote-text {
-      font-size: 14.5px; font-style: italic; font-weight: 400;
+      font-size: 16px; font-style: italic; font-weight: 400;
       color: rgba(245,245,247,0.62);
-      line-height: 1.65; letter-spacing: -0.05px;
+      line-height: 1.6; letter-spacing: -0.05px;
     }
     .quote-author {
-      font-size: 11.5px; margin-top: 7px;
-      color: rgba(245,245,247,0.28); letter-spacing: 0.1px;
+      font-size: 13px; margin-top: 8px;
+      color: rgba(245,245,247,0.40); letter-spacing: 0.1px;
     }
 
 
@@ -321,7 +321,6 @@ function badgeStyle(label: string): string {
     <div class="main-scroll">
 
       <section class="hero">
-        <span class="hero-eyebrow fade-up">AI-drafted · Human-reviewed</span>
         <h1 class="fade-up" style="transition-delay:80ms">Vibe Reading</h1>
 
         <!-- 哲理语句：构建时嵌入数据，运行时轮播 -->

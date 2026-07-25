@@ -34,7 +34,7 @@ reviewed: false
 
 `reviewed`：是否经人工 review。AI 生成初稿时一律写 `false`；人工 review 通过后改为 `true`，提交重新构建后首页/文章页徽章由 `Draft`（灰黄）切为 `Reviewed`（绿）。省略时等同 `false`。
 
-PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。
+PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读文章也加 `source`（`type: "论文解读"`、无 id），前缀 `[project 论文解读]` 由 source 自动拼，见 `paper-workflow.md`。
 
 **category 末级约定：**
 
@@ -100,6 +100,27 @@ class SQLExecute:
 ````
 
 语言标识必须标注（`python` / `cpp` / `bash` / `typescript` / `go` / `rust` / `sql` / `text` 等）。
+
+---
+
+## 数学公式
+
+博客已启用 KaTeX（`remark-math` + `rehype-katex` + `@astrojs/markdown-remark`，CSS 与字体已打包）。公式用 KaTeX 语法，**不要用代码块放公式**。
+
+- **行内**：`$p_\psi(z_0)$`、`$z_1 \sim \mathcal{N}(0,I)$`
+- **展示（display）**：必须用**多行** `$$`（⚠️ 单行 `$$...$$` 会被渲染成 inline，无居中块）：
+
+  ````markdown
+  $$
+  \log p(x) \geq \mathbb{E}_{z_0 \sim q_\phi}\!\left[\log p_\theta(x \mid z_0) - \log q_\phi(z_0 \mid x)\right]
+  $$
+  ````
+
+- **逐行注释**用 `\underbrace{...}_{\text{…}}` 把公式分段标注。
+- 常用宏：`\mathbb{E}` `\mathcal{N}` `\mid` `\,\|` `\sum` `\nabla` `\partial` `\top` `\ast` `\approx` `\geq` `\leq` `\cdot` `\quad` `\left[…\right]`。
+- 行内符号（如 `z0`、`p(x)`）也用 `$...$`，不用反引号 `` `z0` `` 包，与公式风格一致。
+
+> 论文解读的公式规则与示例见 `paper-workflow.md`。
 
 ---
 
@@ -173,6 +194,8 @@ public/images/articles/starrocks-pr-52103/checkpoint-architecture.png
 mkdir -p public/images/articles/{slug}
 curl -sL "{remote-url}" -o public/images/articles/{slug}/{filename}.png
 ```
+
+> 论文/PR PDF 中的图（Figure）用 PyMuPDF 渲染图区抽取（`page.get_pixmap(clip=rect)`），详见 `paper-workflow.md` 图节。
 
 ### Markdown 引用
 

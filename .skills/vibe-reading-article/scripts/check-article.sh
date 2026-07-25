@@ -64,6 +64,12 @@ if [[ "$EXT" == "md" ]]; then
         ERRORS+=("文件命名应以 '${EXPECTED_PREFIX}' 开头，当前: $BASENAME")
       fi
     fi
+    # 论文解读类型：pdf 必填（博客本地 PDF 链接，见 references/paper-workflow.md）
+    if [[ "$SRC_TYPE" == "论文解读" ]]; then
+      if ! grep -qE '^\s+pdf:' "$FILE"; then
+        ERRORS+=("source 缺少子字段: pdf（论文解读类型必填，博客本地 PDF 链接）")
+      fi
+    fi
     # article 类型（转载）：仅要求 type，不要求 project/id/prType，文件名 kebab-case 自由命名（见 references/markdown-repost.md）
   fi
 

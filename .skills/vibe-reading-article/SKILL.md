@@ -19,7 +19,7 @@ description: >
 |---------|------|---------|
 | PR / commit / Issue | **Markdown** | `references/markdown-pr.md` + `references/markdown-style.md` |
 | 代码库 Internals | **HTML** | `references/content-guide.md`（代码库节）+ `references/html-style.md` |
-| 论文 | **Markdown** | `references/content-guide.md`（论文节）+ `references/markdown-style.md` |
+| 论文 | **Markdown** | `references/content-guide.md`（论文节）+ `references/paper-workflow.md` + `references/markdown-style.md` |
 | 产品 / 文档介绍 | **HTML** | `references/content-guide.md`（产品节）+ `references/html-style.md` |
 | 技术文章转载（博客/知乎/公众号） | **Markdown** | `references/markdown-repost.md` + `references/markdown-style.md` |
 | 文学 / 电影 / 历史笔记 | **Markdown** | `references/literary-style.md`（沉浸式布局自动启用）|

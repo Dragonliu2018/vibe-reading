@@ -1,10 +1,11 @@
 ---
-import { articles } from '../data/articles';
+import { articles, sourceLabel } from '../data/articles';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
 import GiscusComments from '../components/GiscusComments.astro';
 import '../styles/article.css';
+import 'katex/dist/katex.min.css';
 
 export interface Props {
   frontmatter: {
@@ -30,20 +31,11 @@ export interface Props {
 const { frontmatter, headings = [] } = Astro.props;
 const { title, date, category, tags = [], description, readingTime, aiModel, source, reviewed } = frontmatter;
 
-// source 前缀：PR/commit → [project type-id]；article 转载 → [project 来源]（来源取 category 末级 Official/Informal）
-let sourceLabel = '';
-if (source) {
-  if (source.type === 'article') {
-    const origin = category?.length ? category[category.length - 1] : '';
-    const parts = [source.project, origin].filter(Boolean);
-    sourceLabel = parts.length ? `[${parts.join(' ')}]` : '';
-  } else {
-    sourceLabel = `[${source.project} ${source.type}-${source.id}]`;
-  }
-}
-const hasSourceLabel = !!sourceLabel;
+// source 前缀（统一用 articles.ts 的 sourceLabel helper，避免 4 处副本漂移）
+const srcLabel    = source ? sourceLabel(source, category ?? []) : '';
+const hasSourceLabel = !!srcLabel;
 const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
-const displayTitle = hasSourceLabel ? `${sourceLabel} ${prTypeLabel}${title}` : title;
+const displayTitle = hasSourceLabel ? `${srcLabel} ${prTypeLabel}${title}` : title;
 
 const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catLabel = category?.length ? category[category.length - 1] : '';
@@ -177,7 +169,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
           </div>
 
           <h1 class="article-title" data-pagefind-meta="title">
-            {hasSourceLabel && <span class="source-label">{sourceLabel}</span>}
+            {hasSourceLabel && <span class="source-label">{srcLabel}</span>}
             {source?.prType && <span class="pr-type-label"> {source.prType}:</span>}
             {hasSourceLabel ? ` ${title}` : title}
           </h1>

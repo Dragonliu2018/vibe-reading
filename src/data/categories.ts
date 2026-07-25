@@ -9,7 +9,7 @@
  * 新增文章只需在文件里写 category，无需改此文件。
  */
 
-import { articles } from './articles';
+import { articles, sourceLabel } from './articles';
 
 export interface TreeNode {
   key:       string;       // 完整路径作为唯一 key，例如 "AI/可观测性/Litefuse"
@@ -23,12 +23,8 @@ function displayTitle(slug: string): string {
   const a = articles.find(a => a.slug === slug);
   if (!a) return slug;
   if (!a.source) return a.title;
-  if (a.source.type === 'article') {
-    const origin = a.categoryPath?.length ? a.categoryPath[a.categoryPath.length - 1] : '';
-    const parts = [a.source.project, origin].filter(Boolean);
-    return parts.length ? `[${parts.join(' ')}] ${a.title}` : a.title;
-  }
-  return `[${a.source.project} ${a.source.type}-${a.source.id}] ${a.title}`;
+  const label = sourceLabel(a.source, a.categoryPath ?? []);
+  return label ? `${label} ${a.title}` : a.title;
 }
 
 // ── 从 articles 自动构建分类树 ──────────────────────────────────────

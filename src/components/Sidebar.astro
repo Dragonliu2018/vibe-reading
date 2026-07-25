@@ -1,7 +1,7 @@
 ---
 import type { TreeNode } from '../data/categories';
 import type { ToolNode } from '../data/tools-tree';
-import { articles } from '../data/articles';
+import { articles, sourceLabel } from '../data/articles';
 import { categoryTree, findActivePath } from '../data/categories';
 import { toolsTree } from '../data/tools-tree';
 
@@ -37,16 +37,12 @@ function renderNode(node: TreeNode, depth: number = 0): string {
     const { source } = article ?? {};
     const baseTitle    = article?.title ?? slug;
     const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
-    // PR/commit → [project type-id]；article 转载 → [project 来源]（来源取 category 末级）
+    // source 前缀（统一用 articles.ts 的 sourceLabel helper）：article → [project 来源]；
+    //   有 id（PR/commit）→ [project type-id]；无 id（论文解读）→ [project type]
     let displayTitle = baseTitle;
     if (source) {
-      if (source.type === 'article') {
-        const origin = article?.categoryPath?.length ? article.categoryPath[article.categoryPath.length - 1] : '';
-        const parts = [source.project, origin].filter(Boolean);
-        if (parts.length) displayTitle = `[${parts.join(' ')}] ${baseTitle}`;
-      } else {
-        displayTitle = `[${source.project} ${source.type}-${source.id}] ${prTypeLabel}${baseTitle}`;
-      }
+      const label = sourceLabel(source, article?.categoryPath ?? []);
+      if (label) displayTitle = `${label} ${prTypeLabel}${baseTitle}`;
     }
     const active = slug === currentSlug ? ' active' : '';
     return `<a class="tree-article${active}" href="${base}/articles/${slug}" data-tip="${esc(displayTitle)}">${esc(displayTitle)}</a>`;

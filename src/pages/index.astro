@@ -1,5 +1,5 @@
 ---
-import { articles } from '../data/articles';
+import { articles, sourceLabel } from '../data/articles';
 import { quotes } from '../data/quotes';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
@@ -379,14 +379,7 @@ function badgeStyle(label: string): string {
                     <div class="card-title">
                       {(() => {
                         const src = article.source; if (!src) return <>{article.title}</>;
-                        let label = '';
-                        if (src.type === 'article') {
-                          const origin = article.categoryPath?.length ? article.categoryPath[article.categoryPath.length - 1] : '';
-                          const parts = [src.project, origin].filter(Boolean);
-                          label = parts.length ? `[${parts.join(' ')}]` : '';
-                        } else {
-                          label = `[${src.project} ${src.type}-${src.id}]`;
-                        }
+                        const label = sourceLabel(src, article.categoryPath ?? []);
                         return <>{label && <span class="card-source-label">{label}</span>}{src.prType && <span class="card-pr-type"> {src.prType}:</span>}{label ? ` ${article.title}` : article.title}</>;
                       })()}
                     </div>

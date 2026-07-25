@@ -4,9 +4,10 @@ export type PrType = 'feat' | 'perf' | 'enhancement' | 'fix' | 'refactor';
 
 export interface ArticleSource {
   project: string;   // 项目名，如 Doris / ClickHouse
-  type:    string;   // 引用类型，如 PR / Issue / RFC / arxiv / commit
-  id:      string;   // 编号，如 26133
+  type:    string;   // 引用类型，如 PR / Issue / RFC / arxiv / commit / 论文解读
+  id?:     string;   // 编号，如 26133（PR/commit 必填；论文解读/转载可省略）
   url?:    string;   // 可选：原始链接
+  pdf?:    string;   // 博客本地 PDF 链接（论文解读 type=论文解读 时必填，见 check-article.sh）
   prType?: PrType;   // PR 类型（仅 type=PR/commit 时有效）
 }
 
@@ -22,6 +23,23 @@ export interface Article {
   readingTime?: string;
   aiModel?:     string;
   reviewed?:    boolean;     // frontmatter 显式声明已 review；与 src/data/reviewed.ts 数组取并集，构建期静态决定徽章状态
+}
+
+/**
+ * 计算 source 前缀标签（不含 prType、不含标题）：
+ *   article 转载 → [project 来源]（来源取 categoryPath 末级）
+ *   有 id（PR/commit）→ [project type-id]
+ *   无 id（如 论文解读）→ [project type]
+ * 返回 '' 表示无前缀。首页卡片 / 侧边栏 / 文章页 / 排序统一用此函数，避免 4 处副本漂移。
+ */
+export function sourceLabel(source: ArticleSource, categoryPath: string[] = []): string {
+  if (source.type === 'article') {
+    const origin = categoryPath.length ? categoryPath[categoryPath.length - 1] : '';
+    const parts = [source.project, origin].filter(Boolean);
+    return parts.length ? `[${parts.join(' ')}]` : '';
+  }
+  const idSuffix = source.id ? `-${source.id}` : '';
+  return `[${source.project} ${source.type}${idSuffix}]`;
 }
 
 // ── MD 文章：从 frontmatter 自动读取 ──────────────────────────────

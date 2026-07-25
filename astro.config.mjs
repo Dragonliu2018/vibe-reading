@@ -1,6 +1,8 @@
 import { defineConfig } from 'astro/config';
 import { existsSync, readFileSync } from 'fs';
 import { join, extname } from 'path';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const BASE = '/vibe-reading';
 
@@ -17,6 +19,8 @@ export default defineConfig({
   output: 'static',
 
   markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
     shikiConfig: {
       theme: 'github-dark-dimmed',
       transformers: [{

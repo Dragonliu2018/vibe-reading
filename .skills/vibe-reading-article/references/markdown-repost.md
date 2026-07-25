@@ -134,9 +134,10 @@ bash .skills/vibe-reading-article/scripts/check-article.sh <file>
 
 ### 标题
 
-- `frontmatter.title` 用**中文译名**（博客卡片/检索/SEO 友好）。
-- 正文 `##` / `###` 标题用**中文译名**（TOC 显示中文）。
-- 原文标题在导言标注（见下），不在正文重复。
+- `frontmatter.title` 用**原文英文标题**（照搬，不翻译；与 `source.url` 原文一致）。**不要把副标题塞进 title**。
+- 若原文带副标题（如 Substack 的 subtitle 字段），放入 `description` 字段——ArticleLayout 会把 `description` 渲染为标题下方的 `.article-desc` 引文段，作为副标题展示。注意取页面当前**可见**副标题，而非可能滞后的 SEO meta description。
+- 正文 `##` / `###` / `####` 标题用**原文英文**（照搬，不翻译；TOC 显示英文）。
+- 导言标注原文标题（见下）；正文各节直接用原文标题，不另起中文译名。
 
 ### 段落对照格式
 
@@ -155,7 +156,7 @@ Next original paragraph.
 ### 代码块 / 图片 / 表格
 
 - **只出现一次**，在原文位置，**不翻译、不重复**。代码块、图片、表格前后若有原文段，各自配译文段；代码/图本身保持原样。
-- 图片照常本地化（见上文"图片"节），alt 可中文。
+- 图片照常本地化（见上文"图片"节），alt 保留原文 caption（图注即原文，不翻译）。
 - 代码块保留原文注释；如需译代码注释，在注释行内用 `// 译：…` 行尾补，不改原文注释。
 
 ### 列表 / 引用块
@@ -170,12 +171,12 @@ Next original paragraph.
 
 ---
 
-## 中文译名标题（第一节）
+## Original English Section Heading (First Section)
 ```
 
 ### Frontmatter
 
-与普通转载一致，`source.type=article`；`title` 用中文译名；`description` 用中文概括。`reviewed: false`——翻译更需人工校，校对通过后改 `true`。
+与普通转载一致，`source.type=article`；`title` 用原文英文标题（照搬不译，不含副标题）；`description` 优先放原文副标题（渲染为标题下方引文），无副标题时用中文概括。`reviewed: false`——翻译更需人工校，校对通过后改 `true`。
 
 ### 翻译原则
 

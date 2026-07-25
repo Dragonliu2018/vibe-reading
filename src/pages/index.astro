@@ -368,13 +368,18 @@ function badgeStyle(label: string): string {
                             title={reviewTitle}>{reviewLabel}</span>
                     </div>
                     <div class="card-title">
-                      {article.source && (
-                        <span class="card-source-label">
-                          [{article.source.project} {article.source.type}-{article.source.id}]
-                        </span>
-                      )}
-                      {article.source?.prType && <span class="card-pr-type"> {article.source.prType}:</span>}
-                      {article.source ? ` ${article.title}` : article.title}
+                      {(() => {
+                        const src = article.source; if (!src) return <>{article.title}</>;
+                        let label = '';
+                        if (src.type === 'article') {
+                          const origin = article.categoryPath?.length ? article.categoryPath[article.categoryPath.length - 1] : '';
+                          const parts = [src.project, origin].filter(Boolean);
+                          label = parts.length ? `[${parts.join(' ')}]` : '';
+                        } else {
+                          label = `[${src.project} ${src.type}-${src.id}]`;
+                        }
+                        return <>{label && <span class="card-source-label">{label}</span>}{src.prType && <span class="card-pr-type"> {src.prType}:</span>}{label ? ` ${article.title}` : article.title}</>;
+                      })()}
                     </div>
                     <div class="card-desc">{article.description}</div>
                     <div class="card-tags">

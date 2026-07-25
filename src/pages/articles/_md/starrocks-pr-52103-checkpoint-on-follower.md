@@ -7,7 +7,7 @@ source:
   url: "https://github.com/StarRocks/starrocks/pull/52103"
   prType: "enhancement"
 date: "2026-07-04"
-category: [Database, StarRocks, Internals]
+category: [Database, StarRocks, PRs]
 tags: ["StarRocks", "FE", "Checkpoint", "高可用", "内存优化"]
 description: "解读 StarRocks FE Checkpoint 的架构重构：将旧版 Checkpoint daemon 拆分为 Leader 专属的 CheckpointController（调度）与全节点运行的 CheckpointWorker（执行），把内存密集型工作卸载到内存余量最多的 Follower 节点。"
 readingTime: "12 min"

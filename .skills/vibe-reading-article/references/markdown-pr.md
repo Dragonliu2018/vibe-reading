@@ -7,7 +7,7 @@
 ## category 选择
 
 - **自己写的 PR / commit** → category 末级用 `Contributions`
-- **解读他人的 PR / commit** → category 末级用 `Internals`
+- **解读他人的 PR / commit** → category 末级用 `PRs`
 
 两种情况使用相同的 `source` 字段结构和 10 节文章模板，区别仅在 category。
 

@@ -277,6 +277,11 @@ a { color: inherit; text-decoration: none; }
 }
 
 .prose p { margin-bottom: 18px; line-height: 1.8; }
+.prose figure.image-figure { margin: 24px 0; text-align: center; }
+.prose figure.image-figure img { max-width: 100%; height: auto; margin: 0 auto; display: block; }
+.prose figure.image-figure figcaption { margin-top: 8px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+/* JS 包裹 figure 前的裸图也居中，避免闪烁 */
+.prose p > img:only-child { display: block; margin: 24px auto; max-width: 100%; height: auto; }
 .prose strong { color: var(--text); font-weight: 600; }
 .prose em { font-style: italic; }
 

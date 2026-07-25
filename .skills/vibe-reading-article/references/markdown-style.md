@@ -41,9 +41,14 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。
 | 末级 | 含义 |
 |------|------|
 | `Contributions` | 自己写的 PR / commit |
-| `Internals` | 解读他人的 PR / commit，或源码架构解读 |
+| `Codebases` | 源码架构解读（AI 解读 code） |
+| `PRs` | 解读他人的 PR / commit |
+| `Official` | 官方文章转载 |
+| `Informal` | 非官方技术博客转载 |
 | `Notes` | 技术笔记 |
 | `Papers` | 论文解读 |
+
+> 转载类末级按来源分：官方 `Official` / 非官方 `Informal`。
 
 ---
 
@@ -173,9 +178,33 @@ curl -sL "{remote-url}" -o public/images/articles/{slug}/{filename}.png
 
 引用时加 `/vibe-reading` base 前缀（与 `astro.config.mjs` 的 `base` 一致）：
 
-```markdown
-![图片描述](/vibe-reading/images/articles/{slug}/{filename}.png)
-```
+````markdown
+![图1-1 rowset版本](/vibe-reading/images/articles/{slug}/fig-1-1-rowset-version.png)
+````
+
+### 图注与居中（alt 即图注）
+
+- **alt 文本就是图注**：图片的 `alt` 会自动渲染为图片下方的图注，并居中显示（由 `ArticleLayout.astro` 的内联脚本 + `article.css` 处理）。**不要**在图片下方再单独写一行图注文字，否则会重复。
+
+  ````markdown
+  ✅ alt 即图注，下方不另写
+  ![图1-1 rowset版本](.../fig-1-1-rowset-version.png)
+
+  下一段正文…
+
+  ❌ alt + 下方重复图注
+  ![图1-1 rowset版本](.../fig-1-1-rowset-version.png)
+
+  图 1-1 rowset 版本
+  ````
+
+- **装饰性图片用空 alt**：banner、头图、作者照等不需要图注的图片写空 alt `![](...)`，不生成图注（空 alt 也是无障碍最佳实践，表示装饰图）。
+
+  ````markdown
+  ![](/vibe-reading/images/articles/{slug}/series-banner.jpg)
+  ````
+
+- **行内图片不生成图注**：只有"段落里仅一张图"的独立图片才会被包成 `<figure>` 加图注；行内图片（与文字混排）保持原样，alt 不显示。
 
 ---
 

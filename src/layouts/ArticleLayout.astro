@@ -30,10 +30,20 @@ export interface Props {
 const { frontmatter, headings = [] } = Astro.props;
 const { title, date, category, tags = [], description, readingTime, aiModel, source, reviewed } = frontmatter;
 
-// 有 source 时，<title> 渲染为 "[Project Type-Id] prType: title"
-const sourceLabel  = source ? `[${source.project} ${source.type}-${source.id}]` : '';
+// source 前缀：PR/commit → [project type-id]；article 转载 → [project 来源]（来源取 category 末级 Official/Informal）
+let sourceLabel = '';
+if (source) {
+  if (source.type === 'article') {
+    const origin = category?.length ? category[category.length - 1] : '';
+    const parts = [source.project, origin].filter(Boolean);
+    sourceLabel = parts.length ? `[${parts.join(' ')}]` : '';
+  } else {
+    sourceLabel = `[${source.project} ${source.type}-${source.id}]`;
+  }
+}
+const hasSourceLabel = !!sourceLabel;
 const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
-const displayTitle = source ? `${sourceLabel} ${prTypeLabel}${title}` : title;
+const displayTitle = hasSourceLabel ? `${sourceLabel} ${prTypeLabel}${title}` : title;
 
 const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catLabel = category?.length ? category[category.length - 1] : '';
@@ -157,9 +167,9 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
           </div>
 
           <h1 class="article-title" data-pagefind-meta="title">
-            {source && <span class="source-label">{sourceLabel}</span>}
+            {hasSourceLabel && <span class="source-label">{sourceLabel}</span>}
             {source?.prType && <span class="pr-type-label"> {source.prType}:</span>}
-            {source ? ` ${title}` : title}
+            {hasSourceLabel ? ` ${title}` : title}
           </h1>
           {description && <p class="article-desc">{description}</p>}
 
@@ -211,6 +221,29 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
   </script>
   <script>
     import '../scripts/code-block';
+  </script>
+  <script is:inline>
+    // 把独立图片段落 <p><img alt="x"></p> 包成
+    // <figure class="image-figure"><img><figcaption>x</figcaption></figure>
+    // 让 markdown alt 作为图注显示并居中（Sätteri 不支持 rehype 插件，改客户端内联处理）
+    (function () {
+      document.querySelectorAll('.prose img').forEach(function (img) {
+        var p = img.parentElement;
+        if (!p || p.tagName !== 'P') return;
+        if (p.children.length !== 1 || p.children[0] !== img) return;
+        if (img.closest('figure.image-figure')) return;
+        var alt = (img.getAttribute('alt') || '').trim();
+        var fig = document.createElement('figure');
+        fig.className = 'image-figure';
+        fig.appendChild(img);
+        if (alt) {
+          var fc = document.createElement('figcaption');
+          fc.textContent = alt;
+          fig.appendChild(fc);
+        }
+        p.replaceWith(fig);
+      });
+    })();
   </script>
 
   <!-- 桌面端：回到顶部 -->

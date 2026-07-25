@@ -37,9 +37,17 @@ function renderNode(node: TreeNode, depth: number = 0): string {
     const { source } = article ?? {};
     const baseTitle    = article?.title ?? slug;
     const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
-    const displayTitle = source
-      ? `[${source.project} ${source.type}-${source.id}] ${prTypeLabel}${baseTitle}`
-      : baseTitle;
+    // PR/commit → [project type-id]；article 转载 → [project 来源]（来源取 category 末级）
+    let displayTitle = baseTitle;
+    if (source) {
+      if (source.type === 'article') {
+        const origin = article?.categoryPath?.length ? article.categoryPath[article.categoryPath.length - 1] : '';
+        const parts = [source.project, origin].filter(Boolean);
+        if (parts.length) displayTitle = `[${parts.join(' ')}] ${baseTitle}`;
+      } else {
+        displayTitle = `[${source.project} ${source.type}-${source.id}] ${prTypeLabel}${baseTitle}`;
+      }
+    }
     const active = slug === currentSlug ? ' active' : '';
     return `<a class="tree-article${active}" href="${base}/articles/${slug}" data-tip="${esc(displayTitle)}">${esc(displayTitle)}</a>`;
   }).join('');

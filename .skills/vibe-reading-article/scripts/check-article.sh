@@ -30,15 +30,22 @@ if [[ "$EXT" == "md" ]]; then
 
   # 3. source 字段完整性
   if grep -qE '^source:' "$FILE"; then
-    for sf in project type id; do
-      if ! grep -qE "^  ${sf}:" "$FILE"; then
-        ERRORS+=("source 缺少子字段: $sf")
-      fi
-    done
-
-    # 4. prType 合规（PR/commit 时必填）
+    # 先提取 source.type，据此决定哪些子字段必填
     SRC_TYPE=$(grep -E '^\s+type:' "$FILE" | head -1 | sed 's/.*"\([^"]*\)".*/\1/')
+
+    # type 子字段对所有 source 类型必填
+    if [[ -z "$SRC_TYPE" ]]; then
+      ERRORS+=("source 缺少子字段: type")
+    fi
+
+    # 4. PR/commit 类型：project / id / prType 必填，且文件命名须含 {project}-{type}-{id}- 前缀
     if [[ "$SRC_TYPE" == "PR" || "$SRC_TYPE" == "commit" ]]; then
+      for sf in project id; do
+        if ! grep -qE "^  ${sf}:" "$FILE"; then
+          ERRORS+=("source 缺少子字段: $sf（$SRC_TYPE 类型必填）")
+        fi
+      done
+
       if ! grep -qE '^\s+prType:' "$FILE"; then
         ERRORS+=("PR/commit 文章缺少 source.prType 字段")
       else
@@ -47,16 +54,17 @@ if [[ "$EXT" == "md" ]]; then
           ERRORS+=("source.prType 值不合法: '$PR_TYPE'（允许: feat|perf|enhancement|fix|refactor）")
         fi
       fi
-    fi
 
-    # 5. PR 文章文件命名格式：{project}-{type}-{id}-*.md
-    SRC_PROJECT=$(grep -E '^\s+project:' "$FILE" | head -1 | sed 's/.*"\([^"]*\)".*/\1/' | tr '[:upper:]' '[:lower:]')
-    SRC_ID=$(grep -E '^\s+id:' "$FILE" | head -1 | sed 's/.*"\([^"]*\)".*/\1/')
-    TYPE_LOWER=$(echo "$SRC_TYPE" | tr '[:upper:]' '[:lower:]')
-    EXPECTED_PREFIX="${SRC_PROJECT}-${TYPE_LOWER}-${SRC_ID}-"
-    if ! echo "$BASENAME" | grep -qi "^${EXPECTED_PREFIX}"; then
-      ERRORS+=("文件命名应以 '${EXPECTED_PREFIX}' 开头，当前: $BASENAME")
+      # 5. PR/commit 文件命名格式：{project}-{type}-{id}-*.md
+      SRC_PROJECT=$(grep -E '^\s+project:' "$FILE" | head -1 | sed 's/.*"\([^"]*\)".*/\1/' | tr '[:upper:]' '[:lower:]')
+      SRC_ID=$(grep -E '^\s+id:' "$FILE" | head -1 | sed 's/.*"\([^"]*\)".*/\1/')
+      TYPE_LOWER=$(echo "$SRC_TYPE" | tr '[:upper:]' '[:lower:]')
+      EXPECTED_PREFIX="${SRC_PROJECT}-${TYPE_LOWER}-${SRC_ID}-"
+      if ! echo "$BASENAME" | grep -qi "^${EXPECTED_PREFIX}"; then
+        ERRORS+=("文件命名应以 '${EXPECTED_PREFIX}' 开头，当前: $BASENAME")
+      fi
     fi
+    # article 类型（转载）：仅要求 type，不要求 project/id/prType，文件名 kebab-case 自由命名（见 references/markdown-repost.md）
   fi
 
   # 6. 不含 layout: 行

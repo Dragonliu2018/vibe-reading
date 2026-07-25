@@ -1,0 +1,127 @@
+# 技术文章转载规范
+
+适用于给定外部技术文章链接（个人博客 / 知乎 / 公众号 / 掘金 / 网站），**完整转载**到博客 Markdown。
+
+与 PR 解读、论文解读不同——转载是**照搬原文**，不解读、不改写、不摘要。
+
+---
+
+## 触发条件
+
+用户提供一个文章 URL，要求"转载 / 搬运 / 迁移到博客"。
+
+---
+
+## 核心原则
+
+- **完全照搬原文**：标题层级、段落、代码块、列表、引用、表格结构保持原样，不改写、不二次创作、不摘要、不补充。
+- **作者署名**：frontmatter 记录原作者 + 原文链接 + 来源平台，尊重来源。
+
+### 例外（可处理，不算改造）
+
+| 类型 | 处理 |
+|---|---|
+| 广告、页脚导航、"推荐阅读"、版权声明、二维码、"关注公众号"、打赏码等与正文无关的噪声 | **删除** |
+| 明显的事实性错误（笔误/错字/拼错的 API 名） | **保留原文**，在该处加 `[^err]` 脚注标注 `[^err]: 原文如此，疑为 XXX`，不直接删改原文 |
+| 原文已失效的内链 / 锚点 | 保留文本，链接可去除或指向原文 |
+| 代码块语言未标注 | 补 `title=` 与语言标识（这是排版，非内容改造） |
+
+> 判定边界：只动"与文章主体无关的噪声"和"标注错误"，不动作者的观点、论证、代码逻辑。拿不准是否该删时，**保留**。
+
+---
+
+## 抓取源材料
+
+按站点类型选工具：
+
+| 来源 | 工具 | 说明 |
+|---|---|---|
+| 普通博客 / 文档站 / 网站 | `WebFetch` | 多数静态博客可直接抓正文 |
+| 知乎专栏 / 公众号 / 掘金 / 需 JS 渲染或反爬站点 | `agent-browser` | `open <url> --headed` → `snapshot` → 提取正文文本与图片 URL；公众号/知乎正文常需滚动加载 |
+
+抓取目标：**正文 DOM**（剔除导航/侧栏/评论/广告），保留：标题层级、代码块（含语言）、有序/无序列表、引用块、表格、图片 URL、alt 文本。
+
+---
+
+## 图片（强制本地化）
+
+照 `markdown-style.md` 的图片规范执行，**禁直连远程 URL**：
+
+```bash
+mkdir -p public/images/articles/{slug}
+curl -sL "{原文图片 URL}" -o public/images/articles/{slug}/{语义名}.png
+```
+
+- 原文所有图片（含图床/CDN/GitHub assets/知乎图片）一律下载到 `public/images/articles/{slug}/`。
+- 文件名用语义名（`arch.png`、`flow-1.png`、`result-table.png`），不用哈希乱码名。
+- **图注作为 alt，不单独成段**：原文图片下方的图注文字（如「图 1-1 rowset 版本」）作为该图片 `alt`，渲染时自动显示为图注并居中（见 `markdown-style.md` 图注与居中）；**不要**在 markdown 里再单独写一行图注，否则重复。原文本有 alt 则保留，无则用原图注文字补；装饰性图片（头图等）用空 alt。
+- 引用加 `/vibe-reading` base 前缀：
+  ```markdown
+  ![架构图](/vibe-reading/images/articles/{slug}/arch.png)
+  ```
+
+---
+
+## Frontmatter
+
+```yaml
+---
+title: "原文标题（照搬，不重写）"
+source:
+  type: "article"            # 固定 article，表示转载
+  project: "项目名"          # 如 Doris / StarRocks；用于标题前缀 [project 来源] 和文件名
+  url: "https://原文链接"
+  author: "原作者名 / 账号"
+  site: "来源平台（知乎 / 公众号 / 个人博客名 / 掘金）"
+date: "YYYY-MM-DD"            # 转载日期
+category: [Domain, Topic, Official]   # 官方转载用 Official，非官方博客用 Informal
+tags: ["原文标签或主题词"]
+description: "一句话概括，可引用原文导言首句"
+readingTime: "N min"
+aiModel: "Claude Opus 4.8"
+reviewed: false
+---
+```
+
+- `source.type = "article"`：转载类，不需要 `prType`（区别于 PR/commit）。
+- `category` 末级按来源：官方文章用 `Official`，非官方技术博客用 `Informal`；前两层反映原文主题域（如 `[Database, Apache Doris, Official]`）。转载标记由 `source.type=article` 负责，末级只反映来源。
+- **标题前缀**：转载文章标题自动渲染为 `[project 来源]` 前缀（如 `[Doris Official]`）——project 取 `source.project`，来源取 category 末级。与 PR 文章的 `[project type-id]` 前缀对应。
+- `reviewed: false`：转载初稿同样默认未 review，人工校对后改 `true`。
+
+---
+
+## 导言
+
+转载文章必须标注来源（区别于原创），在 frontmatter 后、第一节前：
+
+```markdown
+> **原文** [标题](url) · **作者** xxx · **来源** 知乎/公众号 · **转载** 2026-07-24
+
+---
+
+## 原文第一节
+```
+
+---
+
+## 文件命名
+
+`{project}-{来源}-{slug}.md` 格式：project 取 `source.project`，来源取 category 末级小写（`official` / `informal`）。article 无编号，故无 id 段。
+
+示例：`source.project = Doris`、category 末级 `Official` → `doris-official-compaction-mechanism.md`。
+
+---
+
+## 合规检查
+
+```bash
+bash .skills/vibe-reading-article/scripts/check-article.sh <file>
+```
+
+`source.type=article` 不触发 `prType` 必填校验（check-article 仅对 PR/commit 要求 prType），可正常通过。
+
+---
+
+## 长度
+
+照搬原文，长度不限。原文超长（如万字教程）优先单篇完整；确需分篇时按原文章节边界切，每篇独立 slug + 互相在导言链接。

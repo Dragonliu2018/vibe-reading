@@ -22,9 +22,13 @@ export interface TreeNode {
 function displayTitle(slug: string): string {
   const a = articles.find(a => a.slug === slug);
   if (!a) return slug;
-  return a.source
-    ? `[${a.source.project} ${a.source.type}-${a.source.id}] ${a.title}`
-    : a.title;
+  if (!a.source) return a.title;
+  if (a.source.type === 'article') {
+    const origin = a.categoryPath?.length ? a.categoryPath[a.categoryPath.length - 1] : '';
+    const parts = [a.source.project, origin].filter(Boolean);
+    return parts.length ? `[${parts.join(' ')}] ${a.title}` : a.title;
+  }
+  return `[${a.source.project} ${a.source.type}-${a.source.id}] ${a.title}`;
 }
 
 // ── 从 articles 自动构建分类树 ──────────────────────────────────────

@@ -1,0 +1,6 @@
+[submodule "public/images"]
+	path = public/images
+	url = git@github.com:Dragonliu2018/vibe-reading-images.git
+[submodule "public/papers"]
+	path = public/papers
+	url = git@github.com:Dragonliu2018/vibe-reading-pagers.git

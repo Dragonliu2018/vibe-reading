@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true           # 拉取 public/images 与 public/papers 子仓库
       - uses: withastro/action@v3   # 官方 Action：自动处理 Node/npm/构建/上传
         with:
           node-version: 22

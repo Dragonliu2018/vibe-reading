@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "add-image": "node scripts/add-image.mjs"
   },
   "engines": {
     "node": ">=22.12.0"

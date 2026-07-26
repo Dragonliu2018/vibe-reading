@@ -188,14 +188,35 @@ public/images/articles/{article-slug}/{filename}.png
 public/images/articles/starrocks-pr-52103/checkpoint-architecture.png
 ```
 
-### 下载命令
+### 下载与提交（图片在 submodule）
+
+`public/images` 是子仓库 `Dragonliu2018/vibe-reading-images`（submodule）。下载图后需在子仓库 commit+push，再在主 repo 暂存指针。
+
+**推荐用脚本自动化**：
+
+```bash
+npm run add-image -- {slug} {url1} [url2 ...]
+# 例：npm run add-image -- doris-official https://a.com/fig1.png https://b.com/fig2.png
+```
+
+脚本自动：下载到 `public/images/articles/{slug}/` → 子仓库 `git add/commit/push` → 主 repo `git add public/images` 暂存指针。完成后在主 repo commit 文章即可。
+
+**反爬站点（知乎/公众号/掘金）**：用 `agent-browser` 手动下载图到 `public/images/articles/{slug}/`，再跑：
+
+```bash
+npm run add-image -- {slug} --commit-only   # 只做子仓库 commit + 主 repo 暂存
+```
+
+**手动（不用脚本）**：
 
 ```bash
 mkdir -p public/images/articles/{slug}
 curl -sL "{remote-url}" -o public/images/articles/{slug}/{filename}.png
+cd public/images && git add -A && git commit -m "add {slug}" && git push && cd ..
+git add public/images          # 主 repo 记 submodule 指针
 ```
 
-> 论文/PR PDF 中的图（Figure）用 PyMuPDF 渲染图区抽取（`page.get_pixmap(clip=rect)`），详见 `paper-workflow.md` 图节。
+> 论文/PR PDF 中的图（Figure）用 PyMuPDF 渲染图区抽取（`page.get_pixmap(clip=rect)`），详见 `paper-workflow.md` 图节。PDF 本身放 `public/papers`（子仓库 `vibe-reading-papers`），同样需子仓库 commit + 主 repo 记指针。
 
 ### Markdown 引用
 

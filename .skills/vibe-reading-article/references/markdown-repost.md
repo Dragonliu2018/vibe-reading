@@ -52,6 +52,8 @@ mkdir -p public/images/articles/{slug}
 curl -sL "{原文图片 URL}" -o public/images/articles/{slug}/{语义名}.png
 ```
 
+> `public/images` 是 submodule（`vibe-reading-images`）。下图后需子仓库 commit+push + 主 repo 记指针——**推荐用 `npm run add-image -- {slug} {url1} [url2 ...]` 脚本自动化**（反爬站点手动下后用 `--commit-only`），详见 `markdown-style.md` 图片节。
+
 - 原文所有图片（含图床/CDN/GitHub assets/知乎图片）一律下载到 `public/images/articles/{slug}/`。
 - 文件名用语义名（`arch.png`、`flow-1.png`、`result-table.png`），不用哈希乱码名。
 - **图注作为 alt，不单独成段**：原文图片下方的图注文字（如「图 1-1 rowset 版本」）作为该图片 `alt`，渲染时自动显示为图注并居中（见 `markdown-style.md` 图注与居中）；**不要**在 markdown 里再单独写一行图注，否则重复。原文本有 alt 则保留，无则用原图注文字补；装饰性图片（头图等）用空 alt。

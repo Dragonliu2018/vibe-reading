@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'fs';
 import { join, extname } from 'path';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import { rehypeJsdelivrImages } from './scripts/rehype-jsdelivr-images.mjs';
 
 const BASE = '/vibe-reading';
 
@@ -20,7 +21,7 @@ export default defineConfig({
 
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [rehypeKatex, rehypeJsdelivrImages],
     shikiConfig: {
       theme: 'github-dark-dimmed',
       transformers: [{

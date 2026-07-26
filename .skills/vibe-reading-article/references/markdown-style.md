@@ -226,6 +226,8 @@ git add public/images          # 主 repo 记 submodule 指针
 ![图1-1 rowset版本](/vibe-reading/images/articles/{slug}/fig-1-1-rowset-version.png)
 ````
 
+> **md 引用始终写本地路径 `/vibe-reading/images/...`**（dev 走本地、可离线）。生产构建时由 `rehype-jsdelivr-images` 插件自动改写为 jsDelivr CDN（`cdn.jsdelivr.net/gh/Dragonliu2018/vibe-reading-images@main/...`）加速加载，无需手改引用。PDF 链接（`<a href>`）不改写，仍走 Pages + 浏览器原生 viewer 的 Range 流式。
+
 ### 图注与居中（alt 即图注）
 
 - **alt 文本就是图注**：图片的 `alt` 会自动渲染为图片下方的图注，并居中显示（由 `ArticleLayout.astro` 的内联脚本 + `article.css` 处理）。**不要**在图片下方再单独写一行图注文字，否则会重复。

@@ -79,10 +79,19 @@ function buildTree(): TreeNode[] {
   }
   sortSlugs(roots);
 
-  // 分类节点按标签字母序排列（中英文混合，zh locale）
+  // 分类节点排序：非类型词（项目名等）在前按字母序，类型词（Papers/Contributions 等
+  // 占位/兜底末级）置后按字母序——避免兜底桶夹在项目名中间（如 Papers 混在 SGLang/vLLM 间）
+  const TYPE_LABELS = new Set([
+    'Papers', 'Contributions', 'Codebases', 'PRs',
+    'Official', 'Informal', 'Notes', 'Reading', 'Blogs',
+  ]);
   function sortLabels(nodes: TreeNode[]) {
-    // 英文分类在前（A-Z），中文分类在后
-    nodes.sort((a, b) => a.label.localeCompare(b.label, 'en'));
+    nodes.sort((a, b) => {
+      const aType = TYPE_LABELS.has(a.label);
+      const bType = TYPE_LABELS.has(b.label);
+      if (aType !== bType) return aType ? 1 : -1;   // 类型词置后
+      return a.label.localeCompare(b.label, 'en');  // 同组内字母序
+    });
     nodes.forEach(n => n.children && sortLabels(n.children));
   }
   sortLabels(roots);

@@ -78,18 +78,48 @@ TL;DR（3 句话）+ 元信息（作者/发表/任务）。一句话点出 take-
 - **§6 必须有主结果图**（scaling 曲线 / 主结果表 / 关键对比）。
 - **其他重要图按归属放入对应节**：RQ 证据图、隐空间可视化、消融对比曲线、推理超参曲线、反直觉发现图等——凡是支撑文中某个论点的图都应展示。
 - 不搬全文所有图（装饰性 / 重复 / 次要的略过），但**重要的不能省**——宁多勿少，读者看图比看字快。
-- **从 PDF 抽图**（PyMuPDF，已验证可用）：
+- **从 PDF 抽图**（PyMuPDF，已验证可用）。核心原则：**clip 紧贴图本身的 bbox，排除 caption 文本与页面装饰线**，否则会把正文/caption/页眉页脚一起框进去。
+
+  **取图三步法**（每张图都走一遍）：
+
   ```python
   import fitz
   doc = fitz.open('paper.pdf')
-  page = doc[i]
-  # 找 Figure caption 的 y 坐标，图在其上方
-  # 渲染图区为 PNG（clip = 图的 bbox）
-  pix = page.get_pixmap(matrix=fitz.Matrix(220/72, 220/72), clip=fitz.Rect(0, top, W, bottom))
+  page = doc[i]  # 先用 page.get_text("blocks") 找 "Figure N:" caption 确定页码
+
+  # 第 1 步：定位 caption 的 y 坐标（图在 caption 上方，caption 行是图的天然下界）
+  blocks = sorted(page.get_text("blocks"), key=lambda b: b[1])  # 按 y0 排序
+  cap_y = None
+  for b in blocks:
+      if b[4].startswith("Figure ") or b[4].startswith("Table "):
+          cap_y = b[1]  # caption 顶边 y
+          break
+
+  # 第 2 步：求图区 bbox（三种来源，按优先级取）
+  #   (a) 内嵌位图：page.get_images() + get_image_rects() → 位图 bbox 最干净
+  #   (b) 矢量图：page.get_drawings() 求所有 drawing rect 的并集
+  #   (c) 纯文本表格：直接用 caption 所在 block 的 bbox
+  drawings = page.get_drawings()
+  if drawings:
+      xs0 = min(d['rect'].x0 for d in drawings)
+      ys0 = min(d['rect'].y0 for d in drawings)
+      xs1 = max(d['rect'].x1 for d in drawings)
+      ys1 = max(d['rect'].y1 for d in drawings)
+  # 注意：drawings 并集常包含页面顶部/底部的全宽横线（版式装饰），必须剔除
+
+  # 第 3 步：clip = 图 bbox，不延伸到 caption
+  pix = page.get_pixmap(matrix=fitz.Matrix(3, 3), clip=fitz.Rect(xs0, ys0, xs1, ys1))
   pix.save('fig-NN-name.png')
   ```
-  - 用 `page.get_text("dict")` 定位 caption 文本框 y；用 `page.get_drawings()` 取矢量图 bbox 求并集得图区。
-  - 若 PDF 的图是单张内嵌位图，`page.get_images()` 直接抽更干净。
+
+  **关键坑（实测）**：
+  - **drawings 并集含页面装饰线**：论文每页顶部常有一条全宽横线（y≈页顶）、底部有页码横线，`get_drawings()` 会把它们算进并集，导致 clip 顶部跑到 y=39 把标题/作者/摘要全框了进去。**必须排除这些装饰线**——要么按 y 范围过滤 drawing（只取正文区 y∈[80, 720]），要么以 caption `y0` 为下界、以正文区起点为上界手算 clip。
+  - **clip 底部不能到 caption**：图和它的 caption 之间有空白，clip 底边取图的 `y1`（drawing/image 的最大 y），**不要取 caption 的 y0**——否则会把 caption 首行正文框进图片底部。留 2-5px 余量即可。
+  - **表格是纯文本不是图**：Table 的内容是文本 block（无 image/drawing），直接用 caption block 的 bbox `(x0, y0, x1, y1)` 作为 clip，或用 `page.get_text("blocks")` 找到表格首行/末行的 y 范围。不要对表格跑 `get_drawings()`（会取到表格格线但漏掉内容，或取到整页装饰）。
+  - **位图优先 `get_images()`**：若图是单张内嵌 PNG/JPG（很多论文的原理图、结果图都是），`page.get_images(full=True)` + `page.get_image_rects(xref)` 直接拿位图 bbox，比 drawings 并集更准、更干净，不会混入装饰线。
+
+  **矩阵缩放**：`Matrix(3, 3)`（3× zoom）输出清晰；`220/72` 偏小。大图可降到 `Matrix(2, 2)`。
+
 - 存放 `public/images/articles/{slug}/fig-NN-{语义名}.png`，引用加 `/vibe-reading` 前缀，**alt = 图注**（Figure N 原文 caption，可中文）。
 - 抽不到图（扫描版/加密）时退化为 ASCII，并在该处注明"原图未能抽取"。
 

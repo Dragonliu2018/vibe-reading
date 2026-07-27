@@ -71,6 +71,28 @@ agent-browser eval "document.querySelector('.Post-RichText')?.innerHTML"   # 正
 
 stealth 方案参考 [handsomestWei/zhihu-fetch-skill](https://github.com/handsomestWei/zhihu-fetch-skill)。知乎正文里的「知识卡片」链接（`zhida.zhihu.com/search?...`）是知乎自动加的噪声，按「例外」规则去链接保留文本。
 
+### 元素截图（canvas / 动画交互组件）
+
+原文若为 canvas 动画 / 交互图表组件（无图片 URL 可 curl），用 agent-browser 截图。但 `screenshot <selector>` 元素截图有时 **offset 偏移**（裁剪区域偏上/偏左）——改用**全页截图 + Python PIL 按 boundingBox 精确裁剪**：
+
+```python
+import subprocess, json, time
+from PIL import Image
+AGENT = "agent-browser"   # 或 /Users/ace/.npm/_npx/.../agent-browser-darwin-arm64 完整路径
+def run(a): return subprocess.run([AGENT]+a, capture_output=True, text=True, timeout=40).stdout.strip()
+sel = ".chart-section"    # 目标组件 selector
+run(["scrollintoview", sel]); time.sleep(4)
+raw = run(["eval", "var c=document.querySelector('" + sel + "'); var b=c.getBoundingClientRect(); JSON.stringify({x:Math.round(b.x),y:Math.round(b.y),w:Math.round(b.width),h:Math.round(b.height),sy:Math.round(window.scrollY)})"])
+box = json.loads(json.loads(raw))   # eval 输出 "{...}" 带外引号 + \" 转义，双 json.loads
+run(["screenshot", "--full", "/tmp/fullpage.png"])
+img = Image.open("/tmp/fullpage.png")
+dpr = 2   # 高分屏 2x；普通屏 1
+crop = img.crop((box["x"]*dpr, (box["y"]+box["sy"])*dpr, (box["x"]+box["w"])*dpr, (box["y"]+box["sy"]+box["h"])*dpr))
+crop.save("public/images/articles/{slug}/fig-X.png")
+```
+
+要点：`--full` 全页截图含全部 scroll 内容；boundingBox 的 `y` 是**视口坐标**，加 `window.scrollY` 才是全页坐标；DPR 2（高分屏）所有坐标 ×2。全页图可能很大（>89M 像素），PIL 会 `DecompressionBombWarning` 但不影响 crop。
+
 ---
 
 ## 图片（强制本地化）

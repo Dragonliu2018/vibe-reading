@@ -165,7 +165,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
             <span class="review-badge"
                   data-review-state={reviewState}
                   title={reviewTitle}>{reviewLabel}</span>
-            {date        && <><span class="meta-sep">·</span><span class="meta-item">{date}</span></>}
+            {date        && <><span class="meta-sep">·</span><span class="meta-item">{date.slice(0, 10)}</span></>}
             {readingTime && <><span class="meta-sep">·</span><span class="meta-item">{readingTime}</span></>}
             {aiModel     && <><span class="meta-sep">·</span><span class="meta-item">{aiModel}</span></>}
           </div>

@@ -15,7 +15,7 @@ export interface Article {
   slug:         string;
   title:        string;
   source?:      ArticleSource;
-  date:         string;        // YYYY-MM-DD
+  date:         string;        // ISO 8601: YYYY-MM-DD 或 YYYY-MM-DDTHH:MM:SS±HH:MM；排序按完整值，展示截前 10 字符
   category:     string[];      // 层级路径；最后一项用作首页徽章
   categoryPath: string[];      // 同 category，供侧边栏树使用（别名，保持侧边栏逻辑不变）
   tags:         string[];

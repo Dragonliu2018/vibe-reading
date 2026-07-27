@@ -391,7 +391,7 @@ function badgeStyle(label: string): string {
                     </div>
                   </div>
                   <div class="card-aside">
-                    <span class="card-date">{article.date}</span>
+                    <span class="card-date">{article.date.slice(0, 10)}</span>
                     {article.readingTime && <span class="card-reading">{article.readingTime}</span>}
                   </div>
                 </div>

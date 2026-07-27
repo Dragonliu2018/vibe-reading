@@ -37,9 +37,39 @@
 | 来源 | 工具 | 说明 |
 |---|---|---|
 | 普通博客 / 文档站 / 网站 | `WebFetch` | 多数静态博客可直接抓正文 |
-| 知乎专栏 / 公众号 / 掘金 / 需 JS 渲染或反爬站点 | `agent-browser` | `open <url> --headed` → `snapshot` → 提取正文文本与图片 URL；公众号/知乎正文常需滚动加载 |
+| 知乎专栏 / 公众号 / 掘金 / 需 JS 渲染或反爬站点 | `agent-browser` | 公众号见下；**知乎见「知乎反爬」小节，必须注入 stealth** |
 
 抓取目标：**正文 DOM**（剔除导航/侧栏/评论/广告），保留：标题层级、代码块（含语言）、有序/无序列表、引用块、表格、图片 URL、alt 文本。
+
+### 公众号
+
+`agent-browser open <url> --headed`（或 curl 带 UA 直接抓 HTML），正文在 `<div id="js_content">`，图片真实 URL 在 `data-src`。常需滚动加载。
+
+### 知乎反爬（必须注入 stealth init script）
+
+知乎检测 `navigator.webdriver`，未注入时返回 40362「请求异常」风控页——`curl` / `WebFetch` / 知乎 `/api/articles/` 直连均被拦（即使带登录 cookie）。必须用 agent-browser `--init-script` 注入 stealth script（移除 webdriver 标记）+ 登录态：
+
+```bash
+# 1. 写 stealth.js（移除 navigator.webdriver 等自动化标记）
+cat > /tmp/stealth.js << 'JS'
+Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+Object.defineProperty(navigator, 'plugins', { get: () => [1,2,3,4,5] });
+Object.defineProperty(navigator, 'languages', { get: () => ['zh-CN','zh','en'] });
+delete window.cdc_adoQpoasnfa76pfcZLmcfl_Array;
+delete window.cdc_adoQpoasnfa76pfcZLmcfl_Promise;
+delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;
+window.chrome = { runtime: {}, loadTimes: function(){}, csi: function(){}, app: {} };
+JS
+
+# 2. 首次需登录（扫码，cookie 持久化到 ~/.agent-browser/default/，以后免登）
+agent-browser open "https://www.zhihu.com/signin" --headed   # 用户在窗口扫码
+
+# 3. 带 stealth + 登录态抓文章（--init-script 在页面加载前注入，绕过 zse-ck 检测）
+agent-browser --init-script /tmp/stealth.js open "https://zhuanlan.zhihu.com/p/ID" --headed
+agent-browser eval "document.querySelector('.Post-RichText')?.innerHTML"   # 正文 HTML
+```
+
+stealth 方案参考 [handsomestWei/zhihu-fetch-skill](https://github.com/handsomestWei/zhihu-fetch-skill)。知乎正文里的「知识卡片」链接（`zhida.zhihu.com/search?...`）是知乎自动加的噪声，按「例外」规则去链接保留文本。
 
 ---
 

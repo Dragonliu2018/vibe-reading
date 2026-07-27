@@ -7,7 +7,7 @@ source:
   url: "https://github.com/jd-opensource/xllm/pull/1061"
   prType: "refactor"
 date: "2026-07-07"
-category: [AI, 推理, xLLM, Contributions]
+category: [AI, Infra, Inference, xLLM, Contributions]
 tags: ["Effective Modern C++", "重构"]
 description: "xLLM 六次现代化重构：nullptr 替代 NULL、using 替代 typedef、enum class 替代 enum、const_iterator、constexpr、lambda 替代 bind——每条对应《Effective Modern C++》一个 Item。"
 readingTime: "14 min"

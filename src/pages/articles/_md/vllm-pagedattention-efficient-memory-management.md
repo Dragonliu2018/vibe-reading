@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2309.06180"
   pdf: "/vibe-reading/papers/vllm-pagedattention-efficient-memory-management.pdf"
 date: "2026-07-27"
-category: [AI, 推理, vLLM, Papers]
+category: [AI, Infra, Inference, vLLM, Papers]
 tags: ["LLM Serving", "PagedAttention", "vLLM", "KV Cache", "Virtual Memory", "Paging", "Inference"]
 description: "目的：消除 LLM 推理 KV cache 的内存浪费。手段：把 OS 虚拟内存/分页思想搬进 attention，KV 按固定大小 block 非连续存储 + block table 映射 + copy-on-write 共享。结论：相比 FasterTransformer/Orca 吞吐提升 2-4×。"
 readingTime: "16 min"

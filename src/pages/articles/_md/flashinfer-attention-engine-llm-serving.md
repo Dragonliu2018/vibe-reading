@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2501.01005"
   pdf: "/vibe-reading/papers/flashinfer-attention-engine-llm-serving.pdf"
 date: "2026-07-27"
-category: [AI, 推理, FlashInfer, Papers]
+category: [AI, Infra, Inference, FlashInfer, Papers]
 tags: ["LLM Serving", "Attention", "FlashInfer", "KV Cache", "Block-Sparse", "JIT", "CUDAGraph", "vLLM", "SGLang"]
 description: "目的：为 LLM 推理提供统一高效的 attention 引擎。手段：block-sparse 统一 KV cache 格式 + 可定制 attention 模板 JIT 编译 + 负载均衡调度兼容 CUDAGraph。结论：相比 Triton 后端 inter-token 延迟降 29-69%，长上下文降 28-30%，并行生成加速 13-17%。"
 readingTime: "16 min"

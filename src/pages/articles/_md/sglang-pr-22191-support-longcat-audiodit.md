@@ -7,7 +7,7 @@ source:
   url: "https://github.com/sgl-project/sglang/pull/22191"
   prType: "feat"
 date: "2026-07-14"
-category: [AI, 推理, SGLang, Contributions]
+category: [AI, Infra, Inference, SGLang, Contributions]
 tags: ["Diffusion", "TTS", "Flow Matching", "DiT", "SGLang", "LongCat-AudioDiT", "VAE"]
 description: "解读 PR #22191：如何在 SGLang multimodal_gen 框架中接入 LongCat-AudioDiT 扩散式 TTS 模型，涵盖单体 Stage 设计、WAV-VAE 混合精度、inline Euler ODE 积分器与 CFG/APG 双引导。"
 readingTime: "20 min"

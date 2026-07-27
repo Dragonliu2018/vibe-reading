@@ -7,7 +7,7 @@ source:
   url: "https://github.com/xLLM-AI/xllm/pull/1539"
   prType: "feat"
 date: "2026-07-08"
-category: [AI, 推理, xLLM, Contributions]
+category: [AI, Infra, Inference, xLLM, Contributions]
 tags: ["Cola-DLM", "Diffusion", "文本生成", "VAE", "DiT", "KV Cache", "Block Causal Mask"]
 description: "为 xLLM 实现 ByteDance Cola-DLM 连续潜在扩散语言模型 CUDA 支持：TextVAE 编码 token 到潜在空间、block-wise 潜在先验传输 + CFG + Euler 积分、DiT 与 VAE 共享 KV cache 的分块生成、以及 block-causal 注意力掩码的整数除法陷阱。"
 readingTime: "18 min"

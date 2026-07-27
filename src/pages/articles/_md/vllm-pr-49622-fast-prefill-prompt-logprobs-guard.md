@@ -7,7 +7,7 @@ source:
   url: "https://github.com/vllm-project/vllm/pull/49622"
   prType: "fix"
 date: "2026-07-25"
-category: [AI, 推理, vLLM, Contributions]
+category: [AI, Infra, Inference, vLLM, Contributions]
 tags: ["vLLM", "V1 Engine", "kv_sharing_fast_prefill", "prompt_logprobs", "YOCO", "Gemma3n", "Request Admission"]
 description: "解读 PR #49622：为 vLLM V1 同步 LLMEngine 补齐 kv_sharing_fast_prefill 与 prompt_logprobs 的请求准入校验，让 LLM.generate() 用户在请求提交时即收到清晰 ValueError，而非在 GPU 执行深处撞上带笔误的 AssertionError；同时统一三处错误信息。"
 readingTime: "12 min"

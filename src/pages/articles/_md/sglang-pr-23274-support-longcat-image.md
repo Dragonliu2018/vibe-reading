@@ -7,7 +7,7 @@ source:
   url: "https://github.com/sgl-project/sglang/pull/23274"
   prType: "feat"
 date: "2026-07-14"
-category: [AI, 推理, SGLang, Contributions]
+category: [AI, Infra, Inference, SGLang, Contributions]
 tags: ["Diffusion", "DiT", "SGLang", "Tensor Parallelism", "Qwen2.5-VL", "LongCat-Image"]
 description: "解读 PR #23274：如何在 SGLang multimodal_gen 框架中接入 LongCat-Image 文生图模型，涵盖 MMDiT 并行化、Qwen2.5-VL 自回归改写、3D RoPE 与三处共享 bug 修复。"
 readingTime: "22 min"

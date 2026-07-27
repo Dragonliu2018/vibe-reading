@@ -7,7 +7,7 @@ source:
   url: "https://github.com/sgl-project/sglang/pull/22634"
   prType: "fix"
 date: "2026-07-14"
-category: [AI, 推理, SGLang, Contributions]
+category: [AI, Infra, Inference, SGLang, Contributions]
 tags: ["SGLang", "Qwen2.5-VL", "PyTorch", "RoPE", "Bug Fix"]
 description: "Qwen2.5-VL 解码阶段对 .expand() 视图执行 += 触发 RuntimeError，改为先加法再 expand 的 out-of-place 写法修复。"
 readingTime: "9 min"

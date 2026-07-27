@@ -7,7 +7,7 @@ source:
   url: "https://github.com/sgl-project/sglang/pull/26220"
   prType: "feat"
 date: "2026-07-14"
-category: [AI, 推理, SGLang, Contributions]
+category: [AI, Infra, Inference, SGLang, Contributions]
 tags: ["SGLang", "Cola-DLM", "Diffusion Model", "Text Generation"]
 description: "为 multimodal_gen 框架新增 Cola-DLM 文本扩散模型支持：自定义 DiT/VAE 适配器、三阶段块状去噪流水线、T2T 任务类型与文本生成端点。"
 readingTime: "14 min"

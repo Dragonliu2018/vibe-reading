@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2312.07104"
   pdf: "/vibe-reading/papers/sglang-efficient-structured-lm-programs.pdf"
 date: "2026-07-26"
-category: [AI, 推理, SGLang, Papers]
+category: [AI, Infra, Inference, SGLang, Papers]
 tags: ["SGLang", "LLM Serving", "KV Cache", "RadixAttention", "Constrained Decoding", "LM Programs"]
 description: "目的：高效编程与执行结构化 LM 程序。手段：Python 嵌入式 DSL + RadixAttention 基数树 KV 缓存复用 + 压缩 FSM 约束解码 + API 投机执行。结论：相比 vLLM/Guidance/LMQL 吞吐最高 6.4×、延迟降 3.7×。"
 readingTime: "16 min"

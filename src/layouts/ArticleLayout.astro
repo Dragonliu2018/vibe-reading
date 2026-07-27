@@ -289,6 +289,49 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
           }
           apply();
         });
+        // 触摸手势（移动端）：单指拖拽（scale>1 时）、双指捏合缩放、双击放大
+        var lastTap = 0, tapX = 0, tapY = 0;
+        var tDrag = false, tSx = 0, tSy = 0, tOx = 0, tOy = 0;
+        var pinchD0 = 0, pinchS0 = 1;
+        function tDist(ts) {
+          var dx = ts[0].clientX - ts[1].clientX, dy = ts[0].clientY - ts[1].clientY;
+          return Math.sqrt(dx * dx + dy * dy);
+        }
+        b.addEventListener('touchstart', function (e) {
+          if (e.touches.length === 1) {
+            var t = e.touches[0], now = Date.now();
+            if (now - lastTap < 300 && Math.abs(t.clientX - tapX) < 30 && Math.abs(t.clientY - tapY) < 30) {
+              // 双击：以点击点为锚放大到 2.5× 或复原
+              e.preventDefault();
+              if (scale === 1) {
+                var S = 2.5, r = o.getBoundingClientRect();
+                scale = S; tx = (t.clientX - (r.left + r.width / 2)) * (1 - S);
+                ty = (t.clientY - (r.top + r.height / 2)) * (1 - S);
+              } else { scale = 1; tx = 0; ty = 0; }
+              apply(); lastTap = 0;
+            } else {
+              lastTap = now; tapX = t.clientX; tapY = t.clientY;
+              if (scale > 1) { tDrag = true; tSx = t.clientX; tSy = t.clientY; tOx = tx; tOy = ty; }
+            }
+          } else if (e.touches.length === 2) {
+            tDrag = false; pinchD0 = tDist(e.touches); pinchS0 = scale;
+          }
+        }, { passive: false });
+        b.addEventListener('touchmove', function (e) {
+          e.preventDefault();
+          if (e.touches.length === 1 && tDrag) {
+            var t = e.touches[0];
+            tx = tOx + t.clientX - tSx; ty = tOy + t.clientY - tSy; apply();
+          } else if (e.touches.length === 2 && pinchD0 > 0) {
+            scale = Math.max(1, Math.min(8, pinchS0 * (tDist(e.touches) / pinchD0)));
+            if (scale === 1) { tx = 0; ty = 0; }
+            apply();
+          }
+        }, { passive: false });
+        b.addEventListener('touchend', function (e) {
+          if (e.touches.length === 0) tDrag = false;
+          if (e.touches.length < 2) pinchD0 = 0;
+        });
         window.addEventListener('keydown', onKey);
         document.body.appendChild(o);
         document.body.style.overflow = 'hidden';

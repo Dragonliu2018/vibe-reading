@@ -4,6 +4,7 @@ import { join, extname } from 'path';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { rehypeJsdelivrImages } from './scripts/rehype-jsdelivr-images.mjs';
+import { generateSiteManifest } from './scripts/generate-site-manifest.mjs';
 
 const BASE = '/vibe-reading';
 
@@ -36,7 +37,7 @@ export default defineConfig({
     },
   },
 
-  integrations: [{
+  integrations: [generateSiteManifest(), {
     /**
      * 构建后自动往 HTML 文章页注入 giscus-loader.js
      * HTML 源文件零修改，新增文章自动获得评论功能

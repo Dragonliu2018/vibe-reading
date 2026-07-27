@@ -1,0 +1,22 @@
+---
+/**
+ * Service Worker 注册组件
+ *
+ * 放入所有页面 <head>，注册 /sw.js（经 GitHub Pages base 前缀为 /vibe-reading/sw.js）。
+ * 仅在生产环境注册（dev 模式 SW 缓存会干扰热更新）。
+ */
+const isProd = import.meta.env.PROD;
+const base = import.meta.env.BASE_URL;
+---
+
+{isProd && (
+  <script is:inline>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register(`${base}sw.js`).catch(function () {
+          // 注册失败静默降级，不影响页面正常浏览
+        });
+      });
+    }
+  </script>
+)}

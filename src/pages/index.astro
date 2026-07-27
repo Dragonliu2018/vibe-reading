@@ -4,6 +4,7 @@ import { quotes } from '../data/quotes';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
+import SWRegister from '../components/SWRegister.astro';
 
 // 构建时嵌入，无运行时请求
 const quotesJson = JSON.stringify(quotes);
@@ -50,6 +51,7 @@ function badgeStyle(label: string): string {
   <title>Vibe Reading · 技术文档解读博客</title>
   <meta name="description" content="AI-drafted, human-reviewed technical reading blog — code walkthroughs and paper breakdowns." />
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  <SWRegister />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

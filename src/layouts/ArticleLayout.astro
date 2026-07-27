@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
 import GiscusComments from '../components/GiscusComments.astro';
+import SWRegister from '../components/SWRegister.astro';
 import '../styles/article.css';
 import 'katex/dist/katex.min.css';
 
@@ -93,6 +94,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
   <title>{displayTitle} · Vibe Reading</title>
   {description && <meta name="description" content={description} />}
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  <SWRegister />
   {layoutMode === 'literary' && (
     <link rel="preconnect" href="https://fonts.googleapis.com" />
   )}

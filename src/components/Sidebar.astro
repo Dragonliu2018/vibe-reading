@@ -107,6 +107,20 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
       <Fragment set:html={treeHtml} />
     </>
   )}
+
+  <!-- 离线缓存控制（仅文章模式 + 生产环境）-->
+  {mode !== 'tools' && import.meta.env.PROD && (
+    <div class="offline-cache-section" data-pagefind-ignore="all">
+      <button id="offline-cache-btn" class="offline-cache-btn" type="button">
+        <svg class="offline-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 2v8m0 0L4.5 6.5M8 10l3.5-3.5M2.5 11.5v1.5a1 1 0 001 1h9a1 1 0 001-1v-1.5"
+                stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="offline-label">离线缓存</span>
+      </button>
+      <div id="offline-cache-status" class="offline-cache-status"></div>
+    </div>
+  )}
 </aside>
 
 <!-- 同步还原所有侧边栏状态（is:inline = 首次绘制前执行，消除闪动）-->
@@ -386,6 +400,61 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
     .tree-cat     { padding: 12px 8px; font-size: 14px; }  /* ~44px */
     .tree-cat-sub { padding: 11px 8px; font-size: 13px; }  /* ~42px */
     .tree-article { padding: 11px 8px; font-size: 13px; }  /* ~42px */
+    .offline-cache-btn { padding: 12px 8px; font-size: 13px; }
+  }
+
+  /* ── 离线缓存控制区 ── */
+  .offline-cache-section {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 10px 6px 0;
+  }
+  .offline-cache-btn {
+    width: 100%; display: flex; align-items: center; gap: 7px;
+    padding: 7px 8px; border-radius: 6px;
+    background: none; border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer; font-family: var(--font, -apple-system, sans-serif);
+    font-size: 12.5px; font-weight: 500;
+    color: rgba(235,235,245,0.50);
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .offline-cache-btn:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.14);
+    color: rgba(235,235,245,0.75);
+  }
+  .offline-cache-btn:active { background: rgba(255,255,255,0.10); }
+  .offline-cache-btn.downloading {
+    border-color: rgba(41,151,255,0.35);
+    color: rgba(41,151,255,0.80);
+    cursor: progress;
+  }
+  .offline-cache-btn.ready {
+    border-color: rgba(48,209,88,0.30);
+    color: rgba(48,209,88,0.75);
+  }
+  .offline-icon { flex-shrink: 0; opacity: 0.7; }
+  .offline-label { flex: 1; text-align: left; }
+
+  .offline-cache-status {
+    font-size: 11px; font-weight: 400;
+    color: rgba(235,235,245,0.30);
+    padding: 4px 8px 0; line-height: 1.4;
+    display: none;
+  }
+  .offline-cache-status.visible { display: block; }
+
+  /* 缓存进度条 */
+  .offline-progress-bar {
+    width: 100%; height: 3px; border-radius: 2px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden; margin-top: 6px;
+  }
+  .offline-progress-fill {
+    height: 100%; border-radius: 2px;
+    background: rgba(41,151,255,0.60);
+    transition: width .2s ease;
   }
 
   /* ── 自定义文章标题悬浮提示 ── */
@@ -572,4 +641,130 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
       hideTimer = setTimeout(() => { tip.classList.remove('visible'); }, 80);
     });
   });
+
+  // ── 离线缓存控制 ──────────────────────────────────────────────────
+  (function initOfflineCache() {
+    const btn = document.getElementById('offline-cache-btn') as HTMLButtonElement | null;
+    const statusEl = document.getElementById('offline-cache-status');
+    if (!btn || !statusEl) return;
+
+    let isDownloading = false;
+
+    function setLabel(text: string) {
+      const span = btn.querySelector('.offline-label');
+      if (span) span.textContent = text;
+    }
+
+    function showStatus(text: string, visible = true) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle('visible', visible);
+    }
+
+    function renderProgress(done: number, total: number) {
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      showStatus(`缓存中… ${done}/${total} (${pct}%)`);
+      // 更新进度条
+      let bar = statusEl.querySelector('.offline-progress-bar') as HTMLElement | null;
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.className = 'offline-progress-bar';
+        const fill = document.createElement('div');
+        fill.className = 'offline-progress-fill';
+        bar.appendChild(fill);
+        statusEl.appendChild(bar);
+      }
+      const fill = bar.querySelector('.offline-progress-fill') as HTMLElement;
+      if (fill) fill.style.width = pct + '%';
+    }
+
+    // 监听 SW 消息
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (e) => {
+        const msg = e.data;
+        if (!msg || !msg.type) return;
+
+        switch (msg.type) {
+          case 'CACHE_START':
+            isDownloading = true;
+            btn.classList.add('downloading');
+            btn.classList.remove('ready');
+            setLabel('缓存中…');
+            renderProgress(0, msg.total);
+            break;
+          case 'CACHE_PROGRESS':
+            renderProgress(msg.done, msg.total);
+            break;
+          case 'CACHE_DONE':
+            isDownloading = false;
+            btn.classList.remove('downloading');
+            btn.classList.add('ready');
+            setLabel('离线已就绪');
+            showStatus(`✓ 已缓存 ${msg.total} 个资源，可离线访问`);
+            break;
+          case 'CACHE_ERROR':
+            isDownloading = false;
+            btn.classList.remove('downloading');
+            setLabel('离线缓存');
+            showStatus(`✗ ${msg.error || '缓存失败'}`);
+            break;
+          case 'STATUS':
+            if (msg.precacheCount > 0 && !isDownloading) {
+              btn.classList.add('ready');
+              setLabel('离线已就绪');
+              showStatus(`✓ 已缓存 ${msg.precacheCount} 个资源`, false);
+            }
+            break;
+          case 'CACHE_CLEARED':
+            btn.classList.remove('ready', 'downloading');
+            setLabel('离线缓存');
+            showStatus('缓存已清空');
+            setTimeout(() => showStatus('', false), 2000);
+            break;
+        }
+      });
+
+      // 页面加载后查询缓存状态
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.active?.postMessage({ type: 'GET_STATUS' });
+      });
+    }
+
+    // 按钮点击：未缓存→开始缓存；已缓存→长按清空（单击显示状态）
+    let clickTimer: ReturnType<typeof setTimeout> | null = null;
+    btn.addEventListener('click', () => {
+      if (isDownloading) return;
+
+      if (btn.classList.contains('ready')) {
+        // 已缓存：单击显示状态，双击清空
+        if (clickTimer) {
+          // 双击 → 清空
+          clearTimeout(clickTimer);
+          clickTimer = null;
+          if (confirm('确认清空所有离线缓存？')) {
+            navigator.serviceWorker.controller?.postMessage({ type: 'CLEAR_CACHE' });
+            btn.classList.remove('ready');
+            setLabel('离线缓存');
+          }
+        } else {
+          clickTimer = setTimeout(() => {
+            clickTimer = null;
+            showStatus('双击可清空缓存', true);
+            setTimeout(() => {
+              if (!isDownloading) {
+                const ready = btn.classList.contains('ready');
+                showStatus(ready ? '✓ 离线缓存就绪' : '', ready);
+              }
+            }, 2500);
+          }, 250);
+        }
+      } else {
+        // 未缓存：触发全站缓存
+        if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
+          showStatus('Service Worker 尚未就绪，请刷新页面重试');
+          return;
+        }
+        navigator.serviceWorker.controller.postMessage({ type: 'CACHE_ALL' });
+      }
+    });
+  })();
 </script>

@@ -2,7 +2,81 @@
 
 把学术论文（arxiv / 会议 / 期刊）解读成博客 Markdown 文章。**区别于转载**：转载是照搬原文，解读是 AI 蒸馏分析——读全文但只输出结构化产物，不堆原文。
 
-`content-guide.md` 论文节给出 `§1-§8` 骨架；本文档补充**人脑方法论映射、10 问 checklist、图与公式的强制规则**。
+`content-guide.md` 论文节给出 `§1-§8` 骨架；本文档补充**端到端处理流程、人脑方法论映射、10 问 checklist、图与公式的强制规则**。
+
+---
+
+## 端到端处理流程（论文链接 或 本地 PDF 路径）
+
+下面把"拿到一篇论文（arxiv 链接 或 本地 PDF 路径）→ 产出可发布的博客文章"固化为可复现的顺序，每步给具体命令。**两种输入方式仅在 Step 0/1 分流，Step 2 起统一。**详细规则见后续各节（图、公式、PDF 本地化、10 问）。
+
+**Step 0 · 定元信息与 slug**（按输入方式分流）：
+
+- **方式 A — 论文链接（如 arxiv）**：WebFetch 摘要页取**原标题（照搬不译，见 `paper-article-title-original` 记忆）**、作者、机构、发表日期、项目/代码链接。arxiv 摘要页 `https://arxiv.org/abs/<id>` → PDF `https://arxiv.org/pdf/<id>`。
+- **方式 B — 本地 PDF 路径**：用 PyMuPDF 读第 1 页文本取标题（首行最显著行）、作者、机构、发表日期；再从全文 grep `arxiv\.org/abs/` 或 `arXiv:\d{4}\.\d{4,5}` 提取 arxiv 链接作 `source.url`（PDF 版式常印在页眉/脚注），取不到则问用户；项目/代码链接同理从正文找或问用户。
+
+定 `slug = {kebab-case-description}`（论文解读无 id 段）。
+
+**Step 1 · 把 PDF 落到博客本地**（按 Step 0 方式分流）：
+
+```bash
+mkdir -p public/papers
+# 方式 A：curl 下载
+curl -sL "https://arxiv.org/pdf/<id>" -o public/papers/<slug>.pdf
+# 方式 B：复制本地 PDF
+cp /path/to/paper.pdf public/papers/<slug>.pdf
+```
+
+保持原文件不压缩、不抽页。frontmatter `source.pdf` = `/vibe-reading/papers/<slug>.pdf`（详见下文「PDF 本地化」）。
+
+**Step 2 · 通读全文**：用 PyMuPDF 提取全文文本逐页读：
+
+```python
+import fitz
+doc = fitz.open('public/papers/<slug>.pdf')
+print(f'Total pages: {len(doc)}')
+for i, page in enumerate(doc):
+    print(f'\n===== PAGE {i+1} ====='); print(page.get_text())
+```
+
+按论文阅读顺序（标题/摘要 → 引言 → 相关工作 → 方法 → 实验 → 结论）提取：背景与缺口、核心创新、关键公式、实验结果数值、局限性。
+
+**Step 3 · 抽图**：用取图三步法（见下文「图」节）——定位 caption 的 y 坐标、求图区 bbox（位图优先 `get_images()`；矢量图 `get_drawings()` 并集且剔除全宽装饰线；纯文本表格用 caption block 的 bbox）、clip 紧贴图 bbox 渲染 `Matrix(3,3)`。**抽完即用 Read 肉眼校验**每张图完整、无 caption/正文混入、无标签腰斩。存 `public/images/articles/<slug>/fig-NN-{语义名}.png`。
+
+**Step 4 · 撰写文章（§1–§8）**：写到 `src/pages/articles/_md/<slug>.md`，骨架见下文「文章结构 §1-§8」。导言引用块**首字段为 PDF 预览链接**；§3 必有原理图、§6 必有主结果图、其他重要图按归属入节；公式用 KaTeX 多行 `$$`（见「公式」节）；末尾放《摘要》折叠块（原文 + 译）。
+
+**Step 5 · 图与引用对账（必做）**：抽图宁多勿少，但写完必须回头核对子仓库图与正文引用是否一一对应：
+
+```bash
+slug=<slug>
+diff <(ls public/images/articles/$slug/ | sort) \
+     <(grep -oE "fig-[0-9]+-[a-z-]+\.png" src/pages/articles/_md/$slug.md | sort -u) \
+  && echo "✓ 对账无误"
+```
+
+多抽却没引用的图是垃圾资产：重要的补进正文，次要的从目录删除。
+
+**Step 6 · 合规检查**：
+
+```bash
+bash .skills/vibe-reading-article/scripts/check-article.sh src/pages/articles/_md/<slug>.md
+```
+
+exit 0 通过；exit 1 按提示修正后重跑。校验 frontmatter、`source.pdf` 必填、category 末级 Papers 等。
+
+**Step 7 · 提交素材到子仓库（用户确认发布后）**：PDF 与图片分别在子仓库（`vibe-reading-papers` / `vibe-reading-images`），需先在子仓库 commit+push，再在主 repo 暂存指针：
+
+```bash
+cd public/images && git add -A && git commit -m "add <slug>" && git push && cd ../..
+cd public/papers && git add -A && git commit -m "add <slug>" && git push && cd ../..
+git add public/images public/papers   # 主 repo 记 submodule 指针
+```
+
+图片若从 URL 下载可改用 `npm run add-image -- <slug> <url...>`（自动子仓库 commit+push+主 repo 暂存）；本地 PyMuPDF 抽的图用 `--commit-only`。
+
+**Step 8 · 构建验证**：`npm run build`，确认无报错、文章与图正常渲染（md 图片引用走本地 `/vibe-reading/images/...`，生产由 `rehype-jsdelivr-images` 改写为 CDN）。
+
+**Step 9 · 发布前 10 问**：逐问核对（见下文 checklist），每问应落到对应节，答不出则补。
 
 ---
 

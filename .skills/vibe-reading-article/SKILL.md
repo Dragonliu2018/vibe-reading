@@ -30,6 +30,8 @@ description: >
 
 按加载的参考文件中的阅读顺序执行。
 
+> **论文（链接 或 本地 PDF 路径）**：按 `references/paper-workflow.md` 的「端到端处理流程」Step 0–9 执行（两种输入在 Step 0/1 分流、Step 2 起统一）——定元信息 → 落 PDF → 通读全文 → 抽图 → 撰写 §1–§8 → 图对账 → 合规检查 → 子仓库提交 → 构建 → 10 问。
+
 ## Step 3 — 撰写文章
 
 - **Markdown** → `src/pages/articles/_md/<slug>.md`，规范见加载的 references

@@ -24,7 +24,7 @@
 ```yaml
 ---
 title: "百年孤独：时间的循环与孤独的宿命"
-date: "YYYY-MM-DD"
+date: "YYYY-MM-DDTHH:MM:SS+08:00"      # ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
 category: [Literature, 百年孤独, Reading]
 tags: ["马尔克斯", "魔幻现实主义", "时间"]
 description: "一句话概括这篇笔记的核心感悟。"

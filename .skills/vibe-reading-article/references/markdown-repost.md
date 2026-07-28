@@ -101,8 +101,16 @@ crop.save("public/images/articles/{slug}/fig-X.png")
 
 ```bash
 mkdir -p public/images/articles/{slug}
-curl -sL "{原文图片 URL}" -o public/images/articles/{slug}/{语义名}.png
+# 逐张下载（不要并行！），加 UA 和充足超时
+curl -sL -A "Mozilla/5.0" --connect-timeout 30 --max-time 180 \
+  "{原文图片 URL}" -o public/images/articles/{slug}/{语义名}.png
 ```
+
+> **下载注意事项（血泪教训）**：
+> - **禁止并行下载**（`&`）——CDN 对大图（4000px+）响应慢，并行会导致静默截断。
+> - **`--max-time` 至少 180s**——大图实际可能需要 50–60s，60s 超时不够。
+> - **校验文件大小**——`file` 只读 PNG 头（尺寸正确），但像素数据可能不完整。截断的 PNG 文件异常小（如 2700×1500 只有 8KB），浏览器按头声明的尺寸渲染，**只显示顶部一部分**。
+> - **验证方法**：对比同尺寸图片的文件大小；或用 `sips -s format jpeg <file> --out /dev/null` 尝试完整解码。
 
 > `public/images` 是 submodule（`vibe-reading-images`）。下图后需子仓库 commit+push + 主 repo 记指针——**推荐用 `npm run add-image -- {slug} {url1} [url2 ...]` 脚本自动化**（反爬站点手动下后用 `--commit-only`），详见 `markdown-style.md` 图片节。
 
@@ -127,7 +135,7 @@ source:
   url: "https://原文链接"
   author: "原作者名 / 账号"
   site: "来源平台（知乎 / 公众号 / 个人博客名 / 掘金）"
-date: "YYYY-MM-DD"            # 转载日期
+date: "YYYY-MM-DDTHH:MM:SS+08:00"      # ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
 category: [Domain, Topic, Official]   # 官方转载用 Official，非官方博客用 Informal
 tags: ["原文标签或主题词"]
 description: "一句话概括，可引用原文导言首句"

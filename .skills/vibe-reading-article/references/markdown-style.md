@@ -20,7 +20,7 @@
 ```yaml
 ---
 title: "文章标题（双引号包裹）"
-date: "YYYY-MM-DD"
+date: "YYYY-MM-DDTHH:MM:SS+08:00"      # ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
 category: [Domain, Project, Type]
 tags: ["Tag1", "Tag2"]
 description: "一句话描述，出现在文章卡片和 SEO meta 中"

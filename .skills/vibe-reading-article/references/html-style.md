@@ -69,7 +69,7 @@
   <title>文章标题</title>
 <!-- ─── 博客元信息（articles.ts 自动读取，必填）─── -->
 <meta name="description" content="一句话描述">
-<meta name="article:date" content="YYYY-MM-DD">
+<meta name="article:date" content="YYYY-MM-DDTHH:MM:SS+08:00">
 <meta name="article:category" content="一级分类,二级分类,三级分类">
 <meta name="article:tags" content="Tag1,Tag2,Tag3">
 <meta name="article:readingTime" content="N min">

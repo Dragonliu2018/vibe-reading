@@ -6,7 +6,7 @@ source:
   url: "https://mp.weixin.qq.com/s?__biz=MjM5ODYwMjI2MA==&mid=2649802370&idx=1&sn=933bed02fa58d278084e12946d3fa8ce&chksm=becc55f989bbdcefea9252ab9df7313e12f40c1be4625c81e4abe73f1e4748be38c7d3668097"
   author: "混元 AI Infra 推理团队"
   site: "腾讯技术工程"
-date: "2026-07-28"
+date: "2026-07-28T18:35:58+08:00"
 category: [AI, Infra, Inference, Blogs]
 tags: ["Hy3", "MoE", "推理优化", "Hopper", "算子融合", "Prefix Cache", "MTP", "量化", "稀疏注意力", "TPSP", "DP+EP"]
 description: "目的：在 Hopper 卡上将 Hy3 preview 推理性能优化至极致以满足 SLO。手段：算子优化与融合（Attention 动态调度、Router GEMM 双 BF16 重构、FusedMoE、采样/通算融合）+ 并行策略（Prefill TPSP、Decode DP+EP）+ GPU/CPU/KVStore 三级缓存 + MTP 异步调度 + W8A8 量化与 Stem 稀疏注意力。结论：50ms TPOP / 4s TTFT 约束下，多维度实现 1.5x~3.2x 加速，128K Prefill 延迟降 3.6 倍。"

@@ -222,6 +222,8 @@ createTable 配额检查 / SHOW DATA                │ volatile 读
 - **锁收窄**。`Database` 读锁只覆盖表列表拷贝，不再覆盖整个遍历过程，进一步降低与 DDL 的锁交叠面。
 - **代价**。统计值有最多一个周期（默认 60s）的延迟；FE 重启后到首个 `TabletStatMgr` 周期之间，配额检查短暂失真（见 Review）。对限流/观测用途可接受。
 
+> **同主题**：本文用「去锁」消除 TabletStatMgr 的跨表读锁死锁；[#45045](https://github.com/apache/doris/pull/45045) 则用「按 table id 升序统一加锁」消除 Nereids 规划期的表锁死锁——同一公平锁死锁问题的另一条解法，详见[按 table id 升序加锁：Doris 用全序关系根治 Nereids 规划期的表锁死锁](/vibe-reading/articles/doris-pr-45045-lock-table-by-id-order)。
+
 ## TODO
 
 - [ ] `statistics` 未初始化时（FE 重启窗口）配额检查返回 0，可能放过超额建表——作者计划在 master 实现按需初始化，1.2-lts 暂未处理

@@ -7,7 +7,7 @@ source:
   author: "Ziang Li, humans& and Miles Team"
   site: "LMSYS Blog"
 date: "2026-07-30T17:00:00+08:00"
-category: [AI, RL, Official]
+category: [AI, Infra, Inference, SGLang, Blogs]
 tags: ["MXFP8", "NVFP4", "Low-Precision", "Reinforcement Learning", "Blackwell", "Miles", "SGLang", "Megatron", "MoE"]
 description: "LMSYS Miles 团队在 Blackwell 上实现端到端 MXFP8 与 per-token NVFP4 强化学习：覆盖 rollout、前向、权重梯度与数据梯度 GEMM，精细精度控制贯穿 checkpoint 转换、训练、rollout 与在线权重更新。"
 readingTime: "22 min"

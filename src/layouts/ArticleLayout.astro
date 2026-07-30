@@ -5,6 +5,7 @@ import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
 import GiscusComments from '../components/GiscusComments.astro';
 import SWRegister from '../components/SWRegister.astro';
+import ScrollRestore from '../components/ScrollRestore.astro';
 import '../styles/article.css';
 import 'katex/dist/katex.min.css';
 
@@ -202,6 +203,8 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
     </div>
 
   </div>
+
+  <ScrollRestore />
 
   <!-- 首次绘制前还原目录栏宽度/折叠状态，避免布局位移 -->
   <script is:inline>

@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
 import SWRegister from '../components/SWRegister.astro';
+import ScrollRestore from '../components/ScrollRestore.astro';
 
 // 构建时嵌入，无运行时请求
 const quotesJson = JSON.stringify(quotes);
@@ -410,6 +411,8 @@ function badgeStyle(label: string): string {
 
     </div>
   </div>
+
+  <ScrollRestore />
 
   <!-- 哲理语句轮播：数据在构建时嵌入，无运行时请求 -->
   <script define:vars={{ quotes }}>

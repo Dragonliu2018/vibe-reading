@@ -1,0 +1,40 @@
+---
+/**
+ * 桌面端滚动位置恢复
+ *
+ * 桌面端 `.main-scroll` 是真正的滚动容器（height:100%; overflow-y:auto），
+ * 浏览器原生 history.scrollRestoration 只恢复 window 滚动，不恢复自定义容器，
+ * 导致 A→B→返回 A 时回到顶部。本组件在离开页面前把 `.main-scroll.scrollTop`
+ * 按路径存入 sessionStorage，页面加载时在首次绘制前读回恢复。
+ *
+ * 移动端 `.main-scroll` 退化为 overflow:visible，滚动回到 window，由浏览器原生恢复，
+ * 本脚本在移动端直接 return，不干预。
+ *
+ * 必须放在 `.main-scroll` 之后使用，确保元素已存在。
+ */
+---
+
+<script is:inline>
+  (function () {
+    // 仅桌面端：.main-scroll 是滚动容器
+    if (!window.matchMedia('(min-width: 960px)').matches) return;
+    var el = document.querySelector('.main-scroll');
+    if (!el) return;
+
+    var KEY = 'mscroll:' + location.pathname;
+
+    // 离开页面时保存（pagehide 覆盖 bfcache 与普通导航）
+    window.addEventListener('pagehide', function () {
+      try { sessionStorage.setItem(KEY, String(el.scrollTop)); } catch (_) {}
+    });
+
+    // 恢复：立即设一次（首次绘制前，避免闪到顶部）；图片等异步资源加载完后再校准
+    var saved;
+    try { saved = sessionStorage.getItem(KEY); } catch (_) {}
+    if (saved != null) {
+      var top = parseInt(saved, 10) || 0;
+      el.scrollTop = top;
+      window.addEventListener('load', function () { el.scrollTop = top; }, { once: true });
+    }
+  })();
+</script>

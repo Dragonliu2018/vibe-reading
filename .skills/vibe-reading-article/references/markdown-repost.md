@@ -25,6 +25,7 @@
 | 明显的事实性错误（笔误/错字/拼错的 API 名） | **保留原文**，在该处加 `[^err]` 脚注标注 `[^err]: 原文如此，疑为 XXX`，不直接删改原文 |
 | 原文已失效的内链 / 锚点 | 保留文本，链接可去除或指向原文 |
 | 代码块语言未标注 | 补 `title=` 与语言标识（这是排版，非内容改造） |
+| 原文灰色文字段落（公众号 `color: rgba(0,0,0,0.5)` 等旁注样式） | 转为 Markdown 引用块（`>`），保留原文文字不改写 |
 
 > 判定边界：只动"与文章主体无关的噪声"和"标注错误"，不动作者的观点、论证、代码逻辑。拿不准是否该删时，**保留**。
 
@@ -50,6 +51,35 @@
 - **懒加载**：公众号图片是懒加载的，未滚入视口时 `naturalWidth=1`（1×1 占位图）。提取图片 URL 前必须先 `scrollintoview` 逐张滚载，否则拿到的 URL 可能下载到占位图。
 - **同 URL 不同图 / 不同 URL 同图**：CDN 缓存不稳定，不同 URL 可能返回相同字节（MD5 一致），或同一 URL 不同时刻返回不同图。**必须对每张图做 MD5 去重检查**，发现重复时用 cache-buster（`&_cb=$(date +%s)`）+ 换 UA 重下；仍相同的，用 agent-browser 截图兜底。
 - **格式伪装**：URL 里 `wx_fmt=jpeg` 的图实际是 JPEG，但用 `.png` 扩展名保存会导致格式不匹配。**下载后必须用 `file -b` 检测真实格式**，JPEG 用 `sips -s format png` 转为真 PNG。
+
+### 公众号文字样式检测
+
+公众号正文用 `<p>` 标签承载所有段落，**不区分正文段和旁注段**——区分靠 CSS（`color`、`font-style` 等计算样式）。抓取时必须检测 `computed style`，否则旁注段会被当作普通正文，丢失原文的视觉层次：
+
+```bash
+# 检测灰色旁注段落（公众号常见的 color: rgba(0,0,0,0.5)）
+AB=/Applications/Dumbo.app/Contents/Resources/bin/agent-browser
+$AB eval "
+var c = document.querySelector('#js_content');
+var out = [];
+c.querySelectorAll('p').forEach(function(p){
+  var style = window.getComputedStyle(p);
+  var t = p.innerText.trim();
+  if(t.length > 10 && style.color === 'rgba(0, 0, 0, 0.5)'){
+    out.push(t.slice(0,120));
+  }
+});
+JSON.stringify(out);
+" 2>&1 | python3 -c \"
+import json,sys
+raw=sys.stdin.read().strip()
+arr=json.loads(json.loads(raw))
+print(f'共 {len(arr)} 处灰色注释：')
+for i,t in enumerate(arr): print(f'  [{i}] {t}')
+\"
+```
+
+灰色文字段落 → Markdown 引用块（`>`）。除 `color: rgba(0,0,0,0.5)` 外，也检查 `font-style: italic`、`opacity < 1` 等旁注样式。
 
 ### 知乎反爬（必须注入 stealth init script）
 

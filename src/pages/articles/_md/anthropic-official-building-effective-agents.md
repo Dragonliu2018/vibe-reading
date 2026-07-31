@@ -7,7 +7,7 @@ source:
   author: "Erik S., Barry Zhang"
   site: "Anthropic Engineering"
 date: "2026-07-30T16:10:00+08:00"
-category: [AI, Agent, Blogs]
+category: [AI, Agent, AI Coding, Claude Code, Official]
 tags: ["LLM Agents", "Anthropic", "Workflows", "Agentic Systems", "Tool Use", "Prompt Engineering"]
 description: "Anthropic 工程团队总结构建 LLM agent 的实践经验：从增强型 LLM 这一基础构件出发，介绍 prompt chaining、routing、parallelization、orchestrator-workers、evaluator-optimizer 五种工作流，以及自主 agent 的适用场景与设计原则。"
 readingTime: "18 min"

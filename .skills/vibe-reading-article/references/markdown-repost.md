@@ -45,6 +45,12 @@
 
 `agent-browser open <url> --headed`（或 curl 带 UA 直接抓 HTML），正文在 `<div id="js_content">`，图片真实 URL 在 `data-src`。常需滚动加载。
 
+**公众号图片 CDN（`mmbiz.qpic.cn`）特殊行为**：
+
+- **懒加载**：公众号图片是懒加载的，未滚入视口时 `naturalWidth=1`（1×1 占位图）。提取图片 URL 前必须先 `scrollintoview` 逐张滚载，否则拿到的 URL 可能下载到占位图。
+- **同 URL 不同图 / 不同 URL 同图**：CDN 缓存不稳定，不同 URL 可能返回相同字节（MD5 一致），或同一 URL 不同时刻返回不同图。**必须对每张图做 MD5 去重检查**，发现重复时用 cache-buster（`&_cb=$(date +%s)`）+ 换 UA 重下；仍相同的，用 agent-browser 截图兜底。
+- **格式伪装**：URL 里 `wx_fmt=jpeg` 的图实际是 JPEG，但用 `.png` 扩展名保存会导致格式不匹配。**下载后必须用 `file -b` 检测真实格式**，JPEG 用 `sips -s format png` 转为真 PNG。
+
 ### 知乎反爬（必须注入 stealth init script）
 
 知乎检测 `navigator.webdriver`，未注入时返回 40362「请求异常」风控页——`curl` / `WebFetch` / 知乎 `/api/articles/` 直连均被拦（即使带登录 cookie）。必须用 agent-browser `--init-script` 注入 stealth script（移除 webdriver 标记）+ 登录态：
@@ -99,18 +105,60 @@ crop.save("public/images/articles/{slug}/fig-X.png")
 
 照 `markdown-style.md` 的图片规范执行，**禁直连远程 URL**：
 
+### 下载
+
 ```bash
 mkdir -p public/images/articles/{slug}
-# 逐张下载（不要并行！），加 UA 和充足超时
-curl -sL -A "Mozilla/5.0" --connect-timeout 30 --max-time 180 \
+# 逐张下载（不要并行！），加 UA、referer 和充足超时
+curl -sL -A "Mozilla/5.0" --referer "{原文页面 URL}" \
+  --connect-timeout 30 --max-time 180 \
   "{原文图片 URL}" -o public/images/articles/{slug}/{语义名}.png
 ```
 
 > **下载注意事项（血泪教训）**：
 > - **禁止并行下载**（`&`）——CDN 对大图（4000px+）响应慢，并行会导致静默截断。
 > - **`--max-time` 至少 180s**——大图实际可能需要 50–60s，60s 超时不够。
-> - **校验文件大小**——`file` 只读 PNG 头（尺寸正确），但像素数据可能不完整。截断的 PNG 文件异常小（如 2700×1500 只有 8KB），浏览器按头声明的尺寸渲染，**只显示顶部一部分**。
-> - **验证方法**：对比同尺寸图片的文件大小；或用 `sips -s format jpeg <file> --out /dev/null` 尝试完整解码。
+> - **`--referer` 必须带**——微信等 CDN 校验 referer，不带会返回错误页（418 字节）或占位图。
+> - **截断的 PNG 难以察觉**——`file` 只读 PNG 头（尺寸正确），但像素数据可能不完整。截断的 PNG 文件异常小（如 2700×1500 只有 8KB），浏览器按头声明的尺寸渲染，**只显示顶部一部分**。
+
+### 校验（每张图必须执行）
+
+下载后逐张做三重校验，任一失败则重下：
+
+```bash
+# 1. 格式检测：确认是 PNG 还是 JPEG
+file -b public/images/articles/{slug}/{name}.png
+# 输出 "PNG image data" = 正确；输出 "JPEG image data" = 格式不匹配，需转换
+
+# 2. 完整性校验：PNG 必须有 IEND 标记
+python3 -c "
+d = open('public/images/articles/{slug}/{name}.png', 'rb').read()
+ok = d[:8] == b'\x89PNG\r\n\x1a\n' and b'IEND' in d
+print('OK' if ok else 'FAIL - 截断或非 PNG')
+"
+
+# 3. 去重检查：同文章内不能有 MD5 相同的图
+md5 -q public/images/articles/{slug}/*.png | sort | uniq -d
+# 有输出 = 存在重复图（CDN 返回了相同字节），需 cache-buster 重下或截图兜底
+```
+
+### 格式转换
+
+JPEG 存成 `.png` 扩展名时（微信 `wx_fmt=jpeg` 常见），用 sips 转为真 PNG：
+
+```bash
+sips -s format png public/images/articles/{slug}/{name}.png \
+  --out public/images/articles/{slug}/{name}.png
+```
+
+### 重下策略
+
+校验失败时，按以下顺序尝试：
+
+1. **延长超时重下**：`--max-time 180` + `--connect-timeout 60`
+2. **加 cache-buster**：URL 末尾加 `&_cb=$(date +%s)`（绕 CDN 缓存）
+3. **换 User-Agent**：用 `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)` 等浏览器 UA
+4. **agent-browser 截图兜底**：curl 无法获取真实图片时（CDN 返回占位图/错误页），用 agent-browser 滚动加载后全页截图 + PIL 裁剪（见「元素截图」小节）
 
 > `public/images` 是 submodule（`vibe-reading-images`）。下图后需子仓库 commit+push + 主 repo 记指针——**推荐用 `npm run add-image -- {slug} {url1} [url2 ...]` 脚本自动化**（反爬站点手动下后用 `--commit-only`），详见 `markdown-style.md` 图片节。
 

@@ -17,6 +17,7 @@ reviewed: false
 
 > **原文** [What is the Model Context Protocol (MCP)?](https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro) · **作者** Model Context Protocol · **来源** 官方文档 · **原文发布** 2026-07-28 · **中英对照·AI 译** 2026-08-01
 > 翻译为 AI 初稿 + 人工校对，如有出入以原文为准。
+> 📎 本文是 MCP 入门概览；协议架构、原语与传输层细节见 [MCP 官方文档 Architecture overview（中英对照）](/vibe-reading/articles/mcp-official-architecture)，建议对照阅读。
 
 ---
 
@@ -81,7 +82,7 @@ MCP is an open protocol supported across a wide range of clients and servers. AI
 
 ## Learn more
 
-- [Understand concepts](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture) — Learn the core concepts and architecture of MCP
+- [Understand concepts](/vibe-reading/articles/mcp-official-architecture) — Learn the core concepts and architecture of MCP
 
 > **译：**
-> - [理解核心概念](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)（Understand concepts）—— 学习 MCP 的核心概念与架构
+> - [理解核心概念](/vibe-reading/articles/mcp-official-architecture)（Understand concepts）—— 学习 MCP 的核心概念与架构

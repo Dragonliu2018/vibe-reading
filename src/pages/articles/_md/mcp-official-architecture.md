@@ -17,6 +17,7 @@ reviewed: false
 
 > **原文** [Architecture overview](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture) · **作者** Model Context Protocol · **来源** 官方文档 · **原文发布** 2026-07-28 · **中英对照·AI 译** 2026-08-01
 > 翻译为 AI 初稿 + 人工校对，如有出入以原文为准。
+> 📎 如需先了解 MCP 是什么、能做什么，见 [MCP 官方文档 What is the Model Context Protocol?（中英对照）](/vibe-reading/articles/mcp-official-getting-started-intro)，建议先读再读本文。
 
 ---
 

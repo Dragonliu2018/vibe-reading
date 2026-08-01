@@ -305,3 +305,12 @@ bash .skills/vibe-reading-article/scripts/check-article.sh <file>
 ```
 
 `category` 末级 `Papers`、无 `source` 字段均不触发必填校验，可正常通过。
+
+---
+
+## 参考资料
+
+本文档「人脑方法论 → AI 流水线」一节中的论文阅读方法论（Keshav 三轮法、阅读四阶段、发布前 10 问、批判性 + 创造性阅读、50 字摘要、idea 三法）参考自以下网页：
+
+- [SCI阅读和写作【转一】：四位科研牛人介绍的文献阅读经验](https://www.x-mol.com/groups/Yi_cuiping/news/27496)
+- [如何阅读论文？How to Read a Paper](https://zhuanlan.zhihu.com/p/158709625)

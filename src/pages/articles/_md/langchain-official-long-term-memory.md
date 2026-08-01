@@ -17,13 +17,14 @@ reviewed: false
 
 > **原文** [Long-term memory](https://docs.langchain.com/oss/python/langchain/long-term-memory) · **作者** LangChain · **来源** Docs by LangChain 官方文档 · **原文发布** 2026-07-29 · **中英对照·AI 译** 2026-08-01
 > 翻译为 AI 初稿 + 人工校对，如有出入以原文为准。
+> 📎 本文讲跨会话的长期记忆；thread 内的短期记忆见 [LangChain 官方文档 Short-term memory（中英对照）](/vibe-reading/articles/langchain-official-short-term-memory)，建议对照阅读。
 
 ---
 
 Long-term memory lets your agent store and recall information across different conversations and sessions.
-Unlike [short-term memory](https://docs.langchain.com/oss/python/langchain/short-term-memory), which is scoped to a single thread, long-term memory persists across threads and can be recalled at any time.
+Unlike [short-term memory](/vibe-reading/articles/langchain-official-short-term-memory), which is scoped to a single thread, long-term memory persists across threads and can be recalled at any time.
 
-> **译：** 长期记忆让你的 agent 能跨不同会话与 session 存储和回忆信息。与仅限于单个 thread 的[短期记忆](https://docs.langchain.com/oss/python/langchain/short-term-memory)不同，长期记忆可跨 thread 持久化，并可在任意时刻回忆。
+> **译：** 长期记忆让你的 agent 能跨不同会话与 session 存储和回忆信息。与仅限于单个 thread 的[短期记忆](/vibe-reading/articles/langchain-official-short-term-memory)不同，长期记忆可跨 thread 持久化，并可在任意时刻回忆。
 
 Long-term memory is built on [LangGraph stores](https://docs.langchain.com/oss/python/langgraph/stores), which save data as JSON documents organized by namespace and key.
 

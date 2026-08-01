@@ -2,9 +2,9 @@
  * 侧边栏分类树 — 从文章的 categoryPath 字段自动派生
  *
  * MD 文章：frontmatter 中的 category（YAML 数组，内部映射为 categoryPath）
- *   category: [AI, 可观测性, Litefuse]
+ *   category: [AI, Agent, Observability, Litefuse]
  *
- * HTML 文章：<meta name="article:category" content="AI,可观测性,Litefuse">
+ * HTML 文章：<meta name="article:category" content="AI,Agent,Observability,Litefuse">
  *
  * 新增文章只需在文件里写 category，无需改此文件。
  */
@@ -12,7 +12,7 @@
 import { articles, sourceLabel } from './articles';
 
 export interface TreeNode {
-  key:       string;       // 完整路径作为唯一 key，例如 "AI/可观测性/Litefuse"
+  key:       string;       // 完整路径作为唯一 key，例如 "AI/Agent/Observability/Litefuse"
   label:     string;       // 显示名称
   children?: TreeNode[];   // 子分类
   slugs?:    string[];     // 当前节点直属文章 slug

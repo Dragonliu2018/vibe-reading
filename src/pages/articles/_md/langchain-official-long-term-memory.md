@@ -7,7 +7,7 @@ source:
   author: "LangChain"
   site: "Docs by LangChain 官方文档"
 date: "2026-08-01T16:30:00+08:00"
-category: [AI, Agent, LangChain, Official]
+category: [AI, Agent, Memory & Context, Blogs]
 tags: ["LangChain", "Long-term Memory", "Agent", "LangGraph Store", "Memory"]
 description: "Add long-term memory to LangChain agents to store and recall data across conversations and sessions"
 readingTime: "8 min"

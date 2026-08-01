@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2304.03442"
   pdf: "/vibe-reading/papers/generative-agents.pdf"
 date: "2026-08-01T17:30:00+08:00"
-category: [AI, Agent, Papers]
+category: [AI, Agent, Multi-Agent, Papers]
 tags: ["LLM Agent", "Memory Stream", "Reflection", "Planning", "Generative Agents", "Social Simulation"]
 description: "目的：用 LLM 构建可信模拟人类行为的 agent。手段：记忆流（recency/importance/relevance 检索）+ 反思 + 规划架构。结论：25 个 agent 在 Smallville 沙盒中涌现信息扩散、关系形成与协作；架构各组件均关键。"
 readingTime: "15 min"

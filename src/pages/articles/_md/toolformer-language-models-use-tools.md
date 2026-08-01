@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2302.04761"
   pdf: "/vibe-reading/papers/toolformer-language-models-use-tools.pdf"
 date: "2026-08-01T14:40:00+08:00"
-category: [AI, Models, Meta AI, Papers]
+category: [AI, Agent, MCP, Papers]
 tags: ["Tool Use", "Language Model", "Self-Supervised", "GPT-J", "API"]
 description: "目的：让 LM 克服算术/事实/时效等短板。手段：自监督地让模型自己标注并筛选有用的 API 调用再微调。结论：6.7B GPT-J 在多个零样本任务上超过 175B GPT-3，且不损害语言建模能力。"
 readingTime: "16 min"

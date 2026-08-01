@@ -7,7 +7,7 @@ source:
   author: "美团 CatPaw"
   site: "CatPaw 文档"
 date: "2026-08-01T11:00:00+08:00"
-category: [AI Agent, CatPaw, Official]
+category: [AI, Agent, AI Coding, CatPaw, Official]
 tags: ["AI Agent", "CatPaw", "美团", "Sandbox", "MicroVM"]
 description: "美团自研的 AI Agent 平台，面向 Agent 全生命周期，提供多端、全链路的智能化解决方案。"
 readingTime: "6 min"

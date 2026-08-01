@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2005.11401"
   pdf: "/vibe-reading/papers/rag-retrieval-augmented-generation.pdf"
 date: "2026-08-01T15:55:00+08:00"
-category: [AI, RAG, Meta AI, Papers]
+category: [AI, Agent, Memory & Context, RAG, Papers]
 tags: ["RAG", "Retrieval-Augmented Generation", "DPR", "BART", "Knowledge-Intensive"]
 description: "目的：让 LM 用上外部知识且可热更新。手段：DPR 检索器 + BART 生成器端到端微调，把检索文档当隐变量边际化。结论：开源域 QA 三项 SOTA，生成更事实多样，不损语言建模能力。"
 readingTime: "16 min"

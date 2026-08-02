@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2312.17432"
   pdf: "/vibe-reading/papers/video-understanding-llm-survey.pdf"
 date: "2026-08-01T22:00:00+08:00"
-category: [AI, Multimodal, Papers]
+category: [AI, Models, Papers]
 tags: ["Video Understanding", "Vid-LLM", "Multimodal LLM", "Survey", "Video-Language", "LLM"]
 description: "目的：综述用 LLM 做视频理解（Vid-LLM）的方法。手段：按视频处理方式分 3 主类（Analyzer×LLM / Embedder×LLM / 混合）×5 子类（LLM 作摘要器/管理器/解码器/回归器/隐藏层）。结论：Vid-LLM 具备多粒度推理+常识，但细粒度/长视频/多模态对齐仍有挑战。"
 readingTime: "18 min"

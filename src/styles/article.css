@@ -293,6 +293,36 @@ a { color: inherit; text-decoration: none; }
 .prose figure.image-figure { margin: 24px 0; text-align: center; }
 .prose figure.image-figure img { max-width: 100%; height: auto; margin: 0 auto; display: block; }
 .prose figure.image-figure figcaption { margin-top: 8px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+/* 内嵌可视化 HTML（iframe）：自包含暗色页，圆角 + 限宽 + 响应式高度 */
+.prose figure.viz-iframe { margin: 24px 0 0; }
+.prose figure.viz-iframe iframe {
+  width: 100%; height: 1780px; border: 0; border-radius: 12px;
+  background: #0d1117; display: block;
+}
+.prose figure.viz-iframe figcaption { margin-top: 10px; font-size: 13px; color: var(--text-muted); line-height: 1.5; text-align: center; }
+@media (max-width: 720px) {
+  .prose figure.viz-iframe iframe { height: 1500px; }
+}
+/* 折叠式可视化容器：默认收起，点 summary 展开 */
+.prose details.viz-details {
+  margin: 24px 0; border: 1px solid var(--border, #30363d); border-radius: 12px;
+  background: rgba(22,27,34,0.4); overflow: hidden;
+}
+.prose details.viz-details > summary {
+  list-style: none; cursor: pointer; padding: 14px 18px;
+  font-size: 14px; font-weight: 600; color: var(--text-muted, #8b949e);
+  user-select: none; display: flex; align-items: center; gap: 8px;
+  transition: background .15s ease, color .15s ease;
+}
+.prose details.viz-details > summary::-webkit-details-marker { display: none; }
+.prose details.viz-details > summary::before {
+  content: '▸'; font-size: 12px; transition: transform .18s ease; display: inline-block;
+}
+.prose details.viz-details[open] > summary::before { transform: rotate(90deg); }
+.prose details.viz-details[open] > summary { color: var(--text, #c9d1d9); border-bottom: 1px solid var(--border, #30363d); }
+.prose details.viz-details > summary:hover { background: rgba(88,166,255,0.06); }
+.prose details.viz-details[open] > .viz-iframe,
+.prose details.viz-details[open] > figure { padding: 0 18px 18px; }
 /* JS 包裹 figure 前的裸图也居中，避免闪烁 */
 .prose p > img:only-child { display: block; margin: 24px auto; max-width: 100%; height: auto; }
 /* 图片点击放大 lightbox */

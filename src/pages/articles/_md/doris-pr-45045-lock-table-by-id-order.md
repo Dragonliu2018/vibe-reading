@@ -29,7 +29,21 @@ PR 描述里把问题定性得很清楚：
 
 > Doris's table locks are fair read-write locks. If two threads acquire read locks on tables in different orders and simultaneously a third thread attempts to acquire a write lock on one of these tables, a deadlock can form between the two threads trying to acquire read locks.
 
-具体场景：线程 T1 先锁表 A 再锁表 B，线程 T2 先锁表 B 再锁表 A。因为公平锁，当 T3 想拿 A（或 B）的写锁排队时，T1 拿到 A 的读锁后会在 B 上排在 T3 后面，T2 拿到 B 的读锁后会在 A 上排在 T3 后面——T1 等 T2 释放 B，T2 等 T1 释放 A，死锁。**根因不在于锁本身，而在于「加锁顺序不一致」**。只要所有线程都以同一个全局全序获取锁，死锁就不可能发生。
+具体场景：线程 T1 先锁表 A 再锁表 B，线程 T2 先锁表 B 再锁表 A。与此同时，T3 请求 A 的写锁、T4 请求 B 的写锁——在 Doris 里这对应并发发生在不同表上的 DDL / schema change。因为公平锁（`FairSync.readerShouldBlock()` 返回 `hasQueuedPredecessors()`），写锁一旦排队就会阻塞后续读锁：T1 拿到 A 的读锁后请求 B 时被 T4 挡住（B 的等待队列非空），T2 拿到 B 的读锁后请求 A 时被 T3 挡住（A 的等待队列非空）；而 T3 等 T1 释放 A、T4 等 T2 释放 B——T1 → T4 → T2 → T3 → T1 形成四节点循环等待，死锁。
+
+> **为什么必须有两个写者？** 只有一个写者（比如只有 T3 写 A）时，T1 请求 RL(B) 不被阻塞——B 的等待队列空，`hasQueuedPredecessors()` 返回 false，T1 立即拿到 B、完成、释放 A，环断开。单写者只能堵住环的一侧。PR 描述里「a third thread … a write lock on one of these tables」是简化措辞，真实环境里 A、B 各有一个写者排队才是死锁成立的充要条件。Doris 的 `tryReadLock` 走 `tryLock(1, MINUTES)`（定时版，尊重公平队列；而非无参 `tryLock()` 的插队语义），所以这个死锁的表象是 1 分钟超时后抛 `Failed to get read lock on table`，而非永久挂起。
+
+**根因不在于锁本身，而在于「加锁顺序不一致」**。只要所有线程都以同一个全局全序获取锁，循环等待的边就不可能形成，死锁被预防——这是互斥锁死锁的经典解法，与锁是否公平无关。
+
+<details class="viz-details">
+  <summary>📊 展开图解：四节点死锁的形成时序、资源等待环与全序加锁解法</summary>
+  <figure class="viz-iframe">
+    <iframe src="/vibe-reading/images/articles/doris-pr-45045-lock-table-by-id-order/deadlock-case.html"
+            loading="lazy" title="Doris 表锁死锁案例可视化"
+            sandbox="allow-same-origin"></iframe>
+    <figcaption>四节点死锁的形成时序、资源等待环，以及按 table id 升序加锁如何切断环。</figcaption>
+  </figure>
+</details>
 
 这个 PR 的解法直接而彻底：**把查询规划期的所有表读锁收口到一处，按 table id 升序统一加锁**。
 

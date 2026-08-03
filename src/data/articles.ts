@@ -42,6 +42,18 @@ export function sourceLabel(source: ArticleSource, categoryPath: string[] = []):
   return `[${source.project} ${source.type}${idSuffix}]`;
 }
 
+/**
+ * 计算文章的「分类徽章」标签：
+ *   - 含 Docs 的官方文档分类 → 取 "Docs"（而非版本号/章节等末级）
+ *   - 其余 → 取 category 末级
+ * 首页卡片 / 文章页徽章 / 首页过滤器统一用此函数，避免副本漂移。
+ */
+export function badgeCat(category: string[] = []): string {
+  if (!category.length) return '';
+  if (category.includes('Docs')) return 'Docs';
+  return category[category.length - 1];
+}
+
 // ── MD 文章：从 frontmatter 自动读取 ──────────────────────────────
 const mdModules = import.meta.glob<{
   frontmatter: {

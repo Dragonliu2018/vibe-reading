@@ -1,5 +1,5 @@
 ---
-import { articles, sourceLabel } from '../data/articles';
+import { articles, sourceLabel, badgeCat } from '../data/articles';
 import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
@@ -40,7 +40,7 @@ const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
 const displayTitle = hasSourceLabel ? `${srcLabel} ${prTypeLabel}${title}` : title;
 
 const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
-const catLabel = category?.length ? category[category.length - 1] : '';
+const catLabel = badgeCat(category);
 
 // 沉浸式阅读模式：文学 / 电影 / 历史 等非技术题材使用衬线字体 + 疏朗排版
 const LITERARY_DOMAINS = ['Literature', 'Cinema', 'History'];
@@ -56,7 +56,7 @@ const BADGE_PALETTE = [
   { text: '#d2a8ff', bg: 'rgba(210,168,255,.12)', border: 'rgba(210,168,255,.30)' },
 ] as const;
 const catCountMap = articles.reduce<Record<string, number>>((acc, a) => {
-  const last = a.category[a.category.length - 1];
+  const last = badgeCat(a.category);
   if (last) acc[last] = (acc[last] ?? 0) + 1;
   return acc;
 }, {});

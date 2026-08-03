@@ -1,8 +1,8 @@
 ---
-title: "数据分桶（Doris 3.x）"
+title: "数据分桶"
 source:
   type: "article"
-  project: "Doris"
+  project: "Doris-3.x"
   url: "https://doris.apache.org/zh-CN/docs/3.x/table-design/data-partitioning/data-bucketing"
   author: "Apache Doris"
   site: "Apache Doris 官方文档"

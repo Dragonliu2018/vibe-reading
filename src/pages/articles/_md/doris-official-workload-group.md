@@ -1,8 +1,8 @@
 ---
-title: "Workload Group（Doris 2.1）"
+title: "Workload Group"
 source:
   type: "article"
-  project: "Doris"
+  project: "Doris-2.1"
   url: "https://doris.apache.org/zh-CN/docs/2.1/admin-manual/workload-management/workload-group"
   author: "Apache Doris"
   site: "Apache Doris 官方文档"

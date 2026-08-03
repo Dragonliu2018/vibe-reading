@@ -1,8 +1,8 @@
 ---
-title: "临时分区（Doris 3.x）"
+title: "临时分区"
 source:
   type: "article"
-  project: "Doris"
+  project: "Doris-3.x"
   url: "https://doris.apache.org/zh-CN/docs/3.x/data-operate/delete/table-temp-partition"
   author: "Apache Doris"
   site: "Apache Doris 官方文档"

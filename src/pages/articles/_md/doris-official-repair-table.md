@@ -7,7 +7,7 @@ source:
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-08-03T17:00:00+08:00"
-category: [Database, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句"]
+category: [Database, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "表和视图"]
 tags: ["Apache Doris", "REPAIR TABLE", "副本修复", "ADMIN", "SQL", "表和视图"]
 description: "Apache Doris 3.x 官方文档：REPAIR TABLE 语句用于以高优先级修复指定表或分区的副本，支持修复整个表、指定分区及设置修复超时时间。"
 readingTime: "4 min"

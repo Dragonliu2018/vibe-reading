@@ -7,7 +7,7 @@ source:
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-08-03T18:00:00+08:00"
-category: [Database, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句"]
+category: [Database, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "表和视图"]
 tags: ["Apache Doris", "CREATE TABLE", "建表", "数据模型", "分区", "分桶", "SQL"]
 description: "Apache Doris 3.x 官方文档：CREATE TABLE 语句用于在数据库中创建新表，支持明细/主键/聚合三种数据模型、CTAS、LIKE 变种语法、自动/手动分区、分桶、索引、动态分区及丰富表属性。"
 readingTime: "20 min"

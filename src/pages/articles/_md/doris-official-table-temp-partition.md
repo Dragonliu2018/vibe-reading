@@ -2,12 +2,12 @@
 title: "临时分区"
 source:
   type: "article"
-  project: "Doris-3.x"
+  project: "Doris"
   url: "https://doris.apache.org/zh-CN/docs/3.x/data-operate/delete/table-temp-partition"
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-08-01T21:00:00+08:00"
-category: [Database, Apache Doris, Official]
+category: [Database, Apache Doris, Docs, "3.x"]
 tags: ["Apache Doris", "临时分区", "分区", "数据删除", "原子覆盖写"]
 description: "Doris 支持在分区表中添加临时分区，可用于原子覆盖写、修改分桶数、合并/分割分区等场景；临时分区不被常规查询检索，仅在特殊语句中可见。"
 readingTime: "5 min"

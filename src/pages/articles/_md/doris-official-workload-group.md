@@ -2,12 +2,12 @@
 title: "Workload Group"
 source:
   type: "article"
-  project: "Doris-2.1"
+  project: "Doris"
   url: "https://doris.apache.org/zh-CN/docs/2.1/admin-manual/workload-management/workload-group"
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-07-31T09:00:00+08:00"
-category: [Database, Apache Doris, Official]
+category: [Database, Apache Doris, Docs, "2.1"]
 tags: ["Apache Doris", "Workload Group", "资源隔离", "CGroup", "CPU 限流", "内存管理", "IO 限流", "负载管理"]
 description: "Apache Doris 2.1 官方文档：Workload Group 通过对 BE 进程内的 CPU、IO、Memory 资源进行细粒度划分实现进程内负载隔离，支持 CPU 软限/硬限、内存硬限/软限、本地 IO 与远程 IO 硬限，并依赖 CGroup 管理 CPU。"
 readingTime: "20 min"

@@ -214,7 +214,7 @@ source:
   author: "原作者名 / 账号"
   site: "来源平台（知乎 / 公众号 / 个人博客名 / 掘金）"
 date: "YYYY-MM-DDTHH:MM:SS+08:00"      # 转载/翻译日期，不是原文发布日期（后者放导言「原文发布」）；ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
-category: [Domain, Topic, Official]   # 官方转载用 Official，非官方博客用 Informal
+category: [Domain, Topic, Official]   # 版本化官方文档用 Docs + 版本号，如 [Database, Apache Doris, Docs, "3.x"]；非版本化官方文章用 Official；非官方博客用 Informal
 tags: ["原文标签或主题词"]
 description: "一句话概括，可引用原文导言首句"
 readingTime: "N min"
@@ -224,8 +224,8 @@ reviewed: false
 ```
 
 - `source.type = "article"`：转载类，不需要 `prType`（区别于 PR/commit）。
-- `category` 末级按来源：官方文章用 `Official`，非官方技术博客用 `Informal`；前两层反映原文主题域（如 `[Database, Apache Doris, Official]`）。转载标记由 `source.type=article` 负责，末级只反映来源。
-- **标题前缀**：转载文章标题自动渲染为 `[project 来源]` 前缀（如 `[Doris Official]`）——project 取 `source.project`，来源取 category 末级。与 PR 文章的 `[project type-id]` 前缀对应。
+- `category` 末级按来源：版本化官方文档用 `Docs` + 版本号末级（如 `[Database, Apache Doris, Docs, "3.x"]`，版本号必须加引号），非版本化官方文章用 `Official`，非官方技术博客用 `Informal`；前两层反映原文主题域。转载标记由 `source.type=article` 负责，末级只反映来源。
+- **标题前缀**：转载文章标题自动渲染为 `[project 末级]` 前缀——project 取 `source.project`，末级取 category 最后一个元素。版本化文档 project 用项目名不带版本（如 `Doris`），版本号在 category 末级，前缀渲染为 `[Doris 3.x]`；非版本化官方文章前缀 `[Doris Official]`。与 PR 文章的 `[project type-id]` 前缀对应。
 - `reviewed: false`：转载初稿同样默认未 review，人工校对后改 `true`。
 
 ---

@@ -2,12 +2,12 @@
 title: "优化表 Schema 设计"
 source:
   type: "article"
-  project: "Doris-3.x"
+  project: "Doris"
   url: "https://doris.apache.org/zh-CN/docs/3.x/query-acceleration/tuning/tuning-plan/optimizing-table-schema/"
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-08-03T11:30:00+08:00"
-category: [Database, Apache Doris, Official]
+category: [Database, Apache Doris, Docs, "3.x"]
 tags: ["Apache Doris", "Schema 设计", "表引擎", "分桶列", "Key 列", "字段类型", "性能调优"]
 description: "Apache Doris 3.x 官方文档：从实际案例角度展示因 Schema 设计问题导致的性能瓶颈，涵盖表引擎选择、分桶列选择、Key 列优化、字段类型优化四个典型场景及优化建议。"
 readingTime: "8 min"

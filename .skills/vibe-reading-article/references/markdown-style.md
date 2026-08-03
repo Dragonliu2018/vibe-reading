@@ -43,12 +43,13 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读�
 | `Contributions` | 自己写的 PR / commit |
 | `Codebases` | 源码架构解读（AI 解读 code） |
 | `PRs` | 解读他人的 PR / commit |
-| `Official` | 官方文章转载 |
+| `Official` | 官方文章转载（非版本化：官方博客 / 公众号 / 社区指南） |
+| `Docs` | 官方文档站版本化文档转载，末级再带版本号（如 `[Database, Apache Doris, Docs, "3.x"]`） |
 | `Informal` | 非官方技术博客转载 |
 | `Notes` | 技术笔记 |
 | `Papers` | 论文解读 |
 
-> 转载类末级按来源分：官方 `Official` / 非官方 `Informal`。
+> 转载类末级按来源分：版本化官方文档 `Docs`（+ 版本号）/ 非版本化官方文章 `Official` / 非官方 `Informal`。`Docs` 的版本号元素必须加引号（`"3.x"` / `"2.1"`），否则 YAML 会把 `2.1` 解析成浮点数。
 
 ---
 

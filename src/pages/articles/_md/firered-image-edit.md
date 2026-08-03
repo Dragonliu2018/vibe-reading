@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2602.13344"
   pdf: "/vibe-reading/papers/firered-image-edit.pdf"
 date: "2026-07-27T23:05:06+08:00"
-category: [AI, Models, FireRed, Papers]
+category: [AI, Models, Image Model, Papers]
 tags: ["Image Editing", "Diffusion Transformer", "MMDiT", "DPO", "DiffusionNFT", "Instruction-Based Editing", "Benchmark", "RLHF"]
 description: "目的：用扩散 Transformer 做指令式图像编辑，SOTA 同时保持可部署规模。手段：1.6B 样本数据管线 + 多阶段训练（预训练→SFT→RLHF/DPO→DiffusionNFT）+ Multi-Condition Bucket Sampler + Consistency Loss。结论：在 ImgEdit/GEdit/REDEdit-Bench 上达到或超过开源与商用模型，验证系统级优化可匹敌暴力堆参数。"
 readingTime: "16 min"

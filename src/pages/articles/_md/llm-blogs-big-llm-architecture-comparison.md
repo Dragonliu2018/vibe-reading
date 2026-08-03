@@ -7,7 +7,7 @@ source:
   author: "Sebastian Raschka, PhD"
   site: "Ahead of AI（Substack）"
 date: "2026-07-25"
-category: [AI, Models, Blogs]
+category: [AI, Models, Text Model, Blogs]
 tags: ["LLM", "Architecture", "Transformer", "MoE", "Attention", "DeepSeek", "Gemma", "Qwen", "Llama", "gpt-oss"]
 description: "From DeepSeek V3 to GLM-5: A Look At Modern LLM Architecture Design"
 readingTime: "70 min"

@@ -6,7 +6,7 @@ source:
   url: "https://github.com/XiaomiMiMo/MiMo-Audio"
   pdf: "/vibe-reading/papers/mimo-audio-few-shot-learners.pdf"
 date: "2026-07-26"
-category: [AI, Models, MiMo, Papers]
+category: [AI, Models, Audio Model, Papers]
 tags: ["MiMo-Audio", "Audio Language Model", "Few-Shot Learning", "Audio Tokenizer", "Next-Token Prediction", "Speech Intelligence"]
 description: "目的：音频语言模型的少样本泛化。手段：无损高保真 tokenizer + patch 架构 + 100M 小时 next-token 预训练 + thinking 后训练。结论：MiMo-Audio-7B 涌现 GPT-3 式少样本能力，多项音频基准开源 SOTA、逼近闭源。"
 readingTime: "16 min"

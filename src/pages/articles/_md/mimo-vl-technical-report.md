@@ -6,7 +6,7 @@ source:
   url: "https://github.com/XiaomiMiMo/MiMo-VL"
   pdf: "/vibe-reading/papers/mimo-vl-technical-report.pdf"
 date: "2026-07-27"
-category: [AI, Models, MiMo, Papers]
+category: [AI, Models, Vision Model, Papers]
 tags: ["MiMo-VL", "Vision-Language Model", "MORL", "GRPO", "RLVR", "RLHF", "Native-Resolution ViT", "GUI Agent"]
 description: "目的：通用视觉语言模型。手段：原生分辨率 ViT + MLP projector + MiMo-7B + 四阶段预训练 2.4T tokens + MORL 混合在线强化学习（RLVR+RLHF）。结论：MiMo-VL-7B-RL 在 35/40 任务超 Qwen2.5-VL-7B，OlympiadBench 59.4、OSWorld-G 56.1、MMMU 66.7，开源 VLM Elo 第一。"
 readingTime: "17 min"

@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2605.06548"
   pdf: "/vibe-reading/papers/cola-dlm-continuous-latent-diffusion.pdf"
 date: "2026-07-25"
-category: [AI, Models, Seed, Papers]
+category: [AI, Models, Text Model, Papers]
 tags: ["Diffusion", "Language Model", "Non-Autoregressive", "Latent Variable", "VAE", "Flow Matching"]
 description: "目的：突破自回归固定顺序局限。手段：Text VAE + block-causal DiT 在连续隐空间学语义先验 + 条件解码。结论：8 基准上扩展性优于匹配的 ~2B AR/LLaDA。"
 readingTime: "15 min"

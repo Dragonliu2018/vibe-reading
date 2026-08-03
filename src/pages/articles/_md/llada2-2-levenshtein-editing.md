@@ -6,7 +6,7 @@ source:
   url: "https://hf.co/collections/inclusionAI/llada-20"
   pdf: "/vibe-reading/papers/llada2-2-levenshtein-editing.pdf"
 date: "2026-07-28T16:00:00+08:00"
-category: [AI, Models, Ant Group, Papers]
+category: [AI, Models, Text Model, Papers]
 tags: ["Diffusion Language Model", "Levenshtein Editing", "Agentic", "L-EBPO", "Block Routing", "128K Context", "MoE"]
 description: "目的：让扩散语言模型在多轮 agentic 场景下稳定运行。手段：引入 KEEP/SUBSTITUTE/DELETE/INSERT 四操作 Levenshtein 编辑 + LCS 训练标签 + L-EBPO agentic RL + 128K 上下文 + block routing。结论：7 个 agentic 基准上与 AR 持平，吞吐 1.64× 提升。"
 readingTime: "14 min"

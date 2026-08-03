@@ -7,7 +7,7 @@ source:
   author: "Moonshot AI"
   site: "Kimi 官方博客"
 date: "2026-08-01T21:30:00+08:00"
-category: [AI, Models, Kimi, Official]
+category: [AI, Models, Text Model, Official]
 tags: ["Kimi K3", "MoE", "KDA", "Attention Residuals", "Stable LatentMoE", "Agentic", "Open Weights", "1M Context"]
 description: "首个开放 3T 级模型，2.8T 参数，基于 Kimi Delta Attention 与 Attention Residuals，原生视觉 + 1M token 上下文。"
 readingTime: "20 min"

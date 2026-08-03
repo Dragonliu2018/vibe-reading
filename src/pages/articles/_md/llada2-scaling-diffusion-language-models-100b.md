@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2512.15745"
   pdf: "/vibe-reading/papers/llada2-scaling-diffusion-language-models-100b.pdf"
 date: "2026-07-28T11:20:00+08:00"
-category: [AI, Models, Ant Group, Papers]
+category: [AI, Models, Text Model, Papers]
 tags: ["Diffusion Language Model", "Masked Diffusion", "MoE", "AR-to-Diffusion", "Block Diffusion", "WSD", "DPO", "Parallel Decoding"]
 description: "目的：把离散扩散语言模型扩到 100B。手段：从 AR 模型系统转换（WSD 三阶段 CPT + SFT/DPO + 置信度训练）。结论：性能追平同规模 AR，编码与智能体领域反超。"
 readingTime: "16 min"

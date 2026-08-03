@@ -6,7 +6,7 @@ source:
   url: "https://github.com/MoonshotAI/Kimi-K3"
   pdf: "/vibe-reading/papers/kimi-k3-technical-report.pdf"
 date: "2026-07-28T14:30:00+08:00"
-category: [AI, Models, Kimi, Papers]
+category: [AI, Models, Text Model, Papers]
 tags: ["Kimi K3", "MoE", "KDA", "Attention Residuals", "Stable LatentMoE", "Agentic RL", "1M Context", "Open Weights"]
 description: "目的：开源 3T 级前沿模型。手段：2.8T MoE + KDA/AttnRes/Stable LatentMoE 架构三轴扩展 + 1M 上下文多努力度 agentic RL + 系统协同设计。结论：综合效率较 Kimi K2 提升 2.5×，在编码/智能体/知识/推理/视觉全面逼近闭源前沿，开源权重全面开放。"
 readingTime: "28 min"

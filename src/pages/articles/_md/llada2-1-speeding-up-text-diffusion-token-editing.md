@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2602.08676"
   pdf: "/vibe-reading/papers/llada2-1-speeding-up-text-diffusion-token-editing.pdf"
 date: "2026-07-28T15:30:00+08:00"
-category: [AI, Models, Ant Group, Papers]
+category: [AI, Models, Text Model, Papers]
 tags: ["Diffusion Language Model", "Token Editing", "Mask-to-Token", "Token-to-Token", "EBPO", "Reinforcement Learning", "Parallel Decoding", "MoE"]
 description: "目的：打破扩散语言模型速度与质量的取舍。手段：在 M2T 上编织 T2T 编辑 + 双阈值可配置解码（S/Q 模式）+ 首个大规模 dLLM RL（EBPO）。结论：100B 编码达 892 TPS，Q 模式反超 2.0。"
 readingTime: "15 min"

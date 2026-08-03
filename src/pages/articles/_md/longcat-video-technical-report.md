@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2510.22200"
   pdf: "/vibe-reading/papers/longcat-video-technical-report.pdf"
 date: "2026-08-01T11:30:00+08:00"
-category: [AI, Models, LongCat, Papers]
+category: [AI, Models, Video Model, Papers]
 tags: ["Video Generation", "DiT", "GRPO", "Block Sparse Attention", "World Model", "Coarse-to-Fine"]
 description: "目的：用单模型统一 T2V/I2V/Video-Continuation 并高效生成分钟级长视频。手段：13.6B DiT + 多任务统一输入 + 多奖励 GRPO + 粗到细 + 块稀疏注意力。结论：性能比肩闭源，720p/30fps 视频分钟内出图。"
 readingTime: "18 min"

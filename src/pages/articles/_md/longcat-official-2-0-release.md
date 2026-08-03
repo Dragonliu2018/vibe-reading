@@ -7,7 +7,7 @@ source:
   author: "LongCat Team"
   site: "longcat.chat"
 date: "2026-07-27"
-category: [AI, Models, LongCat, Official]
+category: [AI, Models, Text Model, Official]
 tags: ["LongCat", "MoE", "稀疏注意力", "国产算力", "长上下文", "Agent"]
 description: "LongCat-2.0 正式发布：1.6 万亿参数 MoE、480 亿激活、百万上下文，LongCat 稀疏注意力 + N-gram Embedding + 国产算力训练，深度适配 Claude Code 等 Harness。"
 readingTime: "12 min"

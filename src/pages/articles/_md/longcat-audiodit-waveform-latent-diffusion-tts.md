@@ -6,7 +6,7 @@ source:
   url: "https://github.com/meituan-longcat/LongCat-AudioDiT"
   pdf: "/vibe-reading/papers/longcat-audiodit-waveform-latent-diffusion-tts.pdf"
 date: "2026-07-26"
-category: [AI, Models, LongCat, Papers]
+category: [AI, Models, Audio Model, Papers]
 tags: ["LongCat-AudioDiT", "TTS", "Diffusion", "Wav-VAE", "Flow Matching", "Zero-shot Voice Cloning"]
 description: "目的：高保真扩散 TTS。手段：直接在波形隐空间建模（Wav-VAE + DiT），修正训练-推理失配，用 APG 替代 CFG。结论：Seed 基准 SOTA，SIM 0.818（ZH）/0.797（Hard），超越 Seed-TTS。"
 readingTime: "16 min"

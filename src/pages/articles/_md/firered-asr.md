@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2501.14350"
   pdf: "/vibe-reading/papers/firered-asr.pdf"
 date: "2026-07-27"
-category: [AI, Models, FireRed, Papers]
+category: [AI, Models, Audio Model, Papers]
 tags: ["ASR", "Speech Recognition", "Conformer", "LLM", "LoRA", "Qwen2", "Mandarin", "AED"]
 description: "目的：构建工业级开源普通话 ASR 模型。手段：两条路线——FireRedASR-LLM（Encoder-Adapter-LLM，8.3B，冻结 LLM 仅训 LoRA）与 FireRedASR-AED（1.1B，传统注意力编解码）。结论：8 个公开测试集平均 CER 3.05%，较此前最强开源 Seed-ASR 相对降 8.4%，真实场景降 24%-40%。"
 readingTime: "13 min"

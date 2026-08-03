@@ -7,7 +7,7 @@ source:
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-08-03T13:00:00+08:00"
-category: [Database, Apache Doris, Docs, "3.x"]
+category: [Database, Apache Doris, Docs, "3.x", "01 快速开始"]
 tags: ["Apache Doris", "MPP", "实时分析型数据库", "存算分离", "向量化引擎", "数仓"]
 description: "Apache Doris 3.x 官方文档：介绍基于 MPP 架构的高性能、实时分析型数据库，涵盖发展历程、应用现状、使用场景、存算一体/存算分离架构、核心特性与技术特点。"
 readingTime: "10 min"

@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2503.13956"
   pdf: "/vibe-reading/papers/f-16-improving-llm-video-understanding-16fps.pdf"
 date: "2026-08-03T20:00:00+08:00"
-category: [AI, Models, Multimodal, Papers]
+category: [AI, Models, Video Model, Papers]
 tags: ["F-16", "Video LLM", "High Frame Rate", "Video Understanding", "LLaVA-OneVision", "SigLIP", "Qwen2", "Token Compression", "Variable Frame Rate", "Sports Understanding", "SOTA", "ICML 2025"]
 description: "目的：突破视频 LLM ≤2 FPS 的帧率瓶颈，用 16 FPS 捕捉快速运动细节。手段：高帧率 aligner（3 层 MLP 压缩 w 帧/窗口）+ 块矩阵分解从图像 LLM 初始化 + 空间 2×2 池化实现 ~4× token 压缩 + 可变帧率解码（帧重复/参数裁剪）。结论：7B 模型在 Video-MME（65.0）、TemporalBench（37.2）、MotionBench（54.5）达 SOTA，体育任务超越 GPT-4o 和 Gemini-1.5-Pro。"
 readingTime: "14 min"

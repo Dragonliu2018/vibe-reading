@@ -291,6 +291,7 @@ a { color: inherit; text-decoration: none; }
 .category-breadcrumb .bc-current {
   color: var(--text-muted, #8b949e); font-weight: 500;
 }
+.category-breadcrumb a.bc-current:hover { color: var(--text, #e6e6e6); }
 .category-breadcrumb .bc-home {
   white-space: nowrap; text-decoration: none;
   color: var(--text-dim, #6e7681);

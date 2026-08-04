@@ -194,11 +194,10 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
               {category.map((cat, i) => (
                 <>
                   <span class="bc-sep">›</span>
-                  {i === category.length - 1 ? (
-                    <span class="bc-item bc-current">{cat}</span>
-                  ) : (
-                    <a href={`${base}/categories/${category!.slice(0, i + 1).map(encodeURIComponent).join('/')}`} class="bc-item">{cat}</a>
-                  )}
+                  <a
+                    href={`${base}/categories/${category!.slice(0, i + 1).map(encodeURIComponent).join('/')}`}
+                    class={`bc-item${i === category.length - 1 ? ' bc-current' : ''}`}
+                  >{cat}</a>
                 </>
               ))}
             </nav>

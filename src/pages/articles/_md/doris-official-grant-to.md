@@ -7,7 +7,7 @@ source:
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-08-03T10:00:00+08:00"
-category: [Database, Apache Doris, Docs, "3.x"]
+category: [Database, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "账户、角色和权限"]
 tags: ["Apache Doris", "GRANT", "权限管理", "角色", "SQL", "账号管理"]
 description: "Apache Doris 3.x 官方文档：GRANT 命令用于将指定权限授予某用户或角色，或将指定角色授予某用户，涵盖权限列表、权限层级、资源/Workload Group/Compute Group/Storage Vault 授权语法及示例。"
 readingTime: "8 min"

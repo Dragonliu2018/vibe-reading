@@ -272,26 +272,26 @@ a { color: inherit; text-decoration: none; }
 /* 分类层级面包屑 */
 .category-breadcrumb {
   display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
-  font-size: 12.5px; color: var(--text-dim, #6e7681);
-  margin-bottom: 24px; padding: 8px 14px;
-  background: rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.05);
+  font-size: 13px; color: var(--text-muted, #999);
+  margin-bottom: 24px; padding: 9px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 8px;
   line-height: 1.6;
 }
 .category-breadcrumb .bc-sep {
-  margin: 0 4px; opacity: 0.4; font-weight: 300; font-size: 14px;
+  margin: 0 5px; opacity: 0.5; font-weight: 300; font-size: 14px;
 }
 .category-breadcrumb .bc-item {
   white-space: nowrap; text-decoration: none;
-  color: var(--text-dim, #6e7681);
+  color: var(--text-muted, #999);
   transition: color .15s;
 }
 .category-breadcrumb a.bc-item:hover { color: var(--text, #e6e6e6); }
 .category-breadcrumb .bc-current {
-  color: var(--text-muted, #8b949e); font-weight: 500;
+  color: var(--text, #e6e6e6); font-weight: 600;
 }
-.category-breadcrumb a.bc-current:hover { color: var(--text, #e6e6e6); }
+.category-breadcrumb a.bc-current:hover { color: #fff; }
 .category-breadcrumb .bc-home {
   white-space: nowrap; text-decoration: none;
   color: var(--text-dim, #6e7681);

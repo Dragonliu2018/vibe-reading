@@ -188,6 +188,21 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
         <div class="article-divider"></div>
 
         <article class="prose">
+          {category && category.length > 1 && (
+            <nav class="category-breadcrumb" aria-label="分类路径" data-pagefind-ignore>
+              <a href={`${base}/`} class="bc-home">首页</a>
+              {category.map((cat, i) => (
+                <>
+                  <span class="bc-sep">›</span>
+                  {i === category.length - 1 ? (
+                    <span class="bc-item bc-current">{cat}</span>
+                  ) : (
+                    <a href={`${base}/categories/${category!.slice(0, i + 1).map(encodeURIComponent).join('/')}`} class="bc-item">{cat}</a>
+                  )}
+                </>
+              ))}
+            </nav>
+          )}
           <slot />
         </article>
 

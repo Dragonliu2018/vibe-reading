@@ -2,7 +2,7 @@
 title: "xLLM Technical Report"
 source:
   type: "论文解读"
-  project: "JD.com"
+  project: "xLLM"
   url: "https://arxiv.org/abs/2510.14686"
   pdf: "/vibe-reading/papers/xllm-technical-report.pdf"
 date: "2026-08-04T16:00:00+08:00"

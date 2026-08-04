@@ -237,6 +237,82 @@ curl -sL "{pr-or-issue-image-url}" -o public/images/articles/{slug}/{name}.png
 
 ---
 
+## 获取 PR 信息的方法
+
+`gh` CLI 可能未安装，`WebFetch` 对 `github.com` 常被网络策略拦截——**用 GitHub REST API + `curl` 最可靠**。下面的命令对公开仓库无需 token 即可工作（私有仓库或触发速率限制时加 `-H "Authorization: Bearer <token>"`）。
+
+### 1. PR 元信息（标题 / body / 状态 / merge 信息 / Labels / 行数）
+
+```bash
+curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>" \
+  | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps({k:d[k] for k in ['title','body','state','merged_at','merge_commit_sha','additions','deletions','changed_files','labels','base','head','user']}, indent=2, default=str))"
+```
+
+关键字段对照（用于导言元信息行）：
+
+| 元信息字段 | API 来源 |
+|---|---|
+| `PR` | `number` + `html_url` |
+| `Issue` | body 中的 `Closes #XXXXX` / `Fix #XXXXX`（正则提取）；找不到填 `-` |
+| `commit` | `merge_commit_sha`（取前 7 位） |
+| `首发版本` | `labels` 中 `dev/x.x.x-merged` 去前缀；仍无则 `git tag --contains <merge_commit_sha> \| sort -V \| head -1` |
+| `变更行数` | `additions`（导言行写 `+N 行`，`deletions` 可参考但不强制写） |
+| `合并时间` | `merged_at`（ISO → `YYYY-MM-DD`）；未合并填 `-` |
+| `prType` | 从 title 前缀推断：`[feat]`/`[perf]`/`[fix]`/`[refactor]`/`[enhance]` → `feat`/`perf`/`fix`/`refactor`/`enhancement` |
+
+### 2. 变更文件列表
+
+```bash
+curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>/files?per_page=100" \
+  | python3 -c "import json,sys; [print(f'{f[\"status\"]:10} +{f[\"additions\"]:5} -{f[\"deletions\"]:5}  {f[\"filename\"]}') for f in json.load(sys.stdin)]"
+```
+
+> 超过 100 文件时翻页：`&page=2`，或用 `per_page=100` 多次请求合并。
+
+### 3. Review 评论（按文件 / 行）
+
+```bash
+curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>/comments?per_page=100" \
+  | python3 -c "import json,sys; [print(f'--- {c[\"user\"][\"login\"]} on {c.get(\"path\",\"?\")} ---\n{c[\"body\"][:500]}\n') for c in json.load(sys.stdin)]"
+```
+
+### 4. 完整 diff
+
+```bash
+curl -sL "https://github.com/<owner>/<repo>/pull/<number>.diff" -o /tmp/pr_<number>.diff
+```
+
+diff 通常较大（数千行），落盘后按文件名切片阅读：
+
+```bash
+python3 -c "
+content = open('/tmp/pr_<number>.diff').read()
+for block in content.split('diff --git '):
+    if '<keyword>.java' in block.split(chr(10))[0]:
+        print('diff --git ' + block)
+"
+```
+
+### 5. Issue / commit 单独获取（需要时）
+
+```bash
+# Issue
+curl -sL "https://api.github.com/repos/<owner>/<repo>/issues/<number>"
+# commit（含 stat）
+curl -sL "https://api.github.com/repos/<owner>/<repo>/commits/<sha>"
+```
+
+### 与本地源码配合
+
+PR 的 diff 反映**改动前后**，但理解完整调用链还需读**本地仓库的当前代码**（改动已合并后的版本）。流程：
+
+1. 用上面的命令拿到 PR 元信息 + diff + review
+2. `git log --oneline -5` 确认本地仓库已包含 merge commit
+3. 用 Read 读 diff 中提到的关键文件的**完整当前内容**（不只看 diff 片段），确认调用链和上下文
+4. 写文章时，代码片段取自 diff（展示改动），文字描述参考完整源码（解释逻辑）
+
+---
+
 ## 源码核验
 
 文章写完后，**重新获取 PR/commit 的实际 diff**，逐项核对以下内容，发现错误立即修正。

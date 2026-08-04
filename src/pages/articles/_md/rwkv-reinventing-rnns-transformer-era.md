@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2305.13048"
   pdf: "/vibe-reading/papers/rwkv-reinventing-rnns-transformer-era.pdf"
 date: "2026-08-04T17:00:00+08:00"
-category: [AI, Models, Text Model, Papers]
+category: [AI, Models, Text Model, RWKV, Papers]
 tags: ["RNN", "Linear Attention", "Language Model", "WKV", "Token Shift", "Scaling Laws", "Parallelizable Training", "Inference Efficiency"]
 description: "目的：统一 Transformer 训练效率与 RNN 推理效率。手段：线性注意力 WKV + token shift + 双模式切换。结论：14B 参数 SOTA，推理 O(d) 内存。"
 readingTime: "15 min"

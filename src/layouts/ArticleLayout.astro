@@ -71,6 +71,15 @@ function badgeStyle(label: string): string {
 const pathname    = Astro.url.pathname;
 const currentSlug = pathname.replace(/.*\/articles\//, '').replace(/\/$/, '');
 
+// 源文件路径（用于跳转到 IDE 查看对应文件）
+const sourceFilePath = `src/pages/articles/_md/${currentSlug}.md`;
+// 生产环境 GitHub 链接
+const githubSourceUrl = `https://github.com/Dragonliu2018/vibe-reading/blob/main/${sourceFilePath}`;
+// 构建时获取项目根目录绝对路径（用于 localhost 跳转 VS Code）
+const projectRoot = process.cwd();
+// 本地 VS Code 链接
+const vscodeSourceUrl = `vscode://file${projectRoot}/${sourceFilePath}`;
+
 // Reviewed 徽章：静态判定，依据文章 frontmatter 的 reviewed 字段。构建期决定，无运行时。
 const isReviewed = !!reviewed;
 const reviewState = isReviewed ? 'reviewed' : 'pending';
@@ -202,6 +211,15 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
               ))}
             </nav>
           )}
+          {source?.url && (
+            <div class="article-source-path" data-pagefind-ignore="all">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0;opacity:0.5">
+                <path d="M1 4.75C1 3.784 1.784 3 2.75 3h10.5c.966 0 1.75.784 1.75 1.75v6.5A1.75 1.75 0 0113.25 13H2.75A1.75 1.75 0 011 11.25v-6.5zm1.75-.25a.25.25 0 00-.25.25v6.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25v-6.5a.25.25 0 00-.25-.25H2.75z"/>
+                <path d="M4 5.75A.75.75 0 014.75 5h6.5a.75.75 0 010 1.5h-6.5A.75.75 0 014 5.75zM4 8a.75.75 0 01.75-.75h3.5a.75.75 0 010 1.5h-3.5A.75.75 0 014 8z"/>
+              </svg>
+              <a href={githubSourceUrl} target="_blank" rel="noopener" class="source-path-link" data-vscode-url={vscodeSourceUrl}>{sourceFilePath}</a>
+            </div>
+          )}
           <slot />
         </article>
 
@@ -235,6 +253,39 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
         }
       } catch (_) {}
     })();
+  </script>
+
+  <script is:inline set:html={`
+    // 源文件路径点击：localhost 复制路径到剪贴板，生产环境跳转 GitHub
+    // TODO: 优化 VS Code Simple Browser 内部跳转——当前 Simple Browser 拦截所有 vscode:// 协议导航，
+    //   无法直接从 webview 内打开文件。未来可探索 VS Code 扩展 API（acquireVsCodeApi postMessage）
+    //   或自定义 Simple Browser 扩展来实现直接跳转。
+    (function () {
+      var link = document.querySelector('a.source-path-link[data-vscode-url]');
+      if (!link) return;
+      // 仅在本地开发环境（localhost）修改行为
+      if (!location.hostname.match(/^(localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0)$/)) return;
+      // VS Code Simple Browser 拦截所有 vscode:// 协议导航，无法直接跳转
+      // 改为复制文件路径到剪贴板，用户 Cmd+P 粘贴打开
+      var filePath = link.textContent.trim();
+      link.removeAttribute('target');
+      link.removeAttribute('rel');
+      link.href = '#';
+      link.title = '点击复制路径，然后在 VS Code 中 Cmd+P 粘贴打开';
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        navigator.clipboard.writeText(filePath).then(function () {
+          var orig = link.textContent;
+          link.textContent = '已复制! Cmd+P 粘贴打开 →';
+          link.style.color = '#3fb950';
+          setTimeout(function () {
+            link.textContent = orig;
+            link.style.color = '';
+          }, 2000);
+        });
+      });
+    })();
+  `}>
   </script>
 
   <script>

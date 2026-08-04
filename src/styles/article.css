@@ -1015,3 +1015,23 @@ body[data-layout="literary"] .prose-code-block pre {
     line-height: 1.9;
   }
 }
+
+/* ── 源文件路径（与面包屑对齐）── */
+.article-source-path {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 24px; padding: 9px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px;
+  font-size: 13px; line-height: 1.6;
+}
+.article-source-path svg { color: var(--text-dim, #6e7681); flex-shrink: 0; }
+.source-path-link {
+  color: var(--text-dim, #6e7681);
+  text-decoration: none;
+  font-family: var(--mono, 'SF Mono', 'Fira Code', monospace);
+  font-size: 12.5px;
+  transition: color .15s;
+  word-break: break-all;
+}
+.source-path-link:hover { color: var(--text, #e6e6e6); }

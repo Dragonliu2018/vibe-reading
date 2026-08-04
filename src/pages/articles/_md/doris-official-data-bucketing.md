@@ -7,7 +7,7 @@ source:
   author: "Apache Doris"
   site: "Apache Doris 官方文档"
 date: "2026-07-30T20:10:00+08:00"
-category: [Database, Apache Doris, Docs, "3.x"]
+category: [Database, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
 tags: ["Apache Doris", "分桶", "Hash 分桶", "Random 分桶", "tablet", "数据分布", "表设计"]
 description: "Apache Doris 官方文档：数据分桶介绍 Hash 分桶与 Random 分桶两种方式、分桶键选择、分桶数量确定（手动与自动）以及分桶维护方法。"
 readingTime: "8 min"

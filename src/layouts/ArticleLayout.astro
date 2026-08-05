@@ -198,7 +198,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
 
         <article class="prose">
           {category && category.length > 1 && (
-            <nav class="category-breadcrumb" aria-label="分类路径" data-pagefind-ignore>
+            <nav class="category-breadcrumb" aria-label="分类路径" data-pagefind-ignore data-category={`[${category!.map(c => `"${c}"`).join(', ')}]`}>
               <a href={`${base}/`} class="bc-home">首页</a>
               {category.map((cat, i) => (
                 <>
@@ -209,6 +209,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
                   >{cat}</a>
                 </>
               ))}
+              <span class="bc-copy-hint">已复制分类组 →</span>
             </nav>
           )}
           {source?.url && (
@@ -281,6 +282,27 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
           setTimeout(function () {
             link.textContent = orig;
             link.style.color = '';
+          }, 2000);
+        });
+      });
+    })();
+  `}>
+  </script>
+
+  <script is:inline set:html={`
+    // 面包屑空白区域点击：复制分类组到剪贴板
+    (function () {
+      var nav = document.querySelector('.category-breadcrumb[data-category]');
+      if (!nav) return;
+      var cat = nav.getAttribute('data-category') || '';
+      nav.addEventListener('click', function (e) {
+        // 点击分类链接（<a>）时正常跳转，不复制
+        if (e.target.closest('a')) return;
+        e.preventDefault();
+        navigator.clipboard.writeText(cat).then(function () {
+          nav.classList.add('bc-copied');
+          setTimeout(function () {
+            nav.classList.remove('bc-copied');
           }, 2000);
         });
       });

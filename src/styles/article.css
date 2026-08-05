@@ -298,6 +298,13 @@ a { color: inherit; text-decoration: none; }
   transition: color .15s;
 }
 .category-breadcrumb .bc-home:hover { color: var(--text, #e6e6e6); }
+.category-breadcrumb .bc-copy-hint {
+  display: none; margin-left: auto;
+  color: #3fb950; font-size: 12px; white-space: nowrap;
+}
+.category-breadcrumb.bc-copied .bc-copy-hint { display: inline; }
+.category-breadcrumb.bc-copied { cursor: default; }
+.category-breadcrumb { cursor: copy; }
 
 .prose h1, .prose h2, .prose h3, .prose h4 { color: var(--text); font-weight: 700; line-height: 1.3; }
 

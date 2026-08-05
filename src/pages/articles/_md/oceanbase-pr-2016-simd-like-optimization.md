@@ -19,6 +19,8 @@ reviewed: false
 
 > ⚠️ 本 PR 尚未合并，处于开发中状态。commit hash 取自 PR 当前 HEAD。
 
+> 📎 本文与 [用 AVX-512 向量化加速 MurmurHash 批量哈希计算](/vibe-reading/articles/oceanbase-pr-1941-murmurhash-simd) 是同一思路的两条落地线，均面向 ClickBench 场景的 SIMD 加速，建议对照阅读。
+
 ---
 
 ## 背景

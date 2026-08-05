@@ -6,7 +6,7 @@ source:
   url: "https://arxiv.org/abs/2606.12688"
   pdf: "/vibe-reading/papers/mstar-multimodal-serving.pdf"
 date: "2026-08-05T20:00:00+08:00"
-category: [AI, Systems, Papers]
+category: [AI, Infra, Inference, Papers]
 tags: ["M*", "多模态模型", "模型服务", "Walk Graph", "vLLM", "SGLang", "数据流图", "分布式推理"]
 description: "将多模态复合模型统一抽象为数据流图上的 Walk，用四种组合原语解耦模型架构与运行时，在 BAGEL、Qwen3-Omni、V-JEPA 2 等模型上实现 day-zero 部署并超越专用系统。"
 readingTime: "15 min"

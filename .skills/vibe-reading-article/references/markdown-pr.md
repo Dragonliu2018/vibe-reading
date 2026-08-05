@@ -239,9 +239,31 @@ curl -sL "{pr-or-issue-image-url}" -o public/images/articles/{slug}/{name}.png
 
 ## 获取 PR 信息的方法
 
-`gh` CLI 可能未安装，`WebFetch` 对 `github.com` 常被网络策略拦截——**用 GitHub REST API + `curl` 最可靠**。下面的命令对公开仓库无需 token 即可工作（私有仓库或触发速率限制时加 `-H "Authorization: Bearer <token>"`）。
+`WebFetch` 对 `github.com` 常被网络策略拦截，不要依赖它。**首选 `gh` CLI**（已安装，命令简洁、自动处理分页和认证）；**`gh` 不可用时用 `curl` + GitHub REST API**（对公开仓库无需 token）。
+
+> 用 `<owner>/<repo>` 表示仓库（如 `apache/doris`），`<number>` 表示 PR 编号。
+
+### 0. 前置检查
+
+```bash
+gh auth status          # 确认已登录（未登录对公开仓库也能用，但会触发匿名速率限制）
+gh repo view <owner>/<repo> --json name  # 确认能访问目标仓库
+```
+
+> 未登录时先跑 `! gh auth login`（交互式，在终端完成）。
 
 ### 1. PR 元信息（标题 / body / 状态 / merge 信息 / Labels / 行数）
+
+**gh（首选）**：
+
+```bash
+gh pr view <number> --repo <owner>/<repo> --json \
+  title,body,state,mergedAt,mergeCommit,labels,additions,deletions,changedFiles,baseRefName,author
+```
+
+`--json` 支持的字段名与 PR 对象略有差异：`mergedAt`（非 `merged_at`）、`mergeCommit.oid`（非 `merge_commit_sha`）、`additions`/`deletions`/`changedFiles`（非 snake_case）。
+
+**curl（fallback）**：
 
 ```bash
 curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>" \
@@ -250,26 +272,48 @@ curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>" \
 
 关键字段对照（用于导言元信息行）：
 
-| 元信息字段 | API 来源 |
+| 元信息字段 | 来源 |
 |---|---|
 | `PR` | `number` + `html_url` |
 | `Issue` | body 中的 `Closes #XXXXX` / `Fix #XXXXX`（正则提取）；找不到填 `-` |
-| `commit` | `merge_commit_sha`（取前 7 位） |
+| `commit` | `merge_commit_sha` / `mergeCommit.oid`（取前 7 位） |
 | `首发版本` | `labels` 中 `dev/x.x.x-merged` 去前缀；仍无则 `git tag --contains <merge_commit_sha> \| sort -V \| head -1` |
 | `变更行数` | `additions`（导言行写 `+N 行`，`deletions` 可参考但不强制写） |
-| `合并时间` | `merged_at`（ISO → `YYYY-MM-DD`）；未合并填 `-` |
+| `合并时间` | `merged_at` / `mergedAt`（ISO → `YYYY-MM-DD`）；未合并填 `-` |
 | `prType` | 从 title 前缀推断：`[feat]`/`[perf]`/`[fix]`/`[refactor]`/`[enhance]` → `feat`/`perf`/`fix`/`refactor`/`enhancement` |
 
 ### 2. 变更文件列表
+
+**gh（首选）**：
+
+```bash
+gh pr view <number> --repo <owner>/<repo> --json files \
+  --jq '.files[] | "\(.status[:10]) +\(.additions) -\(.deletions)  \(.path)"'
+```
+
+`--jq` 用 jq 语法直接过滤，无需 python。
+
+**curl（fallback）**：
 
 ```bash
 curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>/files?per_page=100" \
   | python3 -c "import json,sys; [print(f'{f[\"status\"]:10} +{f[\"additions\"]:5} -{f[\"deletions\"]:5}  {f[\"filename\"]}') for f in json.load(sys.stdin)]"
 ```
 
-> 超过 100 文件时翻页：`&page=2`，或用 `per_page=100` 多次请求合并。
+> 超过 100 文件：`gh` 自动分页；curl 需 `&page=2` 手动翻页。
 
 ### 3. Review 评论（按文件 / 行）
+
+**gh（首选）**：
+
+```bash
+gh api repos/<owner>/<repo>/pulls/<number>/comments --paginate \
+  --jq '.[] | "--- \(.user.login) on \(.path // \"?\") ---\n\(.body[:500])\n"'
+```
+
+`gh api` 可调用任意 GitHub REST 端点，`--paginate` 自动处理分页。
+
+**curl（fallback）**：
 
 ```bash
 curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>/comments?per_page=100" \
@@ -279,6 +323,9 @@ curl -sL "https://api.github.com/repos/<owner>/<repo>/pulls/<number>/comments?pe
 ### 4. 完整 diff
 
 ```bash
+# gh 和 curl 都能拿到，落盘后切片阅读
+gh pr diff <number> --repo <owner>/<repo> > /tmp/pr_<number>.diff
+# 或
 curl -sL "https://github.com/<owner>/<repo>/pull/<number>.diff" -o /tmp/pr_<number>.diff
 ```
 
@@ -296,9 +343,14 @@ for block in content.split('diff --git '):
 ### 5. Issue / commit 单独获取（需要时）
 
 ```bash
-# Issue
+# Issue（gh）
+gh issue view <number> --repo <owner>/<repo> --json title,body,state,labels
+# commit（gh，含 stat）
+gh api repos/<owner>/<repo>/commits/<sha> --jq '{sha,message,stats}'
+
+# Issue（curl）
 curl -sL "https://api.github.com/repos/<owner>/<repo>/issues/<number>"
-# commit（含 stat）
+# commit（curl，含 stat）
 curl -sL "https://api.github.com/repos/<owner>/<repo>/commits/<sha>"
 ```
 

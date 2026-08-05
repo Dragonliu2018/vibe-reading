@@ -7,7 +7,7 @@ source:
   author: "YMatrix"
   site: "公众号"
 date: "2026-08-05T17:30:00+08:00"
-category: [Database, Graph, Informal, YMatrix]
+category: [Database, YMatrix, Official]
 tags: ["CittaBase", "Neo4j", "图数据库", "GraphRAG", "混合检索", "性能测试"]
 description: "CittaBase 面向 AI 负载的一栈式融合数据库，原生图检索与图计算能力实测，38 条 GraphBench 查询对比 Neo4j。"
 readingTime: "8 min"

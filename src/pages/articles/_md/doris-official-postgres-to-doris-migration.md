@@ -2,12 +2,12 @@
 title: "当 PostgreSQL 面临性能瓶颈：80TB 电商业务迁移至 Apache Doris 的实践思考"
 source:
   type: "article"
-  project: "Apache Doris"
+  project: "Doris"
   url: "https://mp.weixin.qq.com/s/oRyYWe-aIexcONqzgDxFXA"
   author: "杨勇强"
   site: "公众号"
 date: "2026-08-05T17:30:00+08:00"
-category: [Database, Doris, Official]
+category: [Database, Apache Doris, Official]
 tags: ["Apache Doris", "PostgreSQL", "OLAP", "迁移", "Lakehouse", "SelectDB"]
 description: "当分析数据规模达到 80TB，PostgreSQL 只读副本已无法解决单条分析查询的执行效率问题。本文从瓶颈判断、能力依赖、方案选型到迁移架构，系统梳理 PostgreSQL 迁移至 Apache Doris 的实践思考。"
 readingTime: "12 min"
@@ -179,7 +179,5 @@ PostgreSQL 仍然是一款优秀的 OLTP 数据库。对于分析负载有限的
 当数据规模和分析需求持续增长，仅依靠 PostgreSQL 难以兼顾事务处理与实时分析时，采用 PostgreSQL + Apache Doris 的 OLTP 与 OLAP 分层架构，能够在保留现有业务系统的基础上，构建面向实时分析的数据平台。
 
 数据库迁移并不是简单地替换一款产品。相比关注基准测试中的性能数字，更重要的是结合真实业务负载，验证目标系统是否能够满足实时更新、多表关联、全文检索、向量检索等核心需求。
-
-![总结与推荐](/vibe-reading/images/articles/postgres-to-doris-migration/summary-recommendation.png)
 
 更多关于 Apache Doris 的产品能力、部署实践和最佳实践，可参考 [Apache Doris 官方文档](https://doris.apache.org)并参与社区交流；如果希望进一步体验云原生托管版本，也可以了解 [SelectDB](https://selectdb.com) 提供的相关服务。

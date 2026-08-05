@@ -398,3 +398,5 @@ BE 的 `txn_manager` 用 `txn_id` 索引导入上下文，同一 `txn_id` 二次
 * **元数据演进**：`TransactionState` 切换到 JSON 序列化降低了后续新增字段的维护成本，但要求 FE 元数据版本升级到 132，集群升级时需注意兼容性。
 
 > **限制**：Cloud 模式下子事务的 `commitAndPublishTransaction` 和 `addSubTransaction` / `removeSubTransaction` 接口抛出 `UnsupportedOperationException`，Cloud 模式支持留待后续。
+
+> **后续**：本 PR 的事务导入仅在连接 Master FE 时正常工作——连接 follower FE 时 DML 转发到 Master 但事务上下文未一起传递，导致数据提前可见。[PR #35075](https://github.com/apache/doris/pull/35075) 通过在转发请求中携带 `TTxnLoadInfo` 修复了这一问题，详见[修复事务导入连接 Follower FE 时事务上下文丢失](/vibe-reading/articles/doris-pr-35075-txn-insert-follower-fe)。

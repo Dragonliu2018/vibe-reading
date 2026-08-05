@@ -432,6 +432,7 @@ a { color: inherit; text-decoration: none; }
   transition: background .12s, color .12s;
   white-space: nowrap;
 }
+.code-toggle { user-select: text; }   /* 标题文字可选，覆盖 .code-header 的 user-select: none */
 .code-toggle:hover  { background: rgba(255,255,255,0.07); color: rgba(235,235,245,0.80); }
 .code-toggle:active { background: rgba(255,255,255,0.12); }
 .code-toggle svg    { flex-shrink: 0; transition: transform .25s cubic-bezier(0.4,0,0.2,1); }

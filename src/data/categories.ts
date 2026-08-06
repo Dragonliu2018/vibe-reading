@@ -82,7 +82,7 @@ function buildTree(): TreeNode[] {
   // 分类节点排序：非类型词（项目名等）在前按字母序，类型词（Papers/Contributions 等
   // 占位/兜底末级）置后按字母序——避免兜底桶夹在项目名中间（如 Papers 混在 SGLang/vLLM 间）
   const TYPE_LABELS = new Set([
-    'Papers', 'Contributions', 'Codebases', 'PRs',
+    'Papers', 'Contributions', 'CodeWiki', 'PRs',
     'Official', 'Informal', 'Docs', 'Notes', 'Reading', 'Blogs',
   ]);
   function sortLabels(nodes: TreeNode[]) {

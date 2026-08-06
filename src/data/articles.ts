@@ -48,12 +48,14 @@ export function sourceLabel(source: ArticleSource, categoryPath: string[] = []):
 /**
  * 计算文章的「分类徽章」标签：
  *   - 含 Docs 的官方文档分类 → 取 "Docs"（而非版本号/章节等末级）
+ *   - 含 CodeWiki 的代码解读分类 → 取 "CodeWiki"（而非版本号末级）
  *   - 其余 → 取 category 末级
  * 首页卡片 / 文章页徽章 / 首页过滤器统一用此函数，避免副本漂移。
  */
 export function badgeCat(category: string[] = []): string {
   if (!category.length) return '';
   if (category.includes('Docs')) return 'Docs';
+  if (category.includes('CodeWiki')) return 'CodeWiki';
   return category[category.length - 1];
 }
 

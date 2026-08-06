@@ -18,9 +18,8 @@ description: >
 | 来源类型 | 格式 | 加载文件 |
 |---------|------|---------|
 | PR / commit / Issue | **Markdown** | `references/markdown-pr.md` + `references/markdown-style.md` |
-| 代码库 Internals | **HTML** | `references/content-guide.md`（代码库节）+ `references/html-style.md` |
+| 代码库 Internals | **Markdown** | `references/codewiki-workflow.md` + `references/markdown-style.md` |
 | 论文 | **Markdown** | `references/content-guide.md`（论文节）+ `references/paper-workflow.md` + `references/markdown-style.md` |
-| 产品 / 文档介绍 | **HTML** | `references/content-guide.md`（产品节）+ `references/html-style.md` |
 | 技术文章转载（博客/知乎/公众号） | **Markdown** | `references/markdown-repost.md` + `references/markdown-style.md` |
 | 文学 / 电影 / 历史笔记 | **Markdown** | `references/literary-style.md`（沉浸式布局自动启用）|
 
@@ -31,6 +30,8 @@ description: >
 按加载的参考文件中的阅读顺序执行。
 
 > **论文（链接 或 本地 PDF 路径）**：按 `references/paper-workflow.md` 的「端到端处理流程」Step 0–9 执行（两种输入在 Step 0/1 分流、Step 2 起统一）——定元信息 → 落 PDF → 通读全文 → 抽图 → 撰写 §1–§8 → 图对账 → 合规检查 → 子仓库提交 → 构建 → 10 问。
+
+> **代码库（URL 或本地路径）**：按 `references/codewiki-workflow.md` 的「端到端处理流程」Step 0–6 执行——定元信息 → 结构扫描 → 三信号模块识别 → 并行 Agent 模块分析 → 架构综合 → 撰写 §1–§12 Markdown（架构图/流程图用 SVG） → 合规检查 → 构建 → 发布。
 
 ## Step 3 — 撰写文章
 

@@ -78,6 +78,25 @@ if [[ "$EXT" == "md" ]]; then
     ERRORS+=("frontmatter 不应包含 layout: 行")
   fi
 
+  # 7. 目录路径与 category 对齐（仅检查 _md/ 下的子目录文件，不检查 flat 文件）
+  MD_ROOT="$(cd "$(dirname "$FILE")" && pwd)"
+  # 找到 _md 根目录的相对路径
+  REL_PATH="${MD_ROOT#*/_md/}"
+  if [[ "$REL_PATH" != "$MD_ROOT" ]]; then
+    # 文件在 _md/ 的子目录中，检查路径是否与 category 对齐
+    CATEGORY_LINE=$(grep -E '^category:' "$FILE" | head -1)
+    # 提取 category 数组，去掉方括号和引号，用 / 拼接
+    CATEGORY_PATH=$(echo "$CATEGORY_LINE" \
+      | sed 's/^category: *\[//' \
+      | sed 's/\] *$//' \
+      | sed 's/"//g' \
+      | sed 's/ //g' \
+      | tr ',' '/')
+    if [[ -n "$CATEGORY_PATH" && "$REL_PATH" != "$CATEGORY_PATH" ]]; then
+      ERRORS+=("目录路径 '$REL_PATH' 与 category '$CATEGORY_PATH' 不一致（目录应 = category 用 / 拼接）")
+    fi
+  fi
+
 # ── HTML 文章检查 ──────────────────────────────────────────────────
 elif [[ "$EXT" == "html" ]]; then
   for meta in "article:category" "article:date" "article:readingTime"; do

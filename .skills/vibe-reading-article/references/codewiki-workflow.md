@@ -279,48 +279,84 @@ SVG 风格要求：
 
 ---
 
-### Step 5 · 撰写文章
+### Step 5 · 撰写文章（多文件输出）
 
-基于 Step 1-4 的全部产出，按 §1-§12 结构撰写 Markdown 文章。输出到 `src/pages/articles/_md/{slug}.md`，使用 `markdown-style.md` 的排版规范。
+基于 Step 1-4 的全部产出，按**概览 + 模块**多文件结构撰写 Markdown 文章。输出到 `src/pages/articles/_md/{slug}/` 目录，每个文件是首页一张独立卡片。
 
-**Frontmatter**：
+**文件结构**（文件名前缀 `00-`/`01-`/`02-`... 保证排序：概览在前，模块按序）：
+
+```
+src/pages/articles/_md/{slug}/
+├── 00-overview.md          # 概览（§1-§4 + §10-§12）
+├── 01-{module-a}.md        # 核心模块 A（独立成文）
+├── 02-{module-b}.md        # 核心模块 B
+├── 03-{module-c}.md        # 核心模块 C
+└── 04-{module-d}.md        # 核心模块 D（如有）
+```
+
+**每个文件的 Frontmatter**：
 
 ```yaml
 ---
-title: "{project-name} 原理解读"
+title: "{project-name} 原理解读"          # 概览；模块文件改为 "{project-name} · {模块名} 详解"
 date: "YYYY-MM-DDTHH:MM:SS+08:00"
 category: [Domain, Project, CodeWiki, "{version}"]
 tags: ["项目名", "语言", "核心标签"]
-description: "一句话描述项目定位和文章内容"
+description: "一句话描述"
 readingTime: "N min"
 aiModel: "Claude Opus 5"
 reviewed: false
 ---
 ```
 
-> `category` 末级用 `CodeWiki` + 版本号（引号包裹，如 `"1.2.0"`）。徽章显示 `CodeWiki`（而非版本号），与 `Docs` 同理。版本号取 Step 0 的 tag（如 `v1.2.0` → `"1.2.0"`，去掉 `v` 前缀）。
+> `category` 末级用 `CodeWiki` + 版本号（引号包裹，如 `"1.2.0"`）。所有文件共享同一 category。徽章显示 `CodeWiki`（而非版本号），与 `Docs` 同理。版本号取 Step 0 的 tag（如 `v1.2.0` → `"1.2.0"`，去掉 `v` 前缀）。
 
-**导言引用块**（frontmatter 之后立即写）：
+**概览文件（`00-overview.md`）内容**：
 
 ```markdown
 > **版本** v1.0.0 · **协议** MIT · **语言** Python ≥ 3.10 · **代码量** ~18,000 行 · **仓库** [GitHub](repo-url)
 
 ---
+
+## 项目简介
+...（Step 0 元信息）
+
+## 目录结构
+...（Step 1.1 目录树）
+
+## 分层架构
+...（Step 4.1 SVG 架构图）
+
+## 入口与启动流程
+...（Step 1.3 + 数据流 Agent）
+
+## 核心设计模式
+...（Step 4.4 设计模式汇总表格）
+
+## 依赖总览
+...（Step 0 包管理文件表格）
+
+## 全局数据流
+...（Step 4.3 SVG 数据流图）
+
+## 子文档导航
+
+| 文档 | 内容 |
+|------|------|
+| [核心引擎详解](/vibe-reading/articles/{slug}/01-engine) | 解析与执行引擎的内部原理 |
+| [配置管理详解](/vibe-reading/articles/{slug}/02-config) | 配置加载与管理机制 |
+| ... | ... |
 ```
 
-**文章结构与 Step 对应关系**：
+**模块文件（`01-{module}.md`、`02-{module}.md`...）内容**：
 
-| 节 | 标题 | 内容来源 | 图表形式 |
-|----|------|----------|----------|
-| §1 | 项目简介 | Step 0 元信息 | Markdown 表格（核心特性 5-8 项）+ 统计数据表 |
-| §2 | 目录结构 | Step 1.1 目录树 | 代码块（ASCII 目录树）|
-| §3 | 分层架构 | Step 4.1 | SVG 图片（`architecture.svg`）+ 文字说明 |
-| §4 | 入口与启动流程 | Step 1.3 + 数据流 Agent | 代码块（入口代码）+ SVG（启动时序 `startup-flow.svg`，可选）|
-| §5-§8 | 核心模块 ×3-4 | Step 3 各模块 Agent 结果 | 代码块（核心类定义）+ 引用块（设计决策）|
-| §9 | 输出/展示层 | Step 3 对应 Agent | 代码块 |
-| §10 | 核心设计模式 | Step 4.4 | Markdown 表格 |
-| §11 | 依赖总览 | Step 0 包管理文件 | Markdown 表格 |
-| §12 | 全局数据流 | Step 4.3 | SVG 图片（`data-flow.svg`）+ 文字说明 |
+每个模块文件包含该模块的完整解读：
+- 核心类/struct 定义（代码块）
+- 关键方法调用流程（ASCII 流程图或缩进列表）
+- 设计模式与设计决策
+- 模块间交互说明
+
+**概览中的子文档链接**：概览文件末尾放一个导航表格，链接到各模块文档。链接路径为 `/vibe-reading/articles/{slug}/{NN-module}`（不含 `.md` 扩展名）。
 
 **写作规范**：
 - 正文中文，专有名词（框架名、函数名、路径）保留英文原文
@@ -328,15 +364,17 @@ reviewed: false
 - 代码块必须标注语言和 `title="文件路径"`
 - 每个 `##` 节有实质内容（代码 / 表格 / 图片），不写空泛段落
 - SVG 图片用 `![alt](/vibe-reading/images/articles/{slug}/{filename}.svg)` 引用，alt 即图注
-- 不含 `layout:` 行（由 `[slug].astro` 统一处理）
+- 不含 `layout:` 行（由路由统一处理）
 
 ---
 
 ### Step 6 · 合规检查 + 构建 + 发布
 
 ```bash
-# 合规检查
-bash .skills/vibe-reading-article/scripts/check-article.sh src/pages/articles/_md/<slug>.md
+# 合规检查（逐文件检查）
+for f in src/pages/articles/_md/<slug>/*.md; do
+  bash .skills/vibe-reading-article/scripts/check-article.sh "$f"
+done
 
 # 构建验证
 npm run build

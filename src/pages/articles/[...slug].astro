@@ -6,25 +6,26 @@
  *   _html/  HTML 文章（渲染为 HtmlArticleLayout + iframe）
  *   _md/    Markdown 文章（import.meta.glob 渲染为 ArticleLayout）
  *
- * 最终 URL 全部统一为 /articles/[slug]
+ * 最终 URL 全部统一为 /articles/[...slug]
+ * 支持 _md/ 下的子目录（如 _md/myproject/00-overview.md → /articles/myproject/00-overview）
  */
 import { readdirSync } from 'fs';
 import HtmlArticleLayout from '../../layouts/HtmlArticleLayout.astro';
 import ArticleLayout     from '../../layouts/ArticleLayout.astro';
 import { articles as articlesMeta } from '../../data/articles';
 
-// 所有 MD 模块（Astro 在构建期静态分析 import.meta.glob）
-const mdModules = import.meta.glob('./_md/*.md');
+// 所有 MD 模块（递归匹配子目录）——模块级声明，渲染时使用
+const mdModules = import.meta.glob('./_md/**/*.md');
 
 export function getStaticPaths() {
   const htmlFiles = readdirSync('./src/pages/articles/html')
     .filter(f => f.endsWith('.html'))
     .map(f => f.slice(0, -5));           // 真实文件名（不含扩展名）
 
+  // 从 import.meta.glob 的 key 提取 slug（相对 _md/ 的路径，去 .md）
+  const allMdPaths = import.meta.glob('./_md/**/*.md');
   const mdSlugs = new Set(
-    readdirSync('./src/pages/articles/_md')
-      .filter(f => f.endsWith('.md'))
-      .map(f => f.slice(0, -3))
+    Object.keys(allMdPaths).map(p => p.replace('./_md/', '').replace(/\.md$/, ''))
   );
 
   return [
@@ -33,14 +34,19 @@ export function getStaticPaths() {
       const slug = mdSlugs.has(file) ? `${file}-html` : file;
       return { params: { slug }, props: { format: 'html', htmlFile: file } };
     }),
-    // MD 文章：slug 直接等于文件名
-    ...[...mdSlugs].map(slug => ({ params: { slug }, props: { format: 'md', htmlFile: '' } })),
+    // MD 文章：slug 可能含 /（子目录），rest 参数传字符串
+    ...[...mdSlugs].map(slug => {
+      return { params: { slug }, props: { format: 'md', mdSlug: slug } };
+    }),
   ];
 }
 
-const { slug }              = Astro.params;
-const { format, htmlFile } = Astro.props;
+const { slug }              = Astro.params;      // rest 参数：string | string[]
+const { format, htmlFile, mdSlug } = Astro.props;
 const base       = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// 将 rest 参数还原为扁平 slug
+const flatSlug = Array.isArray(slug) ? slug.join('/') : slug;
 
 // MD：通过 import.meta.glob 加载模块，渲染 Content 组件
 let Content:     any;
@@ -48,13 +54,12 @@ let headings:    any[] = [];
 let frontmatter: any   = {};
 
 if (format === 'md') {
-  const loader = mdModules[`./_md/${slug}.md`];
+  const loader = mdModules[`./_md/${flatSlug}.md`];
   if (loader) {
     const mod  = await loader() as any;
     Content    = mod.default;
     headings   = mod.getHeadings?.() ?? [];
-    // 用 articles.ts 补齐 category / readingTime / aiModel（MD frontmatter 不含这些）
-    const meta = articlesMeta.find(a => a.slug === slug);
+    const meta = articlesMeta.find(a => a.slug === flatSlug || a.slug === mdSlug);
     frontmatter = {
       ...mod.frontmatter,
       category:    mod.frontmatter?.category    ?? meta?.category,

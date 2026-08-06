@@ -72,10 +72,11 @@ const mdModules = import.meta.glob<{
     source?:      ArticleSource;
     reviewed?:    boolean;
   };
-}>('../pages/articles/_md/*.md', { eager: true });
+}>('../pages/articles/_md/**/*.md', { eager: true });
 
 const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
-  const slug = path.split('/').pop()!.replace(/\.md$/, '');
+  // slug = 相对于 _md/ 的路径去扩展名（如 'myproject/00-overview' 或 'flat-article'）
+  const slug = path.replace('../pages/articles/_md/', '').replace(/\.md$/, '');
   const fm   = mod.frontmatter;
   const cat = fm.category ?? [];
   return {

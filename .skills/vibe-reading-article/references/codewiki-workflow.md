@@ -281,18 +281,24 @@ SVG 风格要求：
 
 ### Step 5 · 撰写文章（多文件输出）
 
-基于 Step 1-4 的全部产出，按**概览 + 模块**多文件结构撰写 Markdown 文章。输出到 `src/pages/articles/_md/{slug}/` 目录，每个文件是首页一张独立卡片。
+基于 Step 1-4 的全部产出，按**概览 + 模块**多文件结构撰写 Markdown 文章。输出目录与 frontmatter `category` 对齐，每个文件是首页一张独立卡片。
+
+**输出目录**：`src/pages/articles/_md/{category_path}/{slug}/`，其中 `{category_path}` = category 数组用 `/` 拼接。
+
+例如 `category: [Python, MyCLI, CodeWiki, "1.2.0"]` → 目录 `_md/Python/MyCLI/CodeWiki/1.2.0/mycli-internals/`
 
 **文件结构**（文件名前缀 `00-`/`01-`/`02-`... 保证排序：概览在前，模块按序）：
 
 ```
-src/pages/articles/_md/{slug}/
+src/pages/articles/_md/{category_path}/{slug}/
 ├── 00-overview.md          # 概览（§1-§4 + §10-§12）
 ├── 01-{module-a}.md        # 核心模块 A（独立成文）
 ├── 02-{module-b}.md        # 核心模块 B
 ├── 03-{module-c}.md        # 核心模块 C
 └── 04-{module-d}.md        # 核心模块 D（如有）
 ```
+
+> 目录路径中的版本号引号在文件系统中不需要——`"1.2.0"` 作为目录名就是 `1.2.0`。
 
 **每个文件的 Frontmatter**：
 
@@ -343,8 +349,8 @@ reviewed: false
 
 | 文档 | 内容 |
 |------|------|
-| [核心引擎详解](/vibe-reading/articles/{slug}/01-engine) | 解析与执行引擎的内部原理 |
-| [配置管理详解](/vibe-reading/articles/{slug}/02-config) | 配置加载与管理机制 |
+| [核心引擎详解](/vibe-reading/articles/{category_path}/{slug}/01-engine) | 解析与执行引擎的内部原理 |
+| [配置管理详解](/vibe-reading/articles/{category_path}/{slug}/02-config) | 配置加载与管理机制 |
 | ... | ... |
 ```
 

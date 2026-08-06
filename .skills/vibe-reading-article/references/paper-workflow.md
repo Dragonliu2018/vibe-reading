@@ -43,7 +43,7 @@ for i, page in enumerate(doc):
 
 **Step 3 · 抽图**：用取图三步法（见下文「图」节）——定位 caption 的 y 坐标、求图区 bbox（位图优先 `get_images()`；矢量图 `get_drawings()` 并集且剔除全宽装饰线；纯文本表格用 caption block 的 bbox）、clip 紧贴图 bbox 渲染 `Matrix(3,3)`。**抽完即用 Read 肉眼校验**每张图完整、无 caption/正文混入、无标签腰斩。存 `public/images/articles/<slug>/fig-NN-{语义名}.png`。
 
-**Step 4 · 撰写文章（§1–§8）**：写到 `src/pages/articles/_md/<slug>.md`，骨架见下文「文章结构 §1-§8」。导言引用块**首字段为 PDF 预览链接**；§3 必有原理图、§6 必有主结果图、其他重要图按归属入节；公式用 KaTeX 多行 `$$`（见「公式」节）；末尾放《摘要》折叠块（原文 + 译）。
+**Step 4 · 撰写文章（§1–§8）**：写到 `src/pages/articles/_md/{category_path}/<slug>.md`（`{category_path}` = category 数组用 `/` 拼接），骨架见下文「文章结构 §1-§8」。导言引用块**首字段为 PDF 预览链接**；§3 必有原理图、§6 必有主结果图、其他重要图按归属入节；公式用 KaTeX 多行 `$$`（见「公式」节）；末尾放《摘要》折叠块（原文 + 译）。
 
 **Step 5 · 图与引用对账（必做）**：抽图宁多勿少，但写完必须回头核对子仓库图与正文引用是否一一对应：
 

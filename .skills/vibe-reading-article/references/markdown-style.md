@@ -6,12 +6,21 @@
 
 ## 文件命名
 
-文件放在 `src/pages/articles/_md/` 目录下：
+文件放在 `src/pages/articles/_md/` 目录下，**目录路径与 frontmatter `category` 字段对齐**：
 
-| 文章类型 | 格式 | 示例 |
-|---------|------|------|
-| 有 `source` 字段（PR/commit 等）| `{project}-{type}-{id}-{slug}.md` | `doris-pr-26133-status-fmt-formatter.md` |
-| 无 `source` 字段（论文、笔记等）| `{kebab-case-description}.md` | `mycli-architecture.md` |
+```
+_md/{category[0]}/{category[1]}/.../{category[N-1]}/{slug}.md
+```
+
+即 category 数组用 `/` 拼接作为子目录路径，md 文件放在末级目录下。
+
+| 文章类型 | 文件名格式 | 目录示例 |
+|---------|-----------|---------|
+| 有 `source` 字段（PR/commit 等）| `{project}-{type}-{id}-{slug}.md` | `category: [Database, Doris, PRs]` → `_md/Database/Doris/PRs/doris-pr-26133-status-fmt-formatter.md` |
+| 无 `source` 字段（论文、笔记等）| `{kebab-case-description}.md` | `category: [AI, Models, Papers]` → `_md/AI/Models/Papers/cola-dlm.md` |
+| CodeWiki 多文件 | `00-overview.md`、`01-{module}.md`... | `category: [Python, MyCLI, CodeWiki, "1.2.0"]` → `_md/Python/MyCLI/CodeWiki/"1.2.0"/00-overview.md` |
+
+> **存量文章不动**，仍保持在 `_md/` 根目录。仅增量文章遵循此规则。
 
 ---
 

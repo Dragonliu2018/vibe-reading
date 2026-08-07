@@ -42,6 +42,9 @@ execute_favorite_query(cur, arg)            # \f 命令
     └── 普通 SQL → cur.execute(sql)
 ```
 
+<details>
+<summary>方法速查表</summary>
+
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|
 | `execute(cur, sql)` | 命令调度入口，查找并执行 special command | ArgType 三策略选择调用签名 |
@@ -49,6 +52,8 @@ execute_favorite_query(cur, arg)            # \f 命令
 | `register_special_command()` | 注册命令到 COMMANDS 字典 | backslash + forwardslash 双注册 + alias |
 | `execute_favorite_query()` | 执行收藏查询 | UUID marker 防止 `$1` 与 Jinja2 冲突 |
 | `status()` | 聚合服务器状态信息 | 多源查询（SHOW STATUS + VARIABLES + SELECT） |
+
+</details>
 
 ---
 

@@ -33,6 +33,9 @@ main()
     └── mycli.close()                    # finally 块，每步 try/except
 ```
 
+<details>
+<summary>方法速查表</summary>
+
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|
 | `main()` | Click 入口，解析参数并调度 | `standalone_mode=False` 手动处理异常 |
@@ -40,6 +43,8 @@ main()
 | `MyCli.__init__()` | 加载配置、创建 completer/refresher | 5 Mixin 组合，TYPE_CHECKING 声明依赖 |
 | `MyCli.run_cli()` | 启动交互式 REPL | 薄委托到 `repl.main_repl(self)` |
 | `MyCli.close()` | 清理资源 | 每步 try/except 确保独立清理 |
+
+</details>
 
 ---
 

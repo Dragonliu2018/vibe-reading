@@ -43,6 +43,9 @@ ClientConnectionMixin.reconnect()
 └── 第3级: sqlexecute.connect()          # 全新连接
 ```
 
+<details>
+<summary>方法速查表</summary>
+
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|
 | `SQLExecute.run()` | 执行 SQL，返回结果流 | Generator 流式 yield，支持多语句+多结果集 |
@@ -50,6 +53,8 @@ ClientConnectionMixin.reconnect()
 | `SQLExecute.connect()` | 建立 pymysql 连接 | 沙箱模式 + SSL 自动降级 |
 | `ClientConnectionMixin.connect()` | 多源密码解析 + SSH 隧道 + 连接 | 三层重试：SSL fallback / password fallback / sandbox |
 | `ClientConnectionMixin.reconnect()` | 断线重连 | 三级渐进：ping → ping(reconnect) → 全新连接 |
+
+</details>
 
 ---
 

@@ -46,6 +46,9 @@ CompletionRefresher.refresh(executor, callbacks)
     └── for callback in callbacks: callback(completer)  # 回调通知
 ```
 
+<details>
+<summary>方法速查表</summary>
+
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|
 | `SQLCompleter.get_completions()` | 补全入口，返回 Completion 列表 | 遍历 suggestion 列表按类型分发 |
@@ -53,6 +56,8 @@ CompletionRefresher.refresh(executor, callbacks)
 | `find_matches()` | 候选集模糊匹配 | 多级 Fuzziness 优先级排序 |
 | `CompletionRefresher.refresh()` | 启动后台线程刷新 schema | 独立连接 + 新建 completer 实例 |
 | `CompletionRefresher._bg_refresh()` | 后台遍历 @refresher 函数 | _restart_refresh Event 支持重启 |
+
+</details>
 
 ---
 

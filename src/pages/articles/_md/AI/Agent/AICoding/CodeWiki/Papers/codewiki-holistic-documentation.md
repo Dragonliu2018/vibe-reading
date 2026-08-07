@@ -5,7 +5,7 @@ source:
   project: "FPT Software AI Center"
   url: "https://arxiv.org/abs/2510.24428"
   pdf: "/vibe-reading/papers/codewiki-holistic-documentation.pdf"
-category: [AI, Models, Papers]
+category: [AI, Agent, AI Coding, CodeWiki, Papers]
 date: "2026-08-07T18:00:00+08:00"
 tags: ["CodeWiki", "CodeWikiBench", "文档生成", "仓库级文档", "层次分解", "多智能体", "LLM-as-Judge", "tree-sitter", "ACL 2026"]
 description: "CodeWiki 提出半智能体框架，通过层次分解、递归多智能体处理和多模态合成，为 7 种编程语言自动生成仓库级文档。配套 CodeWikiBench 基准采用层次化评分细则和智能体评估协议，CodeWiki 以 68.79% 的质量分超越闭源 DeepWiki 基线 4.73 个百分点。"

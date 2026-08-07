@@ -17,6 +17,18 @@ reviewed: false
 
 ---
 
+## 方法速查
+
+| 方法 | 职责 | 关键设计决策 |
+|------|------|-------------|
+| `SQLExecute.run()` | 执行 SQL，返回结果流 | Generator 流式 yield，支持多语句+多结果集 |
+| `SQLExecute.get_result()` | 从 cursor 提取 SQLResult | 统一结果结构，special 和普通 SQL 共用 |
+| `SQLExecute.connect()` | 建立 pymysql 连接 | 沙箱模式 + SSL 自动降级 |
+| `ClientConnectionMixin.connect()` | 多源密码解析 + SSH 隧道 + 连接 | 三层重试：SSL fallback / password fallback / sandbox |
+| `ClientConnectionMixin.reconnect()` | 断线重连 | 三级渐进：ping → ping(reconnect) → 全新连接 |
+
+---
+
 ## SQLExecute：pymysql 封装核心
 
 `SQLExecute` 是 mycli 与 MySQL 服务器交互的唯一入口，封装了连接管理、SQL 执行和元数据查询：

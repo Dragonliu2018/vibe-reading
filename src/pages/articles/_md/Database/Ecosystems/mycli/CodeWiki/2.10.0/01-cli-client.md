@@ -17,6 +17,18 @@ reviewed: false
 
 ---
 
+## 方法速查
+
+| 方法 | 职责 | 关键设计决策 |
+|------|------|-------------|
+| `main()` | Click 入口，解析参数并调度 | `standalone_mode=False` 手动处理异常 |
+| `run_from_cli_args()` | 参数调度 + DSN 解析 + 连接 + 模式分发 | 策略模式短路，REPL 作为 fallback |
+| `MyCli.__init__()` | 加载配置、创建 completer/refresher | 5 Mixin 组合，TYPE_CHECKING 声明依赖 |
+| `MyCli.run_cli()` | 启动交互式 REPL | 薄委托到 `repl.main_repl(self)` |
+| `MyCli.close()` | 清理资源 | 每步 try/except 确保独立清理 |
+
+---
+
 ## CliArgs：声明式 CLI 参数
 
 mycli 没有使用 Click 原生的装饰器堆叠方式，而是用 `clickdc` 库将所有 CLI 参数声明为 `CliArgs` dataclass 的字段：

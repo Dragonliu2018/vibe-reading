@@ -17,6 +17,18 @@ reviewed: false
 
 ---
 
+## 方法速查
+
+| 方法 | 职责 | 关键设计决策 |
+|------|------|-------------|
+| `execute(cur, sql)` | 命令调度入口，查找并执行 special command | ArgType 三策略选择调用签名 |
+| `parse_special_command()` | 拆分命令词 + verbosity + 参数 | 检测 `+`/`-` 后缀 → CommandVerbosity |
+| `register_special_command()` | 注册命令到 COMMANDS 字典 | backslash + forwardslash 双注册 + alias |
+| `execute_favorite_query()` | 执行收藏查询 | UUID marker 防止 `$1` 与 Jinja2 冲突 |
+| `status()` | 聚合服务器状态信息 | 多源查询（SHOW STATUS + VARIABLES + SELECT） |
+
+---
+
 ## @special_command 装饰器注册
 
 mycli 没有在一个大函数里写 `if command == '\dt': ...`，而是用 `@special_command` 装饰器让每个命令的实现紧邻其注册元数据：

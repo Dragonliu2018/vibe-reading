@@ -17,6 +17,18 @@ reviewed: false
 
 ---
 
+## 方法速查
+
+| 方法 | 职责 | 关键设计决策 |
+|------|------|-------------|
+| `SQLCompleter.get_completions()` | 补全入口，返回 Completion 列表 | 遍历 suggestion 列表按类型分发 |
+| `suggest_type()` | 解析 SQL 上下文，产出 suggestion 列表 | 纯函数无状态，SuggestRule 规则引擎 |
+| `find_matches()` | 候选集模糊匹配 | 多级 Fuzziness 优先级排序 |
+| `CompletionRefresher.refresh()` | 启动后台线程刷新 schema | 独立连接 + 新建 completer 实例 |
+| `CompletionRefresher._bg_refresh()` | 后台遍历 @refresher 函数 | _restart_refresh Event 支持重启 |
+
+---
+
 ## 三层补全架构
 
 mycli 的补全过程被拆为三层，各层职责清晰分离：

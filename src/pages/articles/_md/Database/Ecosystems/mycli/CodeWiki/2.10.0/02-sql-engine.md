@@ -17,7 +17,31 @@ reviewed: false
 
 ---
 
-## 方法速查
+## 调用链路
+
+```
+ClientQueryMixin.run_query(query)
+└── SQLExecute.run(statement)
+    ├── iocommands.split_queries()        # 拆分多语句
+    └── for sql in components:
+        ├── special.execute(cur, sql)     # 先尝试 special command
+        │   └── CommandNotFound → 降级 ↓
+        ├── cur.execute(sql)              # pymysql 执行
+        └── while True:
+            ├── get_result(cursor)        # → SQLResult
+            └── cur.nextset()             # 多结果集（存储过程）
+
+ClientConnectionMixin.connect(...)
+└── SQLExecute(...)
+    └── pymysql.connect()
+        ├── ER_MUST_CHANGE_PASSWORD → _connect_sandbox()   # 沙箱模式
+        └── HANDSHAKE_ERROR + ssl=auto → 禁用 SSL 重试     # SSL 降级
+
+ClientConnectionMixin.reconnect()
+├── 第1级: conn.ping(reconnect=False)    # 轻量探测
+├── 第2级: conn.ping(reconnect=True)       # pymysql 内部重连
+└── 第3级: sqlexecute.connect()          # 全新连接
+```
 
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|

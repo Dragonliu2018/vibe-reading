@@ -17,7 +17,30 @@ reviewed: false
 
 ---
 
-## 方法速查
+## 调用链路
+
+```
+execute(cur, sql)
+├── parse_special_command(sql)               # 拆分 command / verbosity / arg
+├── COMMANDS[command] → SpecialCommand     # O(1) 查找
+├── [特殊分支] help <keyword>
+│   ├── _show_special_help()
+│   └── _show_mysql_help()
+└── 按 arg_type 分发:
+    ├── NO_ARGUMENT  → handler()
+    ├── PARSED_QUERY → handler(cur=, arg=, ...)
+    └── RAW_QUERY   → handler(cur=, query=sql)
+
+execute_favorite_query(cur, arg)            # \f 命令
+├── parse_favorite_query_args(arg)
+├── FavoriteQueries.instance.get(name)
+├── prepare_favorite_query_args()           # $1/$2 → UUID marker
+├── render_favorite_query()                # Jinja2 模板渲染
+├── restore_favorite_query_args()          # marker → 真实值
+└── for sql in sqlparse.split(query):
+    ├── special command → execute(cur, sql)  # 递归回到 execute()
+    └── 普通 SQL → cur.execute(sql)
+```
 
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|

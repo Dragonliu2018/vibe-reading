@@ -17,7 +17,21 @@ reviewed: false
 
 ---
 
-## 方法速查
+## 调用链路
+
+```
+main()
+└── run_from_cli_args(cli_args)
+    ├── preprocess_cli_args()              # 参数校验
+    ├── MyCli(...)                        # 加载配置、创建 completer/refresher
+    ├── mycli.connect(...)                # → ClientConnectionMixin → SQLExecute → pymysql
+    ├── 模式分发（短路）:
+    │   ├── --execute → main_execute_from_cli()
+    │   ├── --batch   → main_batch_*()
+    │   ├── stdin 管道 → main_batch_from_stdin()
+    │   └── 交互式     → mycli.run_cli() → repl.main_repl(self)
+    └── mycli.close()                    # finally 块，每步 try/except
+```
 
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|

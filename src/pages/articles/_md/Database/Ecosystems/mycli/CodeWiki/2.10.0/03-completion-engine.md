@@ -17,7 +17,34 @@ reviewed: false
 
 ---
 
-## 方法速查
+## 调用链路
+
+```
+SQLCompleter.get_completions(document, complete_event)
+├── suggest_type(text, text_before_cursor)       # completion_engine.py
+│   ├── sqlparse.parse(text_before_cursor)       # 解析 SQL
+│   ├── suggest_special(text)                    # 特殊命令分支
+│   └── suggest_based_on_last_token(last_token)  # 规则引擎
+│       └── for rule in SUGGEST_BASED_ON_LAST_TOKEN_RULES:
+│           ├── rule.predicate(ctx) → bool
+│           └── rule.emit(ctx) → list[Suggestion]
+│
+└── for suggestion in suggestions:               # 遍历建议
+    ├── "column" → populate_scoped_cols() → find_matches()
+    ├── "table"  → populate_schema_objects() → find_matches()
+    └── "keyword" → find_matches(self.keywords)
+    └── 排序（fuzziness → rank → length）→ Completion
+
+CompletionRefresher.refresh(executor, callbacks)
+└── daemon Thread → _bg_refresh()
+    ├── SQLCompleter(**options)                 # 新建 completer 实例
+    ├── SQLExecute(...)                         # 新建独立连接
+    ├── for refresher in @refresher 注册表:
+    │   ├── refresh_databases(completer, executor)
+    │   ├── refresh_tables(completer, executor)
+    │   └── ... (共 13 个 refresher)
+    └── for callback in callbacks: callback(completer)  # 回调通知
+```
 
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|

@@ -45,12 +45,17 @@ function countArticles(n: TreeNode): number {
   return count;
 }
 
-// ── 当前分类直属文章（按日期降序）──────────────────────────────────
+// ── 当前分类直属文章（按日期降序；title="Overview" 固定排最前）────
 function getArticles(n: TreeNode) {
   return (n.slugs ?? [])
     .map(slug => articles.find(a => a.slug === slug))
     .filter(Boolean)
-    .sort((a, b) => new Date(b!.date).getTime() - new Date(a!.date).getTime());
+    .sort((a, b) => {
+      // Overview 永远排第一
+      if (a!.title === 'Overview') return -1;
+      if (b!.title === 'Overview') return 1;
+      return new Date(b!.date).getTime() - new Date(a!.date).getTime();
+    });
 }
 
 const directArticles = getArticles(node);

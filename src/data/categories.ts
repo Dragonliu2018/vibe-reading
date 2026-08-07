@@ -66,6 +66,9 @@ function buildTree(): TreeNode[] {
         node.slugs.sort((a, b) => {
           const artA = articles.find(x => x.slug === a);
           const artB = articles.find(x => x.slug === b);
+          // Overview 固定排第一
+          if (artA?.title === 'Overview') return -1;
+          if (artB?.title === 'Overview') return 1;
           const idA = artA?.source?.id ? parseInt(artA.source.id) : NaN;
           const idB = artB?.source?.id ? parseInt(artB.source.id) : NaN;
           if (!isNaN(idA) && !isNaN(idB)) return idA - idB;   // 都有 PR 号：数值升序
@@ -83,7 +86,7 @@ function buildTree(): TreeNode[] {
   // 占位/兜底末级）置后按字母序——避免兜底桶夹在项目名中间（如 Papers 混在 SGLang/vLLM 间）
   const TYPE_LABELS = new Set([
     'Papers', 'Contributions', 'CodeWiki', 'PRs',
-    'Official', 'Informal', 'Docs', 'Notes', 'Reading', 'Blogs',
+    'Official', 'Informal', 'Docs', 'Notes', 'Reading', 'Blogs', 'Ecosystems',
   ]);
   function sortLabels(nodes: TreeNode[]) {
     nodes.sort((a, b) => {

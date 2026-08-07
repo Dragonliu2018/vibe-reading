@@ -7,7 +7,7 @@ source:
   url: "https://github.com/dbcli/mycli/pull/1917"
   prType: "feat"
 date: "2026-07-04"
-category: [Database, 生态, mycli, Contributions]
+category: [Database, Ecosystems, mycli, Contributions]
 tags: ["Apache Doris", "MySQL Protocol"]
 description: "Apache Doris 伪装成 MySQL 5.7.99 与客户端握手，无法从版本字符串区分。本文记录如何在连接后用一条 SQL 探测 @@version_comment 来识别 Doris 并显示真实版本。"
 readingTime: "7 min"

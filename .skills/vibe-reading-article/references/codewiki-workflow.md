@@ -283,15 +283,15 @@ SVG 风格要求：
 
 基于 Step 1-4 的全部产出，按**概览 + 模块**多文件结构撰写 Markdown 文章。输出目录与 frontmatter `category` 对齐，每个文件是首页一张独立卡片。
 
-**输出目录**：`src/pages/articles/_md/{category_path}/{slug}/`，其中 `{category_path}` = category 数组用 `/` 拼接。
+**输出目录**：`src/pages/articles/_md/{category_path}/`，其中 `{category_path}` = category 数组用 `/` 拼接。文件直接放在 category 末级目录下，不再多一层 slug。
 
-例如 `category: [Python, MyCLI, CodeWiki, "1.2.0"]` → 目录 `_md/Python/MyCLI/CodeWiki/1.2.0/mycli-internals/`
+例如 `category: [Python, MyCLI, CodeWiki, "1.2.0"]` → 目录 `_md/Python/MyCLI/CodeWiki/1.2.0/`
 
 **文件结构**（文件名前缀 `00-`/`01-`/`02-`... 保证排序：概览在前，模块按序）：
 
 ```
-src/pages/articles/_md/{category_path}/{slug}/
-├── 00-overview.md          # 概览（§1-§4 + §10-§12）
+src/pages/articles/_md/{category_path}/
+├── 00-overview.md          # 概览（title: "Overview"，排在分类最前）
 ├── 01-{module-a}.md        # 核心模块 A（独立成文）
 ├── 02-{module-b}.md        # 核心模块 B
 ├── 03-{module-c}.md        # 核心模块 C
@@ -299,12 +299,18 @@ src/pages/articles/_md/{category_path}/{slug}/
 ```
 
 > 目录路径中的版本号引号在文件系统中不需要——`"1.2.0"` 作为目录名就是 `1.2.0`。
+>
+> 概览文件 title 固定为 `"Overview"`，使其在分类树中排在最前面（字母序 O 在数字前更靠前，且分类树按 label 字母序排列时 00-overview 的 slug 已保证文件排序）。
 
 **每个文件的 Frontmatter**：
 
 ```yaml
 ---
-title: "{project-name} 原理解读"          # 概览；模块文件改为 "{project-name} · {模块名} 详解"
+source:
+  type: "源码解读"
+  project: "{project-name}"
+  url: "{repo-url}"
+title: "Overview"                        # 概览固定为 "Overview"；模块文件改为 "{模块名} 详解"（不加项目前缀，由 source 自动生成）
 date: "YYYY-MM-DDTHH:MM:SS+08:00"
 category: [Domain, Project, CodeWiki, "{version}"]
 tags: ["项目名", "语言", "核心标签"]
@@ -314,6 +320,8 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 ```
+
+> `source.type = "源码解读"`，前缀自动生成 `[project 源码解读]`（如 `[mycli 源码解读]`）。所有文件共享同一 source 和 category。
 
 > `category` 末级用 `CodeWiki` + 版本号（引号包裹，如 `"1.2.0"`）。所有文件共享同一 category。徽章显示 `CodeWiki`（而非版本号），与 `Docs` 同理。版本号取 Step 0 的 tag（如 `v1.2.0` → `"1.2.0"`，去掉 `v` 前缀）。
 
@@ -349,8 +357,8 @@ reviewed: false
 
 | 文档 | 内容 |
 |------|------|
-| [核心引擎详解](/vibe-reading/articles/{category_path}/{slug}/01-engine) | 解析与执行引擎的内部原理 |
-| [配置管理详解](/vibe-reading/articles/{category_path}/{slug}/02-config) | 配置加载与管理机制 |
+| [核心引擎详解](/vibe-reading/articles/{category_path}/01-engine) | 解析与执行引擎的内部原理 |
+| [配置管理详解](/vibe-reading/articles/{category_path}/02-config) | 配置加载与管理机制 |
 | ... | ... |
 ```
 

@@ -33,7 +33,8 @@ export interface Article {
  *   无 id（如 论文解读）→ [project type]
  * 返回 '' 表示无前缀。首页卡片 / 侧边栏 / 文章页 / 排序统一用此函数，避免 4 处副本漂移。
  */
-export function sourceLabel(source: ArticleSource, categoryPath: string[] = []): string {
+export function sourceLabel(source: ArticleSource | undefined, categoryPath: string[] = []): string {
+  if (!source) return '';
   if (source.type === 'article') {
     // Docs 官方文档不加前缀，分类由徽章体现
     if (categoryPath.includes('Docs')) return '';

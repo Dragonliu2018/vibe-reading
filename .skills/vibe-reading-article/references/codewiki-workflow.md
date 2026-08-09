@@ -324,6 +324,16 @@ grep -rn '"\./\|"github.com/' --include="*.go" . \
    - 分支箭头（一对多）从同一点发散，汇聚箭头（多对一）到同一点收敛
    - 箭头终点与目标节点边缘的距离 ≤ 2px，不悬空也不重叠
 
+7. **风格一致性**
+   - 所有 SVG 统一用 `system-ui, sans-serif` 字体，不混用 monospace 等其他字体
+   - 节点填充色统一用 `#13162a`，不混用 `#1a1d2a` 等其他色值
+   - 装饰性箭头（loop back、cross-layer、feeder）opacity ≥ 0.6，不能用 0.3-0.5 导致在深色背景上几乎不可见
+   - 文字标签不旋转（不用 `transform="rotate"`），水平放置保证可读性
+
+8. **hover 交互**
+   - 所有 SVG 的 `<style>` 块中必须包含 `path:hover { stroke: #6c8ef5 !important; stroke-width: 3 !important; cursor: pointer; }`
+   - 鼠标悬停在箭头上时高亮（加粗变蓝），移开恢复
+
 **4.4 设计模式汇总**：从各 Agent 的"设计模式"信息汇总去重，列出 3-5 个核心设计模式（用 Markdown 表格，不需要 SVG）。
 
 **4.5 核心概念汇总**：从各 Agent 的"核心 class/struct 定义"信息汇总，提取项目最重要的 5-8 个对象和核心抽象，整理为：

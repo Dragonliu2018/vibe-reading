@@ -23,48 +23,15 @@ SQL 执行引擎是 mycli 与 MySQL 服务器交互的唯一入口，封装了�
 
 ## 模块架构
 
-```
-┌─────────────────────────────────────────────────────┐
-│              ClientConnectionMixin                   │
-│  connect() · reconnect()                             │
-│  ├── PasswordCandidates.resolve()                    │
-│  ├── SshTunnel · SSL 降级                            │
-│  └── _connect() 闭包 (递归重试)                       │
-└───────────────────────┬─────────────────────────────┘
-                        │ 创建
-┌───────────────────────▼─────────────────────────────┐
-│                   SQLExecute                          │
-│  conn (pymysql.Connection)                           │
-│  ├── run(sql) → Generator[SQLResult]                 │
-│  ├── get_result(cursor) → SQLResult                  │
-│  ├── connect() · _connect_sandbox()                  │
-│  └── tables() · table_columns() · ... (元数据)        │
-└───────────────────────┬─────────────────────────────┘
-                        │ 持有
-                        ▼
-              pymysql.Connection
-```
+![SQL 执行引擎模块架构](/vibe-reading/images/articles/mycli-internals/sql-engine-architecture.svg)
+
+`ClientConnectionMixin` 和 `ClientQueryMixin` 位于客户端层，负责连接管理和查询执行的协调。`SQLExecute` 是执行层核心，封装 `pymysql.Connection`，提供 `run()`/`get_result()`/元数据查询方法。`ServerInfo`/`ServerSpecies` 通过工厂方法从版本字符串探测数据库类型（MySQL/MariaDB/Doris 等）。
 
 ## 调用链路
 
-```
-ClientQueryMixin.run_query(query)                    # 输入: query (str)
-└── SQLExecute.run(statement)                        # → Generator[SQLResult]
-    输入: str
-    ├── iocommands.split_queries()                  # → list[str] (多语句拆分)
-    └── for sql in components:
-        ├── special.execute(cur, sql)               # → list[SQLResult] 或 CommandNotFound
-        │   └── CommandNotFound → 降级 ↓
-        ├── cur.execute(sql)                        # pymysql 执行 → Cursor
-        └── while True:
-            ├── get_result(cursor)                  # → SQLResult(header, rows=cursor, status)
-            └── cur.nextset()                       # 多结果集（存储过程）
+![SQL 执行引擎调用链路](/vibe-reading/images/articles/mycli-internals/sql-engine-call-chain.svg)
 
-ClientConnectionMixin.reconnect()                    # → bool
-├── 第1级: conn.ping(reconnect=False)               # 轻量探测，零副作用
-├── 第2级: conn.ping(reconnect=True)                 # pymysql 内部重连，可能保留 session
-└── 第3级: sqlexecute.connect()                      # 全新连接，session 丢失
-```
+路径 A（查询执行）：`run_query(str)` → `SQLExecute.run()` 返回 `Generator[SQLResult]`，内部先 `split_queries()` 拆分多语句，逐条尝试 `special.execute()` 分发（`CommandNotFound` 则降级为 `cur.execute(sql)`），通过 `get_result(cursor)` 提取 `SQLResult`，`cur.nextset()` 循环处理多结果集。路径 B（重连）：三级渐进——`ping(reconnect=False)` 轻量探测 → `ping(reconnect=True)` 保 session → `connect()` 全新连接。
 
 <details>
 <summary>方法速查表</summary>
@@ -171,6 +138,8 @@ def reconnect(self, database=""):
 | 策略模式 | `password_sources.py` PasswordCandidates | 按优先级链遍历密码源 |
 
 ## 模块间交互
+
+![SQL 执行引擎模块交互](/vibe-reading/images/articles/mycli-internals/sql-engine-interactions.svg)
 
 `sqlexecute.py` import `pymysql`（DB 驱动）、`packages.special.iocommands`（`split_queries`）、`packages.special.main`（`execute`/`CommandNotFound`）、`packages.sqlresult`（`SQLResult`）。`sqlexecute` 是扇入最高的模块（8 个生产文件引用），是整个 mycli 的核心枢纽。`client_connection.py` import `ssh_tunnel.SshTunnel`、`password_sources.PasswordCandidates`、`sqlexecute.SQLExecute`。
 

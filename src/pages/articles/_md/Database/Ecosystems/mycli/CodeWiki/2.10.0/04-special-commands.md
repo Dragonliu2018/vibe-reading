@@ -23,50 +23,15 @@ reviewed: false
 
 ## 模块架构
 
-```
-┌─────────────────────────────────────────────────────┐
-│              special/main.py                         │
-│  COMMANDS: dict[str, SpecialCommand]                │
-│  execute() · parse_special_command()                │
-│  ArgType: NO_ARGUMENT / PARSED_QUERY / RAW_QUERY    │
-│  @special_command 装饰器                             │
-└───────────────┬──────────────┬──────────────────────┘
-                │ 注册          │ 注册
-    ┌───────────▼──┐  ┌────────▼────────┐
-    │ dbcommands   │  │ iocommands       │
-    │ \dt \l status│  │ pager tee system │
-    │ \u           │  │ \f (favorite)    │
-    └──────────────┘  └─────────────────┘
-           ┌──────────────┐  ┌────────────────┐
-           │favoritequeries│  │  dsn_aliases    │
-           │ \fs \fd       │  │  \ds \dl        │
-           └──────────────┘  └────────────────┘
-```
+![特殊命令模块架构](/vibe-reading/images/articles/mycli-internals/special-commands-architecture.svg)
+
+`special/main.py` 是调度核心，持有 `COMMANDS` 字典、`execute()` 调度器、`@special_command` 装饰器和 `ArgType` 枚举。6 个命令实现模块（`dbcommands`、`iocommands`、`favoritequeries`、`dsn_aliases`、`llm`、`delimitercommand`）通过装饰器单向注册到 `COMMANDS`，不反向依赖 `main.py`。
 
 ## 调用链路
 
-```
-execute(cur, sql)                              # 输入: str (SQL 或命令)
-├── parse_special_command(sql)                # → (command, arg, verbosity)
-├── COMMANDS[command] → SpecialCommand       # → SpecialCommand (O(1) 查找)
-├── [特殊分支] help <keyword>
-│   ├── _show_special_help()                  # → list[SQLResult]
-│   └── _show_mysql_help()
-└── 按 arg_type 分发:
-    ├── NO_ARGUMENT  → handler()              # → list[SQLResult]
-    ├── PARSED_QUERY → handler(cur=, arg=, ...)  # → list[SQLResult]
-    └── RAW_QUERY   → handler(cur=, query=sql)   # → list[SQLResult]
+![特殊命令调用链路](/vibe-reading/images/articles/mycli-internals/special-commands-call-chain.svg)
 
-execute_favorite_query(cur, arg)              # 输入: str (name + args)
-├── parse_favorite_query_args(arg)            # → (positional: list[str], template_values: dict)
-├── FavoriteQueries.instance.get(name)       # → template SQL str
-├── prepare_favorite_query_args()             # → marked_query (UUID marker 替换 $1)
-├── render_favorite_query()                   # → rendered SQL (Jinja2 渲染)
-├── restore_favorite_query_args()             # → final SQL (marker → 真实值)
-└── for sql in sqlparse.split(query):
-    ├── special command → execute(cur, sql)   # 递归 → list[SQLResult]
-    └── 普通 SQL → cur.execute(sql)           # → Cursor
-```
+路径 A（命令调度）：`execute(cur, sql)` → `parse_special_command()` 拆分命令词 → `COMMANDS[command]` O(1) 查找 → 按 `ArgType` 分发到 handler，返回 `list[SQLResult]`。路径 B（Favorite Query）：`execute_favorite_query()` → 解析参数 → 取模板 → UUID marker 替换 `$1` → Jinja2 渲染 → marker 还原 → 逐条执行 SQL 或递归 `execute()`。
 
 <details>
 <summary>方法速查表</summary>
@@ -170,6 +135,8 @@ Favorite Query 的数据流经历 4 次字符串变换：原始模板 → UUID m
 | 模板方法 | `iocommands.py` Favorite Query | prepare→render→restore 固定流程 |
 
 ## 模块间交互
+
+![特殊命令模块交互](/vibe-reading/images/articles/mycli-internals/special-commands-interactions.svg)
 
 `special/main.py` 被 `sqlexecute.py`（`execute`/`CommandNotFound`）、`sqlcompleter.py`（`COMMANDS`）、`completion_engine.py`（`COMMANDS`/`parse_special_command`）、`completion_refresher.py`（`COMMANDS`）、`repl.py`（`handle_llm` 等）引用。`dbcommands.py` 和 `iocommands.py` 通过 `@special_command` 装饰器注册到 `main.py` 的 `COMMANDS` 字典，不反向依赖。`iocommands.py` 用模块级全局变量 + setter/getter 管理可变状态（`TIMING_ENABLED`、`PAGER_ENABLED`、`tee_file` 等），任何模块能直接读取，无需传递上下文对象。
 

@@ -23,55 +23,15 @@ reviewed: false
 
 ## 模块架构
 
-```
-┌──────────────────────────────────────────────────────┐
-│               SQLCompleter (live)                     │
-│  get_completions() · find_matches()                  │
-│  dbmetadata: tables/views/functions/...              │
-│  Fuzziness: PERFECT > REGEX > UNDER_WORDS >          │
-│             CAMEL_CASE > RAPIDFUZZ                    │
-└───────┬──────────────────────────────┬───────────────┘
-        │ 调用                          │ 被填充
-        ▼                              ▼
-┌──────────────────┐    ┌─────────────────────────────┐
-│ completion_engine│    │  CompletionRefresher         │
-│ suggest_type()   │    │  daemon Thread              │
-│ SuggestRule[]    │    │  ├── 独立 SQLExecute 连接    │
-│ (规则引擎)        │    │  ├── @refresher 注册表       │
-│ lru_cache(128)   │    │  └── callback → 热替换       │
-└──────────────────┘    └─────────────────────────────┘
-```
+![补全引擎模块架构](/vibe-reading/images/articles/mycli-internals/completion-engine-architecture.svg)
+
+三层架构：解析层（`completion_engine.py`，`suggest_type()` + `SuggestRule[]` 规则引擎，纯函数无状态）→ 数据+匹配层（`sqlcompleter.py`，`SQLCompleter` 持有 `dbmetadata` + `Fuzziness` 多级匹配）→ 异步刷新层（`completion_refresher.py`，daemon Thread + 独立连接 + `@refresher` 注册表）。跨层链接：解析层被匹配层调用，刷新层完成后热替换填充匹配层。
 
 ## 调用链路
 
-```
-SQLCompleter.get_completions(document, complete_event)
-  输入: Document (str), CompleteEvent
-├── suggest_type(text, text_before_cursor)       # → list[Suggestion]
-│   输入: str
-│   ├── sqlparse.parse(text_before_cursor)       # → Statement (lru_cache 缓存)
-│   ├── suggest_special(text)                    # 特殊命令分支
-│   └── suggest_based_on_last_token(last_token)  # 规则引擎
-│       输入: Token, SuggestContext (frozen dataclass)
-│       └── for rule in SUGGEST_BASED_ON_LAST_TOKEN_RULES:
-│           ├── rule.predicate(ctx) → bool
-│           └── rule.emit(ctx) → list[Suggestion]
-│
-└── for suggestion in suggestions:               # 遍历建议
-    ├── "column" → populate_scoped_cols() → find_matches()  # → list[tuple[str, int]]
-    ├── "table"  → populate_schema_objects() → find_matches()
-    └── "keyword" → find_matches(self.keywords)
-    └── 排序（fuzziness → rank → length）→ list[Completion]
+![补全引擎调用链路](/vibe-reading/images/articles/mycli-internals/completion-engine-call-chain.svg)
 
-CompletionRefresher.refresh(executor, callbacks)
-  输入: SQLExecute, list[Callback]
-└── daemon Thread → _bg_refresh()
-    ├── SQLCompleter(**options)                 # → 新 completer 实例
-    ├── SQLExecute(...)                         # → 新建独立连接
-    ├── for refresher in @refresher 注册表:
-    │   └── refresh_*(completer, executor)      # 填充 completer.dbmetadata
-    └── callback(completer)                     # → 原子热替换
-```
+路径 A（补全生成）：`get_completions(Document)` → `suggest_type()` 解析 SQL 上下文产出 `list[Suggestion]`（经 `sqlparse.parse` + `SuggestRule` 规则引擎）→ 遍历 suggestion 取候选集 → `find_matches()` 多级 Fuzziness 匹配 → 排序输出 `list[Completion]`。路径 B（后台刷新）：`refresh()` → daemon Thread `_bg_refresh()` → 新建 `SQLCompleter` + 独立 `SQLExecute` 连接 → 遍历 `@refresher` 注册表填充元数据 → callback 原子热替换。
 
 <details>
 <summary>方法速查表</summary>
@@ -169,6 +129,8 @@ def refresh_databases(completer, executor): ...
 | 原子替换 | `sqlcompleter.py` load_schema_metadata | 赋值替换保证并发读者安全 |
 
 ## 模块间交互
+
+![补全引擎模块交互](/vibe-reading/images/articles/mycli-internals/completion-engine-interactions.svg)
 
 `sqlcompleter.py` import `completion_engine.suggest_type`、`prompt_toolkit.Completer`、`rapidfuzz`、`pygments`（MySQL 内置关键字/函数/数据类型）。`completion_engine.py` import `sqlparse`、`packages.special.main.COMMANDS`。`completion_refresher.py` import `SQLCompleter`、`SQLExecute`（新建独立连接）。被 `client.py`、`client_query.py`、`schema_prefetcher.py` 引用。
 

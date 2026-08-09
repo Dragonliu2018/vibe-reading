@@ -23,49 +23,15 @@ CLI 客户端模块是 mycli 的入口层，负责将命令行参数解析为结
 
 ## 模块架构
 
-```
-┌─────────────────────────────────────────────────────┐
-│                     main.py                         │
-│  CliArgs (dataclass, 50+ 字段)                      │
-│  click_entrypoint · main()                          │
-└──────────────────────┬──────────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────────┐
-│                  cli_runner.py                       │
-│  run_from_cli_args()                                │
-│  ├── DSN 解析 / 密码候选链 / SSL 配置                │
-│  └── 模式分发 (5 种)                                 │
-└──────────────────────┬──────────────────────────────┘
-                       │
-         ┌─────────────┼─────────────┐
-         ▼             ▼             ▼
-┌──────────────┐ ┌───────────┐ ┌──────────────┐
-│  client.py   │ │main_modes/│ │password_     │
-│  MyCli       │ │repl.py    │ │sources.py    │
-│  (5 Mixin)   │ │execute.py │ │PasswordCands │
-│              │ │batch.py   │ │              │
-└──────────────┘ └───────────┘ └──────────────┘
-```
+![CLI 客户端模块架构](/vibe-reading/images/articles/mycli-internals/cli-client-architecture.svg)
+
+`main.py` 定义 `CliArgs` dataclass（50+ 字段）作为参数声明层，不含业务逻辑。`cli_runner.py` 是路由层，解析 DSN/密码/SSL 后将参数传给 `MyCli` 实例，再按优先级短路分发到 `main_modes/` 下的 5 种模式。`client.py` 是组合层，`MyCli` 通过 5 个 Mixin 聚合能力。`password_sources.py` 作为侧向依赖提供密码候选链。
 
 ## 调用链路
 
-```
-main()                                    # main.py:471
-  输入: sys.argv (str[])
-└── run_from_cli_args(cli_args)            # cli_runner.py:127
-    输入: CliArgs (dataclass, 50+ 字段)
-    ├── preprocess_cli_args()              # → cli_verbosity: int
-    ├── MyCli(...)                        # → MyCli 实例 (持有 completer/prefetcher)
-    ├── mycli.connect(...)                # → SQLExecute → pymysql 连接
-    ├── 模式分发（短路）:
-    │   ├── --execute → main_execute_from_cli()  → exit_code
-    │   ├── --batch   → main_batch_*()           → exit_code
-    │   ├── stdin 管道 → main_batch_from_stdin() → exit_code
-    │   └── 交互式     → mycli.run_cli() → main_repl()
-    └── mycli.close()                    # finally 块
-```
+![CLI 客户端调用链路](/vibe-reading/images/articles/mycli-internals/cli-client-call-chain.svg)
 
-REPL 每次迭代：`text(str)` → 可能被 LLM/编辑器替换 → `sqlexecute.run()` → `Generator[SQLResult]` → `format_sqlresult()` → `click.echo`。`ReplState` 累积状态（`iterations` 递增，`mutating` 一旦 True 不回退）。
+`main()` 经 click 参数解析后进入 `run_from_cli_args()`，依次完成参数校验、MyCli 实例化、数据库连接建立，最后按优先级短路分发到五种运行模式（`--execute`/`--batch`/stdin/交互式 REPL），交互式 REPL 作为 fallback。每个模式函数返回 exit code 并直接 `sys.exit()`。REPL 每次迭代：`text(str)` → `sqlexecute.run()` → `Generator[SQLResult]` → `format_sqlresult()` → `click.echo`。
 
 <details>
 <summary>方法速查表</summary>
@@ -170,7 +136,9 @@ prompt > literal > file > environment > dsn > vault > keyring
 
 ## 模块间交互
 
-`cli_runner.py` import `main_modes/*`（模式函数）、`password_sources.PasswordCandidates`、`vault`、`packages.special.dsn_aliases`。运行时延迟导入 `mycli.main` 避免循环依赖。`MyCli` 被 `main.py`、`schema_prefetcher.py`、`main_modes/*.py` 引用（多数通过 `TYPE_CHECKING`）。`repl.py` 的 `set_all_external_titles` 被 `client_commands.py` 反向 import。
+![CLI 客户端模块交互](/vibe-reading/images/articles/mycli-internals/cli-client-interactions.svg)
+
+`cli_runner.py` import `main_modes/*`（模式函数）、`password_sources.PasswordCandidates`、`vault`、`packages.special.dsn_aliases`。运行时延迟导入 `mycli.main` 避免循环依赖。`client.py` import `sqlexecute`、`sqlcompleter`、`completion_refresher`、`config`、`ssh_tunnel`、`special`。`MyCli` 被 `main.py`、`schema_prefetcher.py`、`main_modes/*.py` 引用（多数通过 `TYPE_CHECKING`）。`repl.py` 的 `set_all_external_titles` 被 `client_commands.py` 反向 import。
 
 ## 扩展方式
 

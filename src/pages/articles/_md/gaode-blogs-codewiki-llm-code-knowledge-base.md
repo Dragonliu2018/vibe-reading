@@ -7,7 +7,7 @@ source:
   author: "信息业务中心"
   site: "公众号 高德技术"
 date: "2026-08-07T16:10:00+08:00"
-category: [AI, Agent, AI Coding, CodeWiki, Blogs]
+category: [AI, Agent, AI Coding, Code Understanding, Blogs]
 tags: ["CodeWiki", "LLM", "代码知识库", "交叉索引", "领域知识", "OpenSpec", "wiki-reading", "高德", "业务约束", "Merkle Tree", "tree-sitter", "Diamond"]
 description: "高德技术团队 CodeWiki 工程实践：通过带证据的交叉索引提炼源码事实，用研发标注沉淀代码外规则，自底向上九阶段流水线生成供 LLM 消费的结构化知识库，在投放时段智能调控案例中将约束覆盖得分从 0.5 提升至 7.5。"
 readingTime: "18 min"

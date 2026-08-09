@@ -310,6 +310,7 @@ grep -rn '"\./\|"github.com/' --include="*.go" . \
    - 背景 rect 的 height 必须等于 SVG 的 height
    - viewBox 的 height 必须等于 SVG 的 height
    - 三者不一致会导致渲染时底部出现大片黑色留白
+   - SVG 内部的容器框（虚线分组框等）高度也应与内容对齐——容器底部 = 内部内容最大 y 值 + 20-30px padding，不允许容器内出现大片留白
 
 5. **文字不遮挡**
    - 文字必须在所属节点矩形内部，四周至少留 8px padding

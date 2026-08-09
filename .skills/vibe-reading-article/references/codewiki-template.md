@@ -14,7 +14,7 @@ source:
   type: "源码解读"
   project: "{project-name}"
   url: "{repo-url}"
-title: "Overview"                        # 概览固定为 "Overview"；模块文件改为 "{模块名} 详解"（不加项目前缀，由 source 自动生成）
+title: "Overview"                        # 概览固定为 "Overview"；模块文件改为 "{模块名}"（不加项目前缀和"详解"后缀，由 source 自动生成）
 date: "YYYY-MM-DDTHH:MM:SS+08:00"
 category: [Domain, Project, CodeWiki, "{version}"]
 tags: ["项目名", "语言", "核心标签"]

@@ -3,7 +3,7 @@ source:
   type: "源码解读"
   project: "mycli"
   url: "https://github.com/dbcli/mycli"
-title: "补全引擎详解"
+title: "补全引擎"
 date: "2026-08-09T10:30:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
 tags: ["mycli", "Python", "补全", "sqlparse", "rapidfuzz"]

@@ -3,7 +3,7 @@ source:
   type: "源码解读"
   project: "mycli"
   url: "https://github.com/dbcli/mycli"
-title: "SQL 执行引擎详解"
+title: "SQL 执行引擎"
 date: "2026-08-09T10:20:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
 tags: ["mycli", "Python", "pymysql", "SQL", "Generator"]

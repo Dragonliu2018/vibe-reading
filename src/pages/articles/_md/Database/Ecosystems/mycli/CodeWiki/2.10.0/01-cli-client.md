@@ -3,7 +3,7 @@ source:
   type: "源码解读"
   project: "mycli"
   url: "https://github.com/dbcli/mycli"
-title: "CLI 客户端详解"
+title: "CLI 客户端"
 date: "2026-08-09T10:10:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
 tags: ["mycli", "Python", "CLI", "Click", "Mixin"]

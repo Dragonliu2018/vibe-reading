@@ -3,7 +3,7 @@ source:
   type: "源码解读"
   project: "mycli"
   url: "https://github.com/dbcli/mycli"
-title: "特殊命令详解"
+title: "特殊命令"
 date: "2026-08-09T10:40:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
 tags: ["mycli", "Python", "特殊命令", "装饰器注册", "Favorite Query"]

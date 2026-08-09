@@ -161,6 +161,20 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
         sidebar.scrollTop = parseInt(savedScroll, 10) || 0;
       }
 
+      // 4. 可见性闸门：当前文章在侧边栏可视区 → 保持原位（零跳变）；
+      //    不在 → 居中。仅改 sidebar.scrollTop 不触发页面滚动；
+      //    此时展开态已还原，测量即最终布局，且均在首帧前完成，无可见闪动
+      var activeLink = sidebar.querySelector('.tree-article.active');
+      if (activeLink) {
+        var sRect = sidebar.getBoundingClientRect();
+        var lRect = activeLink.getBoundingClientRect();
+        var inView = lRect.top >= sRect.top - 1 && lRect.bottom <= sRect.bottom + 1;
+        if (!inView) {
+          // 让 active 中线对齐侧边栏中线
+          sidebar.scrollTop += (lRect.top + lRect.height / 2) - (sRect.top + sRect.height / 2);
+        }
+      }
+
       // 还原完毕后移除禁用类，恢复正常交互过渡
       requestAnimationFrame(function () {
         sidebar.classList.remove('no-transition');
@@ -540,13 +554,6 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
         saveOpenCats();
       });
     });
-
-    // 首次访问（无滚动记录）时把当前文章滚进视口；
-    // 跨页导航的滚动位置已由 is:inline 在首次绘制前还原，无需重复
-    if (sessionStorage.getItem('sidebar-scroll') === null) {
-      const activeLink = sidebar.querySelector<HTMLElement>('.tree-article.active');
-      if (activeLink) activeLink.scrollIntoView({ block: 'nearest' });
-    }
   }
 
   // 导航前保存侧边栏滚动位置，使下一页侧边栏原位不动

@@ -25,13 +25,31 @@ CLI 客户端模块是 mycli 的入口层，负责将命令行参数解析为结
 
 ![CLI 客户端模块架构](/vibe-reading/images/articles/mycli-internals/cli-client-architecture.svg)
 
-`main.py` 定义 `CliArgs` dataclass（50+ 字段）作为参数声明层，不含业务逻辑。`cli_runner.py` 是路由层，解析 DSN/密码/SSL 后将参数传给 `MyCli` 实例，再按优先级短路分发到 `main_modes/` 下的 5 种模式。`client.py` 是组合层，`MyCli` 通过 5 个 Mixin 聚合能力。`password_sources.py` 作为侧向依赖提供密码候选链。
+CLI 客户端模块采用"声明—路由—组合"三层分离设计，要回答的核心问题是：如何让命令行入口既不臃肿，又不把参数解析逻辑泄漏进业务类。
+
+第一层是参数声明。`main.py` 的 `CliArgs` dataclass 把 50+ 个 CLI 参数集中定义为纯数据容器，与处理逻辑物理隔离——新增选项只需加字段，测试可直接构造 `CliArgs` 实例，绕开命令行解析。`password_sources.py` 作为这一层的侧向依赖，提供按优先级排列的密码候选链。
+
+第二层是路由。`cli_runner.py` 的 `run_from_cli_args()` 承担参数校验、DSN/密码/SSL 解析、实例化、模式分发四件事，向下依赖 `main_modes/*` 的模式函数。它通过 `client_factory` 参数注入 MyCli 的构造，使测试能用 mock 替换真实连接初始化。
+
+第三层是组合。`client.py` 的 `MyCli` 用 5 个 Mixin 按维度聚合能力（连接、查询、输出、命令、状态），避免 God Class。各 Mixin 用 `TYPE_CHECKING` 声明对彼此属性的期望，运行时由 MRO 保证属性存在，不引入运行时耦合。
+
+三层之间依赖单向流动：声明层被路由层引用，路由层实例化组合层，组合层不反向依赖前两者。这种单向依赖使每层可独立测试——`CliArgs` 单测参数定义，`run_from_cli_args` 注入 mock 测分发逻辑，`MyCli` 在测试框架里直接 new 出来跑查询；扩展性则体现在新增运行模式只需在 `main_modes/` 加文件并在 if 链插入分支，前两层无需改动（详见下文扩展方式）。
 
 ## 调用链路
 
 ![CLI 客户端调用链路](/vibe-reading/images/articles/mycli-internals/cli-client-call-chain.svg)
 
-`main()` 经 click 参数解析后进入 `run_from_cli_args()`，依次完成参数校验、MyCli 实例化、数据库连接建立，最后按优先级短路分发到五种运行模式（`--execute`/`--batch`/stdin/交互式 REPL），交互式 REPL 作为 fallback。每个模式函数返回 exit code 并直接 `sys.exit()`。REPL 每次迭代：`text(str)` → `sqlexecute.run()` → `Generator[SQLResult]` → `format_sqlresult()` → `click.echo`。
+mycli 的启动是一条严格线性的流水线，前段没有分支回退，末尾才做模式短路选择。理解这条链路的关键是认清四个节点的职责边界。
+
+入口 `main()` 只负责把命令行交给 Click 解析成 `CliArgs`，然后转交 `run_from_cli_args()`——`standalone_mode=False` 让异常由调用方处理而非 Click 直接退出，便于测试。
+
+校验与实例化节点在 `run_from_cli_args()` 内完成：DSN 拆解、密码候选链 resolve、SSL mode 推导，任一失败即抛异常退出；通过后用 `client_factory` 创建 MyCli 实例，该参数留作注入点，测试时传 mock factory 跳过真实的 sqlexecute/completer 初始化。
+
+连接节点由 `ClientConnectionMixin.connect()` 建立会话，失败则整体退出；连接成功后 MyCli 已具备执行 SQL 的全部能力。
+
+最后一个节点是模式分发，采用优先级短路策略：按 `completions` → `--execute` → `--batch` → stdin 管道 → 交互式 REPL 的顺序逐个判断，命中即 `sys.exit()`，不会 fall through。前四种是一次性执行语义，交互式 REPL 排在最后作为 fallback——这让 `echo "SELECT 1" | mycli` 这类管道用法无需额外参数就能工作，因为 `not sys.stdin.isatty()` 在管道场景先于 REPL 命中。
+
+进入 REPL 后，每次迭代走固定骨架：`text(str)` → `sqlexecute.run()` → `Generator[SQLResult]` → `format_sqlresult()` → `click.echo`。生成器惰性产出结果集，格式化层逐条消费，避免大结果集一次性撑爆内存。
 
 <details>
 <summary>方法速查表</summary>
@@ -138,7 +156,13 @@ prompt > literal > file > environment > dsn > vault > keyring
 
 ![CLI 客户端模块交互](/vibe-reading/images/articles/mycli-internals/cli-client-interactions.svg)
 
-`cli_runner.py` import `main_modes/*`（模式函数）、`password_sources.PasswordCandidates`、`vault`、`packages.special.dsn_aliases`。运行时延迟导入 `mycli.main` 避免循环依赖。`client.py` import `sqlexecute`、`sqlcompleter`、`completion_refresher`、`config`、`ssh_tunnel`、`special`。`MyCli` 被 `main.py`、`schema_prefetcher.py`、`main_modes/*.py` 引用（多数通过 `TYPE_CHECKING`）。`repl.py` 的 `set_all_external_titles` 被 `client_commands.py` 反向 import。
+CLI 客户端模块在 mycli 整体架构中处于承上启下的位置：向上承接命令行入口与各运行模式，向下对接 SQL 执行、补全、配置等基础设施。理清依赖关系要看三个方向。
+
+**向外依赖**——`cli_runner.py` 引入 `main_modes/*` 的模式函数作为分发目标，引入 `password_sources.PasswordCandidates` 构建密码候选链，引入 `vault` 与 `packages.special.dsn_aliases` 支持密码和 DSN 解析。`client.py` 则引入 `sqlexecute`、`sqlcompleter`、`completion_refresher`、`config`、`ssh_tunnel`、`special` 等基础设施，为 MyCli 实例补齐执行与补全能力。
+
+**被依赖**——`MyCli` 作为核心组合类，被 `main.py`（入口实例化）、`schema_prefetcher.py`（预取表结构用于补全）、`main_modes/*.py`（各模式函数接收 `mycli` 参数）引用。这些引用多数放在 `TYPE_CHECKING` 块里，仅供类型标注，运行时不引入。
+
+**循环依赖的消解**——`cli_runner.py` 与 `mycli.main` 之间存在潜在环：`main.py` 调用 `run_from_cli_args()`，而后者又需引用 `main.py` 中的类型。解法是延迟导入——运行时按需 import，避开模块加载阶段的环；类型层面的环用 `TYPE_CHECKING` 守卫，仅 mypy/IDE 可见，运行时被跳过。另一个反向引用是 `repl.py` 的 `set_all_external_titles` 被 `client_commands.py` 导入，这种跨模式文件的引用同样依赖延迟加载策略保证初始化顺序安全。
 
 ## 扩展方式
 

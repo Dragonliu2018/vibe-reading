@@ -25,13 +25,21 @@ reviewed: false
 
 ![补全引擎模块架构](/vibe-reading/images/articles/mycli-internals/completion-engine-architecture.svg)
 
-三层架构：解析层（`completion_engine.py`，`suggest_type()` + `SuggestRule[]` 规则引擎，纯函数无状态）→ 数据+匹配层（`sqlcompleter.py`，`SQLCompleter` 持有 `dbmetadata` + `Fuzziness` 多级匹配）→ 异步刷新层（`completion_refresher.py`，daemon Thread + 独立连接 + `@refresher` 注册表）。跨层链接：解析层被匹配层调用，刷新层完成后热替换填充匹配层。
+补全引擎之所以拆成三层，本质是要把"无状态的解析"、"有状态的匹配"、"耗时的刷新"三类工作隔离，让它们各自拥有独立的生命周期与测试边界。
+
+解析层（`completion_engine.py`）把光标前的 SQL 文本翻译成 `list[Suggestion]`，是纯函数、零状态——每条 `SuggestRule` 都能脱离数据库和 prompt_toolkit 单元测试，新增 SQL 上下文分支只改规则表、不动分发逻辑。数据+匹配层（`sqlcompleter.py`）必须持有状态：候选词来自数据库实时元数据，会随 `USE` 切换和 DDL 操作变化，把状态集中在此让"取候选集→`find_matches()` 多级 Fuzziness 匹配→排序"成为唯一的可变状态入口。异步刷新层（`completion_refresher.py`）解决"元数据刷新要发 SQL 查询、耗时可达数百毫秒"的矛盾，跑在 daemon Thread 上绝不阻塞 UI 线程的 `get_completions`——所以另起一个 `SQLCompleter` + 独立 `SQLExecute` 连接在后台填好，完成后原子替换在线 completer。
+
+三层协作遵循"解析→匹配→刷新填充"的单一方向：UI 线程调用解析层拿到 suggestion 列表，交给匹配层按类型取候选并模糊排序；刷新层在后台默默重建匹配层的状态、完成后热替换上去。这条数据流是单向的——匹配层从不反向调用解析层，刷新层也只写不读匹配层的内部结构。
 
 ## 调用链路
 
 ![补全引擎调用链路](/vibe-reading/images/articles/mycli-internals/completion-engine-call-chain.svg)
 
-路径 A（补全生成）：`get_completions(Document)` → `suggest_type()` 解析 SQL 上下文产出 `list[Suggestion]`（经 `sqlparse.parse` + `SuggestRule` 规则引擎）→ 遍历 suggestion 取候选集 → `find_matches()` 多级 Fuzziness 匹配 → 排序输出 `list[Completion]`。路径 B（后台刷新）：`refresh()` → daemon Thread `_bg_refresh()` → 新建 `SQLCompleter` + 独立 `SQLExecute` 连接 → 遍历 `@refresher` 注册表填充元数据 → callback 原子热替换。
+调用链路背后是两条职责截然不同的路径：一条是用户每敲一个键就要跑的补全生成路径，另一条是偶发触发的后台元数据刷新路径。
+
+补全生成路径对延迟极其敏感（prompt_toolkit 每次按键同步调用 `get_completions`），因此有三处关键设计控制开销：其一，`suggest_type()` 内的 `SuggestRule` 规则引擎顺序遍历、命中即返回，避免对每条 SQL 做全量规则匹配；其二，`SuggestContext` 的 `parsed_cb` / `tokens_wo_space_cb` 配合 `lru_cache` 延迟解析，并非所有规则都需要完整 `sqlparse.parse`，避免无谓开销；其三，`find_matches()` 用 `Fuzziness` IntEnum 给候选排序——完美前缀匹配排在前面、rapidfuzz WRatio 仅在输入 ≥ 4 字符时启用，把昂贵的模糊计算推到最后一层。
+
+后台刷新路径要解决的是"刷新期间用户继续输入"的并发矛盾。`refresh()` 起一个 daemon Thread 跑 `_bg_refresh()`，线程内新建独立 `SQLExecute` 连接——刷新查询绝不抢占用户输入所用的连接。填充元数据时不直接修改在线 completer，而是构造一个全新的 `SQLCompleter`、遍历 `@refresher` 注册表填好后通过 callback 原子热替换上去，读者要么看到旧 dict 要么看到新 dict、永远看不到半更新的中间状态。`_restart_refresh` Event 则在"刷新途中用户又切了数据库"时从头开始，无需杀死线程。
 
 <details>
 <summary>方法速查表</summary>
@@ -111,6 +119,14 @@ def refresh_databases(completer, executor): ...
 # 共 13 个 refresher
 ```
 
+**触发时机**：
+- mycli 启动时——首次加载 schema 元数据
+- 用户执行 `USE` 切换数据库后——自动触发
+- 用户执行 `REFRESH` 命令——手动触发
+- 执行 DDL 语句（`CREATE TABLE`/`DROP TABLE` 等）后——检测到 schema 变化时自动触发
+
+触发路径：`ClientQueryMixin.refresh_completions()` → 设置当前 schema 指针 → 启动 `CompletionRefresher.refresh()`。
+
 `_bg_refresh` 新建独立 `SQLExecute` 连接和 `SQLCompleter` 实例，完成后通过 callback 返回新 completer。这避免了在刷新过程中对在线 completer 的并发修改——读者（UI 线程的 `get_completions`）永远不会看到半刷新的状态。
 
 `load_schema_metadata()` 通过直接赋值（而非逐条 append）替换 per-schema dict，保证并发读者要么看到旧 dict 要么看到新 dict，不会看到半更新的中间状态。
@@ -132,7 +148,11 @@ def refresh_databases(completer, executor): ...
 
 ![补全引擎模块交互](/vibe-reading/images/articles/mycli-internals/completion-engine-interactions.svg)
 
-`sqlcompleter.py` import `completion_engine.suggest_type`、`prompt_toolkit.Completer`、`rapidfuzz`、`pygments`（MySQL 内置关键字/函数/数据类型）。`completion_engine.py` import `sqlparse`、`packages.special.main.COMMANDS`。`completion_refresher.py` import `SQLCompleter`、`SQLExecute`（新建独立连接）。被 `client.py`、`client_query.py`、`schema_prefetcher.py` 引用。
+补全引擎三层的跨模块依赖恰好对应它们各自的职责边界，每一层只引入它真正需要的库，避免把解析耦合进匹配、或把 IO 耦合进解析。
+
+解析层（`completion_engine.py`）只依赖 `sqlparse` 做 SQL token 化，以及 `packages.special.main.COMMANDS` 识别 `\d` 这类 special 命令——它不需要知道数据库长什么样、也不需要 prompt_toolkit 的 Completion 类型，所以能作为纯逻辑模块独立复用。数据+匹配层（`sqlcompleter.py`）的依赖反映了它的两个职责：`prompt_toolkit.Completer` / `Completion` 提供框架集成接口，`rapidfuzz` 提供 WRatio 模糊匹配，`pygments` 提供内置的 MySQL 关键字/函数/数据类型词表——它还 import 解析层的 `suggest_type`，把"解析→匹配"两层串起来。刷新层（`completion_refresher.py`）的依赖最特殊：import `SQLExecute` 是为了新建一条独立连接跑刷新 SQL，import `SQLCompleter` 是为了在后台构造好替换品——这两条 import 都只服务于"后台构造 + 原子替换"这一个目的。
+
+对外，补全引擎被 `client.py`（启动时触发首次刷新）、`client_query.py`（`USE` / DDL 后触发刷新）、`schema_prefetcher.py`（预取 schema）三处引用——这些上层模块只与 `CompletionRefresher.refresh()` 这一个入口交互，不直接触碰 completer 内部状态，保证了刷新的时序由调用方决定、状态变更由刷新层统一管理。
 
 ## 扩展方式
 

@@ -25,13 +25,21 @@ SQL 执行引擎是 mycli 与 MySQL 服务器交互的唯一入口，封装了�
 
 ![SQL 执行引擎模块架构](/vibe-reading/images/articles/mycli-internals/sql-engine-architecture.svg)
 
-`ClientConnectionMixin` 和 `ClientQueryMixin` 位于客户端层，负责连接管理和查询执行的协调。`SQLExecute` 是执行层核心，封装 `pymysql.Connection`，提供 `run()`/`get_result()`/元数据查询方法。`ServerInfo`/`ServerSpecies` 通过工厂方法从版本字符串探测数据库类型（MySQL/MariaDB/Doris 等）。
+SQL 执行引擎的内部设计要回答一个核心问题：**如何在保持 MySQL 协议封装的同时，让连接管理和 SQL 执行各自独立演化？** 答案是 Mixin 分离——`ClientConnectionMixin` 和 `ClientQueryMixin` 位于客户端层，前者专注于连接生命周期（多源密码、SSH 隧道、重连），后者负责查询执行的协调。两者分离的逻辑在于：连接管理需要处理网络不可靠、认证降级等基础设施问题，而查询执行关注的是 SQL 语义和多结果集处理，两者的变更频率和关注点完全不同，放在同一个类中会导致职责膨胀。
+
+`SQLExecute` 是执行层核心，选择封装 `pymysql.Connection` 而非直接暴露驱动，有三个考量：其一，pymysql 的 `Cursor`/`Connection` API 细节（如 `nextset()` 多结果集遍历、`ping(reconnect)` 语义）不应渗透到上层；其二，`run()` 返回 `Generator[SQLResult]` 而非 `list`，让大结果集可以流式处理而不一次性占满内存；其三，元数据查询（`tables()`/`table_columns()`）与 SQL 执行共享同一个连接和 cursor 生命周期，封装后上层无需关心 cursor 复用策略。
+
+`ServerInfo`/`ServerSpecies` 解决的是**服务器类型探测的可靠性问题**。`from_version_string()` 通过工厂方法用正则匹配 MySQL/MariaDB/Percona/TiDB 的版本字符串——之所以需要独立探测，是因为不同数据库物种在 SQL 方言、补全规则、特殊命令支持上差异显著，上层需要据此选择正确的行为分支。Doris 的特殊情况（版本字符串伪装成 MySQL 格式）更说明：仅靠协议握手不足以判断真实物种，连接后必须主动执行 `SELECT @@version_comment` 二次验证。
 
 ## 调用链路
 
 ![SQL 执行引擎调用链路](/vibe-reading/images/articles/mycli-internals/sql-engine-call-chain.svg)
 
-路径 A（查询执行）：`run_query(str)` → `SQLExecute.run()` 返回 `Generator[SQLResult]`，内部先 `split_queries()` 拆分多语句，逐条尝试 `special.execute()` 分发（`CommandNotFound` 则降级为 `cur.execute(sql)`），通过 `get_result(cursor)` 提取 `SQLResult`，`cur.nextset()` 循环处理多结果集。路径 B（重连）：三级渐进——`ping(reconnect=False)` 轻量探测 → `ping(reconnect=True)` 保 session → `connect()` 全新连接。
+SQL 执行引擎有两条核心调用路径，分别回答"用户输入的 SQL 如何执行"和"连接断开如何恢复"两个问题。
+
+**查询执行路径**（路径 A）从 `run_query(str)` 进入 `SQLExecute.run()`，返回 `Generator[SQLResult]`。这条路径有三个关键设计决策。第一，`run()` 返回 Generator 而非 list——这样多语句拆分后逐条 yield、存储过程多结果集逐个 yield、大结果集不一次性 fetchall，三种场景统一用惰性求值解决内存压力。第二，每条语句先尝试 `special.execute()` 分发，抛出 `CommandNotFound` 才降级为 `cur.execute(sql)`——这是 Chain of Responsibility 模式，让 special command（如 `\d`、`\dt`）和普通 SQL 共用同一条入口，上层无需区分。第三，`get_result(cursor)` 让 `SQLResult.rows` 直接持有 Cursor 而非 fetchall，配合 `SSCursor` 实现真正的流式输出。
+
+**重连路径**（路径 B）采用三级渐进策略，核心原则是**最小副作用**——每级只在上一级失败时才升级，尽可能保留用户 session 状态。第 1 级 `ping(reconnect=False)` 是轻量探测，零副作用，如果连接还活着就直接返回，不丢失任何 `@变量` 或 `USE` 的库。第 2 级 `ping(reconnect=True)` 让 pymysql 内部重连，可能保留 session 状态但成功率取决于服务端是否维护了会话。第 3 级 `connect()` 完全重建连接，session 状态全部丢失——这是最后的手段。之所以渐进而非直接重建，是因为在不可靠网络（如 SSH 隧道断流）下，多数"断线"只是暂时的 TCP 心跳丢失，连接本身可能仍有效，直接重建会不必要地丢失用户的临时表、会话变量等状态。
 
 <details>
 <summary>方法速查表</summary>
@@ -141,7 +149,13 @@ def reconnect(self, database=""):
 
 ![SQL 执行引擎模块交互](/vibe-reading/images/articles/mycli-internals/sql-engine-interactions.svg)
 
-`sqlexecute.py` import `pymysql`（DB 驱动）、`packages.special.iocommands`（`split_queries`）、`packages.special.main`（`execute`/`CommandNotFound`）、`packages.sqlresult`（`SQLResult`）。`sqlexecute` 是扇入最高的模块（8 个生产文件引用），是整个 mycli 的核心枢纽。`client_connection.py` import `ssh_tunnel.SshTunnel`、`password_sources.PasswordCandidates`、`sqlexecute.SQLExecute`。
+SQL 执行引擎在 mycli 的模块依赖图中扮演**核心枢纽**角色——`sqlexecute.py` 是扇入最高的模块（8 个生产文件引用它），几乎所有上层组件最终都要通过它才能与数据库交互。理解这个枢纽的依赖关系，就能理解整个 mycli 的协作架构。
+
+**谁依赖 sqlexecute**：REPL 主循环（`main.py`）通过 `run_query()` 调用它执行用户输入；补全刷新器（`completion_refresher.py`）调用它的 `tables()`/`table_columns()` 等元数据方法构建补全索引；`client_connection.py` 的重连逻辑直接操作它的 `conn` 属性和 `connect()` 方法。sqlexecute 对外暴露的接口是稳定的 `Generator[SQLResult]` 和元数据查询方法，内部如何管理 pymysql 的 cursor 和连接对调用方不可见——这种封装让上层组件可以独立演化。
+
+**sqlexecute 依赖了什么**：它 import `pymysql`（DB 驱动，负责底层协议）、`packages.special.iocommands` 的 `split_queries`（语句拆分）、`packages.special.main` 的 `execute`/`CommandNotFound`（special command 分发）、`packages.sqlresult` 的 `SQLResult`（统一结果契约）。这条依赖链回答了"SQL 从输入到执行经历了什么"：`split_queries` 先拆分多语句，`execute` 尝试 special command 分发，失败则降级为 `cur.execute(sql)`，结果统一封装为 `SQLResult`。
+
+**special 模块如何融入执行流程**：`split_queries` 和 `execute` 来自 `packages.special`，它们不是 sqlexecute 的内部方法而是独立模块。这种设计让 special command（如 `\d table`、`system` shell 命令）可以独立扩展——新增 special command 只需在 special 模块注册，不需要修改 sqlexecute。`CommandNotFound` 作为降级信号是这条协作链的关键：special 模块用异常告诉 sqlexecute"这条不是我能处理的"，sqlexecute据此降级为普通 SQL 执行，两个模块通过异常实现了松耦合的职责分发。
 
 ## 扩展方式
 

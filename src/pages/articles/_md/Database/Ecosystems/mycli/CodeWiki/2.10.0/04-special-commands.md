@@ -4,7 +4,7 @@ source:
   project: "mycli"
   url: "https://github.com/dbcli/mycli"
 title: "特殊命令详解"
-date: "2026-08-07T01:40:00+08:00"
+date: "2026-08-09T10:40:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
 tags: ["mycli", "Python", "特殊命令", "装饰器注册", "Favorite Query"]
 description: "mycli 特殊命令模块深度解读：@special_command 装饰器注册、execute() 调度、ArgType 策略、Favorite Query 模板渲染。"
@@ -17,29 +17,55 @@ reviewed: false
 
 ---
 
+## 模块定位
+
+特殊命令模块处理所有 `\` 前缀的客户端命令（如 `\dt`、`\l`、`status`、`\f`），将命令注册、调度和实现解耦。它让 SQLExecute 的 `run()` 通过 `execute()` 入口统一分发客户端命令和普通 SQL，使上层无需区分命令来源。
+
+## 模块架构
+
+```
+┌─────────────────────────────────────────────────────┐
+│              special/main.py                         │
+│  COMMANDS: dict[str, SpecialCommand]                │
+│  execute() · parse_special_command()                │
+│  ArgType: NO_ARGUMENT / PARSED_QUERY / RAW_QUERY    │
+│  @special_command 装饰器                             │
+└───────────────┬──────────────┬──────────────────────┘
+                │ 注册          │ 注册
+    ┌───────────▼──┐  ┌────────▼────────┐
+    │ dbcommands   │  │ iocommands       │
+    │ \dt \l status│  │ pager tee system │
+    │ \u           │  │ \f (favorite)    │
+    └──────────────┘  └─────────────────┘
+           ┌──────────────┐  ┌────────────────┐
+           │favoritequeries│  │  dsn_aliases    │
+           │ \fs \fd       │  │  \ds \dl        │
+           └──────────────┘  └────────────────┘
+```
+
 ## 调用链路
 
 ```
-execute(cur, sql)
-├── parse_special_command(sql)               # 拆分 command / verbosity / arg
-├── COMMANDS[command] → SpecialCommand     # O(1) 查找
+execute(cur, sql)                              # 输入: str (SQL 或命令)
+├── parse_special_command(sql)                # → (command, arg, verbosity)
+├── COMMANDS[command] → SpecialCommand       # → SpecialCommand (O(1) 查找)
 ├── [特殊分支] help <keyword>
-│   ├── _show_special_help()
+│   ├── _show_special_help()                  # → list[SQLResult]
 │   └── _show_mysql_help()
 └── 按 arg_type 分发:
-    ├── NO_ARGUMENT  → handler()
-    ├── PARSED_QUERY → handler(cur=, arg=, ...)
-    └── RAW_QUERY   → handler(cur=, query=sql)
+    ├── NO_ARGUMENT  → handler()              # → list[SQLResult]
+    ├── PARSED_QUERY → handler(cur=, arg=, ...)  # → list[SQLResult]
+    └── RAW_QUERY   → handler(cur=, query=sql)   # → list[SQLResult]
 
-execute_favorite_query(cur, arg)            # \f 命令
-├── parse_favorite_query_args(arg)
-├── FavoriteQueries.instance.get(name)
-├── prepare_favorite_query_args()           # $1/$2 → UUID marker
-├── render_favorite_query()                # Jinja2 模板渲染
-├── restore_favorite_query_args()          # marker → 真实值
+execute_favorite_query(cur, arg)              # 输入: str (name + args)
+├── parse_favorite_query_args(arg)            # → (positional: list[str], template_values: dict)
+├── FavoriteQueries.instance.get(name)       # → template SQL str
+├── prepare_favorite_query_args()             # → marked_query (UUID marker 替换 $1)
+├── render_favorite_query()                   # → rendered SQL (Jinja2 渲染)
+├── restore_favorite_query_args()             # → final SQL (marker → 真实值)
 └── for sql in sqlparse.split(query):
-    ├── special command → execute(cur, sql)  # 递归回到 execute()
-    └── 普通 SQL → cur.execute(sql)
+    ├── special command → execute(cur, sql)   # 递归 → list[SQLResult]
+    └── 普通 SQL → cur.execute(sql)           # → Cursor
 ```
 
 <details>
@@ -47,7 +73,7 @@ execute_favorite_query(cur, arg)            # \f 命令
 
 | 方法 | 职责 | 关键设计决策 |
 |------|------|-------------|
-| `execute(cur, sql)` | 命令调度入口，查找并执行 special command | ArgType 三策略选择调用签名 |
+| `execute(cur, sql)` in `main.py` | 命令调度入口 | ArgType 三策略选择调用签名 |
 | `parse_special_command()` | 拆分命令词 + verbosity + 参数 | 检测 `+`/`-` 后缀 → CommandVerbosity |
 | `register_special_command()` | 注册命令到 COMMANDS 字典 | backslash + forwardslash 双注册 + alias |
 | `execute_favorite_query()` | 执行收藏查询 | UUID marker 防止 `$1` 与 Jinja2 冲突 |
@@ -57,9 +83,11 @@ execute_favorite_query(cur, arg)            # \f 命令
 
 ---
 
-## @special_command 装饰器注册
+## 核心实现
 
-mycli 没有在一个大函数里写 `if command == '\dt': ...`，而是用 `@special_command` 装饰器让每个命令的实现紧邻其注册元数据：
+### @special_command 装饰器注册
+
+mycli 用 `@special_command` 装饰器让每个命令的实现紧邻其注册元数据：
 
 ```python title="mycli/packages/special/main.py"
 @dataclass(frozen=True)
@@ -84,15 +112,13 @@ def special_command(command, usage, description, arg_type=ArgType.PARSED_QUERY, 
 
 新增命令只需在任意文件加一个装饰器，自动进入 `\help` 列表，命令的 usage/description/aliases/arg_type 等元数据与 handler 在同一处。
 
-## execute() 调度器
+### execute() 调度器
 
 ```python title="mycli/packages/special/main.py — execute()"
 def execute(cur, sql):
     command, arg, verbosity = parse_special_command(sql)
     special_cmd = COMMANDS[command]  # O(1) 查找
-    # 特殊分支：help <keyword>
     if command == 'help': ...
-    # 按 arg_type 策略分发
     if special_cmd.arg_type == ArgType.NO_ARGUMENT:
         return special_cmd.handler()
     elif special_cmd.arg_type == ArgType.PARSED_QUERY:
@@ -103,29 +129,22 @@ def execute(cur, sql):
 
 `ArgType` 枚举定义了三种调用策略，handler 只接收自己需要的参数，避免了所有 handler 都带 `cur=None, arg=None, query=None` 的臃肿签名。
 
-## 命令分类
+### 命令分类
 
 | 类别 | 文件 | 命令示例 |
 |------|------|----------|
-| 数据库元命令 | `dbcommands.py` | `\dt`（表列表）、`\l`（库列表）、`status`（服务器状态）、`\u`（切库） |
-| IO 控制 | `iocommands.py` | `pager`、`tee`、`system`、`watch`、`\f`（favorite query） |
+| 数据库元命令 | `dbcommands.py` | `\dt`（表列表）、`\l`（库列表）、`status`、`\u`（切库） |
+| IO 控制 | `iocommands.py` | `pager`、`tee`、`system`、`watch`、`\f` |
 | 收藏查询 | `favoritequeries.py` | `\fs`（保存）、`\fd`（删除）、`\f`（执行） |
 | DSN 别名 | `dsn_aliases.py` | `\ds`（保存别名）、`\dl`（列表） |
 | LLM 集成 | `llm.py` | `\llm`（自然语言转 SQL） |
 | 分隔符 | `delimitercommand.py` | `delimiter`（修改 SQL 分隔符） |
 
-## Stub 命令：元数据与实现分离
+### Stub 命令：元数据与实现分离
 
-`\edit`、`\G`、`\g`、`\x`、`\clip`、`\llm` 在 special 模块中注册为 `stub()`（抛 `NotImplementedError`），真实逻辑在 REPL 层拦截：
+`\edit`、`\G`、`\g`、`\x`、`\clip`、`\llm` 在 special 模块中注册为 `stub()`（抛 `NotImplementedError`），真实逻辑在 REPL 层拦截。这样 `\help` 能完整列出所有命令（包括需要接管终端/编辑器的命令），而 special 模块保持纯粹的"命令注册 + DB 可执行命令"职责，不引入对 `prompt_toolkit`/`click.edit` 的强依赖。
 
-```python title="mycli/packages/special/main.py"
-@special_command('\\edit', '\\edit', 'Open an editor.', arg_type=ArgType.NO_ARGUMENT)
-def stub(): raise NotImplementedError
-```
-
-这样 `\help` 能完整列出所有命令（包括需要接管终端/编辑器的命令），而 special 模块保持纯粹的"命令注册 + DB 可执行命令"职责，不引入对 `prompt_toolkit`/`click.edit` 的强依赖。
-
-## Favorite Query：模板系统
+### Favorite Query：模板系统
 
 `\f` 命令支持位置参数 `$1`/`$2` 和 Jinja2 模板变量 `{{ name }}`：
 
@@ -139,27 +158,23 @@ def stub(): raise NotImplementedError
 
 两套模板系统共存的关键是 **UUID marker 防冲突**：`prepare_favorite_query_args` 将 `$1`/`$2` 替换为 `__mycli_favorite_arg_<uuid>_<n>__` marker，再交给 Jinja2 渲染，最后还原。这解决了位置参数语法 `$1` 与 Jinja2 模板变量同存的冲突。
 
-## 模块级单例状态
+Favorite Query 的数据流经历 4 次字符串变换：原始模板 → UUID marker 替换 → Jinja2 渲染 → marker 恢复 → 最终 SQL。
 
-`iocommands.py` 用模块级全局变量 + setter/getter 对管理可变状态：
+## 设计模式
 
-```python title="mycli/packages/special/iocommands.py"
-TIMING_ENABLED = False
-use_expanded_output = False
-PAGER_ENABLED = True
-tee_file = None
-delimiter_command = DelimiterCommand()
-favoritequeries = FavoriteQueries(ConfigObj())
-```
+| 模式 | 位置 | 为什么用 |
+|------|------|----------|
+| 装饰器注册 | `main.py` @special_command | 命令元数据与 handler 在同一处，不漂移 |
+| 策略模式 | `main.py` ArgType | 不同命令对参数需求不同，按策略选择签名 |
+| Stub/分离 | `main.py` stub() | 元数据完整但实现延迟到 REPL 层 |
+| 模板方法 | `iocommands.py` Favorite Query | prepare→render→restore 固定流程 |
 
-任何模块都能直接 `from mycli.packages.special.iocommands import is_pager_enabled` 读取状态，无需传递上下文对象。对单进程 CLI 工具来说是合理的简化。
+## 模块间交互
 
-## 关键设计决策
+`special/main.py` 被 `sqlexecute.py`（`execute`/`CommandNotFound`）、`sqlcompleter.py`（`COMMANDS`）、`completion_engine.py`（`COMMANDS`/`parse_special_command`）、`completion_refresher.py`（`COMMANDS`）、`repl.py`（`handle_llm` 等）引用。`dbcommands.py` 和 `iocommands.py` 通过 `@special_command` 装饰器注册到 `main.py` 的 `COMMANDS` 字典，不反向依赖。`iocommands.py` 用模块级全局变量 + setter/getter 管理可变状态（`TIMING_ENABLED`、`PAGER_ENABLED`、`tee_file` 等），任何模块能直接读取，无需传递上下文对象。
 
-**装饰器注册 vs 集中分发表**：命令元数据与 handler 在同一处，不会漂移。不同类别的命令可以分散到 `dbcommands.py`、`iocommands.py` 等文件，按职责拆分。
+## 扩展方式
 
-**backslash + forwardslash 双注册**：自动注册 `\x` 和 `/x` 两种形式，`/x` 标记为 hidden 不在 `\help` 显示。代价是 `COMMANDS` 字典有大量 hidden 条目，但查找是 O(1)。
-
-**ArgType 三策略**：不同命令对 cursor 和参数的需求差异很大。用 `ArgType` 枚举让 `execute()` 按策略选择调用签名，handler 只接收自己需要的参数。
-
-**UUID marker 防冲突**：两套模板系统（`$1` 位置参数 + Jinja2 `{{ }}`）共存的工程妥协，通过 UUID marker 隔离两套语法的解析。
+- **新增特殊命令**：在 `dbcommands.py` 或 `iocommands.py` 中加 `@special_command('\\xxx', ...)` 装饰的 handler 函数 → 自动注册到 `COMMANDS` 字典
+- **新增命令别名**：在 `@special_command` 的 `aliases` 参数中加 `SpecialCommandAlias`
+- **修改 Favorite Query 模板语法**：`iocommands.py` 的 `prepare_favorite_query_args` / `render_favorite_query` / `restore_favorite_query_args`

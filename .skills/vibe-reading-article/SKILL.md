@@ -60,28 +60,19 @@ exit 0 = 通过；exit 1 = 输出具体错误，按提示修正后重跑。
 
 用户确认满意后：将文件放到对应目录，运行 `npm run build`。
 
-## 并发写作隔离（多 session 同时写博客）
+## 并发写作（多 session 同时写博客）
 
-单 session 直接在主 repo 工作区写即可。**多 session 同时写不同文章时，不要在主 repo 工作区直接写**——git 工作区单实例，多 session 开分支会互相切走 checkout，且 `git add -A` 会误收对方半成品。
+单 session 直接在主 repo 工作区写即可。**多 session 同时写不同文章时，都在主 repo main 工作区写各自 slug**——不开分支（单工作区开分支会互相切走 checkout），commit 时**只 add 自己 slug 的路径，不用 `git add -A`**（否则误收对方半成品）。
 
-用 git worktree 物理隔离：每篇文章一个独立工作区 + 独立分支，checkout 互不干扰，连 `git add` 都自动隔离（工作区只有自己的改动）。
-
-**开始写**（主 repo 根执行，实测 ~5 秒）：
+写完用脚本精确 commit：
 
 ```bash
-bash .skills/vibe-reading-article/scripts/setup-article-worktree.sh <slug>
-cd ../vibe-reading-<slug>   # 进入隔离工作区，正常写 + npm run build 验证
+bash .skills/vibe-reading-article/scripts/commit-article.sh <slug>
 ```
 
-脚本建 worktree（`article/<slug>` 分支）+ symlink node_modules（不重装 210M）+ init `public/images` submodule（`--reference` 复用主 repo 对象，不重下）。
+脚本只 add `<slug>` 的 md（`src/pages/articles/_md/**/*<slug>*.md`）+ 图（`public/images/articles/<slug>/`）+ PDF（`public/papers/<slug>.pdf`），子仓库 commit + 主 repo commit（文章 + 指针），**不 push**（人工触发）。
 
-**写完收尾**（主 repo 根执行）：
-
-```bash
-bash .skills/vibe-reading-article/scripts/finish-article-worktree.sh <slug>
-```
-
-脚本：submodule commit SVG + 主 repo commit 文章 + rebase `origin/main` + push 到远端 main（fast-forward，**不碰主 repo 工作区**，多 session 安全）+ worktree remove。push 撞了提示进 worktree `git fetch && git rebase origin/main` 后重试。
+优点（替代 worktree）：不开分支无 checkout 切走、子仓库 commit 落主 `.git/modules` 不丢、主 repo dev 4321 共享预览（文章在工作区 HMR 直接看）。根因治的是 `git add -A` 误收——本脚本精确 add 自己 slug 路径。
 
 ## 写作规范
 

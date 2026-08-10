@@ -41,6 +41,8 @@ reviewed: false
 
 **所有字段必须填写。不要加 `layout:` 行（由 `[slug].astro` 统一处理）。**
 
+**标题/描述内部含引号时**：字符串值外层用 ASCII `"`（YAML 分隔符），内层改用中文弯引号 `“”`（U+201C/U+201D）。中文标题常含引号（如"不明觉赞"），直接用 ASCII `"` 会让 YAML 把它当成字符串结束符，`astro build` 报 `bad indentation` 解析失败。`check-article.sh` 已做 YAML 解析校验可捕获此类错误。
+
 `reviewed`：是否经人工 review。AI 生成初稿时一律写 `false`；人工 review 通过后改为 `true`，提交重新构建后首页/文章页徽章由 `Draft`（灰黄）切为 `Reviewed`（绿）。省略时等同 `false`。
 
 PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读文章也加 `source`（`type: "论文解读"`、无 id），前缀 `[project 论文解读]` 由 source 自动拼，见 `paper-workflow.md`。

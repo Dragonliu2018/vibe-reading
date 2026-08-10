@@ -32,13 +32,13 @@ if [[ "$EXT" == "md" ]]; then
     # 提取 frontmatter 块（第一个 --- 到第二个 --- 之间，含中文弯引号也安全）
     FM_CONTENT=$(awk 'BEGIN{c=0} /^---[[:space:]]*$/{c++; if(c==2) exit; next} c==1' "$FILE")
     if [[ -n "$FM_CONTENT" ]]; then
-      YAML_ERR=$(JSYAML="$PROJECT_ROOT/node_modules/js-yaml" printf '%s' "$FM_CONTENT" | node -e '
+      YAML_ERR=$(JSYAML="$PROJECT_ROOT/node_modules/js-yaml" node -e '
 const yaml = require(process.env.JSYAML);
 let d = ""; process.stdin.on("data", c => d += c);
 process.stdin.on("end", () => {
   try { yaml.load(d); }
   catch(e) { console.error(e.message); process.exit(1); }
-});' 2>&1)
+});' <<< "$FM_CONTENT" 2>&1)
       if [[ -n "$YAML_ERR" ]]; then
         ERRORS+=("frontmatter YAML 解析失败（会导致 astro build 失败）: $YAML_ERR")
       fi

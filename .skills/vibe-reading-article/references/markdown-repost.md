@@ -223,6 +223,7 @@ reviewed: false
 ---
 ```
 
+- **标题/描述内部含引号时**：frontmatter 字符串值**外层**用 ASCII `"`（YAML 分隔符），**内层**改用中文弯引号 `“”`（U+201C/U+201D）。中文文章标题常含引号（如"不明觉赞"），直接用 ASCII `"` 会被 YAML 当成字符串结束符，导致 `astro build` 报 `bad indentation` 解析失败。`check-article.sh` 已做 YAML 解析校验可捕获此类错误，但写作时应直接用弯引号避免。
 - `source.type = "article"`：转载类，不需要 `prType`（区别于 PR/commit）。
 - `category` 末级按来源：版本化官方文档用 `Docs` + 版本号末级（如 `[Database, Apache Doris, Docs, "3.x"]`，版本号必须加引号），非版本化官方文章用 `Official`，非官方技术博客用 `Informal`；前两层反映原文主题域。转载标记由 `source.type=article` 负责，末级只反映来源。
 - **标题前缀**：转载文章标题自动渲染为 `[project 末级]` 前缀——project 取 `source.project`，末级取 category 最后一个元素。版本化文档 project 用项目名不带版本（如 `Doris`），版本号在 category 末级，前缀渲染为 `[Doris 3.x]`；非版本化官方文章前缀 `[Doris Official]`。与 PR 文章的 `[project type-id]` 前缀对应。

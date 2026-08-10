@@ -113,12 +113,12 @@ process.stdin.on("end", () => {
     # 文件在 _md/ 的子目录中，检查路径是否以 category 开头
     CATEGORY_LINE=$(grep -E '^category:' "$FILE" | head -1)
     # 提取 category 数组，去掉方括号和引号，用 / 拼接
+    # 注意：元素可能含空格（如 "AI Coding"），只去引号和逗号后空格，保留元素内部空格
     CATEGORY_PATH=$(echo "$CATEGORY_LINE" \
       | sed 's/^category: *\[//' \
       | sed 's/\] *$//' \
       | sed 's/"//g' \
-      | sed 's/ //g' \
-      | tr ',' '/')
+      | sed 's/, */\//g')
     if [[ -n "$CATEGORY_PATH" ]]; then
       # 目录路径应等于 category_path 或 category_path/{slug}（多一层）
       if [[ "$REL_PATH" != "$CATEGORY_PATH" ]] && [[ "$REL_PATH" != "$CATEGORY_PATH"/* ]]; then

@@ -5,7 +5,7 @@ source:
   url: "https://github.com/Graphify-Labs/graphify"
 title: "Extraction Engine"
 date: "2026-08-10T22:00:00+08:00"
-category: [AI, Agent, AICoding, Graphify, CodeWiki, "0.9.38"]
+category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
 tags: ["graphify", "tree-sitter", "AST", "LanguageConfig", "符号解析", "phantom-edge"]
 description: "graphify 抽取引擎：tree-sitter AST 确定性抽取 ~40 种语言，LanguageConfig 统一语言差异，跨文件符号解析 + 多层 phantom-edge 防护。"
 readingTime: "18 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/00-overview)
 
 ---
 

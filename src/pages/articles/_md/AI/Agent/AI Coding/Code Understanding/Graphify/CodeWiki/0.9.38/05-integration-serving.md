@@ -5,7 +5,7 @@ source:
   url: "https://github.com/Graphify-Labs/graphify"
 title: "Integration & Serving"
 date: "2026-08-10T22:00:00+08:00"
-category: [AI, Agent, AICoding, Graphify, CodeWiki, "0.9.38"]
+category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
 tags: ["graphify", "MCP", "skill注册", "PreToolUse hooks", "Claude Code", "Git hooks"]
 description: "graphify 集成层：15+ AI 助手 skill 注册、MCP server 双兼容、PreToolUse nudge/deny 拦截、fail-open 原则与版本检测。"
 readingTime: "14 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/00-overview)
 
 ---
 

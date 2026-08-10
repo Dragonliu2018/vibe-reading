@@ -5,7 +5,7 @@ source:
   url: "https://github.com/Graphify-Labs/graphify"
 title: "LLM Semantic Layer"
 date: "2026-08-10T22:00:00+08:00"
-category: [AI, Agent, AICoding, Graphify, CodeWiki, "0.9.38"]
+category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
 tags: ["graphify", "LLM", "语义抽取", "多provider", "自适应重试", "prompt安全"]
 description: "graphify LLM 语义层：多 provider 统一接口、自适应二分重试、prompt injection 防御、语义缓存与 semantic_cleanup 安全边界。"
 readingTime: "16 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/00-overview)
 
 ---
 

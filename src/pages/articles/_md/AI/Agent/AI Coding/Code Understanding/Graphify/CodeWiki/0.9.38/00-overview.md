@@ -5,7 +5,7 @@ source:
   url: "https://github.com/Graphify-Labs/graphify"
 title: "Overview"
 date: "2026-08-10T22:00:00+08:00"
-category: [AI, Agent, AICoding, Graphify, CodeWiki, "0.9.38"]
+category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
 tags: ["graphify", "Python", "知识图谱", "tree-sitter", "社区检测", "AI Coding"]
 description: "graphify 把代码库、文档、PDF、图片映射为可查询的知识图谱。本文从五层架构、tree-sitter 抽取引擎、Leiden 社区检测到 MCP 集成，全面解读 v0.9.38 的内部原理。"
 readingTime: "25 min"
@@ -212,11 +212,11 @@ graphify 的五个核心模块各自有明确的职责边界。下图展示模�
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|----------|-----------|----------|
-| 抽取引擎 | tree-sitter AST 确定性抽取 ~40 语言 | `extract()` in `extract.py` L5139 | 确定性抽取是 graphify 的核心价值——不调 LLM、可缓存、可复现。与 LLM 语义层分离保证了代码映射"完全本地" | [抽取引擎](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/01-extraction-engine) |
-| 图构建与分析 | 组装 NetworkX 图、去重、社区检测 | `build()` in `build.py` L1264 | nodes+edges 到有结构图的变换是独立的关注点——去重策略、社区算法、phantom-edge 防护都需独立演进 | [图构建与分析](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/02-graph-building) |
-| 查询与导出 | 查询 graph.json、导出 HTML/Neo4j | `to_json()` in `export.py` L232 | 查询和导出不依赖抽取过程——只消费 `graph.json`，可独立运行 | [查询与导出](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/03-query-export) |
-| LLM 语义层 | docs/PDF/media 的语义抽取 | `extract_corpus_parallel()` in `llm.py` L2227 | LLM 抽取是不确定性的、有成本的、需缓存的——与确定性 AST 抽取物理隔离，避免污染核心管线 | [LLM 语义层](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/04-llm-semantic) |
-| 集成与服务 | AI 助手注册、MCP server、hooks | `main()` in `__main__.py` L460 | 外部协议适配（CLI/MCP/15+ AI 助手）变化频繁，隔离在核心管线之外 | [集成与服务](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/05-integration-serving) |
+| 抽取引擎 | tree-sitter AST 确定性抽取 ~40 语言 | `extract()` in `extract.py` L5139 | 确定性抽取是 graphify 的核心价值——不调 LLM、可缓存、可复现。与 LLM 语义层分离保证了代码映射"完全本地" | [抽取引擎](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/01-extraction-engine) |
+| 图构建与分析 | 组装 NetworkX 图、去重、社区检测 | `build()` in `build.py` L1264 | nodes+edges 到有结构图的变换是独立的关注点——去重策略、社区算法、phantom-edge 防护都需独立演进 | [图构建与分析](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/02-graph-building) |
+| 查询与导出 | 查询 graph.json、导出 HTML/Neo4j | `to_json()` in `export.py` L232 | 查询和导出不依赖抽取过程——只消费 `graph.json`，可独立运行 | [查询与导出](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/03-query-export) |
+| LLM 语义层 | docs/PDF/media 的语义抽取 | `extract_corpus_parallel()` in `llm.py` L2227 | LLM 抽取是不确定性的、有成本的、需缓存的——与确定性 AST 抽取物理隔离，避免污染核心管线 | [LLM 语义层](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/04-llm-semantic) |
+| 集成与服务 | AI 助手注册、MCP server、hooks | `main()` in `__main__.py` L460 | 外部协议适配（CLI/MCP/15+ AI 助手）变化频繁，隔离在核心管线之外 | [集成与服务](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/05-integration-serving) |
 
 ---
 
@@ -339,4 +339,4 @@ tests/
   读这些理解"如何新增语言、新增解析器、新增 LLM provider、新增 AI 助手平台"。
 
 - **第四遍：选择重点子模块深入阅读**
-  [抽取引擎](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/01-extraction-engine) · [图构建与分析](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/02-graph-building) · [查询与导出](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/03-query-export) · [LLM 语义层](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/04-llm-semantic) · [集成与服务](/vibe-reading/articles/AI/Agent/AICoding/Graphify/CodeWiki/0.9.38/05-integration-serving)
+  [抽取引擎](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/01-extraction-engine) · [图构建与分析](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/02-graph-building) · [查询与导出](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/03-query-export) · [LLM 语义层](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/04-llm-semantic) · [集成与服务](/vibe-reading/articles/AI/Agent/AI Coding/Code Understanding/Graphify/CodeWiki/0.9.38/05-integration-serving)

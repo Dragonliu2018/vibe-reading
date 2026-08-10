@@ -15,7 +15,7 @@ source:
   project: "{project-name}"
   url: "{repo-url}"
 title: "Overview"                        # 概览固定为 "Overview"；模块文件改为 "{模块名}"（不加项目前缀和"详解"后缀，由 source 自动生成）
-date: "YYYY-MM-DDTHH:MM:SS+08:00"
+date: "YYYY-MM-DDTHH:MM:SS+08:00"      # 取博客编写时的当前时间（TZ=Asia/Shanghai date '+%Y-%m-%dT%H:%M:%S+08:00'，勿手填近似）；ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
 category: [Domain, Project, CodeWiki, "{version}"]
 tags: ["项目名", "语言", "核心标签"]
 description: "一句话描述"

@@ -213,7 +213,7 @@ source:
   url: "https://原文链接"
   author: "原作者名 / 账号"
   site: "来源平台（知乎 / 公众号 / 个人博客名 / 掘金）"
-date: "YYYY-MM-DDTHH:MM:SS+08:00"      # 转载/翻译日期，不是原文发布日期（后者放导言「原文发布」）；ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
+date: "YYYY-MM-DDTHH:MM:SS+08:00"      # 取转载/翻译时的当前时间（TZ=Asia/Shanghai date '+%Y-%m-%dT%H:%M:%S+08:00'，勿手填近似）；转载/翻译日期，不是原文发布日期（后者放导言「原文发布」）；ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
 category: [Domain, Topic, Official]   # 版本化官方文档用 Docs + 版本号，如 [Database, Apache Doris, Docs, "3.x"]；非版本化官方文章用 Official；非官方博客用 Informal
 tags: ["原文标签或主题词"]
 description: "一句话概括，可引用原文导言首句"

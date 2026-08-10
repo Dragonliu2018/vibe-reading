@@ -34,6 +34,10 @@ Doris 的 `FullSorter` 是全排序算子的核心实现，负责将上游传入
 
 PR [#55317](https://github.com/apache/doris/pull/55317) 由 **qzsee** 提交，针对这两个浪费点做了对应优化：累积阶段跳过常量列物化、归并阶段缓存列指针。
 
+![FullSorter 架构与改动位置](/vibe-reading/images/articles/doris-pr-55317-full-sort-const-column-optimization/architecture-overview.svg)
+
+上图标注了 PR 的两处改动：累积阶段（黄）`append_block` 跳过 ColumnConst 物化，归并阶段（绿）`MergeSortCursorImpl` 缓存列指针。两处都不改变排序语义，只消除各自阶段的冗余开销——一处省内存分配，一处省临时 vector 构造。
+
 ---
 
 ## 前置知识
@@ -84,6 +88,10 @@ virtual void insert_many_from(const IColumn& src, size_t position, size_t length
 
 ### 改动一：append_block 跳过常量列物化
 
+![append_block 常量列物化优化](/vibe-reading/images/articles/doris-pr-55317-full-sort-const-column-optimization/append-block-optimization.svg)
+
+改动前对每列无条件 `convert_to_full_column_if_const`（红，常量列会物化 N 行临时列再拷贝）；改动后先 `is_column_const` 判断，常量列直接 `insert_many_from` 重复单值（绿，跳过物化），普通列直接 `insert_range_from`。
+
 这是本 PR 最核心的优化。`FullSorter::append_block` 负责将上游 Block 的各列追加到累积列中。
 
 **改动前**：
@@ -115,6 +123,10 @@ if (is_column_const(*arrival_data[i].column)) {
 - **普通列分支**：直接 `insert_range_from`，不再调用 `convert_to_full_column_if_const()`。对普通列来说 `convert_to_full_column_if_const()` 本来就是 no-op（直接返回自身），但省掉一次虚函数调用和引用计数操作。
 
 ### 改动二：MergeSortCursorImpl 缓存列指针
+
+![归并阶段列指针缓存](/vibe-reading/images/articles/doris-pr-55317-full-sort-const-column-optimization/merge-cursor-cache.svg)
+
+改动前归并循环每行调 `block->get_columns()[i]`（红，按值返回 `vector<ColumnPtr>` 逐行构造+析构）；改动后 `reset()` 一次性缓存所有列裸指针到 `columns` 成员，循环里直接 `current->columns[i]`（绿，零开销访问）。
 
 `MergeSortCursorImpl` 是归并排序的游标，在堆中排序多个已排序 Block。`reset()` 在每次加载新 Block 时被调用，准备排序所需的列指针。
 

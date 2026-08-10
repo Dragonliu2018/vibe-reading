@@ -15,7 +15,8 @@
 ```
 Step 0  元信息与 slug          ── 顺序
 Step 1  结构扫描               ── 顺序（Bash: tree/find/grep/wc）
-Step 2  核心模块识别            ── 顺序（三信号筛选）
+Step 1.5 graphify 建图（可选）  ── 顺序（AST 知识图谱，零 token，确定性数据层）
+Step 2  核心模块识别            ── 顺序（四信号：重目录+高扇入+入口可达+社区/god）
 Step 3  并行模块分析            ── 并行（spawn Agent，每模块一个 + 数据流追踪一个）
 Step 4  架构综合 + SVG 生成     ── 顺序（从 Agent 结果汇总，生成架构图/数据流图 SVG）
 Step 5  撰写文章               ── 顺序（§1-§12 Markdown，引用 SVG 图片）
@@ -32,31 +33,28 @@ Step 6  合规检查 + 构建 + 发布   ── 顺序
 **获取仓库代码**：
 
 ```bash
-# 方式 A：GitHub 仓库 URL → clone（完整历史，用于 Step 0 取 tag）
+# 方式 A：GitHub 仓库 URL → clone（完整历史，用于取 tag）
 git clone <repo-url> /tmp/<project-name>
-
-# 方式 B：本地路径 → 直接使用
-REPO_PATH=/path/to/project
-```
-
-> ⚠️ 不要用 `--depth 1`，否则无法获取 git tag。如果仓库过大，clone 后立即 checkout 到目标 tag 再分析。
-
-**确定解读版本**：
-
-```bash
-# 如果用户指定了版本号（如 v1.2.0），checkout 到该 tag
 cd /tmp/<project-name>
-git checkout <version-tag>
+TAG="${VERSION_TAG:-$(git describe --tags --abbrev=0 2>/dev/null)}"
+[ -n "$TAG" ] && git checkout "$TAG"   # 无 tag 则留在默认分支 HEAD
+REPO_PATH=/tmp/<project-name>
 
-# 如果用户未指定版本号，取最新 tag 作为解读目标
-LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
-if [ -n "$LATEST_TAG" ]; then
-  git checkout "$LATEST_TAG"
-  echo "解读版本：$LATEST_TAG（最新 tag）"
-else
-  echo "无 tag，使用默认分支 HEAD"
-fi
+# 方式 B：本地路径 → worktree 建目标 tag 的临时工作区
+#         （不污染原 repo HEAD，比 clone 本地 repo 快——共享 .git）
+cd <local-repo>
+TAG="${VERSION_TAG:-$(git describe --tags --abbrev=0 2>/dev/null)}"
+WORKTREE=/tmp/<project-name>-"${TAG:-HEAD}"
+git worktree add --detach "$WORKTREE" "${TAG:-HEAD}"
+REPO_PATH="$WORKTREE"
+# 跑完后清理：git worktree remove "$WORKTREE"  （见 Step 6）
 ```
+
+> ⚠️ 方式 A 不要用 `--depth 1`，否则无法获取 git tag。仓库过大时 clone 后立即 checkout 目标 tag 再分析。
+>
+> 方式 B 的 worktree 共享原 repo 的 `.git`，几乎瞬时，原 repo 工作区/HEAD 不受影响。原 repo 若是 `--depth 1` 浅 clone 且缺目标 tag，退回方式 A 重新 clone。
+
+**确定解读版本**：tag 优先级 = 用户指定 `VERSION_TAG` > `git describe --tags --abbrev=0`（最新 tag）> 默认分支 HEAD。两种方式都用 `${VERSION_TAG:-...}` 统一取。
 
 提取元信息：
 
@@ -175,21 +173,76 @@ grep -rn '"\./\|"github.com/' --include="*.go" . \
 
 ---
 
+### Step 1.5 · graphify 建图（可选增强）
+
+> **可选**：检测到 `graphify` CLI 已装（`command -v graphify`）时启用；未装则跳过本步，Step 2 走纯 Bash 三信号法。**不硬依赖**——graphify 是确定性数据层，提供客观数据让 LLM 少脑补，但缺失时流程照常跑。
+
+用 tree-sitter AST 把代码库映射成知识图谱（零 token、秒级、确定性），为 Step 2-5 提供客观的依赖/调用/社区数据，替代手搓 `grep import`。
+
+**建图**（对**包源码目录**跑，避开 test/ 噪声）：
+
+```bash
+command -v graphify >/dev/null 2>&1 || { echo "graphify 未装，跳过 Step 1.5"; }
+# 对包目录跑（如 mycli/），不要对仓库根跑（含 test 会碎片化）
+cd <repo>/<pkg-dir>
+graphify . --code-only              # 纯 AST，无 LLM、零 token
+graphify cluster-only . --no-label  # Leiden 社区，跳过社区语义命名
+```
+
+产出 `graphify-out/`：
+
+- `graph.json` — 节点（类/函数/文件）+ 边（calls/imports/inherits/uses，带 `EXTRACTED`/`INFERRED` 置信度）+ 节点 community 属性
+- `GRAPH_REPORT.md` — god nodes / 社区 / 跨社区连接 / import 循环
+
+**关键命令**（后续 Step 消费，见 `graphify --help`）：
+
+| 命令 | 产出 | 喂给 |
+|------|------|------|
+| `graphify god-nodes --top 20` | degree 最高的核心抽象 | Step 2/3 重点对象 |
+| `graphify explain "<node>"` | 单节点全部邻居 + relation + 置信度 + 行号 | Step 3 Agent prompt |
+| `graphify path "A" "B"` | 最短调用链 | Step 4.3 数据流验证 |
+| `graphify affected "X"` | 改 X 影响哪些节点 | Step 4.6 典型修改场景 |
+
+**注意**：
+
+- 用 `god-nodes` 输出的精确 label，泛词（如 "main"）会匹配歧义
+- `graph.json` 是标准 node-link 格式，纯 stdlib `json` 可解析，无需 networkx（见 `scripts/aggregate-modules.py`）
+- `graphify-out/` 加入 `.gitignore`，不提交图（一次性产出）
+
+---
+
 ### Step 2 · 核心模块识别
 
-基于 Step 1 的扫描结果，用**三信号法**筛选 3-5 个核心模块：
+基于 Step 1 扫描结果，用**四信号法**筛选 3-5 个核心模块：
 
 | 信号 | 含义 | 来源 |
 |------|------|------|
 | **重目录** | 代码量 top 5 的子目录 | Step 1.2 统计 |
 | **高扇入** | 被 import 次数 top 5 的模块 | Step 1.4 统计 |
 | **入口可达** | 从入口文件沿调用链可达的模块 | Step 1.3 入口 + 调用链 |
+| **Leiden 社区 + god nodes** | 图论聚类的社区边界 + degree 最高的核心抽象 | Step 1.5 graphify（可选） |
+
+> 第 4 信号是 graphify 的客观图论信号：god nodes 给"对象级"核心（可能横跨目录，三信号漏掉），Leiden 社区给"职责聚类"边界。三者交叉印证模块边界，比单一信号更立体。第 4 信号缺失时退化为三信号法。
 
 筛选规则：
-1. 取三个信号的**并集**，优先选同时满足两个以上信号的模块
+1. 取四个信号的**并集**，优先选同时满足两个以上信号的模块
 2. 排除纯数据/工具/配置/常量目录（如 `utils/`、`constants/`、`types/`、`models/`、`dto/`、`entities/`）——它们被频繁 import 但通常不包含业务逻辑
 3. 排除测试目录（`test*/`、`*_test.*`、`spec/`）
-4. 目标：3-5 个核心模块，每个模块有明确的职责边界
+4. **若 Step 1.5 建了图**，跑聚合脚本得到模块草案，校验人工划分：
+
+   ```bash
+   python3 .skills/vibe-reading-article/scripts/aggregate-modules.py <repo>/<pkg-dir>/graphify-out
+   ```
+
+   脚本输出「模块地图草案」：每社区按 local hub 归模块 + 跨模块桥梁标注 + god anchors 表 + 模块汇总。用它做四件事：
+   - **校验**三信号选的模块是否对齐草案分组（对齐=可信；偏离=边界待商榷）
+   - **补重点**：god anchors（degree top）作为对象级重点分给 Step 3 Agent（不只按目录分工）
+   - **标耦合**：跨模块桥梁社区（连了别的模块的全局 god）→ 模块地图「为什么独立」要提的耦合点
+   - **兜底**：无 local hub 的社区归基础设施层
+
+5. 目标：3-5 个核心模块，每个模块有明确的职责边界
+
+> **社区聚合分工**：graphify 社区粒度太细（如 mycli v2.10.0 有 52 个社区），需聚合到 3-5 模块。`aggregate-modules.py` 做一级聚类（按社区 local hub 的 source_file 归模块草案），LLM 做二级语义合并——把同职责的社区组归并（如 `special/` 下的 iocommands/dbcommands/favoritequeries 子社区合成"特殊命令"模块）+ 命名 + 边界微调。一级是图论（通用、确定性），二级是语义（项目相关、需判断）。
 
 产出格式：
 
@@ -216,6 +269,8 @@ grep -rn '"\./\|"github.com/' --include="*.go" . \
 模块路径：{module_path}
 模块职责（初步判断）：{one_line_responsibility}
 关键文件：{key_files_list}
+该模块 hub 节点的 graphify 邻居（可选，来自 Step 1.5，AST 级准确依赖图，带 relation/置信度/行号）：
+{graphify_explain_output}
 
 请阅读该模块的关键文件（不超过 3 个，每个 ≤ 500 行），提取以下信息：
 
@@ -278,9 +333,9 @@ grep -rn '"\./\|"github.com/' --include="*.go" . \
 
 **4.1 分层架构图（SVG）**：根据模块职责和依赖关系，将模块归入 3-5 层，生成 SVG 图片存入 `public/images/articles/{slug}/architecture.svg`。用于概览「分层设计」子节——展示纵向分层。
 
-**4.2 模块关系图（SVG）**：从各 Agent 的"模块间交互"信息汇总，画出模块间的依赖关系，生成 `module-dependencies.svg`。用于概览「模块地图」章——展示横向组件间的 import/调用关系。与 4.1 分层架构图视角不同：4.1 讲纵向分层，4.2 讲横向依赖。
+**4.2 模块关系图（SVG）**：从各 Agent 的"模块间交互"信息汇总，画出模块间的依赖关系，生成 `module-dependencies.svg`。用于概览「模块地图」章——展示横向组件间的 import/调用关系。与 4.1 分层架构图视角不同：4.1 讲纵向分层，4.2 讲横向依赖。若 Step 1.5 建图，优先用 graph.json 的 `edges`（准确的 import/calls 箭头，带 EXTRACTED/INFERRED 标签）画依赖图，替代 Agent 汇总。
 
-**4.3 全局数据流路径（SVG）**：从数据流追踪 Agent 的结果整理出端到端数据流路径图，生成 `data-flow.svg`。
+**4.3 全局数据流路径（SVG）**：从数据流追踪 Agent 的结果整理出端到端数据流路径图，生成 `data-flow.svg`。若 Step 1.5 建图，用 `graphify path "<entry>" "<output>"` 客观验证调用链连通性，用 `explain "<hub>"` 取节点级邻居补全数据流。
 
 **SVG 通用设计要求**（所有 SVG 共用）：
 
@@ -365,7 +420,9 @@ grep -rn '"\./\|"github.com/' --include="*.go" . \
 - 核心抽象表（接口/抽象类 | 定义位置 | 实现类 | 注册方式）——基础接口/抽象类及其实现关系，这些是扩展点的契约
 - 对象关系图（ASCII 即可，复杂关系才生成 SVG）——展示对象间的包含/依赖/继承关系，含抽象与实现的层次
 
-**4.6 典型修改场景汇总**：从各 Agent 的"典型修改场景"信息汇总，挑选 3 个最具代表性的场景（覆盖不同模块），每个场景列出需修改的文件和关键函数——供概览"典型修改场景"章使用。
+**4.6 典型修改场景汇总**：从各 Agent 的"典型修改场景"信息汇总，挑选 3 个最具代表性的场景（覆盖不同模块），每个场景列出需修改的文件和关键函数——供概览"典型修改场景"章使用。若 Step 1.5 建图，用 `graphify affected "<X>"` 客观给出"改 X 影响哪些节点"，替代 Agent 猜测影响面。
+
+**4.7 Import Cycles（可选）**：若 Step 1.5 建图且 `GRAPH_REPORT.md` 检出 import 循环（如 `client.py → client_commands.py → repl.py → client.py`），在概览「架构设计解析」章单列子节说明循环依赖与解耦建议——这是原流程没有的架构坏味道检出，来自 graphify 的 `Import Cycles` 报告段。无循环则省略。
 
 **SVG 生成方法**：用 Python 脚本或手写 SVG XML 生成，存入 `public/images/articles/{slug}/` 目录。所有 SVG 遵循上述「SVG 通用设计要求」（美观 + 直观简洁 + 准确）。图片引用路径 `/vibe-reading/images/articles/{slug}/{filename}.svg`，由 `rehype-jsdelivr-images` 插件自动改写为 CDN。
 
@@ -403,6 +460,15 @@ src/pages/articles/_md/{category_path}/
 借鉴 [deep-code-reader](https://github.com/CiferaTeam/deep-code-reader) 的 ABC 验证循环，用信息隔离的闭卷考试检验文档是否真正全面，而非浅层摘要。**默认 1 轮，仅在通过率 < 80% 时追加第 2 轮**，在质量和成本间取平衡。
 
 **为什么需要**：Step 3 的 Agent 分析和 Step 5 的撰写都可能"脑补"——写出听起来合理但与源码不符的断言，或遗漏关键细节。合规检查（Step 6）只查格式，不查内容准确性。验证循环补上这个缺口。
+
+**双轨验证**（Step 1.5 建图时启用第二轨；未建图则只跑语义轨）：
+
+| 轨 | 验证什么 | 方法 |
+|----|---------|------|
+| **语义轨**（原有） | 文档是否覆盖模块关键行为 | ABC 闭卷考试：出题→答题→required_facts 覆盖率 |
+| **事实轨**（新增） | 文档里的调用链/依赖是否真实存在 | wiki 说"A 调用 B"→ 查 graph.json 有无 A→B 边；INFERRED 边清单 = 待核实清单（wiki 把 INFERRED 当 EXTRACTED 写即脑补） |
+
+事实轨基于 graphify 的 AST 边（exactly 一条边，客观可验），补语义轨的盲区——语义轨只查"文档说了没"，不查"说的是不是真的"。两者交叉：语义轨管"覆盖度"，事实轨管"准确度"。
 
 **三角色信息隔离**（隔离是验证可信的前提）：
 
@@ -489,6 +555,14 @@ exit 0 = 通过；exit 1 = 按提示修正后重跑。
 ```bash
 cd public/images && git add -A && git commit -m "add {slug} svg" && git push && cd ../..
 git add public/images
+```
+
+**临时工作区清理**：发布完成后清理 Step 0 建的临时 checkout（避免 /tmp 堆积 + worktree 残留，graphify-out/ 也一并清掉）：
+
+```bash
+# 方式 A（clone 到 /tmp）：rm -rf /tmp/<project-name>
+# 方式 B（worktree）：git worktree remove（有 graphify-out/ 等未跟踪改动时 --force）
+git worktree remove --force /tmp/<project-name>-"<tag>" 2>/dev/null || rm -rf /tmp/<project-name>*
 ```
 
 用户确认满意后完成发布。

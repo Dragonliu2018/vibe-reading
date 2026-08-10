@@ -31,7 +31,7 @@ description: >
 
 > **论文（链接 或 本地 PDF 路径）**：按 `references/paper-workflow.md` 的「端到端处理流程」Step 0–9 执行（两种输入在 Step 0/1 分流、Step 2 起统一）——定元信息 → 落 PDF → 通读全文 → 抽图 → 撰写 §1–§8 → 图对账 → 合规检查 → 子仓库提交 → 构建 → 10 问。
 
-> **代码库（URL 或本地路径）**：按 `references/codewiki-workflow.md` 的「端到端处理流程」Step 0–6 执行——定元信息 → 结构扫描 → 三信号模块识别 → 并行 Agent 模块分析 → 架构综合 → 撰写 §1–§12 Markdown（架构图/流程图用 SVG） → 合规检查 → 构建 → 发布。
+> **代码库（URL 或本地路径）**：按 `references/codewiki-workflow.md` 的「端到端处理流程」Step 0–6 执行——定元信息 → 结构扫描 → （可选）graphify 建图 → 四信号模块识别 → 并行 Agent 模块分析 → 架构综合 → 撰写 §1–§12 Markdown（架构图/流程图用 SVG） → 合规检查（含双轨验证）→ 构建 → 发布。
 
 ## Step 3 — 撰写文章
 
@@ -59,6 +59,29 @@ exit 0 = 通过；exit 1 = 输出具体错误，按提示修正后重跑。
 ## Step 5 — 发布
 
 用户确认满意后：将文件放到对应目录，运行 `npm run build`。
+
+## 并发写作隔离（多 session 同时写博客）
+
+单 session 直接在主 repo 工作区写即可。**多 session 同时写不同文章时，不要在主 repo 工作区直接写**——git 工作区单实例，多 session 开分支会互相切走 checkout，且 `git add -A` 会误收对方半成品。
+
+用 git worktree 物理隔离：每篇文章一个独立工作区 + 独立分支，checkout 互不干扰，连 `git add` 都自动隔离（工作区只有自己的改动）。
+
+**开始写**（主 repo 根执行，实测 ~5 秒）：
+
+```bash
+bash .skills/vibe-reading-article/scripts/setup-article-worktree.sh <slug>
+cd ../vibe-reading-<slug>   # 进入隔离工作区，正常写 + npm run build 验证
+```
+
+脚本建 worktree（`article/<slug>` 分支）+ symlink node_modules（不重装 210M）+ init `public/images` submodule（`--reference` 复用主 repo 对象，不重下）。
+
+**写完收尾**（主 repo 根执行）：
+
+```bash
+bash .skills/vibe-reading-article/scripts/finish-article-worktree.sh <slug>
+```
+
+脚本：submodule commit SVG + 主 repo commit 文章 + rebase `origin/main` + push 到远端 main（fast-forward，**不碰主 repo 工作区**，多 session 安全）+ worktree remove。push 撞了提示进 worktree `git fetch && git rebase origin/main` 后重试。
 
 ## 写作规范
 

@@ -6,15 +6,16 @@ source:
   id: "22634"
   url: "https://github.com/sgl-project/sglang/pull/22634"
   prType: "fix"
-date: "2026-07-14"
+date: "2026-08-11T00:22:42+08:00"
 category: [AI, Infra, Inference, SGLang, Contributions]
 tags: ["SGLang", "Qwen2.5-VL", "PyTorch", "RoPE", "Bug Fix"]
 description: "Qwen2.5-VL 解码阶段对 .expand() 视图执行 += 触发 RuntimeError，改为先加法再 expand 的 out-of-place 写法修复。"
 readingTime: "9 min"
 aiModel: "Claude Opus 4.8"
+reviewed: false
 ---
 
-> **PR** [#22634](https://github.com/sgl-project/sglang/pull/22634) · **Issue** `-` · **commit** `-` · **首发版本** `-` · **变更行数** +6 / -7 行 · **合并时间** -
+> **PR** [#22634](https://github.com/sgl-project/sglang/pull/22634) · **Issue** `-` · **commit** [453ea21](https://github.com/sgl-project/sglang/pull/22634/commits/453ea21dd32eb9cfe572b3fce8856169955a871b) · **首发版本** `-` · **变更行数** +6 / -7 行 · **合并时间** 2026-08-07
 
 ---
 
@@ -31,7 +32,7 @@ refers to a single memory location. Please clone() the tensor before performing 
 
 错误信息把根因说得很直白：被写入的张量里，**多个逻辑元素指向同一块物理内存**。这正是 PyTorch 对 `expand()` 视图执行原地写时的标准拒绝姿势。
 
-PR [#22634](https://github.com/sgl-project/sglang/pull/22634) 的修复只有 +6 / -7 行、单文件改动，思路是把"先 `expand` 再 `+=`"重排为"先 `+` 再 `expand`"——让 `expand()` 始终处于数据流末端、只读的位置。（该 PR 截至撰稿时仍处于 Open 状态，尚未合入主线。）
+PR [#22634](https://github.com/sgl-project/sglang/pull/22634) 的修复只有 +6 / -7 行、单文件改动，思路是把"先 `expand` 再 `+=`"重排为"先 `+` 再 `expand`"——让 `expand()` 始终处于数据流末端、只读的位置。该 PR 已于 2026-08-07 合入主线，获得 BBuf、alexnails 等 reviewer 的 Approved。
 
 ---
 
@@ -112,6 +113,10 @@ position_ids[2, b, :]  ──┘
 
 ### 修复
 
+![修复前后数据流对比](/vibe-reading/images/articles/sglang-pr-22634-qwen2-5-vl-expand-inplace-fix/before-after-comparison.svg)
+
+左列是修复前的数据流：先 `expand` 造出零步长视图（黄框），再对它做 `+=`（粉框）——多个逻辑元素指向同一物理地址，PyTorch 拒绝原地写，直接抛出 `RuntimeError`。右列是修复后的数据流：先用 `arange(S) + delta` 做非原地加法、物化出一块全新的连续 `[B, S]` 存储，再 `unsqueeze` + `expand` 扩展到 `[3, B, S]`——`expand` 此时位于数据流末端，全程只读，下游 `rotary_emb` 直接消费，不再有原地写。
+
 ```python title="qwen2_5vl.py — decode 分支（修复后）"
 batch_size, seq_length, _ = inputs_embeds.shape
 if cache_position is not None:
@@ -145,7 +150,7 @@ position_ids = (
 
 ## 验证
 
-PR 未新增单测（checklist 中测试项未勾选），这是合理的：修复是值等价重排，`position_ids` 的输出张量逐元素不变，已有的端到端精度测试足以覆盖。
+PR 未新增单测（checklist 中测试项未勾选），这是合理的：修复是值等价重排，`position_ids` 的输出张量逐元素不变，已有的端到端精度测试足以覆盖。Review 阶段获得 BBuf（SGLang maintainer）和 alexnails 的 Approved，gemini-code-assist 也给出了 Code Review 意见，无阻塞性问题。
 
 下游消费方式也佐证了这一点：`Qwen2_5_VLTextModel.forward` 收到形状 `[3, B, S]`（`ndim == 3` 且 `shape[0] == 3`，非 4 轴打包情形）的 `position_ids` 后，走 `text_position_ids = position_ids[0]` 取首轴建 mask，再 `self.rotary_emb(hidden_states, position_ids)` 读三轴算 RoPE——**全程只读**，与修复后"expand 处于数据流末端"的约束完全契合。
 

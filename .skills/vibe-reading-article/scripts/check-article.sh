@@ -21,7 +21,31 @@ if [[ "$EXT" == "md" ]]; then
     ERRORS+=("文件命名不符合 kebab-case: $BASENAME")
   fi
 
-  # 2. 必填 frontmatter 字段
+  # 2. YAML frontmatter 解析校验（防止引号/缩进等语法错误导致 astro build 失败）
+  #    check-article 的 grep 字段检查不验证 YAML 语法，需真正解析才能捕获
+  #    如标题内部含 ASCII " 会被当成字符串结束符，grep 查得到字段但 build 会炸
+  PROJECT_ROOT="$(cd "$(dirname "$FILE")" && pwd)"
+  while [[ "$PROJECT_ROOT" != "/" && ! -d "$PROJECT_ROOT/node_modules/js-yaml" ]]; do
+    PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+  done
+  if [[ -d "$PROJECT_ROOT/node_modules/js-yaml" ]]; then
+    # 提取 frontmatter 块（第一个 --- 到第二个 --- 之间，含中文弯引号也安全）
+    FM_CONTENT=$(awk 'BEGIN{c=0} /^---[[:space:]]*$/{c++; if(c==2) exit; next} c==1' "$FILE")
+    if [[ -n "$FM_CONTENT" ]]; then
+      YAML_ERR=$(JSYAML="$PROJECT_ROOT/node_modules/js-yaml" printf '%s' "$FM_CONTENT" | node -e '
+const yaml = require(process.env.JSYAML);
+let d = ""; process.stdin.on("data", c => d += c);
+process.stdin.on("end", () => {
+  try { yaml.load(d); }
+  catch(e) { console.error(e.message); process.exit(1); }
+});' 2>&1)
+      if [[ -n "$YAML_ERR" ]]; then
+        ERRORS+=("frontmatter YAML 解析失败（会导致 astro build 失败）: $YAML_ERR")
+      fi
+    fi
+  fi
+
+  # 3. 必填 frontmatter 字段
   for field in title date category description readingTime aiModel; do
     if ! grep -qE "^${field}:" "$FILE"; then
       ERRORS+=("frontmatter 缺少字段: $field")

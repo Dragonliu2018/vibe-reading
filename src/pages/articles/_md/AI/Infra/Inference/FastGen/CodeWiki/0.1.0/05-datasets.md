@@ -5,7 +5,7 @@ source:
   url: "https://github.com/NVlabs/FastGen"
 title: "数据集"
 date: "2026-08-11T15:45:00+08:00"
-category: [AI, Generative, FastGen, CodeWiki, "0.1.0"]
+category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏"]
 description: "FastGen 数据集模块深度解读：ImageDataset class-conditional、BaseWDSLoader 模板方法、ImageWDSLoader/VideoWDSLoader 策略、DeterministicWDS 断点恢复、AugmentPipe 增强管道。"
 readingTime: "8 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Generative/FastGen/CodeWiki/0.1.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/00-overview)
 
 
 ## 模块定位

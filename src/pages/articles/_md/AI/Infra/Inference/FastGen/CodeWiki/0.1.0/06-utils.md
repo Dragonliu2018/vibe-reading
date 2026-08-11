@@ -5,7 +5,7 @@ source:
   url: "https://github.com/NVlabs/FastGen"
 title: "分布式基础设施"
 date: "2026-08-11T15:46:00+08:00"
-category: [AI, Generative, FastGen, CodeWiki, "0.1.0"]
+category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏"]
 description: "FastGen 分布式基础设施模块深度解读：DDP/FSDP2 装配、Checkpointer 适配器模式、AutoResumeInterface 策略模式、分布式原语、loguru 日志、S3 IO。"
 readingTime: "9 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Generative/FastGen/CodeWiki/0.1.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/00-overview)
 
 
 ## 模块定位

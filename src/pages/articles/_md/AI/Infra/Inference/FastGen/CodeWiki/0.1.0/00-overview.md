@@ -5,7 +5,7 @@ source:
   url: "https://github.com/NVlabs/FastGen"
 title: "Overview"
 date: "2026-08-11T15:35:00+08:00"
-category: [AI, Generative, FastGen, CodeWiki, "0.1.0"]
+category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏", "NVIDIA"]
 description: "NVIDIA FastGen 是基于 PyTorch 的扩散模型蒸馏/加速框架，支持 CM、DMD2、LADD、Self-Forcing 等多种方法与 11 种网络架构。本文从系统架构、运行时行为到核心模块，全面解读 v0.1.0 的内部原理。"
 readingTime: "15 min"
@@ -173,12 +173,12 @@ FastGen/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| 训练循环核心 | 训练骨架编排 + 回调分发 | `Trainer.run()` | 模板方法固定流程，横切关注点用回调解耦 | [01-trainer](01-trainer) |
-| 蒸馏方法 | 各蒸馏算法实现 | `FastGenModel.single_train_step()` | 算法可互换，"method 包 network" 组合模式 | [02-methods](02-methods) |
-| 网络架构 | 11 种生成模型 + 噪声调度 | `FastGenNetwork.forward()` | 网络×调度解耦（7+11 vs 77 组合） | [03-networks](03-networks) |
-| 配置系统 | 声明式配置 + 递归实例化 | `instantiate()` | 配置与代码解耦，LazyCall 延迟实例化 | [04-configs](04-configs) |
-| 数据集 | class-conditional + WebDataset | `BaseWDSLoader._pipeline()` | 图像/视频/latent 多模态统一接口 | [05-datasets](05-datasets) |
-| 分布式基础设施 | DDP/FSDP2 + 检查点 + auto-resume | `synchronize()`/`Checkpointer` | 环境特定逻辑可替换，不污染训练逻辑 | [06-utils](06-utils) |
+| 训练循环核心 | 训练骨架编排 + 回调分发 | `Trainer.run()` | 模板方法固定流程，横切关注点用回调解耦 | [01-trainer](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/01-trainer) |
+| 蒸馏方法 | 各蒸馏算法实现 | `FastGenModel.single_train_step()` | 算法可互换，"method 包 network" 组合模式 | [02-methods](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/02-methods) |
+| 网络架构 | 11 种生成模型 + 噪声调度 | `FastGenNetwork.forward()` | 网络×调度解耦（7+11 vs 77 组合） | [03-networks](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/03-networks) |
+| 配置系统 | 声明式配置 + 递归实例化 | `instantiate()` | 配置与代码解耦，LazyCall 延迟实例化 | [04-configs](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/04-configs) |
+| 数据集 | class-conditional + WebDataset | `BaseWDSLoader._pipeline()` | 图像/视频/latent 多模态统一接口 | [05-datasets](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/05-datasets) |
+| 分布式基础设施 | DDP/FSDP2 + 检查点 + auto-resume | `synchronize()`/`Checkpointer` | 环境特定逻辑可替换，不污染训练逻辑 | [06-utils](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/06-utils) |
 
 > 模块间的动态调用顺序见下方「运行时行为 > 核心运行流程」。
 
@@ -302,7 +302,7 @@ tests/
 - **第四遍：理解网络与噪声调度**
   `networks/network.py` 的 `FastGenNetwork` → `networks/noise_schedule.py` 的 `BaseNoiseSchedule` + `convert_model_output` → `networks/EDM/network.py` 的 `EDMPrecond`（装饰器模式） → 选择一个视频网络 `networks/Wan/network.py` 深入
 - **第五遍：选择重点模块深入阅读**
-  [训练循环核心](01-trainer) · [蒸馏方法](02-methods) · [网络架构](03-networks) · [配置系统](04-configs) · [数据集](05-datasets) · [分布式基础设施](06-utils)
+  [训练循环核心](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/01-trainer) · [蒸馏方法](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/02-methods) · [网络架构](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/03-networks) · [配置系统](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/04-configs) · [数据集](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/05-datasets) · [分布式基础设施](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/06-utils)
 
 ---
 

@@ -5,7 +5,7 @@ source:
   url: "https://github.com/NVlabs/FastGen"
 title: "训练循环核心"
 date: "2026-08-11T15:41:00+08:00"
-category: [AI, Generative, FastGen, CodeWiki, "0.1.0"]
+category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏"]
 description: "FastGen 训练循环核心模块深度解读：Trainer 模板方法、Callback 观察者模式（20 钩子）、CallbackDict 动态分发、梯度累积与 DDP/FSDP 同步控制、auto-resume 策略模式。"
 readingTime: "10 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Generative/FastGen/CodeWiki/0.1.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/00-overview)
 
 
 ## 模块定位

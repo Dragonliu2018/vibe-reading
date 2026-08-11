@@ -5,7 +5,7 @@ source:
   url: "https://github.com/NVlabs/FastGen"
 title: "配置系统"
 date: "2026-08-11T15:44:00+08:00"
-category: [AI, Generative, FastGen, CodeWiki, "0.1.0"]
+category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏"]
 description: "FastGen 配置系统模块深度解读：BaseConfig attrs 结构、LazyCall 延迟调用、instantiate 递归工厂、配置三层组合（Base→methods→experiments）、Hydra 命令行 override。"
 readingTime: "9 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Generative/FastGen/CodeWiki/0.1.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/00-overview)
 
 
 ## 模块定位

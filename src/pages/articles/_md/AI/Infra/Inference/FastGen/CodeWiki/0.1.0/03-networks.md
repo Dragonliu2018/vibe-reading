@@ -5,7 +5,7 @@ source:
   url: "https://github.com/NVlabs/FastGen"
 title: "网络架构"
 date: "2026-08-11T15:43:00+08:00"
-category: [AI, Generative, FastGen, CodeWiki, "0.1.0"]
+category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏"]
 description: "FastGen 网络架构模块深度解读：FastGenNetwork 抽象基类、BaseNoiseSchedule 策略模式（7 子类）、EDMPrecond 装饰器、CausalFastGenNetwork 视频因果、noise_schedule 解耦组合爆炸。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Generative/FastGen/CodeWiki/0.1.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/FastGen/CodeWiki/0.1.0/00-overview)
 
 
 ## 模块定位

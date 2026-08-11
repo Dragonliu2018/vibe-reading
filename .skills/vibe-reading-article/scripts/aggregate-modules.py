@@ -6,7 +6,8 @@
 产出 graphify-out/graph.json。本脚本只读 graph.json，不调 graphify CLI、不依赖第三方库。
 
 原理（codewiki-workflow Step 2 的第 4 信号）：
-  Leiden 社区粒度太细（mycli 52 个），人工模块只 4-6 个。两步聚合：
+  Leiden 社区粒度太细（mycli 52 个），需聚合到有效模块数 M（根号原则：
+  M ≤ 7 单层、M > 7 两层 K=⌈√M⌉ 子系统）。两步聚合：
     1. 每社区取 local hub（社区内 degree 最高、过滤 file hub/method stub/
        builtin 的节点），用 hub 的 source_file 启发式归模块——与 graphify
        社区命名同源，绕开"跨连全局 god 边数被 file hub 虚高压制"的噪声。
@@ -20,6 +21,7 @@
   # GRAPHIFY_OUT_DIR 默认 ./graphify-out
 """
 import json
+import math
 import os
 import sys
 from collections import Counter, defaultdict
@@ -197,6 +199,22 @@ def main():
     for mod in sorted(mod_groups, key=lambda m: -mod_groups[m]["nodes"]):
         v = mod_groups[mod]
         print(f"| **{mod}** | {v['comms']} | {v['nodes']} | {v['ids']} |")
+
+    # ── 弹性分层建议（根号原则，codewiki-workflow Step 2 第三步）──
+    infra_keys = {m for m in mod_groups if m.startswith("基础设施")}
+    effective_mods = [m for m in mod_groups if m not in infra_keys]
+    M = len(effective_mods)
+    K = math.ceil(math.sqrt(M)) if M > 0 else 0
+    print("\n## 弹性分层建议（根号原则）")
+    print(f"有效模块数 M = {M}（排除基础设施桶 {len(infra_keys)} 个）")
+    print(f"建议 K = ⌈√M⌉ = {K}")
+    if M <= 7:
+        print(f"- M ≤ 7 → **单层**：概览 + {M} 个模块文件")
+    elif M > 0:
+        print(f"- M > 7 → **两层**：概览 + {K} 个子系统 + {M} 个模块文件（每子系统平均挂 {M // K} 个）")
+    if M <= 2 and len(mod_groups) > 0:
+        print(f"- ⚠️ 一级草案有效模块过少（M={M}），可能 guess_module 未适配此项目结构")
+        print(f"  → 请 LLM 做二级语义合并重新划分模块，手动定 M 后套用根号原则")
 
     bridges = [r for r in rows if r[5]]
     print(

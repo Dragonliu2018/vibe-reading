@@ -5,6 +5,7 @@
 
 FILE="$1"
 ERRORS=()
+WARNS=()
 
 # ── 基础检查 ──────────────────────────────────────────────────────
 [[ -z "$FILE" ]] && { echo "ERROR: 未指定文件" >&2; exit 1; }
@@ -127,6 +128,18 @@ process.stdin.on("end", () => {
     fi
   fi
 
+  # 8. 相关阅读章节软校验（warn 不 fail）
+  #    论文解读/PR/commit/article 类型文章末尾应有「## 相关阅读」章节
+  if [[ -n "$SRC_TYPE" ]]; then
+    case "$SRC_TYPE" in
+      论文解读|PR|commit|article)
+        if ! grep -qE '^##[[:space:]]+相关阅读' "$FILE"; then
+          WARNS+=("$SRC_TYPE 类型文章建议在末尾加「## 相关阅读」章节（关联博客内其他相关文章，见 content-guide.md）")
+        fi
+        ;;
+    esac
+  fi
+
 # ── HTML 文章检查 ──────────────────────────────────────────────────
 elif [[ "$EXT" == "html" ]]; then
   for meta in "article:category" "article:date" "article:readingTime"; do
@@ -143,11 +156,17 @@ fi
 # ── 结果输出 ──────────────────────────────────────────────────────
 if [[ ${#ERRORS[@]} -eq 0 ]]; then
   echo "✓ 检查通过: $FILE"
+  for w in "${WARNS[@]}"; do
+    echo "  ⚠ $w"
+  done
   exit 0
 else
   echo "✗ 检查失败: $FILE"
   for err in "${ERRORS[@]}"; do
     echo "  · $err"
+  done
+  for w in "${WARNS[@]}"; do
+    echo "  ⚠ $w"
   done
   exit 1
 fi

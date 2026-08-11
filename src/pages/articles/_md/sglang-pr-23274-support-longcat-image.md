@@ -426,3 +426,11 @@ SGLang `DenoisingStage` 直接把 scheduler 原始 timestep（`[0,1000]`）传�
 - [LongCat-Image GitHub](https://github.com/meituan-longcat/LongCat-Image)
 - [diffusers `transformer_longcat_image.py`](https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/transformers/transformer_longcat_image.py)
 - Flux MMDiT 架构（`axes_dims_rope`、packed latents 的同族设计）
+
+---
+
+## 相关阅读
+
+- [LongCat-Image Technical Report](/vibe-reading/articles/longcat-image-technical-report) — **设计来源**·本 PR 落地的模型原论文（MM-DiT 混合架构 + 三阶段数据精炼 + 多奖励 RLHF）
+- [xLLM PR #849：LongCat-Image CUDA 支持](/vibe-reading/articles/xllm-pr-849-longcat-image-cuda) — **同模型另一框架**·LongCat-Image T2I 在 xLLM 的 CUDA 适配
+- [xLLM PR #957：LongCat-Image-Edit CUDA 支持](/vibe-reading/articles/xllm-pr-957-longcat-image-edit-cuda) — **同模型 Edit 分支**·LongCat-Image-Edit 在 xLLM 的 CUDA 适配

@@ -322,3 +322,11 @@ LongCat-Image-Edit 的 CUDA 支持使 xLLM 在图像生成领域从"文生图"�
 - [diffusers LongCat-Image-Edit Pipeline](https://github.com/huggingface/diffusers/blob/main/src/diffusers/pipelines/longcat_image/pipeline_longcat_image_edit.py)
 - [Qwen2.5-VL 技术报告](https://arxiv.org/abs/2502.13923)
 - [FlashInfer AOT 编译文档](https://docs.flashinfer.ai/installation.html)
+
+---
+
+## 相关阅读
+
+- [LongCat-Image Technical Report](/vibe-reading/articles/longcat-image-technical-report) — **设计来源**·本 PR 落地的模型原论文（§3.4 图像编辑分支：双 VAE Encoder + 3D RoPE 模态区分）
+- [SGLang PR #23274：接入 LongCat-Image](/vibe-reading/articles/sglang-pr-23274-support-longcat-image) — **同模型 T2I**·LongCat-Image T2I 在 SGLang 的全栈适配
+- [xLLM PR #849：LongCat-Image CUDA 支持](/vibe-reading/articles/xllm-pr-849-longcat-image-cuda) — **同模型 T2I**·LongCat-Image T2I 在 xLLM 的 CUDA 适配

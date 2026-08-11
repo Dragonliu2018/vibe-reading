@@ -268,3 +268,13 @@ LongCat-Image-Edit 在一致性和综合质量上均优于 Qwen-Image-Edit [2509
 - **减少约束**：MPO 已消除 GRPO 的组内同步瓶颈，未来可进一步消除对参考模型的依赖，探索无参考的在线 RL 方案。
 
 **一句话收尾**：LongCat-Image 证明了一件事——在扩散模型领域，**6B 做对了数据纯度、架构继承和 RL 精调三件事，就能比肩甚至超越 20B+ MoE**，而开源全链路让"高效高质量"不再是闭源巨头的专利。
+
+---
+
+## 相关阅读
+
+- [SGLang PR #23274：接入 LongCat-Image](/vibe-reading/articles/sglang-pr-23274-support-longcat-image) — **工程实现**·本篇 MM-DiT 架构在 SGLang 中的全栈落地（MMDiT TP 并行 + 3D RoPE）
+- [xLLM PR #849：LongCat-Image CUDA 支持](/vibe-reading/articles/xllm-pr-849-longcat-image-cuda) — **工程实现**·本篇 T2I 模型的 CUDA 适配（Qwen2.5-VL 文本编码 + FlashInfer FA2 bit-packing 掩码）
+- [xLLM PR #957：LongCat-Image-Edit CUDA 支持](/vibe-reading/articles/xllm-pr-957-longcat-image-edit-cuda) — **工程实现**·本篇 §3.4 图像编辑分支的 CUDA 适配（双流 latent 拼接 + 双 VAE Encoder）
+- [LongCat-Video Technical Report](/vibe-reading/articles/longcat-video-technical-report) — **同家族**·视频版同套方法论（13.6B DiT + 多奖励 GRPO + 块稀疏注意力）
+- [FireRed-Image-Edit-1.0 Technical Report](/vibe-reading/articles/firered-image-edit) — **方法论镜像**·扩散图像编辑 + 多阶段 RLHF/DPO，ImgEdit/GEdit-Bench 直接对标

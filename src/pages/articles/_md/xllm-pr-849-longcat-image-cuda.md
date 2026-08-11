@@ -359,3 +359,11 @@ LongCat-Image 使用 Qwen2.5-VL 作为文本编码器这一点值得关注——
 - [diffusers LongCat-Image Transformer](https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/transformers/transformer_longcat_image.py)
 - [FlashInfer Custom Mask 文档](https://docs.flashinfer.ai/api/python/attention.html)
 - [FlowMatch Euler Discrete Scheduler](https://huggingface.co/docs/diffusers/api/schedulers/flow_match_euler_discrete)
+
+---
+
+## 相关阅读
+
+- [LongCat-Image Technical Report](/vibe-reading/articles/longcat-image-technical-report) — **设计来源**·本 PR 落地的模型原论文（MM-DiT 混合架构 + 三阶段数据精炼 + 多奖励 RLHF）
+- [SGLang PR #23274：接入 LongCat-Image](/vibe-reading/articles/sglang-pr-23274-support-longcat-image) — **同模型另一框架**·LongCat-Image T2I 在 SGLang 的全栈适配
+- [xLLM PR #957：LongCat-Image-Edit CUDA 支持](/vibe-reading/articles/xllm-pr-957-longcat-image-edit-cuda) — **同模型 Edit 分支**·LongCat-Image-Edit 在 xLLM 的 CUDA 适配

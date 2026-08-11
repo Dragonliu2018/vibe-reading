@@ -24,11 +24,15 @@ reviewed: false
 
 ## 模块架构
 
+![基础设施模块架构](/vibe-reading/images/articles/fastgen-internals/utils-architecture.svg)
+
 `distributed/` 子包提供分布式原语（`synchronize`/`world_size`/`is_rank0`/`rank0_only`）+ DDP/FSDP2 装配 + S3 FileSystem DCP 适配。`checkpointer.py` 用 Wrapper 适配器统一 FSDP 与非 FSDP 的 state_dict 接口。`autoresume.py` 用策略模式对接集群调度器。`logging_utils.py` 用 loguru + rank0 过滤。`__init__.py` 的 `instantiate`/`LazyCall`/`expand_like` 是全局工具（配置模块覆盖，这里看分布式/checkpointer 部分）。
 
 ---
 
 ## 调用链路
+
+![FSDP 装配 + 检查点 + auto_resume 链路](/vibe-reading/images/articles/fastgen-internals/utils-flow.svg)
 
 FSDP 装配 + 检查点保存链路：
 

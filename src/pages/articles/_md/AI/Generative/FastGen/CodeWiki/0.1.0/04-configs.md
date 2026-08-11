@@ -24,11 +24,15 @@ reviewed: false
 
 ## 模块架构
 
+![配置系统架构（三层 + LazyCall/instantiate）](/vibe-reading/images/articles/fastgen-internals/configs-architecture.svg)
+
 配置分三层：`BaseConfig`（`config.py`）定义训练任务通用字段 → `methods/config_xxx.py` 添加方法特有字段并切换 `model_class` → `experiments/<Arch>/config_xxx.py` 覆盖实验特定参数。`LazyCall`（`utils/__init__.py:108`）是延迟调用包装器，`instantiate()`（`utils/__init__.py:60`）是递归工厂，`config_utils.py` 处理 Python 文件加载和 Hydra 命令行 override。`configs/net.py`（扇入 72，最高）和 `configs/data.py`（扇入 59）定义所有网络和 dataloader 的 `LazyCall` 模板。
 
 ---
 
 ## 调用链路
+
+![配置加载到对象实例化链路](/vibe-reading/images/articles/fastgen-internals/configs-flow.svg)
 
 从命令行到对象实例化的完整链路：
 

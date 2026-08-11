@@ -24,11 +24,15 @@ reviewed: false
 
 ## 模块架构
 
+![网络架构模块架构](/vibe-reading/images/articles/fastgen-internals/networks-architecture.svg)
+
 `FastGenNetwork`（`network.py:13`）是所有架构的抽象基类，定义 `forward()` 契约并持有 `noise_scheduler`（通过 `set_noise_schedule` 工厂创建）。`BaseNoiseSchedule`（`noise_schedule.py:23`）定义扩散过程数学框架 `x_t = alpha(t)*x_0 + sigma(t)*eps`，7 个子类实现不同参数化。`EDMPrecond`（`EDM/network.py:808`）是装饰器模式代表，包装底层 U-Net 添加 EDM 预处理。视频因果模型走 `CausalFastGenNetwork`（`network.py:211`）分支，额外管理 KV cache 和分块处理。判别器独立在 `discriminators.py`，不继承 `FastGenNetwork`——消费网络中间特征做对抗训练。
 
 ---
 
 ## 调用链路
+
+![EDMPrecond.forward 调用链路](/vibe-reading/images/articles/fastgen-internals/networks-flow.svg)
 
 `FastGenNetwork.forward` 调用链（以 EDMPrecond 为例）：
 

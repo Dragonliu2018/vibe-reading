@@ -24,11 +24,15 @@ reviewed: false
 
 ## 模块架构
 
+![训练循环核心模块架构](/vibe-reading/images/articles/fastgen-internals/trainer-architecture.svg)
+
 `Trainer` 是唯一编排器，持有 `CallbackDict`（回调容器）、`Checkpointer`（持久化）、`AutoResumeInterface`（抢占恢复）三个协作者。`CallbackDict` 通过 `__getattr__` 动态分发——Trainer 调任意 `on_xxx` 方法时，Python 触发 `__getattr__` 返回闭包，遍历所有注册的 callback 逐个调用同名方法。Callback 子类（EMA/Wandb/GradClip）通过 config 的 `_target_` 动态实例化，Trainer 不 import 任何具体回调类。
 
 ---
 
 ## 调用链路
+
+![训练一个 step 的调用链路](/vibe-reading/images/articles/fastgen-internals/trainer-flow.svg)
 
 `Trainer.run()` 是主模板方法，固定骨架：
 

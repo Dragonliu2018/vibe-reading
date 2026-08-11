@@ -24,11 +24,15 @@ reviewed: false
 
 ## 模块架构
 
+![蒸馏方法模块架构（继承树）](/vibe-reading/images/articles/fastgen-internals/methods-architecture.svg)
+
 `FastGenModel`（`methods/model.py:26`）继承 `torch.nn.Module`，是训练算法容器。它**不继承** `FastGenNetwork`，而是**组合持有**它——这是"method 包 network"的两层分离：network 层负责纯前向计算，model 层负责训练逻辑（loss/optimizer/EMA/sampling）。一个 method 可同时持有多个 network（DMD2 最多 5 个：student+teacher+fake_score+discriminator+ema）。各子类按 4 个方法分类组织在 `consistency_model/`/`distribution_matching/`/`fine_tuning/`/`knowledge_distillation/` 子目录，共享 loss 逻辑抽到 `common_loss.py`。
 
 ---
 
 ## 调用链路
+
+![DMD2 单步调用链路](/vibe-reading/images/articles/fastgen-internals/methods-flow.svg)
 
 `Trainer.train_step` → `FastGenModel.single_train_step`（抽象，子类实现）的调用链，以 DMD2 为例：
 

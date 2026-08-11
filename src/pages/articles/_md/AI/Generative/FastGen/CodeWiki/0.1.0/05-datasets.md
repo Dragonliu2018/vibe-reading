@@ -24,11 +24,15 @@ reviewed: false
 
 ## 模块架构
 
+![数据集模块架构（两条路径）](/vibe-reading/images/articles/fastgen-internals/datasets-architecture.svg)
+
 两条数据路径并行：**class-conditional**（`ImageDataset` + `ImageFolderDataset` + `InfiniteSampler`）用于 CIFAR-10/ImageNet 类标签场景；**WebDataset**（`BaseWDSLoader` → `WDSLoader` → `ImageWDSLoader`/`VideoWDSLoader`）用于大规模 shard 化图像/视频/latent。`AugmentPipe`（EDM 风格增强管道）不在 dataloader 内，而在 `Trainer.preprocess_data` 中调用。`decoders.py` 提供视频/图像/latent 解码函数。
 
 ---
 
 ## 调用链路
+
+![WebDataset 管道数据流](/vibe-reading/images/articles/fastgen-internals/datasets-flow.svg)
 
 WebDataset 管道（数据流转）：
 

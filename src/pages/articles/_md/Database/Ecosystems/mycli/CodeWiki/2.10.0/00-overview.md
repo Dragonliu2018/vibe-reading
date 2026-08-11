@@ -171,7 +171,7 @@ mycli 的启动是一次性的线性流程：`main()` 入口经 click 参数解�
 
 **对象装配**：`MyCli.__init__` 是组装点——读取三层配置文件（系统/包默认/用户 `~/.myclirc`），创建 `SQLCompleter`（补全器）、`SchemaPrefetcher`（预取器）、`PromptSession`（交互会话）。`PasswordCandidates` 按 `password_source_precedence` 配置链注册 7 种密码源（prompt → literal → file → environment → dsn → vault → keyring）。`client_factory` 参数注入使测试时可传 mock。
 
-**连接降级**：连接建立时 `_connect()` 闭包递归降级——遇到 `ER_MUST_CHANGE_PASSWORD` 进入沙箱模式（临时 monkey-patch `set_character_set` 跳过 post-handshake 查询），遇到 `HANDSHAKE_ERROR` 且 SSL mode 为 auto 时自动禁用 SSL 重试。用户不需要手动指定 `--ssl-mode=off`。
+**连接降级**：连接建立时 `_connect()` 闭包递归降级——遇到 `ER_MUST_CHANGE_PASSWORD` 时 `SQLExecute` 内部进沙箱模式（`_connect_sandbox` 临时 monkey-patch `set_character_set` 跳过 post-handshake 查询，详见下方状态流），遇到 `HANDSHAKE_ERROR` 且 SSL mode 为 auto 时自动禁用 SSL 重试。用户不需要手动指定 `--ssl-mode=off`。
 
 ### 核心运行流程
 
@@ -190,6 +190,28 @@ mycli 的核心运行流程围绕几条关键业务链路展开，覆盖了从�
 ![mycli --execute 数据流](/vibe-reading/images/articles/mycli-internals/execute-flow.svg)
 
 `main_execute_from_cli()` in `execute.py` 接收 `cli_args.execute` 中的 SQL 语句，调用 `mycli.run_query()` 执行——内部经 `sqlexecute.run()` 返回 `Generator[SQLResult]`，经 `format_sqlresult()` 格式化后 `click.echo` 输出到终端。执行完毕直接 `sys.exit(exit_code)`，不进入 REPL 循环。
+
+#### 后台机制：补全元数据刷新
+
+业务流程：触发刷新 → 启动 daemon Thread → 独立连接遍历 @refresher 填新 completer → callback 原子热替换
+
+![mycli 后台补全刷新流](/vibe-reading/images/articles/mycli-internals/refresh-flow.svg)
+
+这条链路要解决的核心矛盾是"元数据刷新要发多条 SQL 查询、耗时可达数百毫秒，但 UI 线程的 `get_completions()` 每次按键同步调用、不能阻塞"。`ClientQueryMixin.refresh_completions()` in `client_query.py:35` 是入口，触发时机有四个：启动首次加载、`USE` 切库、`REFRESH` 命令、DDL 后检测到 schema 变化。`reset=True` 时先在 `_completer_lock` 下设 `completer.set_dbname()`，让非限定补全在后台刷新完成前就能反映切库。
+
+`CompletionRefresher.refresh()` in `completion_refresher.py:25` 启动一个 daemon Thread 跑 `_bg_refresh()`，UI 线程立即返回、继续用旧 completer serve 按键补全。`_bg_refresh()` 的关键设计是**新建一条独立 `SQLExecute` 连接**（复用原连接凭据，`completion_refresher.py:77`），刷新查询绝不抢占用户输入所用的连接；线程内遍历 `refreshers` 字典里 13 个 `@refresher` 函数（databases/schemata/tables/indexed_columns/foreign_keys/enum_values/users/functions/procedures/character_sets/collations/special_commands/keywords），把结果填进一个全新构造的 `SQLCompleter`。
+
+完成后的交接用**原子热替换**：`callback(completer)` 把新 completer 交回主线程的 `_on_completions_refreshed()`，由 `load_schema_metadata()` 直接赋值替换 per-schema dict（而非逐条 append）——并发读者要么看到旧 dict 要么看到新 dict，永远看不到半更新的中间状态。`_restart_refresh` Event 处理"刷新途中用户又切了数据库"的并发场景：不杀线程，set Event 让遍历循环 break 后从头跑。刷新消息的可见性由 `_visibility_timer` 控制 1 秒下限，避免 UI 闪烁。
+
+### 状态流
+
+mycli 有两个值得单列的隐式状态机——由 Event/标志位驱动、非显式枚举，但状态转换规则明确、可追溯。
+
+![mycli 状态流](/vibe-reading/images/articles/mycli-internals/state-flow.svg)
+
+**补全刷新状态机**（`CompletionRefresher`，`completion_refresher.py`）：状态变量 `_completer_thread.is_alive()`（refreshing）· `_refresh_visible_until`（visibility 窗口）· `_restart_refresh` Event（重启信号）。UI 线程调 `refresh()` 进 refreshing，daemon Thread 自跑 `_bg_refresh` 内部循环；中途切库由 `_restart_refresh` Event 让遍历 break 后从头跑（不杀线程），独立连接失败走 `_finish_refreshing` 回 IDLE 不替换 completer，遍历完成经 callback 热替换进 VISIBILITY 后回 IDLE。
+
+**连接状态机**（`ClientConnectionMixin` + `SQLExecute`，`client_connection.py` / `sqlexecute.py`）：沙箱模式是连接状态机的特殊态——`SQLExecute._connect_sandbox()` in `sqlexecute.py:610` 临时把 `conn.set_character_set` 替换成 no-op，执行 raw socket 连接跳过 post-handshake 查询（`SET NAMES` 等），finally 恢复，让必须改密码的用户也能进 REPL 执行 `ALTER USER`。沙箱下跳过 connection id 检索（`sqlexecute.py:322`），`ClientConnectionMixin.connect()` 连接后检测 `sqlexecute.sandbox_mode` 标志复制到 `self.sandbox_mode`。`HANDSHAKE_ERROR` + SSL auto 分支在 `_connect()` 闭包里禁 SSL 递归重试（`client_connection.py:299`），`ACCESS_DENIED` + 无密码走 fallback prompt 重试。`reconnect()` 双段 ping（先 `ping(reconnect=False)` 再 `ping(True)`，`client_connection.py:417/431`）。
 
 ## 典型修改场景
 

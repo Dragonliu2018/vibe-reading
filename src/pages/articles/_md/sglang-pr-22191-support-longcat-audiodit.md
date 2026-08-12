@@ -14,7 +14,7 @@ readingTime: "20 min"
 aiModel: "Claude Opus 4.8"
 ---
 
-> **PR** [#22191](https://github.com/sgl-project/sglang/pull/22191) · **Issue** - · **commit** - · **首发版本** - · **变更行数** +2197 / -11 行（17 文件）· **合并时间** 2026-04-06（创建，截至写作时仍处 Open 状态）
+> **PR** [#22191](https://github.com/sgl-project/sglang/pull/22191) · **Issue** - · **commit** - · **首发版本** - · **变更行数** +2180 / -8 行（15 文件）· **合并时间** -（截至 2026-08-11 仍处 Open 状态）
 
 ---
 
@@ -25,6 +25,10 @@ LongCat-AudioDiT 是美团 LongCat 团队的扩散式文本转语音（TTS）模
 SGLang 的 `multimodal_gen` 子系统此前已接入 Wan / Hunyuan / ZImage / Flux / LongCat-Image 等**图像/视频**扩散模型，形成"标准 Stage + 模型特定 `PipelineConfig` hooks"的组合式 pipeline 框架。但这些模型都有两个共同前提：（1）以 Diffusers `model_index.json` 声明组件；（2）生成流程能干净地拆成 `LatentPreparation → Denoising → Decoding` 三段式标准 Stage。
 
 LongCat-AudioDiT 同时打破这两个前提：它以**单个 HuggingFace `PreTrainedModel`** 形式发布（无 `model_index.json`），且整条生成链路（文本编码 → ODE 求解 → VAE 解码）高度耦合在模型自己的 `forward` 里——ODE 积分器、CFG/APG 引导、prompt 音频的 VAE 编码都交织在同一个闭包中，无法拆给标准 `DenoisingStage`。本 PR 的工作正是为这类模型设计一条**单体 Stage（monolithic stage）**接入路径，并把 `AUDIO` 作为一等数据类型引入框架。
+
+![LongCat-AudioDiT 接入 multimodal_gen 架构与改动位置](/vibe-reading/images/articles/sglang-pr-22191-support-longcat-audiodit/architecture.svg)
+
+上图自上而下标注了本 PR 的改动位置：入口层（黄）CLI / HTTP / Python API 三路补齐音频参数与 audio-only 输出 → `registry.py`（黄）用 `register_configs` 登记 1B/3.5B + 新增 `SamplingParams`（青）→ `LongCatAudioDiTPipeline`（青）绕过 Diffusers 组件加载，右侧灰虚框是被绕过的标准 `DenoisingStage`/`DecodingStage` → 单体 `LongCatAudioDiTInferenceStage`（青）跑完全程 → 内联 `LongCatAudioDiTModel`（青）在 `forward` 内完成 inline Euler + CFG/APG + VAE 解码，算法 1:1 移植自上游仓库（蓝）→ 经 `T2A` / `DataType.AUDIO` 走 `soundfile` 写出 `.wav`（黄）。核心取舍是右侧灰虚框：不强行套三段式，而是用一个 Stage 诚实地包裹耦合在 `forward` 闭包里的整条生成链路。
 
 ---
 
@@ -162,7 +166,25 @@ AutoConfig.register("audiodit", LongCatAudioDiTConfig, exist_ok=True)
 AutoModel.register(LongCatAudioDiTConfig, LongCatAudioDiTModel, exist_ok=True)
 ```
 
-`LongCatAudioDiTConfig` 用 `sub_configs` 把 `vae_config` 与 `text_encoder_config`（`UMT5Config`）声明为子配置，`from_pretrained` 时连同 UMT5 文本编码器一起加载——文本编码器作为 `LongCatAudioDiTModel` 的子模块构造、权重随主 checkpoint 一起加载，无需单独下载。`utils.py` 的 `KNOWN_NON_DIFFUSERS_DIFFUSION_MODEL_PATTERNS` 加一行 `"longcat-audiodit": "LongCatAudioDiTPipeline"`，让框架识别这类非 Diffusers 模型。
+`LongCatAudioDiTConfig` 用 `sub_configs` 把 `vae_config` 与 `text_encoder_config`（`UMT5Config`）声明为子配置，`from_pretrained` 时连同 UMT5 文本编码器一起加载——文本编码器作为 `LongCatAudioDiTModel` 的子模块构造、权重随主 checkpoint 一起加载，无需单独下载。
+
+模型到 Pipeline 的映射注册在 **`registry.py`**（而非旧的 `KNOWN_NON_DIFFUSERS_DIFFUSION_MODEL_PATTERNS`）。框架用两步识别：一是 `ConfigInfo` 字典里加一行 `"longcat-audiodit": "LongCatAudioDiTPipeline"`，让 HF id 含 `longcat-audiodit` 的模型命中本 Pipeline；二是 `register_configs` 显式登记两个官方权重路径与一个模糊匹配 detector：
+
+```python title="registry.py"
+"longcat-audiodit": "LongCatAudioDiTPipeline",
+# ...
+register_configs(
+    sampling_param_cls=LongCatAudioDiTSamplingParams,
+    pipeline_config_cls=LongCatAudioDiTPipelineConfig,
+    hf_model_paths=[
+        "meituan-longcat/LongCat-AudioDiT-1B",
+        "meituan-longcat/LongCat-AudioDiT-3.5B",
+    ],
+    model_detectors=[lambda hf_id: "longcat-audiodit" in hf_id.lower()],
+)
+```
+
+即 **1B 与 3.5B 两个规格**都在框架注册之列，且任何 HF id 含 `longcat-audiodit` 的社区衍生权重也能自动命中。`register_configs` 同时把 `LongCatAudioDiTSamplingParams`（默认 `num_inference_steps=16`、`guidance_scale=4.0`、`data_type=DataType.AUDIO`）与 `LongCatAudioDiTPipelineConfig` 绑定到该模型，CLI / HTTP 路径据此选对采样参数与 Pipeline。
 
 ### 关键设计 3：WAV-VAE 的 fp16 数值对齐
 
@@ -192,8 +214,16 @@ def encode(self, audio):
 
 ```python title="runtime/models/dits/longcat_audiodit.py"
 def odeint_euler(fn, y0, t):
-    """Simple Euler ODE integrator (equivalent to torchdiffeq.odeint
-    with method='euler')."""
+    """Simple Euler ODE integrator (equivalent to `torchdiffeq.odeint` with method='euler').
+
+    Args:
+        fn: callable(t, y) → dy/dt
+        y0: initial state tensor
+        t:  1-D tensor of time steps (must be monotonically increasing)
+
+    Returns:
+        Tensor of shape `(len(t), *y0.shape)` containing the trajectory.
+    """
     ys = [y0]
     y = y0
     for i in range(len(t) - 1):
@@ -234,7 +264,13 @@ def fn(t, x):
 
 ### 关键设计 6：声音克隆与时长估计
 
-纯文本 TTS 时，时长由文本字符数估算（`_approx_duration_from_text`：中文 0.21s/字、英文 0.082s/字，按主语言把"其他字符"归并）。声音克隆时多一步：先 VAE 编码参考音频得到精确 prompt 帧数 `prompt_dur`，再用参考音频实际时长 / 其文本估算时长的比值（clip 到 `[1.0, 1.5]`）校正生成段时长，最终 `duration = min(gen_dur + prompt_dur, max_frames)`：
+时长估计有三条路径，由 `LongCatAudioDiTInferenceStage.forward` 根据采样参数分派：
+
+- **显式指定**：`duration_seconds` 不为空时直接换算帧数 `int(duration_seconds * sr // full_hop)`（clip 到 `max_wav_duration`）。
+- **纯文本 TTS**：由文本字符数估算（`_approx_duration_from_text`：中文 0.21s/字、英文 0.082s/字，按主语言把"其他字符"归并）。
+- **声音克隆**：先 VAE 编码参考音频得到精确 prompt 帧数 `prompt_dur`，再用参考音频实际时长 / 其文本估算时长的比值（clip 到 `[1.0, 1.5]`）校正生成段时长，最终 `duration = min(gen_dur + prompt_dur, max_frames)`。
+
+声音克隆的时长校正代码：
 
 ```python title="pipelines_core/.../longcat_audiodit.py"
 prompt_wav_1d = _load_audio_tensor(prompt_audio_path, sr)        # librosa 加载
@@ -243,8 +279,9 @@ prompt_time = prompt_dur * full_hop / sr
 dur_sec = _approx_duration_from_text(gen_text, max_duration=max_duration - prompt_time)
 if prompt_text:
     approx_pd = _approx_duration_from_text(prompt_text, max_duration=max_duration)
-    ratio = float(np.clip(prompt_time / approx_pd, 1.0, 1.5))
-    dur_sec = dur_sec * ratio
+    if approx_pd > 0:
+        ratio = float(np.clip(prompt_time / approx_pd, 1.0, 1.5))
+        dur_sec = dur_sec * ratio
 duration = int(dur_sec * sr // full_hop)
 duration = min(duration + prompt_dur, int(max_duration * sr // full_hop))
 ```
@@ -260,13 +297,26 @@ duration = min(duration + prompt_dur, int(max_duration * sr // full_hop))
 # Everything is built lazily in forward().
 self._cos: torch.Tensor | None = None
 self._sin: torch.Tensor | None = None
+self._cached_len: int = 0
+self._cached_device: torch.device | None = None
+
+def _build(self, seq_len, device, dtype):
+    """Build cos/sin tables entirely on CPU (matching original
+    Qwen2RotaryEmbedding which builds in __init__ on CPU, then the
+    whole model is moved with .to(device)), then move to target."""
+    inv_freq = 1.0 / (self.base ** (torch.arange(0, self.dim, 2, dtype=torch.int64).float() / self.dim))
+    t = torch.arange(seq_len, dtype=torch.int64).type_as(inv_freq)
+    freqs = torch.outer(t, inv_freq)
+    emb = torch.cat((freqs, freqs), dim=-1)
+    self._cos = emb.cos().to(dtype=dtype, device=device)
+    self._sin = emb.sin().to(dtype=dtype, device=device)
 ```
 
-注释解释：`from_pretrained` 用 meta-device 构造模型，若 `inv_freq` 在 `__init__` 里就建在 CPU、再随 `.to(device)` 整体搬迁，会和 meta-device 路径冲突导致损坏。lazy build 在目标 device 上直接构造，产生与原 `Qwen2RotaryEmbedding` bit-identical 的结果。
+注释解释：`from_pretrained` 用 meta-device 构造模型，若 `inv_freq` 在 `__init__` 里就注册成 buffer，会随 meta-device 路径冲突而损坏。lazy build 把构造推迟到首次 `forward`，且**刻意在 CPU 上算 `inv_freq` 与 cos/sin，再 `.to(device)` 搬到目标设备**——这与原 `Qwen2RotaryEmbedding` 在 `__init__` 于 CPU 构造、随后整个模型 `.to(device)` 搬迁的行为一致，从而产出 bit-identical 结果。`_cached_len` / `_cached_device` 避免同设备同长度的重复构造。
 
 ### 框架贯通：AUDIO 作为一等数据类型
 
-为支持音频输出，框架侧补齐三处：
+为支持音频输出，框架侧补齐四处：
 
 **`base.py`** 新增 `ModelTaskType.T2A`，其 `data_type` 返回 `DataType.AUDIO`：
 
@@ -282,14 +332,20 @@ class ModelTaskType(Enum):
         ...
 ```
 
-**`sampling_params.py`** 新增 `DataType.AUDIO`（默认扩展名 `wav`）、`prompt_audio_path` / `prompt_text` / `guidance_method` 字段及对应 CLI 参数（`--prompt-audio-path` / `--prompt-text` / `--guidance-method`），并在 `_set_output_file_ext` 的扩展名白名单加入 `.wav`。
+**`sampling_params.py`** 新增 `DataType.AUDIO`（默认扩展名 `wav`）、`prompt_audio_path` / `prompt_text` / `guidance_method` 字段及对应 CLI 参数（`--prompt-audio-path` / `--prompt-text` / `--guidance-method`），并在 `_set_output_file_ext` 的扩展名白名单加入 `.wav`。配套的 **`configs/sample/longcat_audiodit.py`** 定义 `LongCatAudioDiTSamplingParams`，把 `data_type` 固定为 `DataType.AUDIO`，并给出音频专属默认值 `num_inference_steps=16`、`guidance_scale=4.0`、`duration_seconds=None`（`_default_height` / `_default_width` 置空，因为音频无图像空间尺寸）。
 
-**`entrypoints/utils.py`** 的 `post_process_sample` 增加 `DataType.AUDIO` 分支，用 `soundfile` 写 WAV：
+**`entrypoints/utils.py`** 的 `post_process_sample` 增加 `DataType.AUDIO` 分支，用 `soundfile` 写 WAV（缺包时抛出明确 `ImportError` 并提示安装命令）：
 
 ```python title="runtime/entrypoints/utils.py"
 if data_type == DataType.AUDIO:
     if save_output and save_file_path:
-        import soundfile as sf
+        try:
+            import soundfile as sf
+        except ImportError as e:
+            raise ImportError(
+                "soundfile is required for audio output. "
+                "Install with: pip install soundfile"
+            ) from e
         if isinstance(sample, torch.Tensor):
             audio_np = sample.squeeze().detach().cpu().numpy()
         else:
@@ -300,7 +356,7 @@ if data_type == DataType.AUDIO:
     return None  # no video frames to return
 ```
 
-**`http_server.py`** 处理音频-only 输出（`output is None but audio is not None`），并把 `encode_video_to_base64` 改名为通用的 `encode_file_to_base64`；`vertex_generate` 透传 `prompt_audio_path` / `prompt_text` / `guidance_method`。
+**`http_server.py`** 处理音频-only 输出：新增 `_scheduler_response_has_no_output` helper 把"无输出"判定统一为 `output is None and output_file_paths is None and audio is None`；当 `output is None but audio is not None` 时把 `response.audio` 张量作为 `outputs_to_save` 传给 `save_outputs`。同时把 `encode_video_to_base64` 改名为通用的 `encode_file_to_base64`；`vertex_generate` 透传 `prompt_audio_path` / `prompt_text` / `guidance_method`。
 
 **`pyproject*.toml`** 四处 diffusion 依赖组加入 `librosa`（`soundfile` 随 librosa 间接引入，但代码里显式 `import soundfile`）。
 
@@ -316,9 +372,9 @@ sglang generate --model-path meituan-longcat/LongCat-AudioDiT-1B \
   │    └─ AutoTokenizer.from_pretrained("google/umt5-base")
   │
   └─ LongCatAudioDiTInferenceStage.forward()
-       ├─ 解析 gen_text / prompt_audio_path / prompt_text / guidance_method
+       ├─ 解析 gen_text / prompt_audio_path / prompt_text / guidance_method / duration_seconds
        ├─ 声音克隆？ → librosa 加载 ref.wav → VAE encode 得 prompt_dur → 校正 duration
-       │  纯文本？  → _approx_duration_from_text 估算 duration
+       │  纯文本？  → duration_seconds 显式指定，否则 _approx_duration_from_text 估算
        ├─ _normalize_text + 拼接 → tokenizer → input_ids / attention_mask
        ├─ model.forward(input_ids, attention_mask, prompt_audio, duration, steps=16,
        │                cfg_strength=4.0, guidance_method="cfg"|"apg")
@@ -363,7 +419,7 @@ LongCat-AudioDiT 的 ODE 积分器、prompt 音频 VAE 编码、CFG/APG 引导�
 
 ### 为什么 RoPE 不在 `__init__` 里建 `inv_freq`？
 
-`from_pretrained` 用 meta-device 构造模型，若 `inv_freq` 在 `__init__` 里就建在 CPU、再随 `.to(device)` 整体搬迁，会和 meta-device 路径冲突导致 buffer 损坏。lazy build 在目标 device 上直接构造 cos/sin，既避开 meta-device 问题，又产出与原实现 bit-identical 的结果。这是把外部模型搬进 HuggingFace `PreTrainedModel` 体系时常见的坑。
+`from_pretrained` 用 meta-device 构造模型，若 `inv_freq` 在 `__init__` 里就注册成 buffer，会随 meta-device 路径冲突而损坏。lazy build 把构造推迟到首次 `forward`，且刻意在 CPU 上算 `inv_freq` 与 cos/sin、再 `.to(device)` 搬到目标设备——复刻原 `Qwen2RotaryEmbedding` 在 `__init__` 于 CPU 构造后整体搬迁的行为，从而产出 bit-identical 结果。这是把外部模型搬进 HuggingFace `PreTrainedModel` 体系时常见的坑。
 
 ### 为什么文本编码要 `last_hidden + first_hidden` 并做 LayerNorm？
 

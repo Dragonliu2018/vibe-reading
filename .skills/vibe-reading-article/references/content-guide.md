@@ -14,7 +14,7 @@
 
 ### 推荐文章结构（代码解读，多文件输出）
 
-一个项目 = 1 个概览文件 + N 个模块文件，放在 `_md/{category_path}/` 目录下（category_path = category 数组用 / 拼接，不再多一层 slug）：
+一个项目 = 1 个概览文件 + N 个模块文件，放在 `_md/{category_path}/` 目录下（category_path 规则见 `markdown-style.md`「文件命名」，含空格元素替换为 `-`；不再多一层 slug）：
 
 ```
 概览文件 00-overview.md：

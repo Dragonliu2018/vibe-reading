@@ -467,7 +467,7 @@ M > 7 两层结构时，表首列加「所属子系统」，按子系统分组�
 
 基于 Step 1-4 的全部产出，按**概览 + 模块**多文件结构撰写 Markdown 文章。输出目录与 frontmatter `category` 对齐，每个文件是首页一张独立卡片。
 
-**输出目录**：`src/pages/articles/_md/{category_path}/`，其中 `{category_path}` = category 数组用 `/` 拼接。文件直接放在 category 末级目录下，不再多一层 slug。
+**输出目录**：`src/pages/articles/_md/{category_path}/`（`{category_path}` 规则见 `markdown-style.md`「文件命名」：category 数组用 `/` 拼接，含空格元素替换为 `-`）。文件直接放在 category 末级目录下，不再多一层 slug。
 
 例如 `category: [Python, MyCLI, CodeWiki, "1.2.0"]` → 目录 `_md/Python/MyCLI/CodeWiki/1.2.0/`
 

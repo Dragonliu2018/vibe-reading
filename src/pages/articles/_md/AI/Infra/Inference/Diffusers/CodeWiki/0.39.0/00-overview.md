@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/diffusers"
 title: "Overview"
 date: "2026-08-12T15:35:17+08:00"
-category: [AI, Diffusers, CodeWiki, "0.39.0"]
+category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
 tags: ["Diffusers", "Python", "扩散模型", "Stable Diffusion", "UNet", "VAE", "LoRA", "量化"]
 description: "HuggingFace Diffusers v0.39.0 源码架构解读：管线核心、模型架构、调度器、加载器、模块化管线、前向钩子、引导器、量化器八大模块。"
 readingTime: "15 min"
@@ -152,14 +152,14 @@ Diffusers v0.39.0 的核心代码分化为 8 个有效模块，每个模块有�
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| 管线核心 | 管线基类、加载、推理编排 | `DiffusionPipeline.from_pretrained` | 定义所有管线的统一生命周期 | [管线核心](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/01-pipeline-core) |
-| 模型架构 | UNet/VAE/Transformer 网络定义 | `UNet2DConditionModel.forward` | 扩散模型的核心计算图 | [模型架构](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/02-models) |
-| 调度器 | 噪声调度数学 | `DDPMScheduler.step` | 去噪算法独立于模型架构 | [调度器](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/03-schedulers) |
-| 加载器 | LoRA/IP-Adapter 运行时注入 | `pipe.load_lora_weights` | 加载逻辑与模型定义解耦 | [加载器](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/04-loaders) |
-| 模块化管线 | 组件化管线组装系统 | `ModularPipeline.__call__` | 声明式组件 + 条件执行 | [模块化管线](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/05-modular-pipelines) |
-| 前向钩子 | 推理优化（缓存/卸载） | `apply_first_block_cache` | 不改模型代码注入优化 | [前向钩子](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/06-hooks) |
-| 引导器 | CFG/PAG 生成方向控制 | `ClassifierFreeGuidance.forward` | 引导策略可插拔替换 | [引导器](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/07-guiders) |
-| 量化器 | 低显存量化推理 | `DiffusersAutoQuantizer.from_config` | 多后端统一接口 | [量化器](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/08-quantizers) |
+| 管线核心 | 管线基类、加载、推理编排 | `DiffusionPipeline.from_pretrained` | 定义所有管线的统一生命周期 | [管线核心](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/01-pipeline-core) |
+| 模型架构 | UNet/VAE/Transformer 网络定义 | `UNet2DConditionModel.forward` | 扩散模型的核心计算图 | [模型架构](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/02-models) |
+| 调度器 | 噪声调度数学 | `DDPMScheduler.step` | 去噪算法独立于模型架构 | [调度器](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/03-schedulers) |
+| 加载器 | LoRA/IP-Adapter 运行时注入 | `pipe.load_lora_weights` | 加载逻辑与模型定义解耦 | [加载器](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/04-loaders) |
+| 模块化管线 | 组件化管线组装系统 | `ModularPipeline.__call__` | 声明式组件 + 条件执行 | [模块化管线](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/05-modular-pipelines) |
+| 前向钩子 | 推理优化（缓存/卸载） | `apply_first_block_cache` | 不改模型代码注入优化 | [前向钩子](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/06-hooks) |
+| 引导器 | CFG/PAG 生成方向控制 | `ClassifierFreeGuidance.forward` | 引导策略可插拔替换 | [引导器](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/07-guiders) |
+| 量化器 | 低显存量化推理 | `DiffusersAutoQuantizer.from_config` | 多后端统一接口 | [量化器](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/08-quantizers) |
 
 ## 运行时行为
 

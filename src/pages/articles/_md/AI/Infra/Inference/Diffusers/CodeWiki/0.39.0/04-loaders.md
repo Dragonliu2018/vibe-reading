@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/diffusers"
 title: "加载器"
 date: "2026-08-12T15:35:17+08:00"
-category: [AI, Diffusers, CodeWiki, "0.39.0"]
+category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
 tags: ["Diffusers", "LoRA", "IP-Adapter", "PEFT", "SingleFile"]
 description: "Mixin 架构的 LoRA/IP-Adapter 运行时注入、单文件加载、PEFT 集成。"
 readingTime: "11 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/00-overview)
 
 ---
 

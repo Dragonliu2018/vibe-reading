@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/diffusers"
 title: "管线核心"
 date: "2026-08-12T15:35:17+08:00"
-category: [AI, Diffusers, CodeWiki, "0.39.0"]
+category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
 tags: ["Diffusers", "Pipeline", "ConfigMixin", "ModelMixin", "from_pretrained"]
 description: "DiffusionPipeline 基类、ConfigMixin/ModelMixin 配置系统、AutoPipeline 工厂模式、from_pretrained 12 步加载流程。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/00-overview)
 
 ## 模块定位
 

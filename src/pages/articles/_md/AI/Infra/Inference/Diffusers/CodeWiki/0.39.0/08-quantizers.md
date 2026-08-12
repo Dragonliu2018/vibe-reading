@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/diffusers"
 title: "量化器"
 date: "2026-08-12T15:35:17+08:00"
-category: [AI, Diffusers, CodeWiki, "0.39.0"]
+category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
 tags: ["Diffusers", "Quantization", "bitsandbytes", "GGUF", "Quanto", "TorchAO"]
 description: "DiffusersQuantizer ABC 策略基类、BnB/GGUF/Quanto/TorchAO 多后端量化、DiffusersAutoQuantizer 工厂路由。"
 readingTime: "9 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/00-overview)
 
 ---
 

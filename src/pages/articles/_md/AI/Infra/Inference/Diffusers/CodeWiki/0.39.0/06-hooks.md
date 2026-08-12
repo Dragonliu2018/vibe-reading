@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/diffusers"
 title: "前向钩子"
 date: "2026-08-12T15:35:17+08:00"
-category: [AI, Diffusers, CodeWiki, "0.39.0"]
+category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
 tags: ["Diffusers", "Hooks", "FBCache", "GroupOffload", "推理优化"]
 description: "ModelHook 洋葱模型、HookRegistry 链式注册、首块缓存与组卸载的 forward 拦截机制。"
 readingTime: "10 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Diffusers/CodeWiki/0.39.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/Diffusers/CodeWiki/0.39.0/00-overview)
 
 ## 模块定位
 

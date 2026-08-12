@@ -241,14 +241,15 @@ const filterCats: [string, number][] = Object.entries(
 
     .card-inner { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
     .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
-    .cat-badge    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
-    .pin-badge    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
-    .review-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
-    .review-badge[data-review-state="pending"] { color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30); }
-    .review-badge[data-review-state="reviewed"] { color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30); }
-    .origin-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
-    .origin-badge[data-origin="repost"] { color: #2dd4bf; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.30); }
-    .origin-badge[data-origin="original"] { color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30); }
+    /* 徽章由 ArticleBadges 子组件渲染，用 :global() 让本页作用域样式穿透到子组件元素 */
+    :global(.cat-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
+    :global(.pin-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
+    :global(.review-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
+    :global(.review-badge[data-review-state="pending"]) { color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30); }
+    :global(.review-badge[data-review-state="reviewed"]) { color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30); }
+    :global(.origin-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
+    :global(.origin-badge[data-origin="repost"]) { color: #2dd4bf; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.30); }
+    :global(.origin-badge[data-origin="original"]) { color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30); }
     .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
     .card-source-label { color: inherit; margin-right: 0.2em; }
     .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }

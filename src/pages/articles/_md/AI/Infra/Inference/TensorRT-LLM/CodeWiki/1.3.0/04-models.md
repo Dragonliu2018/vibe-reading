@@ -3,7 +3,7 @@ source:
   type: "源码解读"
   project: "TensorRT-LLM"
   url: "https://github.com/NVIDIA/TensorRT-LLM"
-title: "models"
+title: "模型定义"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
 tags: ["TensorRT-LLM", "models", "注册表", "懒加载", "权重加载"]

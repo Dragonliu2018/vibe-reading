@@ -188,19 +188,20 @@ TensorRT-LLM/
 
 ## 模块地图
 
-本文聚焦 Torch 后端的 7 个核心模块（C++ 后端作为参考层在概览提及）。模块间的静态依赖关系：上层模块调用下层模块，`pyexecutor` 是依赖枢纽。
+本文聚焦 Torch 后端的 8 个核心模块（C++ 后端作为参考层在概览提及）。模块间的静态依赖关系：上层模块调用下层模块，`pyexecutor` 是依赖枢纽。
 
 ![模块依赖关系](/vibe-reading/images/articles/tensorrt-llm/module-dependencies.svg)
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| 高层 API | LLM/AsyncLLM 统一入口 | `llmapi/llm.py` `LLM.generate()` | 隔离用户与引擎，后端可切换 | [llmapi](01-llmapi) |
-| 请求编排 | 请求生命周期与进程拓扑 | `executor/executor.py` `GenerationExecutor` | 解耦提交与执行，支持多种部署 | [executor](02-executor) |
-| 执行引擎 | 调度/KV cache/采样主循环 | `pyexecutor/py_executor.py` `_executor_loop()` | Torch 后端心脏，每 iteration 的核心 | [pyexecutor](03-pyexecutor) |
-| 模型定义 | 80+ 模型 forward 与权重加载 | `models/modeling_auto.py` `AutoModelForCausalLM` | 每模型特化的权重转换，注册表式扩展 | [models](04-models) |
-| 神经网络算子 | Attention/MLP/MoE 可组合组件 | `modules/attention.py` `Attention` | 计算逻辑与 kernel 实现分离 | [modules](05-modules) |
-| 注意力后端 | TRTLLM/FlashInfer kernel 适配 | `attention_backend/interface.py` `AttentionBackend` | 多 kernel 可切换，prefill/decode 分支 | [attention_backend](06-attention-backend) |
-| 高级推理特性 | 投机解码 + PD 分离 | `speculative/interface.py` + `disaggregation/transceiver.py` | hook 进引擎而非垂直分层 | [speculative & disaggregation](07-speculative-disaggregation) |
+| 高层 API | LLM/AsyncLLM 统一入口 | `llmapi/llm.py` `LLM.generate()` | 隔离用户与引擎，后端可切换 | [高层 API](01-llmapi) |
+| 请求编排 | 请求生命周期与进程拓扑 | `executor/executor.py` `GenerationExecutor` | 解耦提交与执行，支持多种部署 | [请求编排](02-executor) |
+| 执行引擎 | 调度/KV cache/采样主循环 | `pyexecutor/py_executor.py` `_executor_loop()` | Torch 后端心脏，每 iteration 的核心 | [执行引擎](03-pyexecutor) |
+| 模型定义 | 80+ 模型 forward 与权重加载 | `models/modeling_auto.py` `AutoModelForCausalLM` | 每模型特化的权重转换，注册表式扩展 | [模型定义](04-models) |
+| 神经网络算子 | Attention/MLP/MoE 可组合组件 | `modules/attention.py` `Attention` | 计算逻辑与 kernel 实现分离 | [神经网络算子](05-modules) |
+| 注意力后端 | TRTLLM/FlashInfer kernel 适配 | `attention_backend/interface.py` `AttentionBackend` | 多 kernel 可切换，prefill/decode 分支 | [注意力后端](06-attention-backend) |
+| 投机解码 | 15+ 算法可切换的 draft-verify | `speculative/interface.py` `SpecWorkerBase` | hook 进引擎，策略模式多算法 | [投机解码](07-speculative) |
+| PD 分离 | NIXL RDMA 跨节点 KV 传输 | `disaggregation/transceiver.py` `KvCacheTransceiverV2` | hook 进引擎，prefill/decode 分离部署 | [PD 分离](08-disaggregation) |
 
 > 模块间的动态调用顺序见「运行时行为 > 核心运行流程」。
 
@@ -314,7 +315,7 @@ cpp/tests/unit_tests/    # C++ 后端单元测试
 - **第三遍：理解模型加载与算子组装**
   `models/modeling_auto.py` 的 `AutoModelForCausalLM._resolve_class()` → 选一个 `modeling_deepseekv3.py` 看 `DeepseekV3DecoderLayer` 如何组装 `MLA` + `MoE` → `modules/attention.py` 的 `Attention.forward_impl()` 委托给 `attention_backend/`
 - **第四遍：选择重点子模块深入阅读**
-  [llmapi](01-llmapi) · [executor](02-executor) · [pyexecutor](03-pyexecutor) · [models](04-models) · [modules](05-modules) · [attention_backend](06-attention-backend) · [speculative & disaggregation](07-speculative-disaggregation)
+  [高层 API](01-llmapi) · [请求编排](02-executor) · [执行引擎](03-pyexecutor) · [模型定义](04-models) · [神经网络算子](05-modules) · [注意力后端](06-attention-backend) · [投机解码](07-speculative) · [PD 分离](08-disaggregation)
 
 ---
 

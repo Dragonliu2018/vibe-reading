@@ -3,7 +3,7 @@ source:
   type: "源码解读"
   project: "TensorRT-LLM"
   url: "https://github.com/NVIDIA/TensorRT-LLM"
-title: "modules"
+title: "神经网络算子"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
 tags: ["TensorRT-LLM", "modules", "Attention", "MoE", "融合算子", "torch.compile"]

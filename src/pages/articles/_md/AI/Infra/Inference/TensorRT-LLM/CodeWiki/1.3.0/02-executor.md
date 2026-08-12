@@ -3,7 +3,7 @@ source:
   type: "源码解读"
   project: "TensorRT-LLM"
   url: "https://github.com/NVIDIA/TensorRT-LLM"
-title: "executor"
+title: "请求编排"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
 tags: ["TensorRT-LLM", "executor", "Future", "生产者-消费者", "IPC"]

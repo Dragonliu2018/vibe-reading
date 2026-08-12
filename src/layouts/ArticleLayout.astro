@@ -1,6 +1,8 @@
 ---
-import { articles, sourceLabel, badgeCat } from '../data/articles';
+import { sourceLabel } from '../data/articles';
+import { deriveBadges } from '../data/badges';
 import Sidebar from '../components/Sidebar.astro';
+import ArticleBadges from '../components/ArticleBadges.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
 import GiscusComments from '../components/GiscusComments.astro';
@@ -19,6 +21,7 @@ export interface Props {
     readingTime?: string;
     aiModel?:     string;
     reviewed?:    boolean;
+    pinned?:      boolean;
     source?: {
       project: string;        // 项目名，如 Doris / ClickHouse
       type:    string;        // 引用类型，如 PR / Issue / RFC / arxiv / commit
@@ -31,7 +34,7 @@ export interface Props {
 }
 
 const { frontmatter, headings = [] } = Astro.props;
-const { title, date, category, tags = [], description, readingTime, aiModel, source, reviewed } = frontmatter;
+const { title, date, category, tags = [], description, readingTime, aiModel, source, reviewed, pinned } = frontmatter;
 
 // source 前缀（统一用 articles.ts 的 sourceLabel helper，避免 4 处副本漂移）
 const srcLabel    = source ? sourceLabel(source, category ?? []) : '';
@@ -40,32 +43,11 @@ const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
 const displayTitle = hasSourceLabel ? `${srcLabel} ${prTypeLabel}${title}` : title;
 
 const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
-const catLabel = badgeCat(category);
 
 // 沉浸式阅读模式：文学 / 电影 / 历史 等非技术题材使用衬线字体 + 疏朗排版
 const LITERARY_DOMAINS = ['Literature', 'Cinema', 'History'];
 const firstCat   = category?.[0] ?? '';
 const layoutMode = LITERARY_DOMAINS.includes(firstCat) ? 'literary' : 'default';
-
-// 与首页保持一致：按全站标签首次出现顺序分配颜色，保证相同标签全站同色
-// 仅用蓝紫系——绿/橙黄留给 review-badge、粉/teal 留给 origin-badge，三类徽章色域不重合
-const BADGE_PALETTE = [
-  { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },
-  { text: '#bc8cff', bg: 'rgba(188,140,255,.12)', border: 'rgba(188,140,255,.30)' },
-  { text: '#7aa2f7', bg: 'rgba(122,162,247,.12)', border: 'rgba(122,162,247,.30)' },
-  { text: '#d2a8ff', bg: 'rgba(210,168,255,.12)', border: 'rgba(210,168,255,.30)' },
-] as const;
-const catCountMap = articles.reduce<Record<string, number>>((acc, a) => {
-  const last = badgeCat(a.category);
-  if (last) acc[last] = (acc[last] ?? 0) + 1;
-  return acc;
-}, {});
-const allCats = Object.entries(catCountMap).sort((a, b) => b[1] - a[1]).map(([l]) => l);
-const catColorMap = new Map(allCats.map((label, i) => [label, BADGE_PALETTE[i % BADGE_PALETTE.length]]));
-function badgeStyle(label: string): string {
-  const col = catColorMap.get(label) ?? BADGE_PALETTE[0];
-  return `color:${col.text};background:${col.bg};border:1px solid ${col.border};`;
-}
 
 // Derive slug from URL to highlight current article in sidebar
 const pathname    = Astro.url.pathname;
@@ -80,17 +62,8 @@ const projectRoot = process.cwd();
 // 本地 VS Code 链接
 const vscodeSourceUrl = `vscode://file${projectRoot}/${sourceFilePath}`;
 
-// Reviewed 徽章：静态判定，依据文章 frontmatter 的 reviewed 字段。构建期决定，无运行时。
-const isReviewed = !!reviewed;
-const reviewState = isReviewed ? 'reviewed' : 'pending';
-const reviewLabel = isReviewed ? 'Reviewed' : 'Draft';
-const reviewTitle = isReviewed ? '已人工 review' : 'AI 初稿，待人工 review';
-
-// Origin 徽章：转载（source.type=article）vs AI 生成内容（PR 解读/源码解读/论文等）
-const isRepost = source?.type === 'article';
-const originState = isRepost ? 'repost' : 'original';
-const originLabel = isRepost ? '转载' : 'AI 生成';
-const originTitle = isRepost ? '转载自外部文章' : 'AI 生成内容';
+// 徽章状态（pinned / 分类 / origin / review）统一由 deriveBadges 派生，与首页共享同一来源
+const badges = deriveBadges({ pinned, category, reviewed, source });
 
 // TOC: h2 + h3 + h4 only
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.depth === 4);
@@ -164,17 +137,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
 
         <header class="article-header">
           <div class="article-meta">
-            {catLabel && (
-              <span class="cat-badge" style={badgeStyle(catLabel)}>
-                {catLabel}
-              </span>
-            )}
-            <span class="origin-badge"
-                  data-origin={originState}
-                  title={originTitle}>{originLabel}</span>
-            <span class="review-badge"
-                  data-review-state={reviewState}
-                  title={reviewTitle}>{reviewLabel}</span>
+            <ArticleBadges state={badges} />
             {date        && <><span class="meta-sep">·</span><span class="meta-item">{date.slice(0, 10)}</span></>}
             {readingTime && <><span class="meta-sep">·</span><span class="meta-item">{readingTime}</span></>}
             {aiModel     && <><span class="meta-sep">·</span><span class="meta-item">{aiModel}</span></>}

@@ -1,7 +1,9 @@
 ---
 import { articles, sourceLabel, badgeCat } from '../data/articles';
+import { deriveBadges } from '../data/badges';
 import { quotes } from '../data/quotes';
 import Sidebar from '../components/Sidebar.astro';
+import ArticleBadges from '../components/ArticleBadges.astro';
 import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
 import SWRegister from '../components/SWRegister.astro';
@@ -27,22 +29,6 @@ const filterCats: [string, number][] = Object.entries(
     return acc;
   }, {})
 ).sort((a, b) => b[1] - a[1]);
-
-// 按首次出现顺序顺序分配颜色，保证不同标签必然不同色
-// 仅用蓝紫系——绿/橙黄留给 review-badge、粉/teal 留给 origin-badge，三类徽章色域不重合
-const BADGE_PALETTE = [
-  { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },
-  { text: '#bc8cff', bg: 'rgba(188,140,255,.12)', border: 'rgba(188,140,255,.30)' },
-  { text: '#7aa2f7', bg: 'rgba(122,162,247,.12)', border: 'rgba(122,162,247,.30)' },
-  { text: '#d2a8ff', bg: 'rgba(210,168,255,.12)', border: 'rgba(210,168,255,.30)' },
-] as const;
-const catColorMap = new Map(
-  filterCats.map(([label], i) => [label, BADGE_PALETTE[i % BADGE_PALETTE.length]])
-);
-function badgeStyle(label: string): string {
-  const col = catColorMap.get(label) ?? BADGE_PALETTE[0];
-  return `color:${col.text};background:${col.bg};border:1px solid ${col.border};`;
-}
 
 ---
 
@@ -359,31 +345,13 @@ function badgeStyle(label: string): string {
         <main class="articles stagger" id="article-list">
           {sorted.map((article) => {
             const catLabel = lastCatOf(article);
-            const isReviewed = !!article.reviewed;
-            const reviewLabel = isReviewed ? 'Reviewed' : 'Draft';
-            const reviewTitle = isReviewed ? '已人工 review' : 'AI 初稿，待人工 review';
-            const isRepost = article.source?.type === 'article';
-            const originLabel = isRepost ? '转载' : 'AI 生成';
-            const originTitle = isRepost ? '转载自外部文章' : 'AI 生成内容';
+            const badges = deriveBadges(article);
             return (
               <a class="article-card fade-up" href={`${base}/articles/${article.slug}`} data-category={catLabel}>
                 <div class="card-inner">
                   <div>
                     <div class="card-meta">
-                      {article.pinned && (
-                        <span class="pin-badge" title="置顶文章">📌 置顶</span>
-                      )}
-                      {catLabel && (
-                        <span class="cat-badge" style={badgeStyle(catLabel)}>
-                          {catLabel}
-                        </span>
-                      )}
-                      <span class="origin-badge"
-                            data-origin={isRepost ? 'repost' : 'original'}
-                            title={originTitle}>{originLabel}</span>
-                      <span class="review-badge"
-                            data-review-state={isReviewed ? 'reviewed' : 'pending'}
-                            title={reviewTitle}>{reviewLabel}</span>
+                      <ArticleBadges state={badges} />
                     </div>
                     <div class="card-title">
                       {(() => {

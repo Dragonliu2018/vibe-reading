@@ -49,6 +49,23 @@ reviewed: false
 
 PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读文章也加 `source`（`type: "论文解读"`、无 id），前缀 `[project 论文解读]` 由 source 自动拼，见 `paper-workflow.md`。
 
+**category 确认流程（写文章前必须执行）：**
+
+1. **先查已有文章**：按原文主题域 / 来源，在 `src/pages/articles/_md/` 下 grep 同主题或同来源的已有文章，看它们的 `category` 字段。例：
+   ```bash
+   # 按来源查（如同项目/同作者的转载）
+   grep -rl "source:\s*\n\s*project: \"Runoob\"" src/pages/articles/_md/
+   # 按主题关键词查
+   grep -rl "Harness Engineering\|驾驭工程" src/pages/articles/_md/ | head
+   ```
+2. **对齐已有分类树**：若已有同类文章，**优先复用其 category 路径**（保持分类树一致，避免同主题文章散落到不同分类下）。分类树是人工持续维护的，已有路径即为既定约定。
+3. **无同类文章时按末级规则推断**（见下表），并基于现有目录结构选择最贴近的主题层。
+4. **人工显式指定优先级最高**：用户在指令里给了具体 category 数组时，直接用，不走上述推断（规范也写明「人工明确指定格式时，以人工为准」）。
+
+> 核心原则：category 不是凭空推断的，是**对齐已有博客分类树**的——先查再定，不先定再查。
+
+---
+
 **category 末级约定：**
 
 | 末级 | 含义 |

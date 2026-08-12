@@ -6,15 +6,16 @@ source:
   id: "26220"
   url: "https://github.com/sgl-project/sglang/pull/26220"
   prType: "feat"
-date: "2026-07-14"
+date: "2026-08-11T00:26:42+08:00"
 category: [AI, Infra, Inference, SGLang, Contributions]
 tags: ["SGLang", "Cola-DLM", "Diffusion Model", "Text Generation"]
 description: "为 multimodal_gen 框架新增 Cola-DLM 文本扩散模型支持：自定义 DiT/VAE 适配器、三阶段块状去噪流水线、T2T 任务类型与文本生成端点。"
 readingTime: "14 min"
 aiModel: "Claude Opus 4.8"
+reviewed: false
 ---
 
-> **PR** [#26220](https://github.com/sgl-project/sglang/pull/26220) · **Issue** `-` · **commit** `-` · **首发版本** `-` · **变更行数** +1175 / -7 行 · **合并时间** -
+> **PR** [#26220](https://github.com/sgl-project/sglang/pull/26220) · **Issue** `-` · **commit** [b1f1c3a](https://github.com/sgl-project/sglang/pull/26220/commits/b1f1c3a466c8d4d4bac0d5f3503501a3fffbaebd) · **首发版本** `-` · **变更行数** +1175 / -7 行（18 文件）· **合并时间** -（截至写作时仍处 Draft、未合并，最新更新 2026-08-09）
 
 ---
 
@@ -29,7 +30,13 @@ PR [#26220](https://github.com/sgl-project/sglang/pull/26220) 接入的 **Cola-D
 - 注册逻辑重构，支持**没有 `model_index.json` 的非 diffusers 模型**（Cola-DLM 的权重来自上游 `cola_dlm` 包，不是 diffusers checkpoint）；
 - 三个完全自定义的流水线阶段，移植 Cola-DLM 上游的块状去噪推理算法。
 
-PR 仍是 Draft、未合并，+1175 / -7 行、19 个文件（8 新增 + 11 修改）。本文聚焦这次接入的实现要点。
+改动贯穿入口、注册、流水线、模型包装四层，位置如下图：
+
+![Cola-DLM 接入 multimodal_gen 的改动位置总览](/vibe-reading/images/articles/sglang-pr-26220-cola-dlm-text-diffusion/architecture.svg)
+
+自上而下：入口层（黄）新增文本端点与 CLI / Python API 分支；`registry.py`（黄）把 Cola-DLM 登记为非 diffusers 模型并重构 detector；`ColaDLMPipeline`（青）用三个自定义阶段替代被绕过的标准 `DenoisingStage` / `DecodingStage`（灰虚线）；底层两个 wrapper（青）注入上游 `cola_dlm` 包（蓝）的模型实例——整条链路绕开 `model_index.json`，最终落到新增的 `DataType.TEXT` 文本输出。
+
+PR 仍是 Draft、未合并，+1175 / -7 行、18 个文件（9 新增 + 9 修改）。本文聚焦这次接入的实现要点。
 
 ---
 
@@ -53,6 +60,8 @@ PR 仍是 Draft、未合并，+1175 / -7 行、19 个文件（8 新增 + 11 修�
 | `T` | 1000.0 | flow matching 端点 |
 | `num_inference_steps` | 16 | 每块的 Euler ODE 步数 |
 | `guidance_scale` | 7.0 | CFG 强度 |
+| `patch_size` | 1 | 潜在 patch 粒度（latent ↔ token 比）|
+| `max_new_tokens` | 256 | 单次生成最大 token 数 |
 
 两个让推理又快又对的技巧贯穿实现：**跨块 KV cache**（前缀与已生成块的 K/V 只算一次，后续块只对新增 Q 做注意力）和**首块 clean guidance**（把 prompt 对应的潜在位置在 t=0 钉死到干净值，保证 prompt 不被扩散破坏）。
 
@@ -107,7 +116,7 @@ def forward(self, hidden_states=None, encoder_hidden_states=None,
 
 - **注入而非继承**：`load_model(model)` 把已 `from_pretrained` 加载好的上游实例塞进 `self._model`，权重直通、不做任何重映射（`param_names_mapping = {r"^(.*)$": r"\1"}` 是恒等映射）。
 - **KV cache 透传**：`set_kv_cache(flag)` 遍历 `self._model.blocks` 调上游方法；`forward` 把 `update_kv` / `use_kv_cache` 透传给上游——这是跨块缓存能工作的前提。
-- VAE wrapper 同理：`encode([input_tensor])` 取 `enc.latents_list[0]`，`decode(z, txt_shape, txt_q_shape, update_kv)` 返回 logits。
+- VAE wrapper 同理：`encode(input_ids_list)` 直通上游、返回带 `.latents_list` 的结果（阶段 1 再取 `enc.latents_list[0]` 做 `(latents - shift) * scale` 缩放）；`decode(z, txt_shape, txt_q_shape, update_kv)` 返回词表 logits。
 
 ### 二、三阶段流水线：块状去噪的核心
 
@@ -184,14 +193,15 @@ def load_modules(self, server_args, loaded_modules=None):
 | 文件 | 改动 | 作用 |
 | --- | --- | --- |
 | `configs/pipeline_configs/base.py` | 新增 `ModelTaskType.T2T`；`data_type()` 把 `T2T` → `DataType.TEXT` | 框架首次有"文本"任务类型 |
-| `configs/sample/sampling_params.py` | 新增 `DataType.TEXT`；`get_default_extension()` 返回 `"txt"`；CLI 加 `--max-new-tokens`/`--T`/`--temperature`/`--top-k`/`--top-p`/`--repetition-penalty` 等 | 文本采样参数 |
+| `configs/sample/sampling_params.py` | 新增 `DataType.TEXT`；`get_default_extension()` 返回 `"txt"`；CLI 加 `--max-new-tokens`/`--T`/`--block-size`/`--patch-size`/`--temperature`/`--top-k`/`--top-p`/`--repetition-penalty` 等 | 文本采样参数 |
 | `runtime/entrypoints/openai/protocol.py` | `TextGenerationsRequest` / `TextResponse` Pydantic 模型 | 文本请求/响应协议 |
 | `runtime/entrypoints/openai/text_api.py` | `POST /v1/text/generations` 路由；校验 `task_type.data_type() == TEXT` | 文本生成 HTTP 端点 |
 | `runtime/entrypoints/diffusion_generator.py` | `DataType.TEXT` 分支，构建 `GenerationResult(text=...)` | Python API 返回文本 |
 | `runtime/entrypoints/cli/generate.py` | 打印 `result.text` | CLI 输出文本 |
 | `runtime/entrypoints/utils.py` | `GenerationResult` 加 `text: str \| None` 字段 | 结果载体加文本槽 |
 | `runtime/managers/gpu_worker.py` | `data_type == TEXT` 时跳过 `save_outputs` | 文本无文件可存 |
-| `python/sglang/utils.py` | `KNOWN_NON_DIFFUSERS_DIFFUSION_MODEL_PATTERNS["cola-dlm"] = "ColaDLMPipeline"` | 标记 Cola-DLM 为非 diffusers 模型 |
+| `runtime/entrypoints/http_server.py` | `create_app()` 中 `include_router(text_api.router)` | 把文本端点挂进 HTTP 路由 |
+| `python/sglang/multimodal_gen/registry.py` | `KNOWN_NON_DIFFUSERS_DIFFUSION_MODEL_PATTERNS["cola-dlm"] = "ColaDLMPipeline"`；`_register_configs()` 注册 Cola-DLM detector | 标记 Cola-DLM 为非 diffusers 模型 + 注册配置 |
 
 文本端点的守卫值得一提——它用任务类型而非路径判断，避免视觉模型误触文本端点：
 
@@ -230,7 +240,7 @@ if not matched_model_names:
         pass  # 非 diffusers 模型没有 model_index.json
 ```
 
-Cola-DLM 注册时只挂 detector（`"cola" in hf_id and "dlm" in hf_id`），不带 `hf_model_paths`，靠路径匹配即可命中。这个重构对所有"非 diffusers 但想接入框架"的模型都是净收益。
+Cola-DLM 的注册全部落在 `registry.py` 两处：一是 `_register_configs()` 里 `register_configs(...)` 只挂 detector（`lambda hf_id: "cola" in hf_id.lower() and "dlm" in hf_id.lower()`），不带 `hf_model_paths`，靠路径匹配即可命中；二是把 `"cola-dlm": "ColaDLMPipeline"` 加进既有的 `KNOWN_NON_DIFFUSERS_DIFFUSION_MODEL_PATTERNS` 字典（与 ideogram 等非 diffusers 模型并列），让框架在加载阶段就把它识别为非 diffusers 流水线、走自定义 `load_modules`。这个 detector 重构对所有"非 diffusers 但想接入框架"的模型都是净收益。
 
 ### 为什么用 `Req.extra` 跨阶段传状态？
 

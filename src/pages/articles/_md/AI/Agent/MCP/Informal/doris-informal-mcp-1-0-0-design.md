@@ -7,7 +7,7 @@ source:
   author: "AI4Data"
   site: "公众号"
 date: "2026-08-11T19:30:55+08:00"
-category: [AI, MCP, Informal]
+category: [AI, Agent, MCP, Informal]
 tags: ["MCP", "Apache Doris", "Agent", "A2A", "企业架构", "Function Call", "语义层"]
 description: "以 Apache Doris MCP Server 1.0.0 为例，讲清企业级 MCP Server 如何实现上下文有界、调用可确定、权限分层、Token 可持续四个目标。"
 readingTime: "18 min"

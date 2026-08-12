@@ -240,3 +240,10 @@ LongCat-Video 总分第二（仅次于 Veo3 与 Vidu Q1），在 **Commonsense �
 - **减少约束**：当前粗到细仍依赖固定 $t_\text{thresh}=0.5$；自适应确定精化起点、或将 BSA 稀疏度按内容动态调整，有望在质量-效率曲线上再前进一步。
 
 **适用边界**：LongCat-Video 的优势不由"DiT/Flow Matching"自动保证，而取决于多奖励 RLHF 的对齐质量与 BSA 在目标分辨率下的稀疏度-质量权衡。若场景需极高物理一致性（如自动驾驶仿真），Physics 维度偏低的短板需额外补偿。
+
+## 相关阅读
+
+- [LongCat-Image Technical Report](/vibe-reading/articles/longcat-image-technical-report) — **同家族**·图像生成姊妹模型，同栈 DiT + 多奖励 RLHF（GRPO/DPO/MPO），横向对照"统一多任务 + 多奖励对齐"方法论在图像侧的落地
+- [FireRed-Image-Edit-1.0 Technical Report](/vibe-reading/articles/firered-image-edit) — **方法论镜像**·扩散 Transformer + 多阶段 RLHF/DPO，与本篇多奖励 GRPO 的"奖励互制防 hacking"设计直觉直接对照
+- [LongCat-AudioDiT: High-Fidelity Diffusion TTS](/vibe-reading/articles/longcat-audiodit-waveform-latent-diffusion-tts) — **同家族**·音频侧的波形潜空间扩散 TTS，同用 Flow Matching，与本篇共享扩散训练范式
+- [LongCat Sparse Attention](/vibe-reading/articles/longcat-sparse-attention) — **背景知识**·同家族文本模型的长上下文稀疏注意力（LSA），与本篇 BSA（Block Sparse Attention）同名但机制不同——前者面向 LLM 长序列、后者面向视频 DiT 高分辨率，可对照两类稀疏注意力的设计取舍

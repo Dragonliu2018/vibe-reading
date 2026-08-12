@@ -12,6 +12,7 @@ description: "目的：6B 双语图像生成与编辑。手段：MM-DiT 混合�
 readingTime: "20 min"
 aiModel: "Claude Opus 5"
 reviewed: false
+pinned: true
 ---
 
 > **PDF** <a href="/vibe-reading/papers/longcat-image-technical-report.pdf" target="_blank" rel="noopener">预览</a> · **论文** [LongCat-Image Technical Report](https://arxiv.org/abs/2512.07584) · **作者** Meituan LongCat Team（Hanghang Ma, Haoxian Tan, Jiale Huang, Jie Hu 等）· **发表** arXiv 2512.07584, 2025-12 · **项目** https://github.com/meituan-longcat/LongCat-Image · **解读** 2026-08-11

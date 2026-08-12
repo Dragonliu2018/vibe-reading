@@ -23,6 +23,7 @@ export interface Article {
   readingTime?: string;
   aiModel?:     string;
   reviewed?:    boolean;     // frontmatter 显式声明已 review；与 src/data/reviewed.ts 数组取并集，构建期静态决定徽章状态
+  pinned?:      boolean;     // frontmatter 显式声明顶置；首页排序 pinned 优先于 date，并显示「置顶」徽章
 }
 
 /**
@@ -72,6 +73,7 @@ const mdModules = import.meta.glob<{
     aiModel?:     string;
     source?:      ArticleSource;
     reviewed?:    boolean;
+    pinned?:      boolean;
   };
 }>('../pages/articles/_md/**/*.md', { eager: true });
 
@@ -92,6 +94,7 @@ const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
     readingTime:  fm.readingTime   || undefined,
     aiModel:      fm.aiModel       || undefined,
     reviewed:     fm.reviewed      || undefined,
+    pinned:       fm.pinned        || false,
   };
 });
 
@@ -126,9 +129,14 @@ const htmlArticles: Article[] = readdirSync(htmlDir)
       description:  metaContent(html, 'description'),
       readingTime:  metaContent(html, 'article:readingTime') || undefined,
       aiModel:      metaContent(html, 'article:aiModel')     || undefined,
+      pinned:       metaContent(html, 'article:pinned') === 'true',
     };
   });
 
-// ── 合并，按日期降序排列 ──────────────────────────────────────────
+// ── 合并，pinned 优先，再按日期降序 ───────────────────────────────
 export const articles: Article[] = [...mdArticles, ...htmlArticles]
-  .sort((a, b) => b.date.localeCompare(a.date));
+  .sort((a, b) => {
+    const pa = !!a.pinned, pb = !!b.pinned;
+    if (pa !== pb) return pa ? -1 : 1;
+    return b.date.localeCompare(a.date);
+  });

@@ -13,6 +13,7 @@ description: "解读 PR #23274：如何在 SGLang multimodal_gen 框架中接入
 readingTime: "20 min"
 aiModel: "Claude Opus 4.8"
 reviewed: false
+pinned: true
 ---
 
 > **PR** [#23274](https://github.com/sgl-project/sglang/pull/23274) · **Issue** - · **commit** [9e07394](https://github.com/sgl-project/sglang/pull/23274/commits/9e073942ecc891953b5e50854d2f2387e559b1f4) · **首发版本** - · **变更行数** +1641 行（10 文件）· **合并时间** -（截至写作时仍处 Open 状态，最新 commit 2026-08-09）

@@ -119,7 +119,8 @@ process.stdin.on("end", () => {
       | sed 's/^category: *\[//' \
       | sed 's/\] *$//' \
       | sed 's/"//g' \
-      | sed 's/, */\//g')
+      | sed 's/, */\//g' \
+      | tr ' ' '-')
     if [[ -n "$CATEGORY_PATH" ]]; then
       # 目录路径应等于 category_path 或 category_path/{slug}（多一层）
       if [[ "$REL_PATH" != "$CATEGORY_PATH" ]] && [[ "$REL_PATH" != "$CATEGORY_PATH"/* ]]; then

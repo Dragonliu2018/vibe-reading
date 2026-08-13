@@ -204,7 +204,7 @@ PR/commit 文章在改动有架构/调用链/数据流可画时，加 SVG 让读
 
 ### SVG 设计
 
-遵循 `codewiki-workflow.md` Step 4 的「SVG 通用设计要求」：深色背景 `#0b0d14`、节点 `#13162a`、强调色（蓝 `#6c8ef5` / 青 `#4ecdc4` / 黄 `#f9ca24` / 粉 `#ff6b9d`）、改动用黄/绿高亮、浪费用红/粉、无底部留白、箭头准确、文字不遮挡、`system-ui` 字体。手写 SVG XML，存 `public/images/articles/<slug>/`，正文引用 `/vibe-reading/images/articles/<slug>/<file>.svg`。
+遵循 [`svg-design.md`](./svg-design.md) 的「SVG 通用设计要求」。PR/commit 文章的额外约定：改动位置用黄/绿高亮、浪费/问题用红/粉。手写 SVG XML，存 `public/images/articles/<slug>/`，正文引用 `/vibe-reading/images/articles/<slug>/<file>.svg`。
 
 ### commit
 

@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/ruff"
 title: "缓存系统"
 date: "2026-08-13T20:14:13+08:00"
-category: [Tools, Ruff, CodeWiki, "0.16.2"]
+category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
 tags: ["ruff", "Rust", "缓存", "rkyv", "增量"]
 description: "ruff 的文件级缓存——mtime+权限 key，rkyv 零拷贝序列化，只缓存通过标志，是极速的关键之一。"
 readingTime: "9 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/00-overview)
 
 ---
 

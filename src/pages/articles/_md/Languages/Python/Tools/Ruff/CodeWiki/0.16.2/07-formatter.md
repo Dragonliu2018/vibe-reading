@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/ruff"
 title: "格式化器"
 date: "2026-08-13T20:14:13+08:00"
-category: [Tools, Ruff, CodeWiki, "0.16.2"]
+category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
 tags: ["ruff", "Rust", "Formatter", "IR", "Wadler-Leijen", "Black"]
 description: "ruff 的格式化器——AST→FormatElement IR→Printer 两阶段，基于 Wadler-Leijen group/break 算法，对标 Black。"
 readingTime: "15 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/00-overview)
 
 ---
 

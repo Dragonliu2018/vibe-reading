@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/ruff"
 title: "Overview"
 date: "2026-08-13T20:14:13+08:00"
-category: [Tools, Ruff, CodeWiki, "0.16.2"]
+category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
 tags: ["ruff", "Rust", "Linter", "Formatter", "Python", "AST"]
 description: "ruff 是用 Rust 编写的极速 Python linter 与 formatter。本文从分层架构、解析管线、语义模型、规则系统、格式化 IR 到 LSP，全面解读 ruff v0.16.2 的内部实现。"
 readingTime: "35 min"
@@ -194,16 +194,16 @@ ruff/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| CLI 与命令分发 | CLI 入口、参数解析、命令分发、诊断输出 | `run()` in `lib.rs:128` | 隔离 CLI 形态，核心不感知调用方式 | [CLI 与命令分发](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/01-cli-commands) |
-| Python 解析器 | 词法 + 递归下降语法分析，带 error recovery | `parse_module()` in `lib.rs:112` | linter 必须在语法错误代码上运行 | [Python 解析器](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/02-parser) |
-| Python AST | AST 节点定义 + 位置 + 三层 Visitor | `Stmt`/`Expr` in `generated.rs` | 所有消费者共享的不可变地基 | [Python AST](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/03-python-ast) |
-| 语义分析 | 作用域栈、绑定 arena、名称解析 | `SemanticModel` in `model.rs:58` | 规则需要超越 AST 模式匹配的语义信息 | [语义分析](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/04-semantic-analysis) |
-| Linter 核心管线 | 多源 checker 编排、诊断收集、fix 收敛 | `check_path()` in `linter.rs:119` | 分发不同数据源 + 容错 + 修复循环 | [Linter 核心管线](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/05-linter-pipeline) |
-| 规则系统 | 900+ 规则的定义、注册、选择、preview | `Rule` enum（宏生成） | 规则按家族组织，宏驱动注册 | [规则系统](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/06-rule-system) |
-| 格式化器 | AST→IR→Printer 两阶段，对标 Black | `format_module_source()` in `lib.rs:137` | IR 解耦格式化逻辑与换行决策 | [格式化器](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/07-formatter) |
-| Workspace 与配置 | 配置发现、层级级联、文件遍历 | `project_files_in_path()` in `resolver.rs:429` | monorepo 友好的 per-directory 配置 | [Workspace 与配置](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/08-workspace-config) |
-| 缓存系统 | 文件级缓存，跳过未变更文件 | `Cache::get()` in `cache.rs:260` | 极速的关键之一：增量场景零开销 | [缓存系统](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/09-cache) |
-| LSP Server | 编辑器集成，诊断/格式化/code action | `Server::run()` in `server.rs:129` | 实时编辑场景与 CLI 共享核心 | [LSP Server](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/10-lsp-server) |
+| CLI 与命令分发 | CLI 入口、参数解析、命令分发、诊断输出 | `run()` in `lib.rs:128` | 隔离 CLI 形态，核心不感知调用方式 | [CLI 与命令分发](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/01-cli-commands) |
+| Python 解析器 | 词法 + 递归下降语法分析，带 error recovery | `parse_module()` in `lib.rs:112` | linter 必须在语法错误代码上运行 | [Python 解析器](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/02-parser) |
+| Python AST | AST 节点定义 + 位置 + 三层 Visitor | `Stmt`/`Expr` in `generated.rs` | 所有消费者共享的不可变地基 | [Python AST](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/03-python-ast) |
+| 语义分析 | 作用域栈、绑定 arena、名称解析 | `SemanticModel` in `model.rs:58` | 规则需要超越 AST 模式匹配的语义信息 | [语义分析](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/04-semantic-analysis) |
+| Linter 核心管线 | 多源 checker 编排、诊断收集、fix 收敛 | `check_path()` in `linter.rs:119` | 分发不同数据源 + 容错 + 修复循环 | [Linter 核心管线](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/05-linter-pipeline) |
+| 规则系统 | 900+ 规则的定义、注册、选择、preview | `Rule` enum（宏生成） | 规则按家族组织，宏驱动注册 | [规则系统](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/06-rule-system) |
+| 格式化器 | AST→IR→Printer 两阶段，对标 Black | `format_module_source()` in `lib.rs:137` | IR 解耦格式化逻辑与换行决策 | [格式化器](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/07-formatter) |
+| Workspace 与配置 | 配置发现、层级级联、文件遍历 | `project_files_in_path()` in `resolver.rs:429` | monorepo 友好的 per-directory 配置 | [Workspace 与配置](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/08-workspace-config) |
+| 缓存系统 | 文件级缓存，跳过未变更文件 | `Cache::get()` in `cache.rs:260` | 极速的关键之一：增量场景零开销 | [缓存系统](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/09-cache) |
+| LSP Server | 编辑器集成，诊断/格式化/code action | `Server::run()` in `server.rs:129` | 实时编辑场景与 CLI 共享核心 | [LSP Server](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/10-lsp-server) |
 
 ---
 

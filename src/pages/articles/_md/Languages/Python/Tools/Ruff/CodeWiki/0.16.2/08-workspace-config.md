@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/ruff"
 title: "Workspace 与配置"
 date: "2026-08-13T20:14:13+08:00"
-category: [Tools, Ruff, CodeWiki, "0.16.2"]
+category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
 tags: ["ruff", "Rust", "配置", "层级配置", "monorepo", "Resolver"]
 description: "ruff 的配置系统——三级表示、层级级联发现、matchit Router 路由、extend 链合并，monorepo 友好。"
 readingTime: "13 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/00-overview)
 
 ---
 

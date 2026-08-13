@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/ruff"
 title: "CLI 与命令分发"
 date: "2026-08-13T20:14:13+08:00"
-category: [Tools, Ruff, CodeWiki, "0.16.2"]
+category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
 tags: ["ruff", "Rust", "CLI", "clap"]
 description: "ruff 的 CLI 入口、参数解析、命令分发与诊断输出——从 main() 到 check/format/server 的完整路径。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Ruff/CodeWiki/0.16.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/Ruff/CodeWiki/0.16.2/00-overview)
 
 ---
 

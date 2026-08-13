@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/uv"
 title: "Python 版本管理"
 date: "2026-08-13T20:07:12+08:00"
-category: [Tools, uv, CodeWiki, "0.12.3"]
+category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
 tags: ["uv", "Rust", "Python", "解释器发现"]
 description: "uv-python 模块：多来源 Python 解释器发现策略链、managed Python 安装与 .python-version 文件支持。"
 readingTime: "13 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/00-overview)
 
 ---
 

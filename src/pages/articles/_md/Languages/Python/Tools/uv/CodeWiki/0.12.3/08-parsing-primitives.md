@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/uv"
 title: "解析原语"
 date: "2026-08-13T20:07:12+08:00"
-category: [Tools, uv, CodeWiki, "0.12.3"]
+category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
 tags: ["uv", "Rust", "PEP 440", "PEP 508", "解析器"]
 description: "uv-pep440/pep508/pypi-types/platform-tags 解析原语：手写字节级解析器、Version 双态表示与 MarkerTree 代数决策图。"
 readingTime: "15 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/00-overview)
 
 ---
 

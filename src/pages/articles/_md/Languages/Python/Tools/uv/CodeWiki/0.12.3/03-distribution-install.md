@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/uv"
 title: "分发获取与安装"
 date: "2026-08-13T20:07:12+08:00"
-category: [Tools, uv, CodeWiki, "0.12.3"]
+category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
 tags: ["uv", "Rust", "wheel", "PEP 517"]
 description: "uv 分发获取与安装链：DistributionDatabase 下载构建、Preparer 并行准备、Installer rayon 并行安装到 venv。"
 readingTime: "15 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/00-overview)
 
 ---
 

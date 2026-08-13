@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/uv"
 title: "Overview"
 date: "2026-08-13T20:07:12+08:00"
-category: [Tools, uv, CodeWiki, "0.12.3"]
+category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
 tags: ["uv", "Rust", "Python 包管理", "依赖解析", "PubGrub"]
 description: "uv 是 Astral 用 Rust 编写的极速 Python 包与项目管理器。本文从分层架构、运行时行为到八大核心模块，全面解读 uv 0.12.3 的内部实现。"
 readingTime: "32 min"
@@ -187,14 +187,14 @@ uv 由 71 个 Cargo crate 组成，按职责分化为 8 个核心模块。模块
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|----------|-----------|----------|
-| CLI 与命令调度 | 参数解析、设置合并、命令分发 | `lib.rs::main()` | 进程模型与 CLI 形态必须隔离，保护核心逻辑 | [01-cli-dispatch](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/01-cli-dispatch) |
-| 依赖解析器 | PubGrub 求解多版本依赖冲突 | `Resolver::resolve()` | 解析正确性是 uv 最复杂的算法问题，独立 trait 抽象便于测试 | [02-resolver](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/02-resolver) |
-| 分发获取与安装 | 下载、构建、安装 wheel/sdist | `DistributionDatabase` · `Installer` | IO 密集，需独立并发控制与缓存策略，区别于纯算法 | [03-distribution-install](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/03-distribution-install) |
-| Python 版本管理 | 多来源发现与安装解释器 | `PythonInstallation::find()` | 解释器发现链复杂且平台差异大，独立于包管理逻辑 | [04-python](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/04-python) |
-| HTTP 客户端 | PyPI Simple API 获取与 HTTP 缓存 | `RegistryClient::simple_detail()` | 网络层需独立的缓存/重试/认证 middleware 管线 | [05-http-client](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/05-http-client) |
-| 缓存层 | 全局去重缓存（12 桶） | `Cache::persist()` | 跨进程共享、archive 去重是 uv 速度的基石 | [06-cache](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/06-cache) |
-| 工作区与项目管理 | pyproject.toml 解析与 workspace 模型 | `ProjectWorkspace::discover()` | 项目模型是 lockfile 与命令编排的数据基础 | [07-workspace-project](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/07-workspace-project) |
-| 解析原语 | PEP 440/508 规范解析 | `Version::from_str()` · `Requirement::from_str()` | 纯函数基础层，无副作用，被几乎所有模块依赖 | [08-parsing-primitives](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/08-parsing-primitives) |
+| CLI 与命令调度 | 参数解析、设置合并、命令分发 | `lib.rs::main()` | 进程模型与 CLI 形态必须隔离，保护核心逻辑 | [01-cli-dispatch](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/01-cli-dispatch) |
+| 依赖解析器 | PubGrub 求解多版本依赖冲突 | `Resolver::resolve()` | 解析正确性是 uv 最复杂的算法问题，独立 trait 抽象便于测试 | [02-resolver](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/02-resolver) |
+| 分发获取与安装 | 下载、构建、安装 wheel/sdist | `DistributionDatabase` · `Installer` | IO 密集，需独立并发控制与缓存策略，区别于纯算法 | [03-distribution-install](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/03-distribution-install) |
+| Python 版本管理 | 多来源发现与安装解释器 | `PythonInstallation::find()` | 解释器发现链复杂且平台差异大，独立于包管理逻辑 | [04-python](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/04-python) |
+| HTTP 客户端 | PyPI Simple API 获取与 HTTP 缓存 | `RegistryClient::simple_detail()` | 网络层需独立的缓存/重试/认证 middleware 管线 | [05-http-client](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/05-http-client) |
+| 缓存层 | 全局去重缓存（12 桶） | `Cache::persist()` | 跨进程共享、archive 去重是 uv 速度的基石 | [06-cache](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/06-cache) |
+| 工作区与项目管理 | pyproject.toml 解析与 workspace 模型 | `ProjectWorkspace::discover()` | 项目模型是 lockfile 与命令编排的数据基础 | [07-workspace-project](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/07-workspace-project) |
+| 解析原语 | PEP 440/508 规范解析 | `Version::from_str()` · `Requirement::from_str()` | 纯函数基础层，无副作用，被几乎所有模块依赖 | [08-parsing-primitives](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/08-parsing-primitives) |
 
 > 模块间的动态调用顺序见下文「运行时行为 > 核心运行流程」。
 

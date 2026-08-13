@@ -5,7 +5,7 @@ source:
   url: "https://github.com/astral-sh/uv"
 title: "依赖解析器"
 date: "2026-08-13T20:07:12+08:00"
-category: [Tools, uv, CodeWiki, "0.12.3"]
+category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
 tags: ["uv", "Rust", "PubGrub", "依赖解析"]
 description: "uv-resolver 基于 PubGrub 算法的依赖解析器：双线程求解架构、fork 分叉机制、候选选择与 batch prefetch 优化。"
 readingTime: "16 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/uv/CodeWiki/0.12.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Python/Tools/uv/CodeWiki/0.12.3/00-overview)
 
 ---
 

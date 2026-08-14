@@ -167,7 +167,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
                 <>
                   <span class="bc-sep">›</span>
                   <a
-                    href={`${base}/categories/${category!.slice(0, i + 1).map(encodeURIComponent).join('/')}`}
+                    href={`${base}/categories/${category!.slice(0, i + 1).map(c => encodeURIComponent(c.replace(/\//g, '-'))).join('/')}`}
                     class={`bc-item${i === category.length - 1 ? ' bc-current' : ''}`}
                   >{cat}</a>
                 </>

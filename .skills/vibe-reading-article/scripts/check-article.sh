@@ -119,6 +119,7 @@ process.stdin.on("end", () => {
       | sed 's/^category: *\[//' \
       | sed 's/\] *$//' \
       | sed 's/"//g' \
+      | sed 's:/:-:g' \
       | sed 's/, */\//g' \
       | tr ' ' '-')
     if [[ -n "$CATEGORY_PATH" ]]; then

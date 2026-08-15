@@ -167,7 +167,7 @@ commit message 里那个 `/spi/spi-sram@0` overlay 节点正是一例：它经 c
 
 ## 相关阅读
 
-- **修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏** —— [Linux commit-169515](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-169515-qcom-cci-del-adapter-of-node-leak)：同思路的后续落地。本篇是 mtd 自己的 `memset` 在 put 前清零 `of_node`，169515 是 `i2c_del_adapter()` 内部的 `memset` 干同样的事、用同一套快照写法修复——三条合起来是 of_node 引用计数的三部曲。
+- **修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏** —— [Linux commit-8eacce](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-8eacce-qcom-cci-del-adapter-of-node-leak)：同思路的后续落地。本篇是 mtd 自己的 `memset` 在 put 前清零 `of_node`，8eacce 是 `i2c_del_adapter()` 内部的 `memset` 干同样的事、用同一套快照写法修复——三条合起来是 of_node 引用计数的三部曲。
 - **为 Qualcomm CCI 驱动补齐 device tree 节点的引用计数** —— [Linux commit-02a4a6](/vibe-reading/articles/OS/Linux/PRs/linux-commit-02a4a6-qcom-cci-of-node-refcount)：同主题的另一条落地线。qcom-cci 是「存指针漏 get」、本篇是「放引用打在已清零指针上」，两条对照可看清 of_node 引用计数的完整面貌。
 - **驱动模型与基础设施** —— [Linux CodeWiki 7.1 · 12-driver-model](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/12-driver-model)：讲解 platform/driver 的注册与卸载模型，`del_mtd_device` 这类设备摘除路径正处在该框架内，可对照理解清理步骤的编排。
 - **Linux之父都"不明觉赞"的一个内核优化与修复历程** —— [tencentos-linux-xarray-fix](/vibe-reading/articles/tencentos-official-linux-xarray-page-cache-fix)：另一则内核 race/一致性修复，对照可见「引用计数与数据结构一致性」问题在内核各子系统的共通形态。

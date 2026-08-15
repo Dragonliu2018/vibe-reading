@@ -185,7 +185,7 @@ i2c 子系统的改动最终都要经 Wolfram Sang 的树收口；原始 CCI 驱
 - **明确引用归属**：`adap.dev.of_node` 由谁赋值、引用就由谁管。i2c 核心只读不持有，驱动必须自管——这次修复让 qcom-cci 与这条约定对齐。
 - **更普适的教训**：`for_each_available_child_of_node` 是内核里「最容易踩坑的遍历宏」之一。只要循环体里把 `child` 存到任何跨作用域的结构里（adapter、私有数据、链表……），都得配上一对 `of_node_get`/`of_node_put`。这条规则同样适用于 `for_each_child_of_node`、`for_each_available_child_of_node_scoped` 等同类宏——`_scoped` 变体用 `__free(device_node)` 自动管理循环内的引用，能从语法上避免这类遗漏，是新代码更推荐的形式。
 
-> **后续**：本 commit 把 `of_node_put` 放在 `i2c_del_adapter()` 之后，而 `i2c_del_adapter()` 末尾会 `memset` 清零 `adap->dev`、令 put 读到 `NULL` 变空操作、泄漏引用。commit `169515` 用「先快照指针再 del_adapter」修复了这一顺序问题，详见[修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-169515-qcom-cci-del-adapter-of-node-leak)。
+> **后续**：本 commit 把 `of_node_put` 放在 `i2c_del_adapter()` 之后，而 `i2c_del_adapter()` 末尾会 `memset` 清零 `adap->dev`、令 put 读到 `NULL` 变空操作、泄漏引用。commit `8eacce` 用「先快照指针再 del_adapter」修复了这一顺序问题，详见[修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-8eacce-qcom-cci-del-adapter-of-node-leak)。
 
 ## 参考
 
@@ -194,7 +194,8 @@ i2c 子系统的改动最终都要经 Wolfram Sang 的树收口；原始 CCI 驱
 
 ## 相关阅读
 
-- **修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏** —— [Linux commit-169515](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-169515-qcom-cci-del-adapter-of-node-leak)：本 commit 的后续修复。本篇把 `of_node_put` 放在 `i2c_del_adapter()` 之后，而后者末尾 `memset` 会清零 `of_node`、使 put 失效；169515 用快照指针修好了。
+- **通用化 OF I2C 支持并确立 adap->dev.of_node 的 of_node_get 模式** —— [Linux commit-9fd049](/vibe-reading/articles/OS/Linux/PRs/linux-commit-9fd049-of-i2c-generalize-of-support)：本篇 of_node_get 模式的源头。2010 年 Grant Likely 在 3 个 i2c 总线驱动里确立 `adap->dev.of_node = of_node_get()`、沿用至今；qcom-CCI 引入时漏了这步，本篇（02a4a6）补回——正是把代码拉回 9fd049 立下的模式。
+- **修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏** —— [Linux commit-8eacce](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-8eacce-qcom-cci-del-adapter-of-node-leak)：本 commit 的后续修复。本篇把 `of_node_put` 放在 `i2c_del_adapter()` 之后，而后者末尾 `memset` 会清零 `of_node`、使 put 失效；8eacce 用快照指针修好了。
 - **修复 del_mtd_device 清零顺序引发的 of_node 引用泄漏** —— [Linux commit-56570b](/vibe-reading/articles/OS/Linux/PRs/linux-commit-56570b-mtd-del-device-of-node-refcount)：同主题的另一条落地线。本篇是「存指针漏 get」、彼篇是「放引用打在已清零指针上」，两条对照可看清 of_node 引用计数的完整面貌。
 - **驱动模型与基础设施** —— [Linux CodeWiki 7.1 · 12-driver-model](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/12-driver-model)：同属 Linux 内核专题，讲解 platform driver 的探测/卸载模型，正是 `cci_probe`/`cci_remove` 所遵循的框架，可对照理解本修复里的回退与卸载路径为何这么组织。
 - **Linux之父都"不明觉赞"的一个内核优化与修复历程** —— [tencentos-linux-xarray-fix](/vibe-reading/articles/tencentos-official-linux-xarray-page-cache-fix)：同样是内核里的一次 race condition 修复，对照阅读可看到「引用/锁与数据结构一致性」这类问题在内核不同子系统里的共通形态。

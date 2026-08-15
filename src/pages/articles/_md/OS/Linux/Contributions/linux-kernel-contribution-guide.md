@@ -387,6 +387,127 @@ git send-email outgoing/0001-*.patch \
 >
 > 注意：`git send-email` 会忽略 `Assisted-by` 标签不作为 cc 地址（输出 `Ignoring Assisted-by`），但该标签作为 patch 正文的一部分发送，收件人能看到——这是正常行为。
 
+### 8.4 发送系列 patch（patch series）
+
+当多个 patch 属于同一主题（如同类 bug 批量修复），应作为**系列 patch** 一次发送，而非逐个发。系列 patch 带 cover letter，形成邮件线程，便于维护者批量 review 和合入。
+
+#### 何时用系列 vs 单个
+
+| 场景 | 做法 |
+|------|------|
+| 同一 bug 模式影响多个驱动 | **系列**（如 5 个 i2c 驱动的 of_node refcount leak） |
+| 根因不同、修法独立 | **单独发**（即使主题相关） |
+| 一个功能分多步实现 | **系列**（patch 1/N 到 N/N 有依赖顺序） |
+| 单个 bug fix | 单个 patch |
+
+> 本案例的实际经验：i2c 子系统有 6 个驱动犯同类 of_node refcount leak，但根因分两类——5 个是"完全漏 of_node_put"，1 个（qcom-CCI）是"of_node_put 放在 i2c_del_adapter 之后被 memset 清零"。**根因表述不同的 patch 不混在一个系列里**，所以 qcom-CCI 单独发，其余 5 个作为系列。
+
+#### 生成系列 patch + cover letter
+
+```bash title="生成系列 patch（含 cover letter）"
+# 在特性分支上，生成从 master 到分支顶端的全部 patch
+git format-patch -o outgoing/ --cover-letter master..fix-<subsystem>-<desc>
+```
+
+`--cover-letter` 额外生成 `0000-cover-letter.patch`，但只生成**骨架**：
+
+```
+Subject: [PATCH 0/5] *** SUBJECT HERE ***
+
+*** BLURB HERE ***
+
+Liu Zhenlong (5):
+  i2c: mpc: fix ...
+  i2c: cpm: fix ...
+  ...
+
+ 5 files changed, 29 insertions(+), 5 deletions(-)
+```
+
+需要人工填写 `*** SUBJECT HERE ***`（Subject）和 `*** BLURB HERE ***`（正文）。`git format-patch` 自动生成 commit 列表摘要和 diffstat。
+
+#### cover letter 正文写什么
+
+cover letter 是给维护者的"系列说明"，应包含：
+
+1. **统一 bug 模式描述**（5 个驱动犯了什么同样的错）
+2. **根因解释**（`of_node_get` 后缺 `of_node_put` + `i2c_del_adapter` 的 `memset` 清零导致 no-op）
+3. **修法说明**（probe error path 加 `of_node_put` + remove 路径先缓存指针）
+4. **参照已有做法**（`i2c-mux`、`mtd` 的同模式 commit）
+5. **关联 patch 链接**（引用已单独发的 qcom-CCI patch 的 lore URL）
+6. **测试声明**（`Compile-tested with gcc on arm64 defconfig using COMPILE_TEST`）
+7. **范围说明**（这 5 个是剩余全部有此模式的驱动，其他驱动用安全写法）
+
+```text title="cover letter 示例（实际提交版节选）"
+Subject: [PATCH 0/5] i2c: fix device_node refcount leaks in 5 bus drivers
+
+This series fixes device_node refcount leaks in 5 i2c bus drivers that
+share the same bug pattern:
+
+  adap->dev.of_node = of_node_get(pdev->dev.of_node);
+
+Each driver calls of_node_get() ... but none of them drop it in the
+probe error paths nor in the remove() callback.
+
+Additionally, in the remove() callbacks, i2c_del_adapter() clears
+adap->dev with memset() at the end (commit bd4bc3dbded9) ...
+
+A related fix for the i2c-qcom-cci driver has already been submitted
+separately:
+
+  https://lore.kernel.org/linux-i2c/20260815140931.53297-1-dragonliu2018@gmail.com/
+
+These 5 drivers are the remaining i2c bus drivers that use of_node_get()
+on the adapter device ...
+```
+
+#### 收件人：get_maintainer 合并查
+
+系列 patch 涉及多个子系统，收件人比单个 patch 多。**传全部 patch 文件给 `get_maintainer`**，它合并去重：
+
+```bash title="系列 patch 的 get_maintainer"
+scripts/get_maintainer.pl --rolestats outgoing/000[1-5]*.patch
+```
+
+> ⚠️ `get_maintainer` 输出的**所有人都应收到**，不能主观挑选。本案例初版漏了 4 个 `blamed_fixes` 角色（被 `Fixes:` 指向的 commit 的作者），后补全到 17 个收件人。`blamed_fixes` 按内核惯例应 cc 通知。
+
+#### 发送系列
+
+```bash title="git send-email 发送系列（含 cover letter）"
+git send-email outgoing/*.patch \
+  --to <维护者1> --to <维护者2> ... \
+  --cc <reviewer1> --cc <列表1> ...
+```
+
+`git send-email` 对系列的行为：
+- **每个 patch 文件发一封独立邮件**（`0000` 到 `0005` 共 6 封）
+- 5 个 patch 的 `In-Reply-To` 头指向 cover letter 的 `Message-ID`，形成**嵌套邮件线程**
+- Subject 自动编号 `[PATCH 0/5]` 到 `[PATCH 5/5]`
+- 全部发给相同的收件人
+
+```
+[PATCH 0/5] i2c: fix device_node refcount leaks in 5 bus drivers     ← cover letter
+  ├─ [PATCH 1/5] i2c: mpc: fix ...                                    ← In-Reply-To 指向 0/5
+  ├─ [PATCH 2/5] i2c: cpm: fix ...
+  ├─ [PATCH 3/5] i2c: ibm_iic: fix ...
+  ├─ [PATCH 4/5] i2c: opal: fix ...
+  └─ [PATCH 5/5] i2c: pnx: fix ...
+```
+
+> **本案例实际发送结果**：6 封邮件全部成功投递（SMTP 250 OK），几分钟后在 [lore.kernel.org/linux-i2c](https://lore.kernel.org/linux-i2c/) 搜到完整线程。`confirm: always` 配置下，发送前会让你逐封确认（或按 `a` 全部确认）。
+
+#### 系列发 V2
+
+如果维护者要求修改某个 patch，改后整个系列重发 V2：
+
+```bash title="系列发 V2"
+# 改代码 + git commit --amend（对应 patch）
+git format-patch -o outgoing/ -v2 --cover-letter master..fix-<subsystem>-<desc>
+# 生成 outgoing/v2-0000-cover-letter.patch 到 v2-0005-*.patch
+# cover letter 里加 changelog 说明 V1→V2 改了什么
+git send-email outgoing/v2-*.patch --to ... --cc ...
+```
+
 ---
 
 ## 第九步：Review 与迭代
@@ -449,6 +570,8 @@ git send-email outgoing/v2-0001-*.patch --to ... --cc ...
 
 ## 完整流程速查
 
+### 单个 patch
+
 ```bash title="从零到发送的完整命令序列"
 # 1. 环境准备
 git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
@@ -480,6 +603,37 @@ git send-email outgoing/0001-*.patch --to <维护者> --cc <邮件列表>
 # 9. 等 review → 改 → 发 V2
 git format-patch -o outgoing/ -v2 HEAD~1
 git send-email outgoing/v2-0001-*.patch --to ... --cc ...
+```
+
+### 系列 patch（多个同主题 patch）
+
+```bash title="系列 patch 的完整命令序列"
+# 1-3. 同上（环境/分支/改代码，每个 patch 一个 commit）
+
+# 4. 每个改动单独 commit（-s）
+git add <文件1> && git commit -s -F msg1.txt
+git add <文件2> && git commit -s -F msg2.txt
+# ...
+
+# 5. 生成系列 patch + cover letter 骨架
+git format-patch -o outgoing/ --cover-letter master..fix-<subsystem>-<desc>
+# 生成 0000-cover-letter.patch（骨架）+ 0001~000N-*.patch
+
+# 6. 编辑 cover letter（填 Subject 和正文）
+# ... 编辑 outgoing/0000-cover-letter.patch ...
+
+# 7. 风格检查全部 patch
+scripts/checkpatch.pl outgoing/000[1-N]*.patch
+
+# 8. 找收件人（传全部 patch，合并查 MAINTAINERS）
+scripts/get_maintainer.pl --rolestats outgoing/000[1-N]*.patch
+
+# 9. 发送（含 cover letter，形成邮件线程）
+git send-email outgoing/*.patch --to <维护者...> --cc <列表...>
+
+# 10. 等 review → 改 → 发 V2（整个系列重发）
+git format-patch -o outgoing/ -v2 --cover-letter master..fix-<subsystem>-<desc>
+git send-email outgoing/v2-*.patch --to ... --cc ...
 ```
 
 ---

@@ -69,6 +69,10 @@ function buildTree(): TreeNode[] {
           // Overview 固定排第一
           if (artA?.title === 'Overview') return -1;
           if (artB?.title === 'Overview') return 1;
+          // type=101（入门指南）排最前（仅次于 Overview）
+          const guideA = artA?.source?.type === '101';
+          const guideB = artB?.source?.type === '101';
+          if (guideA !== guideB) return guideA ? -1 : 1;
           const idA = artA?.source?.id ? parseInt(artA.source.id) : NaN;
           const idB = artB?.source?.id ? parseInt(artB.source.id) : NaN;
           if (!isNaN(idA) && !isNaN(idB)) return idA - idB;   // 都有 PR 号：数值升序

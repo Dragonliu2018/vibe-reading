@@ -433,3 +433,30 @@ PR 的 diff 反映**改动前后**，但理解完整调用链还需读**本地�
 
 - [ ] Review 意见的引用与 PR 评论原文一致（不要改变语义）
 - [ ] 对 Review 的处理结果描述（接受 / 拒绝 / 修改）与实际一致
+
+---
+
+## Linux kernel commit 文章
+
+Linux 内核走邮件列表提交流程，commit 没有 GitHub PR/Issue 编号。kernel commit 文章用**默认 commit 方案**：`source.type: "commit"`、`source.id` = commit hash 前 6 位，前缀 `[Linux commit-<6位>]`。
+
+```yaml title="frontmatter"
+source:
+  project: "Linux"
+  type: "commit"
+  id: "02a4a6"          # commit hash 前 6 位
+  url: "https://github.com/torvalds/linux/commit/<完整 hash>"
+  prType: "fix"
+```
+
+```markdown title="导言元信息（删掉 PR/Issue）"
+> **patch** [20220203](lore-url) · **commit** [02a4a6](github-commit-url) · **首发版本** v5.17-rc5 · **变更行数** +10 行 · **合并时间** 2022-02-20
+```
+
+commit 永远没有 PR/Issue 编号，meta 行**删掉 `**PR** \`-\` · **Issue** \`-\` · `**，保留 `**patch** [时间戳](lore-url)` 在前、`**commit** [hash](github-url)` 在后——前缀仍用 commit-hash（`[Linux commit-<6位>]`，由 `source.type=commit` + `source.id=<6位hash>` 决定），meta 的 patch 字段只标注 patch 来路、不影响排序（排序仍按 `source.id` 的 hash）。
+
+**patch 字段从哪取**：`git format-patch` 的 Message-ID 形如 `<YYYYMMDDHHMMSS>.<pid>-<n>-<author@domain>`，开头 14 位是提交时间戳（UTC，= AuthorDate 换 UTC）。来源：① commit message 的 `Link:` trailer（`Link: https://lore.kernel.org/<list>/<完整 Message-ID>`）→ 直接取时间戳前 8 位 + lore URL；② 无 `Link:`（早于 lore Link 惯例）→ 上 lore 搜，注意 `lore.kernel.org` 现用 Anubis 反爬（`WebFetch` 被拦、`curl` 403），用 agent-browser（真 Chrome，`/Applications/Dumbo.app/Contents/Resources/bin/agent-browser`）`open '?q=...&r'` + `sleep 3` + `eval` 提取 Message-ID 链接。
+
+> **排序权衡（已接受）**：`source.id` 用 commit hash，`categories.ts` 的 `sortSlugs` 会 `parseInt(hash)`——hash 是随机十六进制，parseInt 出垃圾值或 `NaN`（a–f 开头直接 `NaN`），**分类内不保证时间序**。曾考虑改用 patch 的 Message-ID 时间戳当 id 来排序（`[Linux patch-YYYYMMDD]`），但放弃了，回到 hash 前缀、接受不按时间排。若日后要时间序，需解耦：id 仍用 hash（前缀），`sortSlugs` 对 commit 类型改按 `source.mergedAt` 排序（改 `categories.ts` + 加字段）。
+
+> **首发版本 / 合并时间取值**（GitHub Labels 不适用于 kernel）：`首发版本` = `git tag --contains <hash> | sort -V` 里最早包含的 tag（通常是 `-rcN`，如 `v5.17-rc5`；注意 `sort -V` 可能把 stable 排到 rc 前，按时间取最早的 rc）；`合并时间` = 主线 merge commit 日期（`git log --ancestry-path --merges` 找 `Merge tag '.../<subsystem>/for-...'`）。

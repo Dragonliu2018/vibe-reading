@@ -3,9 +3,10 @@ title: "修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏
 source:
   project: "Linux"
   type: "commit"
-  id: "169515"
+  id: "8eacce"
+  url: "https://lore.kernel.org/linux-i2c/20260815140931.53297-1-dragonliu2018@gmail.com/"
   prType: "fix"
-date: "2026-08-15T21:31:31+08:00"
+date: "2026-08-16T01:11:22+08:00"
 category: ["OS", "Linux", "Contributions"]
 tags: ["Linux Kernel", "I2C", "Qualcomm CCI", "Device Tree", "of_node", "引用计数", "Memory Leak", "i2c_del_adapter", "Contributions"]
 description: "qcom-CCI 的 cci_probe/cci_remove 把 of_node_put 放在 i2c_del_adapter() 之后，但 i2c_del_adapter 末尾会 memset 清零 adap->dev、连带把 of_node 清成 NULL，使 put 变空操作、引用泄漏。修复是在调 i2c_del_adapter 前快照 of_node 指针，同 i2c-mux / mtd 的做法。"
@@ -14,7 +15,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> **commit** [169515] · **首发版本** `-` · **变更行数** +6 行 · **合并时间** 2026-08-15
+> **patch** [20260815](https://lore.kernel.org/linux-i2c/20260815140931.53297-1-dragonliu2018@gmail.com/) · **commit** [8eacce] · **首发版本** `-` · **变更行数** +6 行 · **合并时间** 2026-08-15
 
 ---
 
@@ -26,7 +27,7 @@ reviewed: false
 
 这一漏洞其实是被 commit `02a4a69667a2`（"i2c: qcom-cci: don't put a device tree node before i2c_add_adapter()"）**带进来的**：那个补丁在同一次改动里加上了 `of_node_get()` 和配对的 `of_node_put()`，却把 put 放在了 `i2c_del_adapter()` 之后，于是自该修复引入起 bug 就在。本 commit（`Fixes: 02a4a69667a2`）把它收口，做法和 mtd 的 `del_mtd_device()`（commit `56570bdad5e3`）、i2c-mux 的 `i2c_mux_del_adapters()` 一致：**在调用会清零结构的函数之前，先把要用的指针快照下来**。
 
-![cci 清理路径调用链：i2c_del_adapter 内部 memset 清零 of_node](/vibe-reading/images/articles/linux-commit-169515-qcom-cci-del-adapter-of-node-leak/call-chain.svg)
+![cci 清理路径调用链：i2c_del_adapter 内部 memset 清零 of_node](/vibe-reading/images/articles/linux-commit-8eacce-qcom-cci-del-adapter-of-node-leak/call-chain.svg)
 
 上图把 `error_i2c` / `cci_remove` 的清理调用链拆成四步对照。改动前（红）没有快照，`i2c_del_adapter` 内部的 `memset` 把 `adap->dev.of_node` 清成 `NULL`，随后 `of_node_put(adap->dev.of_node)` 退化成 `put(NULL)` 空操作、引用泄漏；改动后（绿）在调 `i2c_del_adapter` 前先把 `node = adap->dev.of_node` 快照下来，清零再也无法伤到这份快照，`of_node_put(node)` 真正归还引用、配平。
 
@@ -147,7 +148,8 @@ cci_probe 失败 → error_i2c（或 cci_remove 卸载）
 
 - 本 commit 由本人（Liu Zhenlong）提交，属 `Contributions`。commit message 把来龙去脉写全：指明 `of_node_get()` / 配对 `of_node_put()` 由 `02a4a69667a2` 引入、put 被放在 `i2c_del_adapter()` 之后，而 `i2c_del_adapter()` 末尾的 `memset`（`bd4bc3dbded9`）会把 `of_node` 清零、令 put 失效。
 - 修法对标现成的正确写法：i2c-mux 的 `i2c_mux_del_adapters()`、mtd 的 `del_mtd_device()`（`56570bdad5e3`），都是在清零结构之前先快照指针。有同子系统里的成熟范例背书，审查风险低。
-- `Fixes: 02a4a69667a2` 标签指向被修的源头，便于 stable 机器人回溯。鉴于这是本地提交、尚未进上游/lore，`首发版本` / 合并时间暂以本地为准。
+- `Fixes: 02a4a69667a2` 指向被修的源头；commit 还显式带 `Cc: stable@vger.kernel.org`，待进上游后由 stable 机器人回溯到 LTS。patch 已提交到 linux-i2c 邮件列表（见 meta 行 `**patch**` 链接）；commit 本身尚未进上游 torvalds/linux，故 `首发版本` 仍填 `-`、合并时间取本地 commit 日期。
+- trailer `Assisted-by: Claude:claude-opus-5` 标注本修复在 AI 协助下完成（与本文 `aiModel` 字段一致）。
 
 ## 问题
 
@@ -178,6 +180,8 @@ cci_probe 失败 → error_i2c（或 cci_remove 卸载）
 
 ## 相关阅读
 
+- **为 i2c-pnx 添加 device tree 支持并套用 adap->dev.of_node 的 of_node_get 模式** —— [Linux commit-b41a216](/vibe-reading/articles/OS/Linux/PRs/linux-commit-b41a216-of-i2c-pnx-dt-support)：同一 bug→fix 弧的 i2c-pnx 实例。b41a216（2012）加了 of_node_get 却漏了 put；2026 年由 `05515d1` 用本篇（8eacce3）那套 cache-before-del 快照补齐——根因同是 `i2c_del_adapter` 的 `memset`（`bd4bc3dbded9`）。
+- **通用化 OF I2C 支持并确立 adap->dev.of_node 的 of_node_get 模式** —— [Linux commit-9fd049](/vibe-reading/articles/OS/Linux/PRs/linux-commit-9fd049-of-i2c-generalize-of-support)：`adap->dev.of_node = of_node_get()` 模式的源头（2010）。qcom-CCI 一连串 of_node 修复（02a4a6 补 get、本篇修 put 顺序）本质上都是把偏离了 9fd049 模式的代码拉回来。
 - **为 Qualcomm CCI 驱动补齐 device tree 节点的引用计数** —— [Linux commit-02a4a6](/vibe-reading/articles/OS/Linux/PRs/linux-commit-02a4a6-qcom-cci-of-node-refcount)：本 commit 的前序（被 `Fixes:` 指向）。那篇给 qcom-CCI 补了 `of_node_get` / `of_node_put`，却把 put 放在 `i2c_del_adapter()` 之后，埋下本篇修复的坑；建议先读它再读本篇。
 - **修复 del_mtd_device 清零顺序引发的 of_node 引用泄漏** —— [Linux commit-56570b](/vibe-reading/articles/OS/Linux/PRs/linux-commit-56570b-mtd-del-device-of-node-refcount)：同思路的另一条落地线。mtd 是驱动自己的 `memset` 在 `of_node_put` 前清零 `of_node`，本篇是 `i2c_del_adapter()` 内部的 `memset` 干同样的事——两条对照可见「use-after-clear」在不同子系统的共通形态与同一套解法。
 - **驱动模型与基础设施** —— [Linux CodeWiki 7.1 · 12-driver-model](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/12-driver-model)：platform driver 的 probe/remove 框架与设备注册/注销模型，`cci_probe` / `cci_remove` 的回退与卸载路径正处其中，可对照理解这些清理步骤的编排。

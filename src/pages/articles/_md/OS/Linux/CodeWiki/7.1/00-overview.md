@@ -42,6 +42,7 @@ Linux kernel 是一个**宏内核**（monolithic kernel）操作系统内核—�
 | 安全框架 | `security/` | LSM static call hooks、可叠加安全模块 |
 | 架构层 | `arch/x86/` | 启动汇编、syscall 入口、页表、中断 |
 | 驱动模型 | `drivers/base/` | device/bus/driver 中介者模型、platform bus |
+| I2C 子系统 | `drivers/i2c/` | adapter/client 设备模型、SMBus 协议、i2c-dev、mux |
 | 通用库 | `lib/` | 红黑树、maple tree、xarray、kobject/sysfs |
 
 ### 技术栈
@@ -182,6 +183,7 @@ linux/
 | 安全框架 LSM | static call hooks、可叠加安全模块 | `security_init`/`call_int_hook` | 横切各层的安全检查，机制与策略分离 | [10](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/10-security-lsm) |
 | 架构层与系统入口 | 启动汇编、syscall 入口、页表、中断 | `entry_SYSCALL_64`/`setup_arch` | 硬件相关，是跨架构复用的关键抽象 | [11](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/11-arch-x86) |
 | 驱动模型与基础设施 | device/bus/driver 中介者、kobject、lib | `device_register`/`driver_attach` | 统一的设备驱动抽象与通用库 | [12](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/12-driver-model) |
+| I2C 子系统 | adapter/client 设备模型、SMBus、i2c-dev、mux | `i2c_transfer`/`i2c_add_adapter` | I2C 总线协议框架与用户态接口 | [13](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/13-i2c-subsystem) |
 
 > 模块间的动态调用顺序见下方「核心运行流程」的 read() 数据流链路。
 
@@ -261,7 +263,7 @@ fstests（外部仓库）       # 文件系统回归测试
   `mm/page_alloc.c` 的 `__alloc_pages` → `mm/memory.c` 的 `handle_mm_fault`/`do_wp_page`（COW）→ `mm/slub.c` 的 `alloc_from_pcs`（sheaves）→ `mm/vmscan.c` 的 `shrink_folio_list`
 - **第四遍：理解 VFS 与块 I/O 协作**
   `fs/namei.c` 的 `link_path_walk`（路径解析）→ `fs/open.c` 的 `do_dentry_open`（f_op 装配）→ `mm/filemap.c` 的 `filemap_read`（page cache）→ `block/blk-mq.c` 的 `blk_mq_submit_bio`
-- **第五遍：选择重点子系统深入阅读**（模块文档：[网络栈](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/06-network-stack)、[io_uring](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/08-io-uring)、[LSM 安全](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/10-security-lsm)）
+- **第五遍：选择重点子系统深入阅读**（模块文档：[网络栈](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/06-network-stack)、[io_uring](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/08-io-uring)、[LSM 安全](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/10-security-lsm)、[I2C 子系统](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/13-i2c-subsystem)）
 
 ## 附录
 

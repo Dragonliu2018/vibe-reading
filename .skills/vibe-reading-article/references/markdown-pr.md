@@ -436,9 +436,21 @@ PR 的 diff 反映**改动前后**，但理解完整调用链还需读**本地�
 
 ---
 
-## Linux kernel commit 文章
+## Linux kernel commit / patch / series 文章
 
-Linux 内核走邮件列表提交流程，commit 没有 GitHub PR/Issue 编号。kernel commit 文章用**默认 commit 方案**：`source.type: "commit"`、`source.id` = commit hash 前 6 位，前缀 `[Linux commit-<6位>]`。
+Linux 内核走邮件列表提交流程，commit/patch 没有 GitHub PR/Issue 编号。按来源形态分三种 `source.type`：
+
+| 来源形态 | `source.type` | `source.id` | 前缀 |
+|---|---|---|---|
+| 已合并的单个 commit（上游或本地） | `commit` | commit hash 前 6 位 | `[Linux commit-<6位>]` |
+| 单个 patch（邮件列表，未合并） | `patch` | Message-ID 时间戳前 8 位（YYYYMMDD） | `[Linux patch-<8位>]` |
+| 一组 patch 系列（cover + N patch） | `series` | cover letter 时间戳前 8 位（YYYYMMDD） | `[Linux series-<8位>]` |
+
+三者泾渭分明，读者从前缀即可判断「单 commit / 单 patch / 一组系列」。`sortSlugs` 用 `parseInt(source.id)` 排序：commit 的 hash 是垃圾值/NaN（不保证时间序，已接受）；patch/series 的时间戳 id 按时间升序。
+
+### 单 commit（`type: commit`）
+
+kernel commit 文章用**默认 commit 方案**：`source.type: "commit"`、`source.id` = commit hash 前 6 位，前缀 `[Linux commit-<6位>]`。
 
 ```yaml title="frontmatter"
 source:
@@ -454,6 +466,28 @@ source:
 ```
 
 commit 永远没有 PR/Issue 编号，meta 行**删掉 `**PR** \`-\` · **Issue** \`-\` · `**，保留 `**patch** [时间戳](lore-url)` 在前、`**commit** [hash](github-url)` 在后——前缀仍用 commit-hash（`[Linux commit-<6位>]`，由 `source.type=commit` + `source.id=<6位hash>` 决定），meta 的 patch 字段只标注 patch 来路、不影响排序（排序仍按 `source.id` 的 hash）。
+
+### patch 系列（`type: series`）——「多 patch 合集」
+
+一组 patch 系列（`[PATCH 0/N]` cover + N 个 patch、一条 lore 线程、一个逻辑变更集）写**一篇系列综述**（同模式多驱动/多文件修复合集，别拆 N 篇重复）。`source.type: "series"`、`source.id` = cover letter Message-ID 时间戳前 8 位，前缀 `[Linux series-<8位>]`。
+
+```yaml title="frontmatter"
+source:
+  project: "Linux"
+  type: "series"
+  id: "20260815"        # cover letter Message-ID 时间戳前 8 位（YYYYMMDD）
+  url: "https://lore.kernel.org/<list>/<cover Message-ID>/"   # 系列线程
+  prType: "fix"
+```
+
+```markdown title="导言元信息（只留 cover，删 PR/Issue）"
+> **cover** [0/5](lore-thread-url) · **首发版本** `-` · **变更行数** +29 行 · **合并时间** 2026-08-15
+```
+
+- `source.id` = cover letter Message-ID 时间戳前 8 位；`source.url` = lore 线程 URL（用 `/T/` 线程视图）。
+- meta 行**只列 cover 一个链接**（`**cover** [0/N](lore 线程)`），**不逐个列 N 个 patch**——封面即系列入口，逐个 patch 链接冗长（N 大时尤甚）。各 patch 的 diff/`Fixes` 在正文按驱动分节展开。
+- `首发版本` 暂 `-`（未进上游）；`变更行数` = N 个 patch 的 insertions 之和；`合并时间` = cover letter 提交日。
+- 正文：背景讲系列根因 + N 个驱动的共性；实现按 N 个 patch 分节（`### <驱动>`），每个一段（同构改动，点出各文件/函数/`Fixes:`）；意义讲「一次收口」。交叉链接各 patch 的 `Fixes:` 源头文章（若已写过）。
 
 **patch 字段从哪取**：`git format-patch` 的 Message-ID 形如 `<YYYYMMDDHHMMSS>.<pid>-<n>-<author@domain>`，开头 14 位是提交时间戳（UTC，= AuthorDate 换 UTC）。来源：① commit message 的 `Link:` trailer（`Link: https://lore.kernel.org/<list>/<完整 Message-ID>`）→ 直接取时间戳前 8 位 + lore URL；② 无 `Link:`（早于 lore Link 惯例）→ 上 lore 搜，注意 `lore.kernel.org` 现用 Anubis 反爬（`WebFetch` 被拦、`curl` 403），用 agent-browser（真 Chrome，`/Applications/Dumbo.app/Contents/Resources/bin/agent-browser`）`open '?q=...&r'` + `sleep 3` + `eval` 提取 Message-ID 链接。
 

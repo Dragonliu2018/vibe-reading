@@ -209,6 +209,7 @@ b41a216 在 probe 里加了 `adap->dev.of_node = of_node_get(...)`（取一份�
 
 ## 相关阅读
 
+- **一次性修复 5 个 i2c 总线驱动的 device_node 引用计数泄漏** —— [Linux series-20260815](/vibe-reading/articles/OS/Linux/Contributions/linux-series-20260815-i2c-ofnode-refcount-leak-series)：b41a216 漏的 put 的后续收口。b41a216 给 pnx 加 `of_node_get` 漏了 put，16 年后该系列的 patch 5/5（`05515d1`）补齐，`Fixes` 指回 b41a216。
 - **通用化 OF I2C 支持并确立 adap->dev.of_node 的 of_node_get 模式** —— [Linux commit-9fd049](/vibe-reading/articles/OS/Linux/PRs/linux-commit-9fd049-of-i2c-generalize-of-support)：本 commit 套用模式的源头。9fd049（2010）在 3 个 i2c 驱动里立下 `adap->dev.of_node = of_node_get()` + `of_i2c_register_devices(adap)`；b41a216 把它搬到 i2c-pnx——但只学了 get、漏了 put，建议与本篇对照看模式的完整与残缺。
 - **修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏** —— [Linux commit-8eacce](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-8eacce-qcom-cci-del-adapter-of-node-leak)：同思路的后续修复。b41a216 漏的 of_node_put，14 年后由 `05515d1` 补——用的是 8eacce3（qcom-CCI）那套 cache-before-del 快照写法，根因同是 `i2c_del_adapter()` 的 `memset`（`bd4bc3dbded9`）。
 - **I2C 子系统** —— [Linux CodeWiki 7.1 · 13-i2c-subsystem](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/13-i2c-subsystem)：Linux i2c 子系统的 CodeWiki 解读，adapter 注册与 OF 枚举在其中，本 commit 的调用链可对照。

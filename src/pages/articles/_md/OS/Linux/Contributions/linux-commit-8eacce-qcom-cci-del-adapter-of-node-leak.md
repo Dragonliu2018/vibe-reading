@@ -180,6 +180,7 @@ cci_probe 失败 → error_i2c（或 cci_remove 卸载）
 
 ## 相关阅读
 
+- **一次性修复 5 个 i2c 总线驱动的 device_node 引用计数泄漏** —— [Linux series-20260815](/vibe-reading/articles/OS/Linux/Contributions/linux-series-20260815-i2c-ofnode-refcount-leak-series)：同根因同解法的 5 驱动系列（兄弟 patch）。本篇（8eacce3，qcom-CCI）是更早单独发的 standalone；该系列把 mpc/cpm/ibm_iic/opal/pnx 五个一起收口，根因同是 `i2c_del_adapter` 的 `memset`（`bd4bc3dbded9`）。
 - **为 i2c-pnx 添加 device tree 支持并套用 adap->dev.of_node 的 of_node_get 模式** —— [Linux commit-b41a216](/vibe-reading/articles/OS/Linux/PRs/linux-commit-b41a216-of-i2c-pnx-dt-support)：同一 bug→fix 弧的 i2c-pnx 实例。b41a216（2012）加了 of_node_get 却漏了 put；2026 年由 `05515d1` 用本篇（8eacce3）那套 cache-before-del 快照补齐——根因同是 `i2c_del_adapter` 的 `memset`（`bd4bc3dbded9`）。
 - **通用化 OF I2C 支持并确立 adap->dev.of_node 的 of_node_get 模式** —— [Linux commit-9fd049](/vibe-reading/articles/OS/Linux/PRs/linux-commit-9fd049-of-i2c-generalize-of-support)：`adap->dev.of_node = of_node_get()` 模式的源头（2010）。qcom-CCI 一连串 of_node 修复（02a4a6 补 get、本篇修 put 顺序）本质上都是把偏离了 9fd049 模式的代码拉回来。
 - **为 Qualcomm CCI 驱动补齐 device tree 节点的引用计数** —— [Linux commit-02a4a6](/vibe-reading/articles/OS/Linux/PRs/linux-commit-02a4a6-qcom-cci-of-node-refcount)：本 commit 的前序（被 `Fixes:` 指向）。那篇给 qcom-CCI 补了 `of_node_get` / `of_node_put`，却把 put 放在 `i2c_del_adapter()` 之后，埋下本篇修复的坑；建议先读它再读本篇。

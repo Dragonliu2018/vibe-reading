@@ -5,7 +5,7 @@ source:
   url: "https://github.com/microsoft/WSL"
 title: "Linux 初始化子系统"
 date: "2026-08-16T00:15:00+08:00"
-category: [OS, WSL, CodeWiki, "2.9.3"]
+category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "WSL2 VM 内的 usermode 初始化——mini_init/init/session leader/relay 的 fork+exec 链、namespace 隔离与 hvsocket 消息循环。"
 readingTime: "18 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/OS/WSL/CodeWiki/2.9.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/OS/Virtualization/WSL/CodeWiki/2.9.3/00-overview)
 
 ---
 

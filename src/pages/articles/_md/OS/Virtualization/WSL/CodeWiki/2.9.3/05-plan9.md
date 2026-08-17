@@ -5,7 +5,7 @@ source:
   url: "https://github.com/microsoft/WSL"
 title: "Plan9 文件服务"
 date: "2026-08-16T00:15:00+08:00"
-category: [OS, WSL, CodeWiki, "2.9.3"]
+category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "9P 文件服务实现（libplan9 静态库）——9P2000.W 扩展、fid 生命周期、C++20 协程异步 IO 与 WSL1/WSL2 双传输。"
 readingTime: "18 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/OS/WSL/CodeWiki/2.9.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/OS/Virtualization/WSL/CodeWiki/2.9.3/00-overview)
 
 ---
 

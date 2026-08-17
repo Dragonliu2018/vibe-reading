@@ -5,7 +5,7 @@ source:
   url: "https://github.com/microsoft/WSL"
 title: "WslService 服务核心"
 date: "2026-08-16T00:15:00+08:00"
-category: [OS, WSL, CodeWiki, "2.9.3"]
+category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "wslservice.exe——Session 0 COM 系统服务、HCS 轻量 VM 生命周期、分发版注册与 per-user 会话管理剖析。"
 readingTime: "15 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/OS/WSL/CodeWiki/2.9.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/OS/Virtualization/WSL/CodeWiki/2.9.3/00-overview)
 
 ---
 

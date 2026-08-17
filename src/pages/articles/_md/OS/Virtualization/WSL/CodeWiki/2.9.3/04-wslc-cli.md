@@ -5,7 +5,7 @@ source:
   url: "https://github.com/microsoft/WSL"
 title: "wslc 容器管理 CLI"
 date: "2026-08-16T00:15:00+08:00"
-category: [OS, WSL, CodeWiki, "2.9.3"]
+category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "WSL 新一代 docker-like 容器 CLI——命令树+Task+Service 三层、per-user 会话运行时与复用 dockerd HTTP API。"
 readingTime: "16 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/OS/WSL/CodeWiki/2.9.3/00-overview)
+> [← 返回概览](/vibe-reading/articles/OS/Virtualization/WSL/CodeWiki/2.9.3/00-overview)
 
 ---
 

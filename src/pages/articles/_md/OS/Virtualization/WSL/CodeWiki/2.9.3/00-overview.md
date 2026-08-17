@@ -5,7 +5,7 @@ source:
   url: "https://github.com/microsoft/WSL"
 title: "Overview"
 date: "2026-08-16T00:15:00+08:00"
-category: [OS, WSL, CodeWiki, "2.9.3"]
+category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "Windows Subsystem for Linux 2.9.3 架构解读——从 wsl.exe 到 wslservice.exe COM 服务、HCS 轻量 VM、Linux 侧 mini_init/init/relay 启动链，再到 9P 文件服务与 wslc 容器管理 CLI 的全栈剖析。"
 readingTime: "40 min"

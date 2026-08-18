@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "生成框架"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "GenerationMixin", "LogitsProcessor", "speculative decoding", "采样"]
 description: "GenerationMixin.generate 是自回归生成入口，用策略模式选解码方法、责任链组合 logits processor、工厂创建 candidate generator 实现 speculative decoding。本文解读生成框架的扩展性设计。"
 readingTime: "14 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

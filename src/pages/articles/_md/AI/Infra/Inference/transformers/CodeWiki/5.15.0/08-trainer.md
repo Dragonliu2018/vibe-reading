@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "训练框架"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "Trainer", "训练循环", "梯度累积", "TrainingArguments"]
 description: "Trainer 是模型无关的训练循环编排器，靠 model.forward + data_collator + compute_loss 三角解耦训练任意架构。两层嵌套循环实现梯度累积，AMP/分布式委托给 accelerate。本文解读其解耦与扩展设计。"
 readingTime: "13 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

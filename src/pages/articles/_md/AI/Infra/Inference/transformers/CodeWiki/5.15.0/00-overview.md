@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "Overview"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "Python", "PyTorch", "LLM", "模型加载", "生成", "训练"]
 description: "HuggingFace transformers 是 SOTA 预训练模型的“模型定义框架”。本文从分层架构、模型核心（PreTrainedModel + WeightConverter）、配置/分词/缓存/生成/训练/流水线/量化到模型注册表，全面解读 v5.15.0 的内部原理。"
 readingTime: "32 min"
@@ -193,17 +193,17 @@ transformers/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|----------|-----------|----------|
-| 建模核心 | 模型生命周期与权重加载 | `PreTrainedModel.from_pretrained` in `modeling_utils.py:3859` | 权重加载（含 v5 WeightConverter）是所有模型的共用契约，独立于具体结构 | [建模核心](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/01-modeling-core) |
-| 建模原语 | transformer 共享构建块 | `ROPE_INIT_FUNCTIONS`/`create_causal_mask`/`ACT2FN` | RoPE/掩码/激活是所有模型复用的计算原语，集中维护避免散落各模型文件 | [建模原语](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/02-modeling-primitives) |
-| 配置系统 | 模型超参数的声明与序列化 | `PretrainedConfig.from_pretrained` in `configuration_utils.py:617` | config 是 model 与 tokenizer 的共享契约，独立于两者存在 | [配置系统](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/03-configuration) |
-| 分词框架 | 文本→token id | `PreTrainedTokenizerBase.__call__` in `tokenization_utils_base.py:2418` | 分词是与模型前向分离的数据预处理，有自己的后端与序列化 | [分词框架](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/04-tokenization) |
-| 多模态处理 | 图像/视频/音频 + 文本统一预处理 | `ProcessorMixin.__call__` in `processing_utils.py:652` | 多模态模型需要把多模态占位符展开与预处理协调，单一对象统一加载 | [多模态处理](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/05-processing) |
-| 生成框架 | 自回归解码策略 | `GenerationMixin.generate` in `generation/utils.py:2261` | 生成是推理的核心，解码策略/logits 处理/speculative decoding 是独立复杂度 | [生成框架](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/06-generation) |
-| KV 缓存 | 注意力历史 K/V 管理 | `Cache.update` in `cache_utils.py:1349` | 缓存策略（动态/静态/量化/线性注意力）独立于模型结构，且要支持 torch.compile | [KV 缓存](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/07-cache) |
-| 训练框架 | 训练循环编排 | `Trainer.train` in `trainer.py:1347` | Trainer 模型无关，靠三角解耦训练任意架构，分布式/AMP 委托给 accelerate | [训练框架](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/08-trainer) |
-| 流水线 | 高级任务 API | `pipeline()` in `pipelines/__init__.py` | 把"模型 + 预处理 + 后处理"封装成单次调用，是最低门槛入口 | [流水线](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/09-pipelines) |
-| 量化 | 量化后端集成 | `AutoHfQuantizer.from_config` in `quantizers/auto.py:193` | 量化在权重加载前替换模块，24 个后端共享统一介入点 | [量化](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/10-quantizers) |
-| 模型注册表 | AutoModel 工厂与 4 件套模板 | `_BaseAutoModelClass.from_pretrained` in `auto_factory.py:261` | 注册表 + 懒加载 + 模板是"数百模型可发现可加载"的根因 | [模型注册表](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/11-models-registry) |
+| 建模核心 | 模型生命周期与权重加载 | `PreTrainedModel.from_pretrained` in `modeling_utils.py:3859` | 权重加载（含 v5 WeightConverter）是所有模型的共用契约，独立于具体结构 | [建模核心](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/01-modeling-core) |
+| 建模原语 | transformer 共享构建块 | `ROPE_INIT_FUNCTIONS`/`create_causal_mask`/`ACT2FN` | RoPE/掩码/激活是所有模型复用的计算原语，集中维护避免散落各模型文件 | [建模原语](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/02-modeling-primitives) |
+| 配置系统 | 模型超参数的声明与序列化 | `PretrainedConfig.from_pretrained` in `configuration_utils.py:617` | config 是 model 与 tokenizer 的共享契约，独立于两者存在 | [配置系统](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/03-configuration) |
+| 分词框架 | 文本→token id | `PreTrainedTokenizerBase.__call__` in `tokenization_utils_base.py:2418` | 分词是与模型前向分离的数据预处理，有自己的后端与序列化 | [分词框架](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/04-tokenization) |
+| 多模态处理 | 图像/视频/音频 + 文本统一预处理 | `ProcessorMixin.__call__` in `processing_utils.py:652` | 多模态模型需要把多模态占位符展开与预处理协调，单一对象统一加载 | [多模态处理](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/05-processing) |
+| 生成框架 | 自回归解码策略 | `GenerationMixin.generate` in `generation/utils.py:2261` | 生成是推理的核心，解码策略/logits 处理/speculative decoding 是独立复杂度 | [生成框架](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/06-generation) |
+| KV 缓存 | 注意力历史 K/V 管理 | `Cache.update` in `cache_utils.py:1349` | 缓存策略（动态/静态/量化/线性注意力）独立于模型结构，且要支持 torch.compile | [KV 缓存](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/07-cache) |
+| 训练框架 | 训练循环编排 | `Trainer.train` in `trainer.py:1347` | Trainer 模型无关，靠三角解耦训练任意架构，分布式/AMP 委托给 accelerate | [训练框架](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/08-trainer) |
+| 流水线 | 高级任务 API | `pipeline()` in `pipelines/__init__.py` | 把"模型 + 预处理 + 后处理"封装成单次调用，是最低门槛入口 | [流水线](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/09-pipelines) |
+| 量化 | 量化后端集成 | `AutoHfQuantizer.from_config` in `quantizers/auto.py:193` | 量化在权重加载前替换模块，24 个后端共享统一介入点 | [量化](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/10-quantizers) |
+| 模型注册表 | AutoModel 工厂与 4 件套模板 | `_BaseAutoModelClass.from_pretrained` in `auto_factory.py:261` | 注册表 + 懒加载 + 模板是"数百模型可发现可加载"的根因 | [模型注册表](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/11-models-registry) |
 
 ---
 
@@ -314,7 +314,7 @@ tests/
 - **第三遍：理解生成与推理链路**
   `generation/utils.py` 的 `GenerationMixin.generate`（L2261）→ `_sample`（L2783）→ `logits_process.py` 的 `LogitsProcessorList`（L63）→ `cache_utils.py` 的 `Cache.update`（L1349）。这条线回答"token 是怎么一个个蹦出来的"。
 - **第四遍：选择重点子模块深入**
-  从 [模块地图](#模块地图) 选感兴趣的模块文档深入；若关注模型如何被注册发现，读 [模型注册表](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/11-models-registry)；若关注训练，读 [训练框架](/vibe-reading/articles/AI/Infra/transformers/CodeWiki/5.15.0/08-trainer)。
+  从 [模块地图](#模块地图) 选感兴趣的模块文档深入；若关注模型如何被注册发现，读 [模型注册表](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/11-models-registry)；若关注训练，读 [训练框架](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/08-trainer)。
 
 ---
 

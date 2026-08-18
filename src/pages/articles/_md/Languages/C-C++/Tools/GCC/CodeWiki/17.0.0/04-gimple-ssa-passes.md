@@ -90,6 +90,10 @@ pass 调度入口是 `execute_one_pass`（`passes.cc:2569`，见[编译驱动器
 
 `pass_build_ssa::execute`（`tree-into-ssa.cc:2490`）实现经典 SSA 构造算法：计算支配树（`calculate_dominance_info`）→ 计算支配边界（`compute_dominance_frontiers`）→ 标记定义点（`mark_def_sites`）→ 在每个定义的支配边界插入 φ 节点（`insert_phi_nodes`）→ 重写变量为 SSA_NAME（`rewrite_into_ssa`）。`make_ssa_name`（`tree-into-ssa.cc:1396`）分配 SSA_NAME tree 节点并关联 `def_stmt`。`tree_ssa_name`（`tree-core.h:1724`）含 `var`（被包装的 `_DECL`）、`def_stmt`（定义语句）、`imm_uses`（立即使用链，`ssa_use_operand_t` 链表，`tree-core.h:1712`）。SSA 退出在 `pass_expand`（`cfgexpand.cc:7058`）的 `rewrite_out_of_ssa`（:7067），把 SSA_NAME 映射到分区/伪寄存器。
 
+> SSA 构造是五次 IR 演变的第三次（GENERIC→GIMPLE→**GIMPLE SSA**→RTL→汇编），边界跨越函数 `rewrite_blocks`（`tree-into-ssa.cc:2285`）的细节与全局状态 `cfun->gimple_df` 的流转见[编译数据流深读](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/00-overview-dataflow-deepdive)。
+
+> pass 调度的 properties 依赖机制（`properties_required/provided/destroyed`，如 `pass_build_ssa` 提供 `PROP_ssa`）让 pass 声明"我要什么"而非"我在谁之后"——`execute_one_pass`（`passes.cc:2569`）执行前用 `verify_curr_properties`（`passes.cc:2187`）断言前置属性满足。TODO 机制（`todo_flags_start/finish`，如 `TODO_update_ssa`/`TODO_cleanup_cfg`）让 pass 只声明副作用，由 `execute_todo` 统一执行维护工作。两者细节见[编译驱动器](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/01-compiler-driver)模块的 pass 管理器章节。
+
 ### SCCVN：RPO + SCC 合并的值编号
 
 `tree-ssa-sccvn.cc` 实现值编号：`vn_ssa_aux`（`tree-ssa-sccvn.h:222`）记录每个 SSA_NAME 的等价值。`do_rpo_vn_1`（`tree-ssa-sccvn.cc:8858`）按逆后序（RPO）遍历，用 **SCC（强连通分量）合并**处理循环——同 SCC 内的 SSA_NAME 视为等价值集合，避免循环引用无法求解。`VN_INFO`（:466）是全局值编号表。`pass_fre::execute`（:9339）的 FRE（Full Redundancy Elimination）消费 SCCVN 结果消除冗余计算。这比传统 GVN 更精确，能识别循环不变量。

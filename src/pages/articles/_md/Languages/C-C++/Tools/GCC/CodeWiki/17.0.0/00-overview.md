@@ -218,7 +218,7 @@ libgomp/                      # OpenMP 运行时
 
 ![GCC 核心模块依赖关系](/vibe-reading/images/articles/gcc-17.0.0/module-dependencies.svg)
 
-七个核心模块按编译数据流顺序串联，目标描述机制作为跨层基底被后端三模块（RTL 生成与优化、寄存器分配、代码生成）查询。模块间的动态调用顺序见「运行时行为 > 核心运行流程」。
+十个核心模块按编译数据流顺序串联：前八个是逐函数编译管线的各层（驱动器→前端→IR→SSA 优化→RTL→寄存器分配→代码生成→目标描述），后两个是**跨函数/全程序视野**——过程间分析（IPA）与调用图在单函数优化之上跨函数边界分析，静态分析器（`-fanalyzer`）则作为 IPA pass 独立运行做 path-sensitive 缺陷检测。目标描述机制作为跨层基底被后端三模块（RTL 生成与优化、寄存器分配、代码生成）查询。模块间的动态调用顺序见「运行时行为 > 核心运行流程」，IR 形态演变的细节见[编译数据流深读](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/00-overview-dataflow-deepdive)。
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|----------|-----------|---------|
@@ -230,6 +230,8 @@ libgomp/                      # OpenMP 运行时
 | 寄存器分配 | IRA 全局 + LRA 局部两阶段分配 | `ira.cc:6224` / `lra.cc:2424` | 全局视野（IRA）与逐指令约束精确性（LRA）分工，NP 问题的近似解 | [寄存器分配](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/06-register-allocation) |
 | 代码生成 | RTL→汇编发射 + DWARF 调试信息 | `final.cc:4259` / `dwarf2out.cc:32832` | 代码段流式输出与数据段/DIE 树输出约束不同，retargetability 靠 .md 模板 | [代码生成](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/07-code-generation) |
 | 目标描述机制 | 机器描述 .md + gen* 代码生成 + targetm 钩子 | `target.h:338` / `config/*.md` | 可重定向的基底——新增架构不改编译器主体 | [目标描述机制](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/08-target-description) |
+| 过程间分析与调用图 | cgraph/symtab 数据结构 + analyze_functions 编排 + 内联/devirt/IPA-CP/modref + WHOPR | `cgraphunit.cc:2562` / `ipa-inline.cc:2822` | 全程序视野独立于单函数优化：跨函数边界分析需统一符号表与调用图，LTO 三阶段靠它承载 | [过程间分析与调用图](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/09-ipa-callgraph) |
+| 静态分析器 | path-sensitive 引擎 + 可插拔 state-machine checker | `analyzer/engine.cc:4762` | 独立于编译管线（不改代码），复用 GIMPLE body 做缺陷检测，是 GCC 自带静态分析子系统 | [静态分析器（-fanalyzer）](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/10-analyzer) |
 
 ---
 
@@ -279,7 +281,7 @@ GCC 有三类核心运行链路：(1) **单文件编译主链路**（`.c` → `.
 
 ![GCC 编译数据流](/vibe-reading/images/articles/gcc-17.0.0/data-flow.svg)
 
-文字解读（数据结构演变与关键决策）：`compile_file`（`toplev.cc:449`）先调 `lang_hooks.parse_file` 让 C 前端把源码递归下降解析为 `union tree_node`（GENERIC），存入每个函数的 `DECL_SAVED_TREE`。随后 `symtab->finalize_compilation_unit`（`cgraphunit.cc:2562`）进入 `analyze_functions`（`cgraphunit.cc:1176`），对调用图每个节点先 `gimplify_function_tree`（`gimplify.cc:22004`）把 GENERIC 降级为三地址 `gimple` 语句，再 `execute_pass_list(all_lowering_passes)`（`cgraphunit.cc:701`）构造 CFG/降低 EH。接着 IPA 阶段（`cgraphunit.cc:2231`）跑 `all_small_ipa_passes` → `all_regular_ipa_passes`（内联、常量传播、devirt），其中 `pass_build_ssa`（`tree-into-ssa.cc:2490`）把变量重写为 `ssa_name` 形式。IPA 完成后 `expand_all_functions`（`cgraphunit.cc:1990`）逐函数 `execute_pass_list(all_passes)`（`cgraphunit.cc:1874`）：GIMPLE 优化遍（向量化 `pass_vectorize`、SCCVN 值编号、PRE 冗余消除）→ `pass_expand`（`cfgexpand.cc:7058`）经 `rewrite_out_of_ssa` 退出 SSA 并把 GIMPLE 展开为 `rtx_def`（RTL）→ RTL 优化遍（`cse`/`combine`/`haifa-sched`）→ `pass_ira`（`ira.cc:6224`）全局分配 + `pass_reload`（`ira.cc:6269`）的 LRA 局部修正 → `pass_final`（`final.cc:4340`）用 `.md` 输出模板把每条 RTL 指令发射为汇编文本写入 `asm_out_file`。整条链路数据从 `tree_node` → `gimple` → `ssa_name` → `rtx_def` → 汇编文本，跨模块边界通过 `symtab`/`cgraph`/`cfun`/`get_insns()` 全局载体传递。
+文字解读（数据结构演变与关键决策）：`compile_file`（`toplev.cc:449`）先调 `lang_hooks.parse_file` 让 C 前端把源码递归下降解析为 `union tree_node`（GENERIC），存入每个函数的 `DECL_SAVED_TREE`。随后 `symtab->finalize_compilation_unit`（`cgraphunit.cc:2562`）进入 `analyze_functions`（`cgraphunit.cc:1176`），对调用图每个节点先 `gimplify_function_tree`（`gimplify.cc:22004`）把 GENERIC 降级为三地址 `gimple` 语句，再 `execute_pass_list(all_lowering_passes)`（`cgraphunit.cc:701`）构造 CFG/降低 EH。接着 IPA 阶段（`cgraphunit.cc:2231`）跑 `all_small_ipa_passes` → `all_regular_ipa_passes`（内联、常量传播、devirt），其中 `pass_build_ssa`（`tree-into-ssa.cc:2490`）把变量重写为 `ssa_name` 形式。IPA 完成后 `expand_all_functions`（`cgraphunit.cc:1990`）逐函数 `execute_pass_list(all_passes)`（`cgraphunit.cc:1874`）：GIMPLE 优化遍（向量化 `pass_vectorize`、SCCVN 值编号、PRE 冗余消除）→ `pass_expand`（`cfgexpand.cc:7058`）经 `rewrite_out_of_ssa` 退出 SSA 并把 GIMPLE 展开为 `rtx_def`（RTL）→ RTL 优化遍（`cse`/`combine`/`haifa-sched`）→ `pass_ira`（`ira.cc:6224`）全局分配 + `pass_reload`（`ira.cc:6269`）的 LRA 局部修正 → `pass_final`（`final.cc:4340`）用 `.md` 输出模板把每条 RTL 指令发射为汇编文本写入 `asm_out_file`。整条链路数据从 `tree_node` → `gimple` → `ssa_name` → `rtx_def` → 汇编文本，跨模块边界通过 `symtab`/`cgraph`/`cfun`/`get_insns()` 全局载体传递。五个 IR 边界跨越函数（`gimplify_body`/`execute_build_cfg`/`rewrite_blocks`/`pass_expand`/`rest_of_handle_final`）、`cgraph_node` 生命周期与 LTO 三阶段的细节见[编译数据流深读](/vibe-reading/articles/Languages/C-C++/Tools/GCC/CodeWiki/17.0.0/00-overview-dataflow-deepdive)。
 
 #### LTO 链接时优化：多进程并行
 

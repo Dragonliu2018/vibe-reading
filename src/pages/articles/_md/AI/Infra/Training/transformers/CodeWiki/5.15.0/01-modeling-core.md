@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "建模核心"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "PreTrainedModel", "WeightConverter", "权重加载", "meta tensor"]
 description: "PreTrainedModel 是所有模型的基类，from_pretrained 在 meta device 上空挂模型再用 WeightConverter 把 checkpoint 权重转换挂载。本文解读 v5 动态权重加载、meta tensor 初始化与可逆转换的设计。"
 readingTime: "14 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Training/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

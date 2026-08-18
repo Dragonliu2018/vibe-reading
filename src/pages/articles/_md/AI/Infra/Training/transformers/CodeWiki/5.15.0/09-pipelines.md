@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "流水线"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "Pipeline", "任务 API", "工厂", "preprocess/forward/postprocess"]
 description: "pipeline() 是最高门槛入口，工厂据 task 名懒加载 model+processor，Pipeline 基类用 preprocess/forward/postprocess 三段模板解耦模型无关转换与模型前向。本文解读三段拆分与 device 管理设计。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Training/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

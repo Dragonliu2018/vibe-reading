@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "多模态处理"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "ProcessorMixin", "多模态", "图像处理", "占位符展开"]
 description: "ProcessorMixin 组合 tokenizer + image_processor 成单一对象，统一加载与调用。__call__ 分模态处理后用占位符替换把多模态输入合并成 model forward 的张量字典。本文解读组合设计与 _merge_kwargs 四级优先级。"
 readingTime: "11 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Training/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

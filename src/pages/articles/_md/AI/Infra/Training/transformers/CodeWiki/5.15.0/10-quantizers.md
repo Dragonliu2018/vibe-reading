@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "量化"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "HfQuantizer", "量化", "bitsandbytes", "WeightConverter"]
 description: "HfQuantizer 抽象基类统一 24 个量化后端，在权重加载前用模板方法替换 Linear 为量化层，避免先加载全精度再量化。本文解读量化介入点与 WeightConverter 协作设计。"
 readingTime: "10 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Training/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

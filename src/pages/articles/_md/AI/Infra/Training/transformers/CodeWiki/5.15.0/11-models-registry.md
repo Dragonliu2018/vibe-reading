@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "模型注册表"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "AutoModel", "懒加载", "注册表", "4件套模板"]
 description: "models/auto 用 _LazyAutoMapping 三层懒加载注册表把 model_type 解析为具体类，AutoModel.from_pretrained 据 config 懒加载 model class。2646 个模型文件遵循 4 件套统一模板。本文解读注册表与模板设计。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Training/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

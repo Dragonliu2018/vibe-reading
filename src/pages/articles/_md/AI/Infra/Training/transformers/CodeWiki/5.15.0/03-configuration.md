@@ -5,7 +5,7 @@ source:
   url: "https://github.com/huggingface/transformers"
 title: "配置系统"
 date: "2026-08-18T16:40:20+08:00"
-category: [AI, Infra, Inference, transformers, CodeWiki, "5.15.0"]
+category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
 tags: ["transformers", "PretrainedConfig", "dataclass", "序列化", "版本迁移"]
 description: "PretrainedConfig 是所有模型配置的基类，用 dataclass + strict 验证声明超参数，from_pretrained/to_diff_dict 负责序列化与版本兼容。本文解读配置的共享契约与懒加载注册表设计。"
 readingTime: "10 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Infra/Inference/transformers/CodeWiki/5.15.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Infra/Training/transformers/CodeWiki/5.15.0/00-overview)
 
 ---
 

@@ -184,5 +184,6 @@ wrap-around 就是修这个：`find_next_zero_bit` 扫到末尾后，fallback �
 
 ## 相关阅读
 
+- **rtrs 移除全部 likely/unlikely 注解，benchmark 证明无性能差异** —— [Linux commit-4693d6](/vibe-reading/articles/OS/Linux/PRs/linux-commit-4693d6-rtrs-remove-likely-unlikely)：同一函数 `__rtrs_get_permit` 的前序。4693d6b（2021）删了 `unlikely(bit >= max_depth)`（benchmark 证明无益）；本篇（0c5549）在 wrap-around cold path 上又加了回来（那里确实冷）。两篇对照可见 `unlikely` 从 cargo-cult 到按 cold-path 语义放的演变。
 - **移除 null_blk 的 bio I/O 路径只留 blk-mq，删掉 get_tag/put_tag 位图分配** —— [Linux commit-8b631f9](/vibe-reading/articles/OS/Linux/PRs/linux-commit-8b631f9-null-blk-remove-bio-path)：本 commit 的「渊源」。8b631f9（2024）删掉了 null_blk 的 `get_tag`/`put_tag`（RTRS `__rtrs_get_permit` 借鉴的那套无锁位图）连同整条 bio 路径——同一种 lockless bitmap 模式在 null_blk 这头被删、在本篇（0c5549，RTRS）那头被优化，两篇对照可见模式的来龙去脉。
 - **Block I/O 子系统** —— [Linux CodeWiki 7.1 · 05-block-io](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/05-block-io)：block 层（blk-mq tag、null_blk 等）的 CodeWiki 解读，无锁位图 tag 分配模式的出处（null_blk `get_tag`）与 RNBD「block over RDMA」都在 block I/O 这条线上，可对照看 tag/permit 分配的共通形态。

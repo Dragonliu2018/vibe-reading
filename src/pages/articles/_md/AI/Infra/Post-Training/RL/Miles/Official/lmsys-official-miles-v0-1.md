@@ -320,4 +320,4 @@ We would like to thank all community contributors of Miles and SGLang for their 
 
 - [Towards Blackwell-Native 8-bit and 4-bit RL: End-to-End MXFP8 and NVFP4 RL in Miles](/vibe-reading/articles/AI/Infra/Post-Training/RL/Miles/Official/lmsys-official-mxfp8-nvfp4-rl) — **同系列·配对原文**·本篇 References [9] 所指的 Miles 低精度配方专文，深入展开 MXFP8/NVFP4 的精度契约、per-token 激活缩放与 bit-exact 量化器，与本篇"Low-precision Training"一节直接对照
 - [SGLang: Efficient Execution of Structured Language Model Programs](/vibe-reading/articles/sglang-efficient-structured-lm-programs) — **背景知识**·Miles 采样侧的高性能引擎 SGLang 的奠基论文，RadixAttention 与前缀缓存复用是本篇"Fast Agentic Rollout"96% cache 命中率的根基
-- [MiniMax Forge: Production-Scale Agent RL System](/vibe-reading/articles/minimax-official-forge-agent-rl-system) — **方法论镜像**·另一套生产级 agent RL 系统，同样面对异步调度、长尾拖尾、沙箱环境与多轮轨迹捕获等问题，可横向对照两类系统的工程取舍
+- [MiniMax Forge: Production-Scale Agent RL System](/vibe-reading/articles/AI/Infra/Post-Training/RL/Blogs/minimax-official-forge-agent-rl-system) — **方法论镜像**·另一套生产级 agent RL 系统，同样面对异步调度、长尾拖尾、沙箱环境与多轮轨迹捕获等问题，可横向对照两类系统的工程取舍

@@ -7,7 +7,7 @@ source:
   author: "MiniMax"
   site: "minimaxi.com"
 date: "2026-07-28T20:14:27+08:00"
-category: [AI, Agent, RL, MiniMax, Official]
+category: ["AI", "Infra", "Post-Training", "RL", "Blogs"]
 tags: ["Agent RL", "Forge", "MiniMax M2.5", "CISPO", "Windowed FIFO", "Prefix Tree Merging", "Prefix Cache", "PD 分离", "强化学习", "RLHF"]
 description: "目的：在大规模 Agent RL 中平衡吞吐量、训练稳定性与 Agent 灵活性。手段：原生异步 Agent RL 系统 Forge——标准化 Agent-LLM 交互协议解耦引擎与脚手架 + Windowed FIFO 混合调度 + Prefix Tree Merging 40× 训练加速 + 全局 L3 KV Cache + Dense/Process Reward。结论：数十万 Agent 脚手架 + 200K 上下文下日吞吐百万级样本，造就 MiniMax M2.5 性能突破。"
 readingTime: "12 min"
@@ -152,3 +152,9 @@ Agent 的多轮请求间存在很高的上下文前缀重合度，传统方法�
 - **用于降低方差的后续奖励（Reward-to-go）**：长周期任务的稀疏奖励容易引发高梯度方差。我们使用 Reward-to-go 来标准化回报，大幅提高了信用分配的精度，稳定了优化过程。
 
 **在 MiniMax M2.5 的训练过程中，在面对数十万个真实的 Agent 脚手架和环境以及 200k 的上下文长度时，我们的 RL 系统做到了每天百万级样本量的吞吐，并实现持续稳定的 Reward 上涨和真实的模型能力提升。**
+
+## 相关阅读
+
+- [Miles v0.1: Production-level Post-training](/vibe-reading/articles/AI/Infra/Post-Training/RL/Miles/Official/lmsys-official-miles-v0-1) — **方法论镜像**·另一套生产级 agent RL 系统，同样面对全异步调度、长尾拖尾、前缀缓存复用与多轮轨迹捕获，可横向对照 Forge 的 Windowed FIFO + Prefix Tree Merging 与 Miles 的全异步 RL + SGLang router 两条工程路线
+- [SGLang: Efficient Execution of Structured Language Model Programs](/vibe-reading/articles/sglang-efficient-structured-lm-programs) — **背景知识·前缀缓存对照**·Forge 的 Prefix Tree Merging（40× 训练加速）与 SGLang 的 RadixAttention 同属前缀复用家族，可对照两类前缀缓存的设计取舍
+- [Towards Blackwell-Native 8-bit and 4-bit RL: End-to-End MXFP8 and NVFP4 RL in Miles](/vibe-reading/articles/AI/Infra/Post-Training/RL/Miles/Official/lmsys-official-mxfp8-nvfp4-rl) — **同域·生产级 RL**·同属大规模 RL 后训练的低精度训练视角，与本篇的 agent 调度/KV cache 视角互补，合看可覆盖生产级 RL 的两条关键优化轴

@@ -9,7 +9,7 @@ source:
 date: "2026-08-16T19:30:48+08:00"
 category: ["OS", "Linux", "PRs"]
 tags: ["Linux Kernel", "RDMA", "RTRS", "likely", "unlikely", "Branch Prediction", "Benchmark", "Gioh Kim", "v5.15", "IONOS"]
-description: "Gioh Kim 用 fio benchmark 测试发现 RTRS 驱动里散布的 likely()/unlikely() 编译器分支预测提示对性能毫无帮助（IOPS=829k 不变），遂全部移除。涉及 rtrs-clt.c/rtrs-srv.c/rtrs-clt-stats.c 三文件、~30 处 if 语句，包括 __rtrs_get_permit() 的 unlikely(bit >= max_depth)——该函数后来由 0c5549 优化时又在 wrap-around cold path 上重新加了 unlikely。"
+description: "Gioh Kim 用 fio benchmark 测试发现 RTRS 驱动里散布的 likely()/unlikely() 编译器分支预测提示对性能毫无帮助（IOPS=829k 不变），遂全部移除。涉及 rtrs-clt.c/rtrs-srv.c/rtrs-clt-stats.c 三文件、~30 处 if 语句，包括 __rtrs_get_permit() 的 unlikely(bit >= max_depth)——该函数后来由 c733a5 优化时也**没有再加回 unlikely**（保持一致）。"
 readingTime: "12 min"
 aiModel: "Claude Opus 5"
 reviewed: false
@@ -29,7 +29,7 @@ reviewed: false
 
 三根柱子（改动前有 likely/unlikely → 交换 → 全删）的 IOPS 都是 **829k**（BW 3239 → 3238 → 3238 MiB/s，在测量噪声范围内）。既然加不加都一样，那就**全删**——去掉 ~100 处宏包装，代码更干净、也不留 cargo-cult。
 
-> 这条 commit 动的 `__rtrs_get_permit()`（`rtrs-clt.c:75`，permit 无锁位图分配）正是后来 [0c5549](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-0c5549-rtrs-clt-find-next-zero-bit) 优化的同一函数——而 0c5549 在 wrap-around 冷路径上**又把 `unlikely()` 加了回来**（因为那里确实是 cold path，和 4693d6b 删的 cargo-cult 不同）。见「意义与影响」。
+> 这条 commit 动的 `__rtrs_get_permit()`（`rtrs-clt.c:75`，permit 无锁位图分配）正是后来 [c733a5](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-c733a5-rtrs-clt-find-next-zero-bit) 优化的同一函数——而 c733a5 优化同一函数时也**没有再加回 `unlikely()`**——与 4693d6b 的「全删」决策保持一致。见「意义与影响」。
 
 ## 前置知识
 
@@ -49,7 +49,7 @@ reviewed: false
 
 | 函数 | 位置 | 原标注 | 场景 |
 |------|------|--------|------|
-| `__rtrs_get_permit` | rtrs-clt.c:75 | `unlikely(bit >= max_depth)` / `unlikely(test_and_set_bit_lock(...))` | permit 无锁分配（★0c5549 后续优化同一函数） |
+| `__rtrs_get_permit` | rtrs-clt.c:75 | `unlikely(bit >= max_depth)` / `unlikely(test_and_set_bit_lock(...))` | permit 无锁分配（★c733a5 后续优化同一函数，也没加回 unlikely） |
 | `rtrs_clt_get_permit` | rtrs-clt.c:115 | `likely(permit)` / `likely(permit)` | 公开 permit API：拿到 permit 是大概率 |
 | `rtrs_permit_to_clt_con` | rtrs-clt.c:175 | `likely(permit->con_type == RTRS_IO_CON)` | permit → 连接：IO 连接是大概率 |
 | `rtrs_clt_fast_reg_done` / `rtrs_clt_inv_rkey_done` | rtrs-clt.c:329 / :349 | `unlikely(wc->status != IB_WC_SUCCESS)` | RDMA 完成回调：WC 失败是 unlikely |
@@ -82,7 +82,7 @@ IO 完成
 
 改动模式统一：去掉 `unlikely(` / `likely(` 包装、保留条件表达式，有些地方顺势补花括号对齐：
 
-### 代表：`__rtrs_get_permit`（★0c5549 后续优化的同一函数）
+### 代表：`__rtrs_get_permit`（★c733a5 后续优化的同一函数）
 
 ```diff title="drivers/infiniband/ulp/rtrs/rtrs-clt.c (__rtrs_get_permit)"
  	do {
@@ -131,7 +131,7 @@ benchmark（829k → 829k → 829k）是铁证：对这个驱动 + 这套硬件 
 
 - **代码简化**：~100 处宏包装去掉，`if` 语句更短更直白，阅读时不用再想「这个 unlikely 标对了吗」。
 - **去 cargo-cult**：RTRS 的 `likely`/`unlikely` 大概率是写时按直觉放的（WC 失败→unlikely、拿到 permit→likely 等），没有数据支撑。benchmark 给了「该删」的依据，也开了内核社区「用数据验证 hint」的好先例。
-- **`__rtrs_get_permit` 的 unlikely 被 0c5549 又加回来——但理由不同**：4693d6b 删了 `__rtrs_get_permit` 里的 `unlikely(bit >= max_depth)`（因为 benchmark 证明无益）；2026 年 [0c5549](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-0c5549-rtrs-clt-find-next-zero-bit) 优化同一函数时，在 wrap-around fallback 路径上**重新加了 `unlikely(bit >= max_depth)`**——但这次有正当理由：wrap-around（`find_next` 扫到末尾后 fallback `find_first`）确实是 cold path（大多数时候续扫就找到了、不会到末尾），和 4693d6b 删的「按直觉放」不同。这正好说明：`unlikely` 不是不能用，而是要用在**真正 cold** 的路径上、且有理由相信它确实冷。
+- **`__rtrs_get_permit` 的 unlikely 没有被加回来**：4693d6b 删了 `__rtrs_get_permit` 里的 `unlikely(bit >= max_depth)`（benchmark 证明无益）；2026 年 [c733a5](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-c733a5-rtrs-clt-find-next-zero-bit) 优化同一函数、加了 wrap-around fallback 路径时，**也没有加回 `unlikely()`**——虽然 wrap-around 确实是冷路径，但既然数据已证明 unlikely 对 RTRS 无益，就不再加。与「全删」决策保持一致。
 
 ## 参考
 
@@ -140,6 +140,6 @@ benchmark（829k → 829k → 829k）是铁证：对这个驱动 + 这套硬件 
 
 ## 相关阅读
 
-- **rtrs permit 分配改用 find_next_zero_bit 避免竞态后重扫** —— [Linux commit-0c5549](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-0c5549-rtrs-clt-find-next-zero-bit)：同一函数 `__rtrs_get_permit` 的后续优化。0c5549 在 wrap-around cold path 上**重新加了 `unlikely(bit >= max_depth)`**——4693d6b 删它因为无益、0c5549 加它因为那里确实冷，两篇对照可见 `unlikely` 从「cargo-cult」到「按 cold-path 语义放」的演变。
+- **rtrs permit 分配改用 find_next_zero_bit 避免竞态后重扫** —— [Linux commit-c733a5](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-c733a5-rtrs-clt-find-next-zero-bit)：同一函数 `__rtrs_get_permit` 的后续优化。c733a5 加了 wrap-around fallback 但**没有加回 `unlikely()`**——与 4693d6b 的「全删 likely/unlikely」保持一致。
 - **移除 null_blk 的 bio I/O 路径只留 blk-mq，删掉 get_tag/put_tag 位图分配** —— [Linux commit-8b631f9](/vibe-reading/articles/OS/Linux/PRs/linux-commit-8b631f9-null-blk-remove-bio-path)：RTRS `__rtrs_get_permit` 借鉴的 null_blk `get_tag()` 的后续命运。8b631f9（2024）把 null_blk 整条 bio 路径 + `get_tag`/`put_tag` 删了——和本 commit 一样，都是在清理 RTRS/null_blk 的「遗留代码」。
 - **Block I/O 子系统** —— [Linux CodeWiki 7.1 · 05-block-io](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/05-block-io)：block 层（blk-mq、RDMA/block 传输）的 CodeWiki 解读，RTRS/RNBD 的数据路径正处其中。

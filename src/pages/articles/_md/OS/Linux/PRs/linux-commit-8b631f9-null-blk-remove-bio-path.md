@@ -30,7 +30,7 @@ bio 路径给 null_blk 带来不小的复杂度：它得维护自己的 `nullb_q
 
 本 commit（Christoph Hellwig）**整条删掉 bio 路径，只留 blk-mq**：移除 `get_tag`/`put_tag`/`__alloc_cmd`/`alloc_cmd`/`free_cmd`/`end_cmd`/`null_handle_bio`/`null_submit_bio`/`nullb_to_queue`/`cleanup_queue(s)` 等，把 `cmd->rq` 改用 `blk_mq_rq_from_pdu()` 取、`end_cmd` 的队列模式分流内联成直接的 `blk_mq_end_request()`。简化驱动、缩数据结构、让日后 block 层 API 改动不必再迁就 null_blk 的双 API 设置。
 
-> 这条 commit 顺带删掉的 `get_tag()`/`put_tag()`，正是 RTRS 客户端 `__rtrs_get_permit()` 注释里「Adapted from null_blk get_tag()」所指的那套无锁位图写法——RTRS 把它留了下来（后来还由 [0c5549](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-0c5549-rtrs-clt-find-next-zero-bit) 优化成 `find_next_zero_bit`），null_blk 自己却在 2024 年把整条 bio 路径连同它一起删了。
+> 这条 commit 顺带删掉的 `get_tag()`/`put_tag()`，正是 RTRS 客户端 `__rtrs_get_permit()` 注释里「Adapted from null_blk get_tag()」所指的那套无锁位图写法——RTRS 把它留了下来（后来还由 [c733a5](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-c733a5-rtrs-clt-find-next-zero-bit) 优化成 `find_next_zero_bit`），null_blk 自己却在 2024 年把整条 bio 路径连同它一起删了。
 
 ![null_blk I/O 路径：双路径 → 只留 blk-mq](/vibe-reading/images/articles/linux-commit-8b631f9-null-blk-remove-bio-path/io-paths.svg)
 
@@ -44,7 +44,7 @@ null_blk 是测试/基准驱动（内存后端 + 可选 zoned/throttling/irqmode
 
 ### 无锁位图 tag 分配（bio 路径的 `get_tag`/`put_tag`）
 
-bio 路径不依赖 blk-mq tag set，自己用 `nullb_queue.tag_map` 位图管命令槽：`get_tag()` 用 `find_first_zero_bit` 扫一个 0 位、`test_and_set_bit_lock` 原子占位（失败重扫，无显式自旋锁）；`put_tag()` 用 `clear_bit_unlock` 释放。这套写法后被 RTRS `__rtrs_get_permit()` 借鉴（见 [0c5549](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-0c5549-rtrs-clt-find-next-zero-bit)）。
+bio 路径不依赖 blk-mq tag set，自己用 `nullb_queue.tag_map` 位图管命令槽：`get_tag()` 用 `find_first_zero_bit` 扫一个 0 位、`test_and_set_bit_lock` 原子占位（失败重扫，无显式自旋锁）；`put_tag()` 用 `clear_bit_unlock` 释放。这套写法后被 RTRS `__rtrs_get_permit()` 借鉴（见 [c733a5](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-c733a5-rtrs-clt-find-next-zero-bit)）。
 
 ### blk-mq 请求路径
 
@@ -194,7 +194,7 @@ null_blk 同时养两条 I/O 路径，复杂度都花在「让数据结构兼容
 ## 意义与影响
 
 - **简化 null_blk**：从双 I/O 路径收敛到单一 blk-mq，删掉 ~260 行 bio 路径代码 + `nullb_queue`/`tag_map`/`cmds[]`/`cmd->bio`/`cmd->rq` 等结构，每命令数据结构显著瘦身。
-- **顺带删掉无锁位图 tag 分配**：`get_tag()`/`put_tag()` 这套「`find_first_zero_bit` + `test_and_set_bit_lock`」写法从 null_blk 消失——但它已被 RTRS `__rtrs_get_permit()` 带走并在那边存活（[0c5549](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-0c5549-rtrs-clt-find-next-zero-bit) 还把它从 `find_first` 优化成 `find_next`）。同一种 lockless bitmap 模式，在 null_blk 这头被删、在 RTRS 那头被改。
+- **顺带删掉无锁位图 tag 分配**：`get_tag()`/`put_tag()` 这套「`find_first_zero_bit` + `test_and_set_bit_lock`」写法从 null_blk 消失——但它已被 RTRS `__rtrs_get_permit()` 带走并在那边存活（[c733a5](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-c733a5-rtrs-clt-find-next-zero-bit) 还把它从 `find_first` 优化成 `find_next`）。同一种 lockless bitmap 模式，在 null_blk 这头被删、在 RTRS 那头被改。
 - **为 block 层 API 演进扫障**：null_blk 是 block 层接口的「试验田」，去掉双 API 后，日后改 block 层接口不必再为 null_blk 的 bio 路径单独适配。
 
 ## 参考
@@ -204,6 +204,6 @@ null_blk 同时养两条 I/O 路径，复杂度都花在「让数据结构兼容
 
 ## 相关阅读
 
-- **rtrs permit 分配改用 find_next_zero_bit 避免竞态后重扫** —— [Linux commit-0c5549](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-0c5549-rtrs-clt-find-next-zero-bit)：本 commit 删掉的 `get_tag()`/`put_tag()` 的「幸存者」。RTRS `__rtrs_get_permit()` 借鉴了 null_blk `get_tag` 的无锁位图写法，并在 0c5549 里把 `find_first_zero_bit` 优化成 `find_next_zero_bit`——同一种模式在 null_blk 这头被删、在 RTRS 那头被改，两篇对照可见 lockless bitmap tag 分配的来龙去脉。
+- **rtrs permit 分配改用 find_next_zero_bit 避免竞态后重扫** —— [Linux commit-c733a5](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-c733a5-rtrs-clt-find-next-zero-bit)：本 commit 删掉的 `get_tag()`/`put_tag()` 的「幸存者」。RTRS `__rtrs_get_permit()` 借鉴了 null_blk `get_tag` 的无锁位图写法，并在 c733a5 里把 `find_first_zero_bit` 优化成 `find_next_zero_bit`——同一种模式在 null_blk 这头被删、在 RTRS 那头被改，两篇对照可见 lockless bitmap tag 分配的来龙去脉。
 - **Block I/O 子系统** —— [Linux CodeWiki 7.1 · 05-block-io](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/05-block-io)：block 层（blk-mq、request/bio、tag 分配）的 CodeWiki 解读，null_blk 的双路径与 tag 分配模式正处其中。
 - **驱动模型与基础设施** —— [Linux CodeWiki 7.1 · 12-driver-model](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/12-driver-model)：platform/块驱动注册模型，null_blk 的 probe/queue setup 框架可对照。

@@ -3,18 +3,19 @@ title: "rtrs permit 分配改用 find_next_zero_bit 避免竞态后重扫"
 source:
   project: "Linux"
   type: "commit"
-  id: "0c5549"
+  id: "c733a5"
+  url: "https://lore.kernel.org/linux-rdma/20260816165935.90523-1-dragonliu2018@gmail.com/"
   prType: "perf"
-date: "2026-08-16T18:45:08+08:00"
+date: "2026-08-19T00:00:21+08:00"
 category: ["OS", "Linux", "Contributions"]
 tags: ["Linux Kernel", "RDMA", "RTRS", "RNBD", "Permit", "Bitmap", "find_next_zero_bit", "Lockless", "Performance", "Contributions"]
-description: "rtrs 客户端 __rtrs_get_permit() 从 permits_map 位图里无锁分配空闲 permit，原用 find_first_zero_bit() 每次从 bit 0 扫，竞态失败后回 0 重扫已置位低段。改用 find_next_zero_bit() 从上次位置续扫；扫到末尾后 fallback find_first_zero_bit 从头扫（wrap-around），确保 cursor 下方释放的 permit 也能找到、NULL 只在 map 真满时返回，匹配原始行为与 sbitmap 惯例。扫描仍非原子、test_and_set_bit_lock 重试逻辑不变。"
+description: "rtrs 客户端 __rtrs_get_permit() 从 permits_map 位图里无锁分配空闲 permit，原用 find_first_zero_bit() 每次从 bit 0 扫，竞态失败后回 0 重扫已置位低段。改用 find_next_zero_bit() 从上次位置续扫；扫到末尾后 fallback find_first_zero_bit 从头扫（wrap-around），确保 cursor 下方释放的 permit 也能找到、NULL 只在 map 真满时返回，匹配原始行为。扫描仍非原子、test_and_set_bit_lock 重试逻辑不变。"
 readingTime: "11 min"
 aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> **commit** [0c5549] · **首发版本** `-` · **变更行数** +15 行 · **合并时间** 2026-08-16
+> **patch** [20260816](https://lore.kernel.org/linux-rdma/20260816165935.90523-1-dragonliu2018@gmail.com/) · **commit** [c733a5] · **首发版本** `-` · **变更行数** +14 行 · **合并时间** 2026-08-16
 
 ---
 
@@ -26,7 +27,7 @@ reviewed: false
 
 本 commit 把扫描换成 `find_next_zero_bit(map, max_depth, bit)`——**从上次的 `bit` 位置继续**，竞态失败后继续向前扫，而不是回 0。扫描仍非原子、`test_and_set_bit_lock()` 重试逻辑原封不动，只是去掉了冗余的重扫。
 
-![rtrs permit 分配：bitmap 扫描的 rewind vs resume](/vibe-reading/images/articles/linux-commit-0c5549-rtrs-clt-find-next-zero-bit/bitmap-scan.svg)
+![rtrs permit 分配：bitmap 扫描的 rewind vs resume](/vibe-reading/images/articles/linux-commit-c733a5-rtrs-clt-find-next-zero-bit/bitmap-scan.svg)
 
 上图把 `permits_map` 画成一条位图条：左段密集置位（in-use permits）、右段空闲。改动前（红）`find_first_zero_bit` 扫到空闲位、输竞态后**回 bit 0 重扫已置位低段**（浪费 ∝ in-use 数）；改动后（绿）`find_next_zero_bit` 输竞态后**从上次位置续扫**，不再回 0。差异只在「失败后的扫描方向」，原子占位与重试逻辑不变。
 
@@ -98,7 +99,7 @@ RTRS 客户端（如 RNBD block-over-RDMA）要发 IO
 
 ## 实现
 
-改动只在一个函数、+15/-9 行：`__rtrs_get_permit` 里把 `find_first_zero_bit` 换成 `find_next_zero_bit`（从上次位置续扫），并加了 **wrap-around**——扫到末尾后 fallback 回 `find_first_zero_bit` 从头扫，确保 cursor 下方释放的 permit 也能找到：
+改动只在一个函数、+14/-9 行：`__rtrs_get_permit` 里把 `find_first_zero_bit` 换成 `find_next_zero_bit`（从上次位置续扫），并加了 **wrap-around**——扫到末尾后 fallback 回 `find_first_zero_bit` 从头扫，确保 cursor 下方释放的 permit 也能找到：
 
 ```diff title="drivers/infiniband/ulp/rtrs/rtrs-clt.c (__rtrs_get_permit)"
  {
@@ -113,21 +114,20 @@ RTRS 客户端（如 RNBD block-over-RDMA）要发 IO
 -	 * But then the test_and_set_bit_lock will fail for all the
 -	 * callers but one, so that they will loop again.
 -	 * This way an explicit spinlock is not required.
-+	 * Adapted from null_blk get_tag(). Callers from different CPUs may
-+	 * grab the same bit, since the bitmap scan is not atomic. But then
-+	 * the test_and_set_bit_lock() will fail for all the callers but one,
-+	 * so that they loop again. This way an explicit spinlock is not
-+	 * required. find_next_zero_bit() resumes from the last position so
-+	 * that a lost race does not rescan the already-set low bits; if it
-+	 * reaches the end, wrap to the beginning to exhaust the map and
-+	 * still find a permit freed below the cursor.
++	 * Callers from different CPUs may grab the same bit, since the bitmap
++	 * scan is not atomic. But then the test_and_set_bit_lock() will fail
++	 * for all the callers but one, so that they loop again. This way an
++	 * explicit spinlock is not required. find_next_zero_bit() resumes
++	 * from the last position so that a lost race does not rescan the
++	 * already-set low bits; if it reaches the end, wrap to the beginning
++	 * to exhaust the map and still find a permit freed below the cursor.
  	 */
  	do {
 -		bit = find_first_zero_bit(clt->permits_map, max_depth);
 -		if (bit >= max_depth)
 -			return NULL;
 +		bit = find_next_zero_bit(clt->permits_map, max_depth, bit);
-+		if (unlikely(bit >= max_depth)) {
++		if (bit >= max_depth) {
 +			bit = find_first_zero_bit(clt->permits_map, max_depth);
 +			if (bit >= max_depth)
 +				return NULL;
@@ -138,10 +138,10 @@ RTRS 客户端（如 RNBD block-over-RDMA）要发 IO
 四处实质改动：
 1. `find_first_zero_bit(map, max_depth)` → `find_next_zero_bit(map, max_depth, bit)`：扫描从「恒从 0」变成「从上次的 `bit` 续扫」。
 2. `int bit;` → `unsigned long bit = 0;`：初始化为 0（首次进入 do-while 的起点），类型对齐 `find_next_zero_bit` 的 `offset` 形参。
-3. **wrap-around**：`find_next_zero_bit` 扫到末尾（`bit >= max_depth`）后，`unlikely` 分支 fallback 到 `find_first_zero_bit` 从头扫——确保 cursor 下方（bit 0 到上次位置之间）被释放的 permit 也能找到，`NULL` 只在两次扫描都空（map 真满）时才返回。这匹配原始 `find_first_zero_bit` 的行为和 sbitmap 分配惯例。
-4. 注释更新：点明续扫 + wrap-around + 失败不重扫已置位低段。
+3. **wrap-around**：`find_next_zero_bit` 扫到末尾（`bit >= max_depth`）后 fallback 到 `find_first_zero_bit` 从头扫——确保 cursor 下方（bit 0 到上次位置之间）被释放的 permit 也能找到，`NULL` 只在两次扫描都空（map 真满）时才返回。这匹配原始 `find_first_zero_bit` 的行为。注意这里**不加 `unlikely()`**——和 4693d6b 的「全删 likely/unlikely」一致（见 [4693d6](/vibe-reading/articles/OS/Linux/PRs/linux-commit-4693d6-rtrs-remove-likely-unlikely)）。
+4. 注释更新：删了「Adapted from null_blk get_tag()」前缀（渊源已在正文讲过），点明续扫 + wrap-around + 失败不重扫已置位低段。
 
-`do { ... } while (test_and_set_bit_lock(bit, clt->permits_map));` 的重试逻辑**一字未动**——扫描仍非原子、`test_and_set_bit_lock()` 仍是唯一的原子占位、输了竞态仍 do-while 重来。wrap-around 只改「续扫到末尾后的回退策略」，不改竞态处理。
+`do { ... } while (test_and_set_bit_lock(bit, clt->permits_map));` 的重试逻辑**一字未动**——扫描仍非原子、`test_and_set_bit_lock()` 仍是唯一的原子占位、输了竞态仍 do-while 重来。wrap-around 只改「续扫到末尾后的回退策略」，不加 `unlikely()`，不改竞态处理。
 
 ## Review
 
@@ -168,22 +168,22 @@ RTRS 客户端（如 RNBD block-over-RDMA）要发 IO
 
 光用 `find_next_zero_bit(map, max, bit)` 从 cursor 续扫有一个隐患：如果扫到 `max_depth`（末尾）——cursor 下方（bit 0 到 cursor 之间）可能有刚释放的 permit，但 `find_next_zero_bit` 只向前扫、看不到——它会直接返回 `NULL`（误判 map 满），即使实际有空闲位。原始 `find_first_zero_bit` 每次从 0 扫，不会漏掉低段释放的位。
 
-wrap-around 就是修这个：`find_next_zero_bit` 扫到末尾后，fallback 到 `find_first_zero_bit` 从头扫一遍，覆盖 cursor 下方。两次扫描都空才返回 `NULL`——这跟原始行为一致、也跟 sbitmap 分配的惯例一致。`unlikely()` 标注 wrap-around 是冷路径（大多数时候续扫就找到了，不需要回 0）。
+wrap-around 就是修这个：`find_next_zero_bit` 扫到末尾后，fallback 到 `find_first_zero_bit` 从头扫一遍，覆盖 cursor 下方。两次扫描都空才返回 `NULL`——这跟原始行为一致、也跟 sbitmap 分配的惯例一致。
 
 ## 意义与影响
 
 - **去掉数据路径里的冗余重扫**：RTRS/RNBD 高 queue_depth 下，permit 分配是每次 IO 都走的快路径；把「竞态失败 ∝ in-use 重扫」改成「续扫」，直接削掉高并发场景下的一大块无谓扫描。
 - **保留无锁位图模式**：`test_and_set_bit_lock` 的原子占位 + 失败重试不动，仍省自旋锁；只优化扫描策略，最小侵入。
-- **wrap-around 保证正确性**：纯 `find_next_zero_bit` 会漏掉 cursor 下方释放的位（误判满）；wrap 到 `find_first_zero_bit` 兜底，确保 `NULL` 只在 map 真满时返回，匹配原始行为与 sbitmap 惯例。
+- **wrap-around 保证正确性**：纯 `find_next_zero_bit` 会漏掉 cursor 下方释放的位（误判满）；wrap 到 `find_first_zero_bit` 兜底，确保 `NULL` 只在 map 真满时返回，匹配原始行为。
 - **模式可复用**：任何「非原子扫位图 + `test_and_set_bit_lock` 占位 + 失败重试」的无锁分配器（null_blk 的 `get_tag` 这类），只要重试时能携带上次的 offset，都能套这个 `find_first → find_next` + wrap-around 的优化。
 
 ## 参考
 
-- **无锁位图 tag 分配的渊源**：commit `8b631f9cf0b8`（"null_blk: remove the bio based I/O path"）移除的 null_blk bio 路径里的 `get_tag()`——RTRS `__rtrs_get_permit` 注释里 "Adapted from null_blk get_tag()" 指的就是它（带 `find_first_zero_bit` 的 bio 路径已删，null_blk 现走 blk-mq tag set）。
+- **无锁位图 tag 分配的渊源**：commit `8b631f9cf0b8`（"null_blk: remove the bio based I/O path"）移除的 null_blk bio 路径里的 `get_tag()`——RTRS `__rtrs_get_permit` 原注释里曾提 "Adapted from null_blk get_tag()"（c733a5 已删此行），指的就是它（带 `find_first_zero_bit` 的 bio 路径已删，null_blk 现走 blk-mq tag set）。
 - **位图 API**：`find_first_zero_bit` / `find_next_zero_bit` / `test_and_set_bit_lock` / `clear_bit_unlock`，见 `include/linux/asm-generic/bitops/` 与 `include/linux/find.h`、`include/linux/bitops.h`。
 
 ## 相关阅读
 
-- **rtrs 移除全部 likely/unlikely 注解，benchmark 证明无性能差异** —— [Linux commit-4693d6](/vibe-reading/articles/OS/Linux/PRs/linux-commit-4693d6-rtrs-remove-likely-unlikely)：同一函数 `__rtrs_get_permit` 的前序。4693d6b（2021）删了 `unlikely(bit >= max_depth)`（benchmark 证明无益）；本篇（0c5549）在 wrap-around cold path 上又加了回来（那里确实冷）。两篇对照可见 `unlikely` 从 cargo-cult 到按 cold-path 语义放的演变。
-- **移除 null_blk 的 bio I/O 路径只留 blk-mq，删掉 get_tag/put_tag 位图分配** —— [Linux commit-8b631f9](/vibe-reading/articles/OS/Linux/PRs/linux-commit-8b631f9-null-blk-remove-bio-path)：本 commit 的「渊源」。8b631f9（2024）删掉了 null_blk 的 `get_tag`/`put_tag`（RTRS `__rtrs_get_permit` 借鉴的那套无锁位图）连同整条 bio 路径——同一种 lockless bitmap 模式在 null_blk 这头被删、在本篇（0c5549，RTRS）那头被优化，两篇对照可见模式的来龙去脉。
+- **rtrs 移除全部 likely/unlikely 注解，benchmark 证明无性能差异** —— [Linux commit-4693d6](/vibe-reading/articles/OS/Linux/PRs/linux-commit-4693d6-rtrs-remove-likely-unlikely)：同一函数 `__rtrs_get_permit` 的前序。4693d6b（2021）删了 `unlikely(bit >= max_depth)`（benchmark 证明无益）；本篇（c733a5）的 wrap-around fallback **也没有加回 `unlikely()`**——与「全删」保持一致。
+- **移除 null_blk 的 bio I/O 路径只留 blk-mq，删掉 get_tag/put_tag 位图分配** —— [Linux commit-8b631f9](/vibe-reading/articles/OS/Linux/PRs/linux-commit-8b631f9-null-blk-remove-bio-path)：本 commit 的「渊源」。8b631f9（2024）删掉了 null_blk 的 `get_tag`/`put_tag`（RTRS `__rtrs_get_permit` 借鉴的那套无锁位图）连同整条 bio 路径——同一种 lockless bitmap 模式在 null_blk 这头被删、在本篇（c733a5，RTRS）那头被优化，两篇对照可见模式的来龙去脉。
 - **Block I/O 子系统** —— [Linux CodeWiki 7.1 · 05-block-io](/vibe-reading/articles/OS/Linux/CodeWiki/7.1/05-block-io)：block 层（blk-mq tag、null_blk 等）的 CodeWiki 解读，无锁位图 tag 分配模式的出处（null_blk `get_tag`）与 RNBD「block over RDMA」都在 block I/O 这条线上，可对照看 tag/permit 分配的共通形态。

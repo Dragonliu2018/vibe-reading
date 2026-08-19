@@ -29,6 +29,8 @@ reviewed: false
 
 > `category` 末级用 `CodeWiki` + 版本号（引号包裹，如 `"1.2.0"`）。所有文件共享同一 category。徽章显示 `CodeWiki`（而非版本号），与 `Docs` 同理。版本号取 Step 0 的 tag（如 `v1.2.0` → `"1.2.0"`，去掉 `v` 前缀）。
 >
+> **无 tag 代码库**：版本号用 `<主分支名>-<YYYY-MM>`（`<主分支名>` = 仓库默认分支如 `main`/`master`/`develop`/`trunk`，**不一定是 `main`**；完整年份，如 `"main-2025-12"`/`"master-2025-12"`，不要 `main-2512`），`YYYY-MM` 取解读基线 commit 的提交年月。导言版本行追加 **解读基线** commit（短 hash + 日期 + 指向该 commit 的链接），锁定确切基线。完整格式与取主分支名/commit 信息的命令见 `codewiki-workflow.md` Step 0。
+>
 > **含空格的分类元素**：frontmatter `category:` 数组保留原样（含空格、用引号包裹，用于显示）；文件目录路径和文章内链接路径把空格替换为 `-`。规则见 `markdown-style.md`「文件命名」。
 
 ---

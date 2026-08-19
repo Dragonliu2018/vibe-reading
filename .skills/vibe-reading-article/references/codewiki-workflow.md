@@ -56,6 +56,18 @@ REPO_PATH="$WORKTREE"
 
 **确定解读版本**：tag 优先级 = 用户指定 `VERSION_TAG` > `git describe --tags --abbrev=0`（最新 tag）> 默认分支 HEAD。两种方式都用 `${VERSION_TAG:-...}` 统一取。
 
+**无 tag 代码库的版本处理**：若仓库无 release tag（落到"默认分支 HEAD"分支），版本号**不用裸分支名**，而用 `<主分支名>-<YYYY-MM>`——`<主分支名>` 取仓库默认分支名（`main`/`master`/`develop`/`trunk` 等，**不一定是 `main`**），`YYYY-MM` 取解读基线 commit（即检出的 HEAD）的提交年月，**用完整年份**（如 Jeandle 默认分支为 `main`，故 `"main-2025-12"`；某 `master` 仓库则为 `"master-2025-12"`，不要缩写 `main-2512`）。frontmatter `category` 末级即 `"<主分支名>-YYYY-MM"`，目录随之（如 `CodeWiki/main-2025-12/`）。同时在概览导言的版本行**记录解读基线 commit**：短 hash + 日期 + 指向该 commit 的链接，锁定确切基线（`<主分支名>-YYYY-MM` 只能到月份粒度，仓库持续滚动须靠 commit 溯源）：
+
+```
+> **版本** main-2025-12 · **解读基线** commit [`4793dc28a4b`](<repo-url>/commit/4793dc28a4b76f5fd4584e05bce8f20aa9ff1b76)（2025-12-07，开发分支快照，无 release tag）· ...
+```
+
+```bash
+# 取主分支名（main/master/develop/trunk...）与解读基线 commit 信息
+git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#origin/##'   # 主分支名
+git log -1 --format='hash=%H  short=%h  date=%cd' --date=format:'%Y-%m-%d'           # 解读基线 commit
+```
+
 提取元信息：
 
 ```bash
@@ -81,7 +93,8 @@ cloc --exclude-dir=node_modules,.git,dist,build .
 ```
 项目名：xxx
 一句话定位：xxx（从 README 首段提取）
-版本：v1.0.0
+版本：v1.0.0                          # 有 tag 用 tag（去 v 前缀）；无 tag 用 <主分支名>-YYYY-MM
+解读基线 commit：4793dc28a4b @ 2025-12-07  # 无 tag 时必填，锁定解读基线
 协议：MIT
 语言：Python ≥ 3.10
 代码量：~18,000 行

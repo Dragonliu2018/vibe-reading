@@ -7,7 +7,7 @@ source:
   author: "Ziang Li, humans& and Miles Team"
   site: "LMSYS Blog"
 date: "2026-07-30T17:00:00+08:00"
-category: [AI, Infra, Inference, SGLang, Blogs]
+category: ["AI", "Infra", "Post-Training", "RL", "Miles", "Official"]
 tags: ["MXFP8", "NVFP4", "Low-Precision", "Reinforcement Learning", "Blackwell", "Miles", "SGLang", "Megatron", "MoE"]
 description: "LMSYS Miles 团队在 Blackwell 上实现端到端 MXFP8 与 per-token NVFP4 强化学习：覆盖 rollout、前向、权重梯度与数据梯度 GEMM，精细精度控制贯穿 checkpoint 转换、训练、rollout 与在线权重更新。"
 readingTime: "22 min"
@@ -589,3 +589,9 @@ The following collaborators are thanked for engineering support, integration hel
 The Cursor team is also thanked for the per-token NVFP4 activation-scaling idea.
 
 > **译：** 同时感谢 Cursor 团队提供 per-token NVFP4 激活缩放的思路。
+
+## 相关阅读
+
+- [Miles v0.1: Production-level Post-training](/vibe-reading/articles/AI/Infra/Post-Training/RL/Miles/Official/lmsys-official-miles-v0-1) — **同系列·配对原文**·本篇所属 Miles 系列的最新总览，将本篇 MXFP8/NVFP4 配方作为 [9] 引用并纳入"Low-precision Training"一节，可对照低精度配方在完整 RL 循环中的位置
+- [FlashInfer: Efficient and Customizable Attention Engine for LLM Inference Serving](/vibe-reading/articles/flashinfer-attention-engine-llm-serving) — **工程依赖**·本篇 bit-exact 量化器契约横跨 TransformerEngine 与 FlashInfer，FlashInfer 侧 kernel 是 rollout 量化路径的执行基础
+- [SGLang: Efficient Execution of Structured Language Model Programs](/vibe-reading/articles/sglang-efficient-structured-lm-programs) — **背景知识**·Miles 低精度 RL 配方的 rollout 侧由 SGLang 承载，RadixAttention 与前缀缓存是量化 rollout 的底座

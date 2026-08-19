@@ -347,7 +347,7 @@ llvm/test/Jeandle/
 - [jeandle-jdk 仓库](https://github.com/jeandle/jeandle-jdk)（OpenJDK 侧，含抽象解释器与运行时）
 - [LLVM Statepoint 文档](https://llvm.org/docs/Statepoints.html)（statepoint 与 RS4GC 机制）
 - [LLVM GCStrategy 文档](https://llvm.org/docs/GarbageCollection.html)（GC 策略框架）
-- Jeandle-JDK CodeWiki：[jeandle-jdk 源码解读](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)（OpenJDK 侧的五层 JIT 流水线）
+- Jeandle-JDK CodeWiki：[jeandle-jdk 源码解读](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)（OpenJDK 侧的五层 JIT 流水线）
 
 ### 工具推荐
 

@@ -7,7 +7,7 @@ source:
   author: "刘陶峰"
   site: "知乎"
 date: "2026-08-11T20:31:20+08:00"
-category: [Languages, Java, Jeandle-JDK, Blogs]
+category: ["Languages", "Java", "Tools", "Jeandle-JDK", "Blogs"]
 tags: ["JVM", "JIT", "类型系统", "LLVM IR", "编译优化", "Devirtualization", "Type Check Elimination"]
 description: "类型系统作为编译优化的重要基石，它决定了 Devirtualization、Constant Field Folding、Type Check Elimination 等重要优化的效果，甚至会进一步影响其他大量优化。"
 readingTime: "8 min"

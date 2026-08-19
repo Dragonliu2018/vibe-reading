@@ -7,7 +7,7 @@ source:
   url: "https://github.com/jeandle/jeandle-jdk/pull/234"
   prType: "fix"
 date: "2026-07-01"
-category: [Languages, Java, Jeandle-JDK, Contributions]
+category: ["Languages", "Java", "Tools", "Jeandle-JDK", "Contributions"]
 tags: ["JVM", "LLVM", "字节码", "BasicType", "Jeandle"]
 description: "Jeandle-JDK 的 load_constant 方法此前仅处理了部分 BasicType，本 PR 补全了 T_BOOLEAN/T_BYTE/T_CHAR/T_SHORT/T_ARRAY 五个缺失分支，使常量加载路径与 JVM 规范完全对齐。"
 readingTime: "12 min"

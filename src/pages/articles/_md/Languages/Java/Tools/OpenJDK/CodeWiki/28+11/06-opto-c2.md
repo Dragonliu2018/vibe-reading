@@ -5,7 +5,7 @@ source:
   url: "https://github.com/openjdk/jdk"
 title: "C2 优化编译器"
 date: "2026-08-19T23:29:36+08:00"
-category: [Languages, Java, OpenJDK, CodeWiki, "28+11"]
+category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
 tags: ["OpenJDK", "HotSpot", "C2", "opto", "Sea-of-Nodes", "Matcher", "Chaitin", "逃逸分析"]
 description: "HotSpot C2 优化编译器——Sea-of-Nodes IR、Type lattice、Phase 优化流水线、Matcher 指令选择、图着色寄存器分配、逃逸分析"
 readingTime: "17 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/00-overview)
 
 ---
 

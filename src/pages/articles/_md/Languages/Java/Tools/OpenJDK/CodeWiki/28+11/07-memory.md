@@ -5,7 +5,7 @@ source:
   url: "https://github.com/openjdk/jdk"
 title: "内存管理"
 date: "2026-08-19T23:29:36+08:00"
-category: [Languages, Java, OpenJDK, CodeWiki, "28+11"]
+category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
 tags: ["OpenJDK", "HotSpot", "Universe", "CollectedHeap", "Metaspace", "Arena", "allocation", "BarrierSet"]
 description: "HotSpot 内存管理基础设施——Universe 全局、CollectedHeap/BarrierSet 抽象、Metaspace 元数据区、Arena bump-pointer 分配、分配标记基类"
 readingTime: "14 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/00-overview)
 
 ---
 

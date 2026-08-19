@@ -5,7 +5,7 @@ source:
   url: "https://github.com/openjdk/jdk"
 title: "JIT 编译框架"
 date: "2026-08-19T23:29:36+08:00"
-category: [Languages, Java, OpenJDK, CodeWiki, "28+11"]
+category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
 tags: ["OpenJDK", "HotSpot", "CompileBroker", "CompilationPolicy", "CodeCache", "nmethod", "ci", "Dependencies", "tiered"]
 description: "HotSpot JIT 编译框架——CompileBroker 调度、分层编译策略、ci 适配层、CodeCache 分区、nmethod 三态与依赖失效"
 readingTime: "16 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/00-overview)
 
 ---
 

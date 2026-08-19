@@ -5,7 +5,7 @@ source:
   url: "https://github.com/openjdk/jdk"
 title: "对象模型"
 date: "2026-08-19T23:29:36+08:00"
-category: [Languages, Java, OpenJDK, CodeWiki, "28+11"]
+category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
 tags: ["OpenJDK", "HotSpot", "Oop", "Klass", "markWord", "vtable", "CompressedOops"]
 description: "HotSpot 对象模型——Oop/Klass 二级分离、markWord 对象头、InstanceKlass 元数据、vtable/itable 多继承分发、MethodData profiling"
 readingTime: "15 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/00-overview)
 
 ---
 
@@ -40,7 +40,7 @@ InstanceKlass::allocate_instance(TRAPS)        (instanceKlass.cpp:1936)
     └─ MemAllocator::finish() → oopDesc::release_set_klass(mem, _klass)  # 写 klass 指针
 ```
 
-`size_helper`（`instanceKlass.hpp:1099`）把 `_layout_helper` 正值右移 `LogBytesPerWord` 得对象大小。分配与对象头/字段布局的衔接见 [内存管理模块](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/07-memory)。
+`size_helper`（`instanceKlass.hpp:1099`）把 `_layout_helper` 正值右移 `LogBytesPerWord` 得对象大小。分配与对象头/字段布局的衔接见 [内存管理模块](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/07-memory)。
 
 ### 方法调用与入口选择
 

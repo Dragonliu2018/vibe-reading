@@ -5,7 +5,7 @@ source:
   url: "https://github.com/openjdk/jdk"
 title: "Overview"
 date: "2026-08-19T23:29:36+08:00"
-category: [Languages, Java, OpenJDK, CodeWiki, "28+11"]
+category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
 tags: ["OpenJDK", "HotSpot", "JVM", "C++", "JIT", "C2", "GC"]
 description: "OpenJDK HotSpot 虚拟机执行引擎源码解读——类加载、模板解释器、分层 JIT 编译（C1/C2）、对象模型与内存管理"
 readingTime: "34 min"
@@ -171,13 +171,13 @@ src/hotspot/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 | --- | --- | --- | --- | --- |
-| 运行时 | VM 生命周期、线程、safepoint、锁 | `Threads::create_vm` | 线程模型与一致性（safepoint）是所有执行的前提 | [运行时](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/01-runtime) |
-| 对象模型 | Oop/Klass、对象头、vtable/itable | `instanceKlass.cpp` | 对象表示是 GC/解释器/编译器的共同契约 | [对象模型](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/02-oop-model) |
-| 类加载 | .class 解析、验证、双亲委派 | `SystemDictionary::resolve_or_null` | 类加载的安全性与并发协调自成体系 | [类加载](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/03-classfile) |
-| 字节码解释器 | 模板解释器 dispatch | `TemplateInterpreter::initialize_code` | 冷启动执行入口，与 JIT 性能互补 | [解释器](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/04-interpreter) |
-| JIT 编译框架 | 编译调度、ci、CodeCache、依赖 | `CompileBroker::compile_method` | 编译编排与产物管理独立于具体编译器 | [编译框架](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/05-compiler-framework) |
-| C2 优化器 | Sea-of-Nodes IR 与全局优化 | `Compile::Compile` | 优化深度（EA/循环/寄存器分配）远超 C1 | [C2 优化器](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/06-opto-c2) |
-| 内存管理 | Universe/Metaspace/Arena/分配控制 | `Universe::initialize_heap` | 分配方式与堆抽象是多 GC 共存的基础 | [内存管理](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/07-memory) |
+| 运行时 | VM 生命周期、线程、safepoint、锁 | `Threads::create_vm` | 线程模型与一致性（safepoint）是所有执行的前提 | [运行时](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/01-runtime) |
+| 对象模型 | Oop/Klass、对象头、vtable/itable | `instanceKlass.cpp` | 对象表示是 GC/解释器/编译器的共同契约 | [对象模型](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/02-oop-model) |
+| 类加载 | .class 解析、验证、双亲委派 | `SystemDictionary::resolve_or_null` | 类加载的安全性与并发协调自成体系 | [类加载](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/03-classfile) |
+| 字节码解释器 | 模板解释器 dispatch | `TemplateInterpreter::initialize_code` | 冷启动执行入口，与 JIT 性能互补 | [解释器](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/04-interpreter) |
+| JIT 编译框架 | 编译调度、ci、CodeCache、依赖 | `CompileBroker::compile_method` | 编译编排与产物管理独立于具体编译器 | [编译框架](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/05-compiler-framework) |
+| C2 优化器 | Sea-of-Nodes IR 与全局优化 | `Compile::Compile` | 优化深度（EA/循环/寄存器分配）远超 C1 | [C2 优化器](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/06-opto-c2) |
+| 内存管理 | Universe/Metaspace/Arena/分配控制 | `Universe::initialize_heap` | 分配方式与堆抽象是多 GC 共存的基础 | [内存管理](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/07-memory) |
 
 ---
 
@@ -219,11 +219,11 @@ Threads::create_vm(args)                       (threads.cpp:448)
 
 #### 类加载与首次解析
 
-`SystemDictionary::resolve_or_null`（`classfile/systemDictionary.cpp:382`）协调加载：先查 `Dictionary` 缓存，再走双亲委派（boot loader 从 jimage 加载，user loader 经 JNI 调 `ClassLoader.loadClass`），用 `Placeholders` 三队列（`LOAD_INSTANCE`/`DEFINE_CLASS`/`DETECT_CIRCULARITY`）协调并行加载与循环检测。解析出的 `ClassFileStream` 经 `KlassFactory::create_from_stream`（`klassFactory.cpp:172`）→ `ClassFileParser::parse_stream`（`classFileParser.cpp:6024`）逐项解析常量池/字段/方法/属性，`FieldLayoutBuilder` 计算紧凑布局，`Verifier::verify`（`verifier.cpp:183`）用 StackMapTable 做类型验证，最终产出 `InstanceKlass`。链接阶段 `Method::link_method`（`method.cpp:1313`）设置解释器入口，`Rewriter` 改写常量池索引加速 invoke。详见 [类加载模块](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/03-classfile)。
+`SystemDictionary::resolve_or_null`（`classfile/systemDictionary.cpp:382`）协调加载：先查 `Dictionary` 缓存，再走双亲委派（boot loader 从 jimage 加载，user loader 经 JNI 调 `ClassLoader.loadClass`），用 `Placeholders` 三队列（`LOAD_INSTANCE`/`DEFINE_CLASS`/`DETECT_CIRCULARITY`）协调并行加载与循环检测。解析出的 `ClassFileStream` 经 `KlassFactory::create_from_stream`（`klassFactory.cpp:172`）→ `ClassFileParser::parse_stream`（`classFileParser.cpp:6024`）逐项解析常量池/字段/方法/属性，`FieldLayoutBuilder` 计算紧凑布局，`Verifier::verify`（`verifier.cpp:183`）用 StackMapTable 做类型验证，最终产出 `InstanceKlass`。链接阶段 `Method::link_method`（`method.cpp:1313`）设置解释器入口，`Rewriter` 改写常量池索引加速 invoke。详见 [类加载模块](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/03-classfile)。
 
 #### 对象分配与 synchronized 锁升级
 
-`new Foo()` → `InstanceKlass::allocate_instance`（`instanceKlass.cpp:1936`）→ `CollectedHeap::obj_allocate`（`collectedHeap.inline.hpp:36`）→ `MemAllocator` 优先走 TLAB 快路径（`mem_allocate_inside_tlab_fast`，`memAllocator.cpp:250`），TLAB 满则 retire 重分配，否则直接堆。`synchronized` 进入由 `ObjectSynchronizer::enter`（`synchronizer.cpp:1725`）多级升级：`LockStack` 递归（零开销）→ fast-lock CAS `markWord`（`fast_lock_try_enter`）→ fast-lock 自旋 → inflate 到 `ObjectMonitor::enter`（`objectMonitor.cpp:484`）重量级锁，`ObjectMonitor::try_spin`（`objectMonitor.cpp:2295`）做自适应自旋。详见 [运行时模块](/vibe-reading/articles/Languages/Java/OpenJDK/CodeWiki/28+11/01-runtime)。
+`new Foo()` → `InstanceKlass::allocate_instance`（`instanceKlass.cpp:1936`）→ `CollectedHeap::obj_allocate`（`collectedHeap.inline.hpp:36`）→ `MemAllocator` 优先走 TLAB 快路径（`mem_allocate_inside_tlab_fast`，`memAllocator.cpp:250`），TLAB 满则 retire 重分配，否则直接堆。`synchronized` 进入由 `ObjectSynchronizer::enter`（`synchronizer.cpp:1725`）多级升级：`LockStack` 递归（零开销）→ fast-lock CAS `markWord`（`fast_lock_try_enter`）→ fast-lock 自旋 → inflate 到 `ObjectMonitor::enter`（`objectMonitor.cpp:484`）重量级锁，`ObjectMonitor::try_spin`（`objectMonitor.cpp:2295`）做自适应自旋。详见 [运行时模块](/vibe-reading/articles/Languages/Java/Tools/OpenJDK/CodeWiki/28+11/01-runtime)。
 
 ---
 

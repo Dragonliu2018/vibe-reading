@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-jdk"
 title: "代码生成"
 date: "2026-08-19T17:50:32+08:00"
-category: [Languages, Java, Jeandle-JDK, CodeWiki, "main-2025-12"]
+category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
 tags: ["Jeandle", "ELF", "重定位", "Code Cache"]
 description: "Jeandle 代码生成：LLVM ELF 产物解析、重定位、OopMap 与异常表装载入 Code Cache"
 readingTime: "13 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)
 
 ---
 

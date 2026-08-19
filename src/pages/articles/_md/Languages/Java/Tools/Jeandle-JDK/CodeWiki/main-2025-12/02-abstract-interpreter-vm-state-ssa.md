@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-jdk"
 title: "VM 状态与 SSA"
 date: "2026-08-19T17:50:32+08:00"
-category: [Languages, Java, Jeandle-JDK, CodeWiki, "main-2025-12"]
+category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
 tags: ["Jeandle", "SSA", "Phi", "抽象解释"]
 description: "Jeandle 抽象解释器的 SSA 构造：JeandleVMState 的 Phi 合并、循环头状态与死局部失效"
 readingTime: "9 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回抽象解释器](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter)
+> [← 返回抽象解释器](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter)
 
 ---
 

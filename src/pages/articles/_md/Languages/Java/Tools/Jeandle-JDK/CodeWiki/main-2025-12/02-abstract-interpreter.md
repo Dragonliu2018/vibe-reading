@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-jdk"
 title: "抽象解释器"
 date: "2026-08-19T17:50:32+08:00"
-category: [Languages, Java, Jeandle-JDK, CodeWiki, "main-2025-12"]
+category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
 tags: ["Jeandle", "JIT", "字节码", "LLVM IR"]
 description: "Jeandle 抽象解释器：Java 字节码到 LLVM IR 的逐块翻译与 SSA 构造"
 readingTime: "16 min"
@@ -13,13 +13,13 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)
 
 ---
 
 ## 模块定位
 
-抽象解释器是 Jeandle 的**前端与语义核心**——把 Java 字节码翻译成 LLVM IR。它模拟 JVM 栈帧（操作数栈/局部变量/锁），按基本块遍历，用 `llvm::IRBuilder` 逐条字节码生成 IR，并在块边界合并 Phi 节点构造 SSA。这是项目最大最复杂的模块（`jeandleAbstractInterpreter.cpp/.hpp` 约 2600 行），承载全部 Java 语义表达：算术、类型转换、控制流、字段/数组访问、方法调用、异常、监控器、对象分配。它之所以独立成文，是因为"如何把 Java 字节码语义忠实且高效地表达为 LLVM IR"是 Jeandle 最具知识密度的工作，且其 SSA 构造（Phi 合并、循环头处理）有微妙的算法细节值得专章拆解（见 [VM 状态与 SSA](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa)）。
+抽象解释器是 Jeandle 的**前端与语义核心**——把 Java 字节码翻译成 LLVM IR。它模拟 JVM 栈帧（操作数栈/局部变量/锁），按基本块遍历，用 `llvm::IRBuilder` 逐条字节码生成 IR，并在块边界合并 Phi 节点构造 SSA。这是项目最大最复杂的模块（`jeandleAbstractInterpreter.cpp/.hpp` 约 2600 行），承载全部 Java 语义表达：算术、类型转换、控制流、字段/数组访问、方法调用、异常、监控器、对象分配。它之所以独立成文，是因为"如何把 Java 字节码语义忠实且高效地表达为 LLVM IR"是 Jeandle 最具知识密度的工作，且其 SSA 构造（Phi 合并、循环头处理）有微妙的算法细节值得专章拆解（见 [VM 状态与 SSA](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa)）。
 
 ## 模块架构
 
@@ -143,7 +143,7 @@ jeandle-llvm 的 `ImplicitNullChecksPass` 据此把显式 null 检查折叠为�
 
 ## 模块间交互
 
-抽象解释器向**下**依赖运行时例程模块（`call_jeandle_routine` 调 `JeandleRuntimeRoutine::*_callee`、`call_java_op` 调模板 `jeandle.*` JavaOp——这些在模板 bitcode 启动期注入），向**上**把产物写入 `JeandleCompiledCode`（`push_non_routine_call_site` 记录调用点供后端重定位匹配、`oop_handles` 登记 oop 全局供 oop 重定位）。`JeandleType`/`TypedValue` 是横切依赖，被本模块与编译驱动（`JeandleFuncSig`）、代码生成共享。交互均为编译期函数调用，无运行期耦合。SSA 合并的细节见 [VM 状态与 SSA 深度解读](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa)。
+抽象解释器向**下**依赖运行时例程模块（`call_jeandle_routine` 调 `JeandleRuntimeRoutine::*_callee`、`call_java_op` 调模板 `jeandle.*` JavaOp——这些在模板 bitcode 启动期注入），向**上**把产物写入 `JeandleCompiledCode`（`push_non_routine_call_site` 记录调用点供后端重定位匹配、`oop_handles` 登记 oop 全局供 oop 重定位）。`JeandleType`/`TypedValue` 是横切依赖，被本模块与编译驱动（`JeandleFuncSig`）、代码生成共享。交互均为编译期函数调用，无运行期耦合。SSA 合并的细节见 [VM 状态与 SSA 深度解读](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa)。
 
 ## 扩展方式
 

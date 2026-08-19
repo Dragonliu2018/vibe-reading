@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-jdk"
 title: "Overview"
 date: "2026-08-19T17:50:32+08:00"
-category: [Languages, Java, Jeandle-JDK, CodeWiki, "main-2025-12"]
+category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
 tags: ["Jeandle", "Java", "JIT", "LLVM", "OpenJDK"]
 description: "基于 OpenJDK 与 LLVM 的 Java JIT 编译器 Jeandle 源码解读"
 readingTime: "28 min"
@@ -187,10 +187,10 @@ src/hotspot/share/jeandle/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 | --- | --- | --- | --- | --- |
-| 编译驱动 | 装配上下文、编排流水线、对接 CI 与 Code Cache | `JeandleCompiler::compile_method` | 编排者角色——不产出 IR 也不解析 ELF，只把两者串起来并管生命周期 | [编译驱动](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/01-compilation-driver) |
-| 抽象解释器 | 字节码→LLVM IR，模拟栈帧构造 SSA | `JeandleAbstractInterpreter` 构造 | 承载全部 Java 语义表达，是项目最大最复杂的 god 模块（~2600 行） | [抽象解释器](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter) · [VM 状态与 SSA](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa) |
-| 代码生成 | 解析 LLVM 产出的 ELF，重定位/构造 OopMap/异常表并装载 | `JeandleCompiledCode::finalize` | 把 LLVM 二进制产物翻译回 JVM 能理解的 CodeBuffer 元数据，是 LLVM 与 JVM 的接合部 | [代码生成](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/03-code-generation) |
-| 运行时例程 | 编译期生成运行期回访 JVM 的例程/桩/模板 IR | `JeandleRuntimeRoutine::generate` | 定义编译产物与 JVM 运行时的契约——离开它，编译出的代码无法 safepoint、无法 GC、无法分配 | [运行时例程](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/04-runtime-routines) |
+| 编译驱动 | 装配上下文、编排流水线、对接 CI 与 Code Cache | `JeandleCompiler::compile_method` | 编排者角色——不产出 IR 也不解析 ELF，只把两者串起来并管生命周期 | [编译驱动](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/01-compilation-driver) |
+| 抽象解释器 | 字节码→LLVM IR，模拟栈帧构造 SSA | `JeandleAbstractInterpreter` 构造 | 承载全部 Java 语义表达，是项目最大最复杂的 god 模块（~2600 行） | [抽象解释器](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter) · [VM 状态与 SSA](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa) |
+| 代码生成 | 解析 LLVM 产出的 ELF，重定位/构造 OopMap/异常表并装载 | `JeandleCompiledCode::finalize` | 把 LLVM 二进制产物翻译回 JVM 能理解的 CodeBuffer 元数据，是 LLVM 与 JVM 的接合部 | [代码生成](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/03-code-generation) |
+| 运行时例程 | 编译期生成运行期回访 JVM 的例程/桩/模板 IR | `JeandleRuntimeRoutine::generate` | 定义编译产物与 JVM 运行时的契约——离开它，编译出的代码无法 safepoint、无法 GC、无法分配 | [运行时例程](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/04-runtime-routines) |
 
 > 模块间的动态调用顺序见「运行时行为 > 核心运行流程」。
 
@@ -279,7 +279,7 @@ test/
 - 第二遍：理解前端如何把字节码变成 IR
   `jeandleAbstractInterpreter.cpp` 的 `interpret`/`interpret_block`（主循环与 `switch`）→ `BasicBlockBuilder::generate_blocks`/`setup_control_flow`/`mark_loops`（构块）→ `JeandleVMState` 的 push/pop/load/store（栈帧模拟）。
 - 第三遍：理解 SSA 与状态合并（最微妙的部分）
-  `JeandleBasicBlock::merge_VM_state_from` 与 `initialize_VM_state_from` → `JeandleVMState::update_phi_nodes` → 留意 `_initial_jvm` 在循环头的作用。配读 [VM 状态与 SSA 深度解读](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa)。
+  `JeandleBasicBlock::merge_VM_state_from` 与 `initialize_VM_state_from` → `JeandleVMState::update_phi_nodes` → 留意 `_initial_jvm` 在循环头的作用。配读 [VM 状态与 SSA 深度解读](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/02-abstract-interpreter-vm-state-ssa)。
 - 第四遍：理解后端如何把 ELF 装回 JVM
   `jeandleCompiledCode.cpp` 的 `finalize` → `resolve_reloc_info`（JITLink 重定位 + StackMap→OopMap）→ `build_exception_handler_table`/`build_implicit_exception_table` → `jeandleReadELF.cpp` 的 `findFunc`/`findSection`。
 - 第五遍：选择运行时支持深入

@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-jdk"
 title: "运行时例程"
 date: "2026-08-19T17:50:32+08:00"
-category: [Languages, Java, Jeandle-JDK, CodeWiki, "main-2025-12"]
+category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
 tags: ["Jeandle", "运行时", "JavaOp", "statepoint"]
 description: "Jeandle 运行时例程：编译期生成供编译代码回访 JVM 的 C/汇编/Hotspot 例程与模板 JavaOp"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)
 
 ---
 

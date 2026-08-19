@@ -5,7 +5,7 @@ source:
   url: "https://github.com/rust-lang/rust"
 title: "代码生成"
 date: "2026-08-19T15:05:00+08:00"
-category: [Languages, Rust, Compiler, CodeWiki, "1.100.0"]
+category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
 tags: ["Rust", "rustc", "代码生成", "LLVM", "CodeWiki"]
 description: "rustc 的多后端 codegen 抽象、单态化与 MIR→LLVM IR 翻译。"
 readingTime: "13 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/00-overview)
 
 ---
 

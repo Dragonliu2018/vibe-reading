@@ -5,7 +5,7 @@ source:
   url: "https://github.com/rust-lang/rust"
 title: "高层中间表示 HIR"
 date: "2026-08-19T14:59:00+08:00"
-category: [Languages, Rust, Compiler, CodeWiki, "1.100.0"]
+category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
 tags: ["Rust", "rustc", "HIR", "CodeWiki"]
 description: "AST 到 HIR 的降低、owner-based 嵌套结构与大量语法去糖。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/00-overview)
 
 ---
 

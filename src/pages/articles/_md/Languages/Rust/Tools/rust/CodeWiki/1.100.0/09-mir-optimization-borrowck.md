@@ -5,7 +5,7 @@ source:
   url: "https://github.com/rust-lang/rust"
 title: "MIR 优化与借用检查"
 date: "2026-08-19T15:04:00+08:00"
-category: [Languages, Rust, Compiler, CodeWiki, "1.100.0"]
+category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
 tags: ["Rust", "rustc", "借用检查", "NLL", "CodeWiki"]
 description: "rustc 的数据流分析框架、MIR 优化 pass 流水线与 NLL 借用检查。"
 readingTime: "15 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/00-overview)
 
 ---
 

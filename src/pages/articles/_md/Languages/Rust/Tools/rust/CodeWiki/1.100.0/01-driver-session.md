@@ -5,7 +5,7 @@ source:
   url: "https://github.com/rust-lang/rust"
 title: "驱动与会话"
 date: "2026-08-19T14:56:00+08:00"
-category: [Languages, Rust, Compiler, CodeWiki, "1.100.0"]
+category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
 tags: ["Rust", "rustc", "驱动", "CodeWiki"]
 description: "rustc 的驱动主循环、Callbacks 回调注入与 Session 会话装配。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/00-overview)
 
 ---
 

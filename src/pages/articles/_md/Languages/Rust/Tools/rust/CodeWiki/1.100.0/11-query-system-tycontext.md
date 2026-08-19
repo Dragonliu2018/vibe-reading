@@ -5,7 +5,7 @@ source:
   url: "https://github.com/rust-lang/rust"
 title: "核心上下文与查询系统"
 date: "2026-08-19T15:06:00+08:00"
-category: [Languages, Rust, Compiler, CodeWiki, "1.100.0"]
+category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
 tags: ["Rust", "rustc", "TyCtxt", "查询系统", "增量编译", "CodeWiki"]
 description: "rustc 的 TyCtxt 中央上下文、demand-driven 查询引擎与增量编译依赖图。"
 readingTime: "14 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/00-overview)
 
 ---
 

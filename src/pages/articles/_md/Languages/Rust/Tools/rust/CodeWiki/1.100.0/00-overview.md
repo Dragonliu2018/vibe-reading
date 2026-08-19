@@ -5,7 +5,7 @@ source:
   url: "https://github.com/rust-lang/rust"
 title: "Overview"
 date: "2026-08-19T14:55:12+08:00"
-category: [Languages, Rust, Compiler, CodeWiki, "1.100.0"]
+category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
 tags: ["Rust", "编译器", "rustc", "CodeWiki"]
 description: "Rust 官方编译器 rustc 1.100.0 源码架构解读：从源码到机器码的完整流水线。"
 readingTime: "28 min"
@@ -194,17 +194,17 @@ rust/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 | --- | --- | --- | --- | --- |
-| 驱动与会话 | 编排全局编译流程、命令行、回调 | `run_compiler` in `rustc_driver_impl` | 二进制入口与编译逻辑的隔离边界，承载对外扩展点（Callbacks） | [驱动与会话](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/01-driver-session) |
-| 词法与语法分析 | 源码→Token→AST | `new_parser_from_file` in `rustc_parse` | 词法层零依赖可复用；解析是手写递归下降，控制力与错误恢复是核心 | [词法与语法分析](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/02-lexer-parser) |
-| 宏展开 | AST→（固定点展开）→AST' | `fully_expand_fragment` in `rustc_expand` | 宏与名称解析交错迭代，需独立的不动点机制与 hygiene 体系 | [宏展开](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/03-macro-expansion) |
-| 高层中间表示 HIR | AST→HIR | `lower_to_hir` in `rustc_ast_lowering` | HIR 的 owner-based 结构是增量编译稳定性的基础，大量去糖在此完成 | [HIR](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/04-hir) |
-| 名称解析 | 路径→DefId/Res | `resolve_crate` in `rustc_resolve` | 名称解析是类型检查的前提；early/late 两阶段因宏展开而必需 | [名称解析](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/05-name-resolution) |
-| 类型检查与推导 | HIR→TypeckResults | `typeck` in `rustc_hir_typeck` | 类型正确性是 Rust 安全保证的核心，推导+coercion+方法解析自成体系 | [类型检查](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/06-type-checking) |
-| Trait 求解 | obligation→ImplSource | `select` in `rustc_trait_selection` | trait 系统是 Rust 类型系统的灵魂，新旧 solver 并存，复杂度最高 | [Trait 求解](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/07-trait-solver) |
-| 中间表示 MIR | HIR→MIR(CFG) | `build_mir` in `rustc_mir_build` | MIR 是 borrowck 与 codegen 的共同基础，把高层语法统一为 CFG | [MIR](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/08-mir) |
-| MIR 优化与借用检查 | MIR→优化 MIR+region | `mir_borrowck` in `rustc_borrowck` | NLL 借用检查是 Rust 的招牌特性，dataflow 框架复用于优化 | [MIR 优化与借用检查](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/09-mir-optimization-borrowck) |
-| 代码生成 | MIR→LLVM IR→目标文件 | `codegen_crate` in `rustc_codegen_ssa` | 单态化与多后端抽象，把类型安全的 MIR 落到具体平台 | [代码生成](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/10-codegen) |
-| 核心上下文与查询系统 | TyCtxt + 惰性 query | `try_execute_query` in `rustc_query_impl` | 编译器的"神经系统"，是增量编译与并行的架构基石 | [查询系统与 TyCtxt](/vibe-reading/articles/Languages/Rust/Compiler/CodeWiki/1.100.0/11-query-system-tycontext) |
+| 驱动与会话 | 编排全局编译流程、命令行、回调 | `run_compiler` in `rustc_driver_impl` | 二进制入口与编译逻辑的隔离边界，承载对外扩展点（Callbacks） | [驱动与会话](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/01-driver-session) |
+| 词法与语法分析 | 源码→Token→AST | `new_parser_from_file` in `rustc_parse` | 词法层零依赖可复用；解析是手写递归下降，控制力与错误恢复是核心 | [词法与语法分析](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/02-lexer-parser) |
+| 宏展开 | AST→（固定点展开）→AST' | `fully_expand_fragment` in `rustc_expand` | 宏与名称解析交错迭代，需独立的不动点机制与 hygiene 体系 | [宏展开](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/03-macro-expansion) |
+| 高层中间表示 HIR | AST→HIR | `lower_to_hir` in `rustc_ast_lowering` | HIR 的 owner-based 结构是增量编译稳定性的基础，大量去糖在此完成 | [HIR](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/04-hir) |
+| 名称解析 | 路径→DefId/Res | `resolve_crate` in `rustc_resolve` | 名称解析是类型检查的前提；early/late 两阶段因宏展开而必需 | [名称解析](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/05-name-resolution) |
+| 类型检查与推导 | HIR→TypeckResults | `typeck` in `rustc_hir_typeck` | 类型正确性是 Rust 安全保证的核心，推导+coercion+方法解析自成体系 | [类型检查](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/06-type-checking) |
+| Trait 求解 | obligation→ImplSource | `select` in `rustc_trait_selection` | trait 系统是 Rust 类型系统的灵魂，新旧 solver 并存，复杂度最高 | [Trait 求解](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/07-trait-solver) |
+| 中间表示 MIR | HIR→MIR(CFG) | `build_mir` in `rustc_mir_build` | MIR 是 borrowck 与 codegen 的共同基础，把高层语法统一为 CFG | [MIR](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/08-mir) |
+| MIR 优化与借用检查 | MIR→优化 MIR+region | `mir_borrowck` in `rustc_borrowck` | NLL 借用检查是 Rust 的招牌特性，dataflow 框架复用于优化 | [MIR 优化与借用检查](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/09-mir-optimization-borrowck) |
+| 代码生成 | MIR→LLVM IR→目标文件 | `codegen_crate` in `rustc_codegen_ssa` | 单态化与多后端抽象，把类型安全的 MIR 落到具体平台 | [代码生成](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/10-codegen) |
+| 核心上下文与查询系统 | TyCtxt + 惰性 query | `try_execute_query` in `rustc_query_impl` | 编译器的"神经系统"，是增量编译与并行的架构基石 | [查询系统与 TyCtxt](/vibe-reading/articles/Languages/Rust/Tools/rust/CodeWiki/1.100.0/11-query-system-tycontext) |
 
 > 模块间的**动态调用顺序**见「运行时行为 > 核心运行流程」——静态职责是上面的地图，动态数据流是下文的链路。
 

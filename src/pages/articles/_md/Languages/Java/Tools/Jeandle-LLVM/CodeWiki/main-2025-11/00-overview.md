@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-llvm"
 title: "Overview"
 date: "2026-08-19T19:41:28+08:00"
-category: [Languages, Java, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
 tags: ["Jeandle", "LLVM", "Java", "JIT", "GC"]
 description: "Jeandle Java JIT 编译器的 LLVM 侧支持——在 LLVM 20.1.0 上添加 Java 专用编译流水线、GC 策略与后端适配"
 readingTime: "30 min"
@@ -202,11 +202,11 @@ llvm/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| 编译流水线 | 编排 6 阶段 pass，对外暴露 optimize 入口 | `jeandle::optimize()` in `Jeandle.cpp` | 解决"何时跑什么 pass"——其他模块只定义单个 pass 的行为，流水线决定它们协同的顺序与相位 | [编译流水线](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/01-pipeline) |
-| GC 基础设施 | 定义 GC 策略、地址空间、元数据/属性常量、IR 文本语法 | `HotspotGC` in `GCStrategy.cpp` | 解决"LLVM 怎么识别 Java 指针与 GC 约定"——纯定义与注册层，不主动变换 IR | [GC 基础设施](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/02-gc-infrastructure) |
-| Java 操作降级 | 两阶段内联并擦除 JavaOp 模板函数 | `JavaOperationLower::run()` in `JavaOperationLower.cpp` | 解决"抽象解释器的模板函数怎么变成具体代码"——是 JDK 抽象解释器与优化流水线的关键桥梁，机制最独特 | [Java 操作降级](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/03-java-operation-lower) |
-| 运行时降级 | TLS 指针基址改写 + card-table 屏障插入 | `TLSPointerRewrite::run()`、`InsertGCBarriers::run()` | 解决"Java 运行时语义怎么落到具体 IR"——两者都是晚期函数级 pass，把抽象的 addrspace 指针与写操作具体化 | [运行时降级](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/04-runtime-lowering) |
-| 调用约定与目标适配 | X86/AArch64 的 Java 寄存器分配、栈帧、对齐 | `CC_X86_64_Hotspot_JIT` in `X86CallingConv.td` | 解决"后端怎么按 Java 约定生成机器码"——与 LLVM 后端代码生成深度耦合，是 Java 与硬件 ABI 的边界 | [调用约定与目标适配](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/05-target-adaptation) |
+| 编译流水线 | 编排 6 阶段 pass，对外暴露 optimize 入口 | `jeandle::optimize()` in `Jeandle.cpp` | 解决"何时跑什么 pass"——其他模块只定义单个 pass 的行为，流水线决定它们协同的顺序与相位 | [编译流水线](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/01-pipeline) |
+| GC 基础设施 | 定义 GC 策略、地址空间、元数据/属性常量、IR 文本语法 | `HotspotGC` in `GCStrategy.cpp` | 解决"LLVM 怎么识别 Java 指针与 GC 约定"——纯定义与注册层，不主动变换 IR | [GC 基础设施](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/02-gc-infrastructure) |
+| Java 操作降级 | 两阶段内联并擦除 JavaOp 模板函数 | `JavaOperationLower::run()` in `JavaOperationLower.cpp` | 解决"抽象解释器的模板函数怎么变成具体代码"——是 JDK 抽象解释器与优化流水线的关键桥梁，机制最独特 | [Java 操作降级](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/03-java-operation-lower) |
+| 运行时降级 | TLS 指针基址改写 + card-table 屏障插入 | `TLSPointerRewrite::run()`、`InsertGCBarriers::run()` | 解决"Java 运行时语义怎么落到具体 IR"——两者都是晚期函数级 pass，把抽象的 addrspace 指针与写操作具体化 | [运行时降级](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/04-runtime-lowering) |
+| 调用约定与目标适配 | X86/AArch64 的 Java 寄存器分配、栈帧、对齐 | `CC_X86_64_Hotspot_JIT` in `X86CallingConv.td` | 解决"后端怎么按 Java 约定生成机器码"——与 LLVM 后端代码生成深度耦合，是 Java 与硬件 ABI 的边界 | [调用约定与目标适配](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/05-target-adaptation) |
 
 > 模块间的动态调用顺序见下文「运行时行为 > 核心运行流程」。
 
@@ -347,7 +347,7 @@ llvm/test/Jeandle/
 - [jeandle-jdk 仓库](https://github.com/jeandle/jeandle-jdk)（OpenJDK 侧，含抽象解释器与运行时）
 - [LLVM Statepoint 文档](https://llvm.org/docs/Statepoints.html)（statepoint 与 RS4GC 机制）
 - [LLVM GCStrategy 文档](https://llvm.org/docs/GarbageCollection.html)（GC 策略框架）
-- Jeandle-JDK CodeWiki：[jeandle-jdk 源码解读](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main/00-overview)（OpenJDK 侧的五层 JIT 流水线）
+- Jeandle-JDK CodeWiki：[jeandle-jdk 源码解读](/vibe-reading/articles/Languages/Java/Jeandle-JDK/CodeWiki/main-2025-12/00-overview)（OpenJDK 侧的五层 JIT 流水线）
 
 ### 工具推荐
 

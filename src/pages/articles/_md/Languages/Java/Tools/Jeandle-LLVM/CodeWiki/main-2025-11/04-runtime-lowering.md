@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-llvm"
 title: "运行时降级"
 date: "2026-08-19T19:41:28+08:00"
-category: [Languages, Java, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
 tags: ["Jeandle", "LLVM", "TLS", "GC-Barrier", "Card-Table"]
 description: "TLSPointerRewrite 与 InsertGCBarriers——把抽象的 addrspace 指针与堆写操作具体化"
 readingTime: "14 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
 
 ---
 

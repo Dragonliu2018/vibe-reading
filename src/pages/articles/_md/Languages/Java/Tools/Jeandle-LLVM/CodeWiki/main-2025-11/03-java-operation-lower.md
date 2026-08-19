@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-llvm"
 title: "Java 操作降级"
 date: "2026-08-19T19:41:28+08:00"
-category: [Languages, Java, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
 tags: ["Jeandle", "LLVM", "Inlining", "JavaOp"]
 description: "JavaOperationLower 两阶段 pass——按 lower-phase 属性内联并擦除 JavaOp 模板函数"
 readingTime: "13 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
 
 ---
 

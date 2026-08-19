@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-llvm"
 title: "编译流水线"
 date: "2026-08-19T19:41:28+08:00"
-category: [Languages, Java, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
 tags: ["Jeandle", "LLVM", "PassManager", "Pipeline"]
 description: "Jeandle 6 阶段编译流水线的编排机制与 PassBuilder/opt 集成"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
 
 ---
 

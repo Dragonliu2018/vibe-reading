@@ -5,7 +5,7 @@ source:
   url: "https://github.com/jeandle/jeandle-llvm"
 title: "调用约定与目标适配"
 date: "2026-08-19T19:41:28+08:00"
-category: [Languages, Java, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
 tags: ["Jeandle", "LLVM", "CallingConv", "X86", "AArch64"]
 description: "Hotspot_JIT 调用约定、线程寄存器预留、栈帧保存与 statepoint 调用点对齐"
 readingTime: "16 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Languages/Java/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
+> [← 返回概览](/vibe-reading/articles/Languages/Java/Tools/Jeandle-LLVM/CodeWiki/main-2025-11/00-overview)
 
 ---
 

@@ -5,7 +5,7 @@ source:
   url: "https://github.com/greenplum-db/gpdb"
 title: "cdb 分布式执行层"
 date: "2026-08-14T15:39:30+08:00"
-category: [Database, Greenplum, CodeWiki, "7.0.0-beta.0"]
+category: [Database, OLAP, Greenplum, CodeWiki, "7.0.0-beta.0"]
 tags: ["Greenplum", "MPP", "Motion", "互连", "分布式事务"]
 description: "cdb——把单机计划变成并行计划、派发 segment 执行、经互连交换中间结果并协调分布式事务的 MPP 执行内核。"
 readingTime: "22 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/00-overview)
 
 ---
 

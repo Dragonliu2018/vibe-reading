@@ -5,7 +5,7 @@ source:
   url: "https://github.com/greenplum-db/gpdb"
 title: "Overview"
 date: "2026-08-14T15:39:30+08:00"
-category: [Database, Greenplum, CodeWiki, "7.0.0-beta.0"]
+category: [Database, OLAP, Greenplum, CodeWiki, "7.0.0-beta.0"]
 tags: ["Greenplum", "C/C++", "MPP", "数据库", "ORCA"]
 description: "基于 PostgreSQL 的开源 MPP 数据仓库——coordinator/segment 共享无盘架构、GPORCA 代价优化器与分布式执行内核解读。"
 readingTime: "35 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> **版本** 7.0.0-beta.0 (commit 482967c1) · **协议** Apache 2.0 · **语言** C / C++ · **代码量** ~2,070,000 行（src/，排除测试）· **仓库** [GitHub](https://github.com/greenplum-db/gpdb)
+> **版本** 7.0.0-beta.0 (commit 482967c1) · **协议** Apache 2.0 · **语言** C / C++ · **代码量** ~2,070,000 行（src/，排除测试）· **仓库** [GitHub](https://github.com/greenplum-db/gpdb-archive)
 
 ---
 
@@ -183,10 +183,10 @@ GPDB 的设计思想是把单机 PostgreSQL 的执行引擎"横向切开"成共�
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|----------|-----------|----------|
-| gporca | 代价优化器（Cascades） | `PdxlnOptimize`（`COptimizer.cpp:230`） | 独立 C++ 子项目，MPP 多维属性需需求驱动搜索，与 PG C 内核解耦 | [01-gporca](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/01-gporca) |
-| gpopt | PG↔ORCA DXL 翻译桥 | `OptimizeTask`（`COptTasks.cpp:850`） | C↔C++ 边界唯一翻译通道，隔离内存/类型系统 | [02-gpopt](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/02-gpopt) |
-| cdb | MPP 分布式执行层 | `CdbDispatchPlan`（`cdbdisp_query.c:177`） | 把单机计划变并行 + segment 间数据交换的唯一通道 | [03-cdb](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/03-cdb) |
-| fts | 容错与 failover | `FtsProbeMain`（`fts.c:113`） | 集群拓扑需全局视图，独立进程的事务隔离 + 崩溃重启 | [04-fts](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/04-fts) |
+| gporca | 代价优化器（Cascades） | `PdxlnOptimize`（`COptimizer.cpp:230`） | 独立 C++ 子项目，MPP 多维属性需需求驱动搜索，与 PG C 内核解耦 | [01-gporca](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/01-gporca) |
+| gpopt | PG↔ORCA DXL 翻译桥 | `OptimizeTask`（`COptTasks.cpp:850`） | C↔C++ 边界唯一翻译通道，隔离内存/类型系统 | [02-gpopt](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/02-gpopt) |
+| cdb | MPP 分布式执行层 | `CdbDispatchPlan`（`cdbdisp_query.c:177`） | 把单机计划变并行 + segment 间数据交换的唯一通道 | [03-cdb](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/03-cdb) |
+| fts | 容错与 failover | `FtsProbeMain`（`fts.c:113`） | 集群拓扑需全局视图，独立进程的事务隔离 + 崩溃重启 | [04-fts](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/04-fts) |
 
 模块间动态调用顺序见 [运行时行为 > 核心运行流程](#运行时行为)。参与的业务链路：gporca/gpopt 参与"查询优化"链路、cdb 参与"分布式执行"主链路、fts 参与"容错探测"循环。
 
@@ -225,11 +225,11 @@ main() main.c:60
 
 #### 容错：FTS 探测循环
 
-FTS 后台进程周期（默认 `gp_fts_probe_interval=60s`）唤醒：读 `gp_segment_configuration` → 对所有 primary/mirror 对并行异步探测（`ftsConnect`/`Poll`/`Send`/`Receive`）→ `processResponse` 按状态机判定——primary 活则更新状态、primary 挂且 mirror in-sync 则翻转角色并下轮发 PROMOTE 提升镜像、primary 挂且 mirror 未同步则 double fault 不提升（数据一致性优先）→ 写 catalog + 共享内存 `status_version++`。dispatcher 下次建 gang 时 `getFtsVersion` 发现版本变化重读配置；建 gang 失败也可 `FtsNotifyProber` 主动触发探测。详见 [FTS 容错服务](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/04-fts)。
+FTS 后台进程周期（默认 `gp_fts_probe_interval=60s`）唤醒：读 `gp_segment_configuration` → 对所有 primary/mirror 对并行异步探测（`ftsConnect`/`Poll`/`Send`/`Receive`）→ `processResponse` 按状态机判定——primary 活则更新状态、primary 挂且 mirror in-sync 则翻转角色并下轮发 PROMOTE 提升镜像、primary 挂且 mirror 未同步则 double fault 不提升（数据一致性优先）→ 写 catalog + 共享内存 `status_version++`。dispatcher 下次建 gang 时 `getFtsVersion` 发现版本变化重读配置；建 gang 失败也可 `FtsNotifyProber` 主动触发探测。详见 [FTS 容错服务](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/04-fts)。
 
 ### 状态流
 
-GPDB 最显式的状态机是 FTS 的 segment 探测流程（`FtsMessageState`，13 态）。每个 segment 对在一个探测周期内：`FTS_PROBE_SEGMENT` → 成功 `FTS_PROBE_SUCCESS` / 失败 `FTS_PROBE_FAILED` → 经 `processResponse` 分派到 SYNCREP_OFF / PROMOTE / 直接处理 / double fault，失败可 `*_RETRY_WAIT` 重试。同时区分 `PMRestartState`（重启中 / 恢复有进展 / 无进展）避免把 segment 正常重启误判为宕机。完整状态图与转换规则见 [FTS 容错服务 > 探测状态机](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/04-fts#核心实现)。
+GPDB 最显式的状态机是 FTS 的 segment 探测流程（`FtsMessageState`，13 态）。每个 segment 对在一个探测周期内：`FTS_PROBE_SEGMENT` → 成功 `FTS_PROBE_SUCCESS` / 失败 `FTS_PROBE_FAILED` → 经 `processResponse` 分派到 SYNCREP_OFF / PROMOTE / 直接处理 / double fault，失败可 `*_RETRY_WAIT` 重试。同时区分 `PMRestartState`（重启中 / 恢复有进展 / 无进展）避免把 segment 正常重启误判为宕机。完整状态图与转换规则见 [FTS 容错服务 > 探测状态机](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/04-fts#核心实现)。
 
 ## 典型修改场景
 

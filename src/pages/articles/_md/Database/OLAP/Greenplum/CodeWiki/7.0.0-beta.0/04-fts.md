@@ -5,7 +5,7 @@ source:
   url: "https://github.com/greenplum-db/gpdb"
 title: "FTS 容错服务"
 date: "2026-08-14T15:39:30+08:00"
-category: [Database, Greenplum, CodeWiki, "7.0.0-beta.0"]
+category: [Database, OLAP, Greenplum, CodeWiki, "7.0.0-beta.0"]
 tags: ["Greenplum", "容错", "FTS", "failover", "mirror"]
 description: "FTS——coordinator 上的后台探测进程，周期探测 primary/mirror segment 并在故障时触发 mirror 提升。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Greenplum/CodeWiki/7.0.0-beta.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/OLAP/Greenplum/CodeWiki/7.0.0-beta.0/00-overview)
 
 ---
 

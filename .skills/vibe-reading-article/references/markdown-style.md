@@ -83,25 +83,37 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读�
 
 ---
 
-**多分类（副分类 `alsoCategories`，可选）：**
+**多分类（副分类 `alsoCategories`，默认不加）：**
 
-一篇文章可能同时属于多个分类组（如 TimescaleDB 既是 TSDB、又是 PostgreSQL 扩展）。分类树是"一处存放、多处引用"模型：
+**默认一篇文章只有主分类。** 只有当一篇文章被**显式指定属于多个分类**时，才加副分类——分类树是"一处存放、多处引用"模型：
 
 - `category`（主分类，必填，第一个分类组）：决定**文件位置**（目录路径与 `category` 对齐）、徽章、sourceLabel。文章文件只存在于主分类目录。
-- `alsoCategories`（副分类，可选，**列表** `string[][]`）：每项是一个完整分类路径，文章在侧边栏树中**多处引用**显示，文件不复制、不移动。`buildTree` 把 slug 挂到每条副分类路径的叶子。
+- `alsoCategories`（副分类，**默认省略**，`string[][]`）：仅当文章需在侧边栏**多处引用**时才加。每项是一个完整分类路径，`buildTree` 把 slug 挂到每条副分类路径的叶子，文件不复制、不移动。
+
+**什么时候才加副分类**（满足其一，且主分类无法覆盖）：
+- 用户明确要求文章归入多个分类组
+- 文章横跨两个独立的分类域，且两个域的读者都会各自去自己熟悉的分类树下找它（如某工具既是 `Database` 又是 `AI`，两类读者各找各的树）
+
+**什么时候不加**（常见误判）：
+- ❌ "参考的同类文章有副分类" → 不构成理由，每篇文章按自身需要判断
+- ❌ "项目基于 X（如基于 PostgreSQL）" → 主分类已能定位，不需要再挂到 X 的分类树下做镜像
+- 判断标准：**去掉副分类后，读者在主分类树下能否找到这篇文章？能找到就不需要副分类。**
 
 ```yaml
-category: [Database, TSDB, TimescaleDB, CodeWiki, "2.29.2"]      # 主：文件在此目录
-alsoCategories:                                                   # 副分类组列表（可多项）
+# 默认：只有主分类（绝大多数文章）
+category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+
+# 仅当显式需要多处引用时才加副分类
+category: [Database, TSDB, TimescaleDB, CodeWiki, "2.29.2"]
+alsoCategories:
   - [Database, OLTP, PostgreSQL, Extension, TimescaleDB, CodeWiki, "2.29.2"]
-  - [Database, PostgreSQL, TimescaleDB]
 ```
 
 约定：
-- 主分类按"产品功能身份"选（如 TimescaleDB → TSDB），副分类承载横切身份（如"基于 PostgreSQL"）。这与 Cloudberry/Greenplum 归 `OLAP` 的惯例一致。
+- 主分类按"产品功能身份"选（如 TimescaleDB → TSDB）。副分类不是"把项目所有身份都挂一遍"，而是"确有另一群读者会去别的树找它"。
 - 副分类路径建议与主分类结构一致（CodeWiki 文章的副分类也带 `CodeWiki, 版本号` 尾），使副分类页是主分类页的真镜像。
 - HTML 文章用 `<meta name="article:also-categories" content="Database,OLTP,PostgreSQL;Database,PG,Tsdb">`（`;` 分组、`,` 组内）。
-- `check-article.sh` 校验 `alsoCategories` 须为 `string[][]`（非空字符串数组的列表）。
+- `check-article.sh` 校验 `alsoCategories`（若存在）须为 `string[][]`（非空字符串数组的列表）。
 
 ---
 

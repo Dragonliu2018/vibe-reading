@@ -40,7 +40,7 @@ process.stdin.on("end", () => {
   let fm;
   try { fm = yaml.load(d); }
   catch(e) { console.error(e.message); process.exit(1); }
-  // alsoCategories 可选；若存在须为 string[][]（分类路径数组的列表，主分类决定文件位置、副分类仅做树引用）
+  // alsoCategories 默认不加；仅当显式指定时才校验须为 string[][]（分类路径数组的列表，主分类决定文件位置、副分类仅做树引用）
   if (fm && fm.alsoCategories !== undefined && fm.alsoCategories !== null) {
     const ac = fm.alsoCategories;
     if (!Array.isArray(ac) || ac.some(g => !Array.isArray(g) || g.length === 0 || g.some(s => typeof s !== "string" || s === "")))

@@ -15,7 +15,8 @@ export interface Props {
   frontmatter: {
     title:        string;
     date:         string;
-    category?:    string[];   // 层级路径；最后一项用作徽章
+    category?:    string[];   // 主分类层级路径；决定文件位置、徽章、面包屑主路径
+    alsoCategories?: string[][]; // 副分类组列表；面包屑「亦见于」展示，文件不复制
     tags?:        string[];
     description?: string;
     readingTime?: string;
@@ -34,7 +35,7 @@ export interface Props {
 }
 
 const { frontmatter, headings = [] } = Astro.props;
-const { title, date, category, tags = [], description, readingTime, aiModel, source, reviewed, pinned } = frontmatter;
+const { title, date, category, alsoCategories = [], tags = [], description, readingTime, aiModel, source, reviewed, pinned } = frontmatter;
 
 // source 前缀（统一用 articles.ts 的 sourceLabel helper，避免 4 处副本漂移）
 const srcLabel    = source ? sourceLabel(source, category ?? []) : '';
@@ -43,6 +44,24 @@ const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
 const displayTitle = hasSourceLabel ? `${srcLabel} ${prTypeLabel}${title}` : title;
 
 const base     = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// 树形面包屑：主分类 + 副分类合并展示，公共祖先只出现一次，分歧处分支
+const catAllPaths = (alsoCategories && alsoCategories.length > 0)
+  ? [category ?? [], ...alsoCategories.filter(p => Array.isArray(p) && p.length > 1)]
+  : (category && category.length > 1 ? [category] : []);
+const catCommonPrefix: string[] = (() => {
+  if (catAllPaths.length === 0) return [];
+  const minLen = Math.min(...catAllPaths.map(p => p.length));
+  const cp: string[] = [];
+  for (let i = 0; i < minLen; i++) {
+    if (catAllPaths.every(p => p[i] === catAllPaths[0][i])) cp.push(catAllPaths[0][i]);
+    else break;
+  }
+  return cp;
+})();
+const catHasBranches = catAllPaths.length > 1;
+const catHref = (path: string[], idx: number) =>
+  `${base}/categories/${path.slice(0, idx + 1).map(c => encodeURIComponent(c.replace(/\//g, '-'))).join('/')}`;
 
 // 沉浸式阅读模式：文学 / 电影 / 历史 等非技术题材使用衬线字体 + 疏朗排版
 const LITERARY_DOMAINS = ['Literature', 'Cinema', 'History'];
@@ -160,18 +179,44 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
         <div class="article-divider"></div>
 
         <article class="prose">
-          {category && category.length > 1 && (
-            <nav class="category-breadcrumb" aria-label="分类路径" data-pagefind-ignore data-category={`[${category!.map(c => `"${c}"`).join(', ')}]`}>
-              <a href={`${base}/`} class="bc-home">首页</a>
-              {category.map((cat, i) => (
-                <>
-                  <span class="bc-sep">›</span>
-                  <a
-                    href={`${base}/categories/${category!.slice(0, i + 1).map(c => encodeURIComponent(c.replace(/\//g, '-'))).join('/')}`}
-                    class={`bc-item${i === category.length - 1 ? ' bc-current' : ''}`}
-                  >{cat}</a>
-                </>
-              ))}
+          {catAllPaths.length > 0 && (
+            <nav class="category-breadcrumb cat-tree" aria-label="分类路径" data-pagefind-ignore data-category={`[${(category ?? []).map(c => `"${c}"`).join(', ')}]`}>
+              <span class="cat-prefix">
+                <a href={`${base}/`} class="bc-home">首页</a>
+                {catCommonPrefix.map((cat, i) => (
+                  <>
+                    <span class="bc-sep">›</span>
+                    <a href={catHref(category ?? [], i)} class="bc-item">{cat}</a>
+                  </>
+                ))}
+                {!catHasBranches && (category ?? []).slice(catCommonPrefix.length).map((cat, k) => {
+                  const idx = catCommonPrefix.length + k;
+                  return (
+                    <>
+                      <span class="bc-sep">›</span>
+                      <a href={catHref(category ?? [], idx)} class={`bc-item${idx === (category ?? []).length - 1 ? ' bc-current' : ''}`}>{cat}</a>
+                    </>
+                  );
+                })}
+              </span>
+              {catHasBranches && catAllPaths.map((p, bi) => {
+                const suffix = p.slice(catCommonPrefix.length);
+                const isPrimary = bi === 0;
+                return (
+                  <span class={`cat-branch${isPrimary ? ' cat-branch-main' : ' cat-branch-also'}`}>
+                    <span class="branch-conn" aria-hidden="true">{bi === 0 ? '┌─' : bi === catAllPaths.length - 1 ? '└─' : '├─'}</span>
+                    {suffix.map((cat, k) => {
+                      const idx = catCommonPrefix.length + k;
+                      return (
+                        <>
+                          {k > 0 && <span class="bc-sep">›</span>}
+                          <a href={catHref(p, idx)} class={`bc-item${isPrimary && idx === p.length - 1 ? ' bc-current' : ''}`}>{cat}</a>
+                        </>
+                      );
+                    })}
+                  </span>
+                );
+              })}
               <span class="bc-copy-hint">已复制分类组 →</span>
             </nav>
           )}

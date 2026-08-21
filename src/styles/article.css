@@ -314,6 +314,37 @@ a { color: inherit; text-decoration: none; }
 .category-breadcrumb.bc-copied { cursor: default; }
 .category-breadcrumb { cursor: copy; }
 
+/* 树形面包屑：grid 双列——公共前缀(左列) + 分支(右列)，连接符对齐到末级前缀右侧，
+   使分支视觉上从末级公共祖先（如 Database）分叉，而非从行首 */
+.category-breadcrumb.cat-tree {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: start; justify-content: start;
+  column-gap: 10px; row-gap: 4px;
+  position: relative;
+}
+.category-breadcrumb.cat-tree .bc-copy-hint {
+  position: absolute; top: 9px; right: 14px; margin: 0;
+}
+.category-breadcrumb.cat-tree .cat-prefix {
+  grid-column: 1; grid-row: 1;
+  display: flex; flex-wrap: wrap; align-items: center;
+}
+.category-breadcrumb.cat-tree .cat-branch {
+  grid-column: 2;                                 /* 分支统一在右列，连接符垂直对齐 */
+  display: flex; flex-wrap: wrap; align-items: center;
+}
+.category-breadcrumb .branch-conn {
+  color: var(--text-dim, #6e7681);
+  flex: 0 0 auto; margin: 0 6px 0 0;
+  opacity: 0.7;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 14px; line-height: 1; white-space: nowrap;
+}
+.category-breadcrumb .cat-branch-main .bc-item { font-weight: 500; }
+.category-breadcrumb .cat-branch-also .bc-item { opacity: 0.78; }
+.category-breadcrumb .cat-branch-also .bc-sep { opacity: 0.4; }
+
 .prose h1, .prose h2, .prose h3, .prose h4 { color: var(--text); font-weight: 700; line-height: 1.3; }
 
 .prose h2 {

@@ -37,11 +37,18 @@ if [[ "$EXT" == "md" ]]; then
 const yaml = require(process.env.JSYAML);
 let d = ""; process.stdin.on("data", c => d += c);
 process.stdin.on("end", () => {
-  try { yaml.load(d); }
+  let fm;
+  try { fm = yaml.load(d); }
   catch(e) { console.error(e.message); process.exit(1); }
+  // alsoCategories 可选；若存在须为 string[][]（分类路径数组的列表，主分类决定文件位置、副分类仅做树引用）
+  if (fm && fm.alsoCategories !== undefined && fm.alsoCategories !== null) {
+    const ac = fm.alsoCategories;
+    if (!Array.isArray(ac) || ac.some(g => !Array.isArray(g) || g.length === 0 || g.some(s => typeof s !== "string" || s === "")))
+      console.error("alsoCategories 须为分类路径数组的列表（string[][]），每项是非空字符串数组");
+  }
 });' <<< "$FM_CONTENT" 2>&1)
       if [[ -n "$YAML_ERR" ]]; then
-        ERRORS+=("frontmatter YAML 解析失败（会导致 astro build 失败）: $YAML_ERR")
+        ERRORS+=("frontmatter 校验失败: $YAML_ERR")
       fi
     fi
   fi

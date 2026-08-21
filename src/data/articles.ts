@@ -16,8 +16,9 @@ export interface Article {
   title:        string;
   source?:      ArticleSource;
   date:         string;        // ISO 8601: YYYY-MM-DDTHH:MM:SS+08:00（北京时间）；排序按完整值，展示截前 10 字符
-  category:     string[];      // 层级路径；最后一项用作首页徽章
+  category:     string[];      // 主分类层级路径（frontmatter 第一个分类组）；决定文件位置、徽章、sourceLabel
   categoryPath: string[];      // 同 category，供侧边栏树使用（别名，保持侧边栏逻辑不变）
+  alsoCategoryPaths?: string[][]; // 副分类组列表（frontmatter alsoCategories）；每条是一个完整分类路径，文章在树中多处引用，文件仍只在主分类目录
   tags:         string[];
   description:  string;
   readingTime?: string;
@@ -67,6 +68,7 @@ const mdModules = import.meta.glob<{
     title:        string;
     date:         string;
     category?:    string[];
+    alsoCategories?: string[][];
     tags?:        string[];
     description?: string;
     readingTime?: string;
@@ -89,6 +91,7 @@ const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
     date:         fm.date,
     category:     cat,
     categoryPath: cat,
+    alsoCategoryPaths: fm.alsoCategories ?? [],
     tags:         fm.tags         ?? [],
     description:  fm.description  ?? '',
     readingTime:  fm.readingTime   || undefined,
@@ -118,13 +121,17 @@ const htmlArticles: Article[] = readdirSync(htmlDir)
     const html = readFileSync(`${htmlDir}/${file}`, 'utf-8');
     const rawTags = metaContent(html, 'article:tags');
     const rawCat  = metaContent(html, 'article:category');
+    const rawAlso = metaContent(html, 'article:also-categories');
     const cat     = rawCat ? rawCat.split(',').map(s => s.trim()) : [];
+    // 副分类组：分组以 ';' 分隔，组内路径以 ',' 分隔，如 "Database,PostgreSQL,TimescaleDB;Database,OLTP,TimescaleDB"
+    const also    = rawAlso ? rawAlso.split(';').map(g => g.split(',').map(s => s.trim()).filter(Boolean)).filter(g => g.length) : [];
     return {
       slug,
       title:        (html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? slug).trim(),
       date:         metaContent(html, 'article:date'),
       category:     cat,
       categoryPath: cat,
+      alsoCategoryPaths: also,
       tags:         rawTags ? rawTags.split(',').map(t => t.trim()) : [],
       description:  metaContent(html, 'description'),
       readingTime:  metaContent(html, 'article:readingTime') || undefined,

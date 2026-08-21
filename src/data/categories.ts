@@ -27,34 +27,38 @@ function displayTitle(slug: string): string {
   return label ? `${label} ${a.title}` : a.title;
 }
 
+// ── 在树中沿 path 建/复用节点，并把 slug 挂到叶子（同叶防重复）────────
+function placeSlug(roots: TreeNode[], path: string[], slug: string) {
+  if (!path.length) return;
+  let level = roots;
+  path.forEach((label, i) => {
+    const key = path.slice(0, i + 1).join('/');   // 唯一 key
+    let node = level.find(n => n.key === key);
+    if (!node) {
+      node = { key, label };
+      level.push(node);
+    }
+    if (i === path.length - 1) {
+      // 最后一段：文章挂在这个节点下（主分类与副分类都可能落到同叶，去重）
+      node.slugs ??= [];
+      if (!node.slugs.includes(slug)) node.slugs.push(slug);
+    } else {
+      node.children ??= [];
+      level = node.children;
+    }
+  });
+}
+
 // ── 从 articles 自动构建分类树 ──────────────────────────────────────
 function buildTree(): TreeNode[] {
   const roots: TreeNode[] = [];
 
   for (const article of articles) {
-    const path = article.categoryPath;
-    if (!path?.length) continue;
-
-    let level = roots;
-
-    path.forEach((label, i) => {
-      const key = path.slice(0, i + 1).join('/');   // 唯一 key
-
-      let node = level.find(n => n.key === key);
-      if (!node) {
-        node = { key, label };
-        level.push(node);
-      }
-
-      if (i === path.length - 1) {
-        // 最后一段：文章挂在这个节点下
-        node.slugs = [...(node.slugs ?? []), article.slug];
-      } else {
-        // 中间节点：确保有 children 并继续向下
-        node.children ??= [];
-        level = node.children;
-      }
-    });
+    // 主分类：决定文件位置、徽章、sourceLabel
+    placeSlug(roots, article.categoryPath ?? [], article.slug);
+    // 副分类组（列表）：文章在树中多处引用，文件仍只在主分类目录
+    for (const also of article.alsoCategoryPaths ?? [])
+      placeSlug(roots, also, article.slug);
   }
 
   // 叶节点内的文章排序：
@@ -109,22 +113,21 @@ function buildTree(): TreeNode[] {
 export const categoryTree: TreeNode[] = buildTree();
 
 // ── 找出包含指定 slug 的所有祖先节点 key 集合 ─────────────────────
+// 多分类下同一 slug 可能命中多个叶子（主分类 + 各副分类），需收集全部命中链，
+// 使侧边栏同时高亮文章所属的所有分类路径。
 export function findActivePath(nodes: TreeNode[], slug: string | undefined): Set<string> {
   const result = new Set<string>();
   if (!slug) return result;
 
-  function walk(nodes: TreeNode[], ancestors: string[]): boolean {
+  function walk(nodes: TreeNode[], ancestors: string[]) {
     for (const node of nodes) {
       if (node.slugs?.includes(slug)) {
         ancestors.forEach(k => result.add(k));
         result.add(node.key);
-        return true;
+        // 不 return：继续遍历兄弟与子树，收集所有命中链
       }
-      if (node.children && walk(node.children, [...ancestors, node.key])) {
-        return true;
-      }
+      if (node.children) walk(node.children, [...ancestors, node.key]);
     }
-    return false;
   }
 
   walk(nodes, []);

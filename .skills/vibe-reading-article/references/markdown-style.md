@@ -83,6 +83,28 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读�
 
 ---
 
+**多分类（副分类 `alsoCategories`，可选）：**
+
+一篇文章可能同时属于多个分类组（如 TimescaleDB 既是 TSDB、又是 PostgreSQL 扩展）。分类树是"一处存放、多处引用"模型：
+
+- `category`（主分类，必填，第一个分类组）：决定**文件位置**（目录路径与 `category` 对齐）、徽章、sourceLabel。文章文件只存在于主分类目录。
+- `alsoCategories`（副分类，可选，**列表** `string[][]`）：每项是一个完整分类路径，文章在侧边栏树中**多处引用**显示，文件不复制、不移动。`buildTree` 把 slug 挂到每条副分类路径的叶子。
+
+```yaml
+category: [Database, TSDB, TimescaleDB, CodeWiki, "2.29.2"]      # 主：文件在此目录
+alsoCategories:                                                   # 副分类组列表（可多项）
+  - [Database, OLTP, PostgreSQL, Extension, TimescaleDB, CodeWiki, "2.29.2"]
+  - [Database, PostgreSQL, TimescaleDB]
+```
+
+约定：
+- 主分类按"产品功能身份"选（如 TimescaleDB → TSDB），副分类承载横切身份（如"基于 PostgreSQL"）。这与 Cloudberry/Greenplum 归 `OLAP` 的惯例一致。
+- 副分类路径建议与主分类结构一致（CodeWiki 文章的副分类也带 `CodeWiki, 版本号` 尾），使副分类页是主分类页的真镜像。
+- HTML 文章用 `<meta name="article:also-categories" content="Database,OLTP,PostgreSQL;Database,PG,Tsdb">`（`;` 分组、`,` 组内）。
+- `check-article.sh` 校验 `alsoCategories` 须为 `string[][]`（非空字符串数组的列表）。
+
+---
+
 ## 导言段落（frontmatter 之后立即写）
 
 只写引用块元信息，**不写额外导言文字**（与第一个 `##` 节重复，直接省略）：

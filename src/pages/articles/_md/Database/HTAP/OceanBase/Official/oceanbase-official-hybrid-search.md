@@ -7,7 +7,7 @@ source:
   author: "OceanBase"
   site: "OceanBase 公众号"
 date: "2026-08-04T15:00:00+08:00"
-category: [Database, OceanBase, Official]
+category: [Database, HTAP, OceanBase, Official]
 tags: ["OceanBase", "混合搜索", "Hybrid Search", "向量搜索", "全文搜索", "RRF", "RAG"]
 description: "OceanBase 混合搜索支持在单条 SQL 中融合向量搜索、全文搜索与标量过滤，通过内置 RRF 等融合算法自动实现合并排序，以单一数据库架构替代向量库+搜索引擎的繁琐拼装。"
 readingTime: "20 min"

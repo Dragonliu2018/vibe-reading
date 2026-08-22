@@ -7,7 +7,7 @@ source:
   url: "https://github.com/oceanbase/oceanbase/pull/1993"
   prType: "feat"
 date: "2026-08-05T17:00:00+08:00"
-category: [Database, OceanBase, Contributions]
+category: [Database, HTAP, OceanBase, Contributions]
 tags: ["OceanBase", "Hyperscan", "Regex", "ICU", "C++", "ClickBench"]
 description: "新增 Hyperscan 作为 ICU 之外的可选正则引擎，通过 tenant 级参数 regexp_engine 切换，REGEXP/REGEXP_COUNT/REGEXP_INSTR/REGEXP_LIKE/REGEXP_REPLACE/REGEXP_SUBSTR 六个表达式均可受益。"
 readingTime: "16 min"

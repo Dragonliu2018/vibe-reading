@@ -7,7 +7,7 @@ source:
   url: "https://github.com/oceanbase/oceanbase/pull/2016"
   prType: "perf"
 date: "2026-08-05T16:30:00+08:00"
-category: [Database, OceanBase, Contributions]
+category: [Database, HTAP, OceanBase, Contributions]
 tags: ["OceanBase", "SIMD", "SSE", "LIKE", "C++", "ClickBench"]
 description: "参考 Doris/StarRocks/ClickHouse 的思路，用 SSE4.1 指令优化 utf8mb4_bin collation 下的 LIKE 模式匹配，将特定 pattern 转为 substring/start_with/end_with/equal 的 SIMD 实现。"
 readingTime: "15 min"

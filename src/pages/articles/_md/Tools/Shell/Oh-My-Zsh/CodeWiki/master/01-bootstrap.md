@@ -5,7 +5,7 @@ source:
   url: "https://github.com/ohmyzsh/ohmyzsh"
 title: "引导引擎"
 date: "2026-08-13T20:12:36+08:00"
-category: [Tools, Oh-My-Zsh, CodeWiki, "master"]
+category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master"]
 tags: ["ohmyzsh", "Shell", "引导加载", "compinit", "缓存"]
 description: "解读 oh-my-zsh.sh 引导引擎：固定加载顺序、_omz_source 覆盖机制、compinit 缓存舞蹈与环境保护设计。"
 readingTime: "10 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/00-overview)
 
 ---
 

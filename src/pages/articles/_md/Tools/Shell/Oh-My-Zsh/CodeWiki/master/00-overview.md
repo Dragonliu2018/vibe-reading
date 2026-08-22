@@ -5,7 +5,7 @@ source:
   url: "https://github.com/ohmyzsh/ohmyzsh"
 title: "Overview"
 date: "2026-08-13T20:12:36+08:00"
-category: [Tools, Oh-My-Zsh, CodeWiki, "master"]
+category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master"]
 tags: ["ohmyzsh", "Shell", "zsh", "插件系统", "启动加载"]
 description: "Oh My Zsh 是最流行的 zsh 配置框架。本文从引导引擎、核心库、插件系统、主题系统到生命周期工具，全面解读其 master 分支的 Shell 内部实现。"
 readingTime: "30 min"
@@ -174,11 +174,11 @@ ohmyzsh/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 | --- | --- | --- | --- | --- |
-| 引导引擎 | zsh 启动时按序装配路径、compinit、lib、插件、主题 | `oh-my-zsh.sh` | 它是唯一控制加载顺序与覆盖机制的层，独立出来核心库才能保持纯函数化 | [引导引擎](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/01-bootstrap) |
-| 核心库 | 内置基础函数：omz CLI、git prompt、completion、键绑定 | `lib/*.zsh` | 这些函数被所有插件和主题依赖，是框架的"标准库"，独立成层保证可被 custom 覆盖 | [核心库](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/02-core-lib) |
-| 插件系统 | 约定式扩展机制，359 个生态插件 | `plugins/` + `is_plugin` | 插件是框架的核心价值载体，独立于 lib 保证可按需加载、可被 custom 覆盖 | [插件系统](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/03-plugins) |
-| 主题系统 | prompt 外观定义，143 个主题 + 异步渲染 | `themes/` + `lib/async_prompt.zsh` | 主题通过变量契约与 lib 协作，独立于插件因为 prompt 渲染是独立关注点 | [主题系统](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/04-themes) |
-| 生命周期工具 | 框架自身的安装、升级、卸载、changelog | `tools/*.sh` | 这些脚本在 zsh 运行时之外执行（安装前/升级时），与运行时加载逻辑正交 | [生命周期工具](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/05-lifecycle) |
+| 引导引擎 | zsh 启动时按序装配路径、compinit、lib、插件、主题 | `oh-my-zsh.sh` | 它是唯一控制加载顺序与覆盖机制的层，独立出来核心库才能保持纯函数化 | [引导引擎](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/01-bootstrap) |
+| 核心库 | 内置基础函数：omz CLI、git prompt、completion、键绑定 | `lib/*.zsh` | 这些函数被所有插件和主题依赖，是框架的"标准库"，独立成层保证可被 custom 覆盖 | [核心库](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/02-core-lib) |
+| 插件系统 | 约定式扩展机制，359 个生态插件 | `plugins/` + `is_plugin` | 插件是框架的核心价值载体，独立于 lib 保证可按需加载、可被 custom 覆盖 | [插件系统](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/03-plugins) |
+| 主题系统 | prompt 外观定义，143 个主题 + 异步渲染 | `themes/` + `lib/async_prompt.zsh` | 主题通过变量契约与 lib 协作，独立于插件因为 prompt 渲染是独立关注点 | [主题系统](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/04-themes) |
+| 生命周期工具 | 框架自身的安装、升级、卸载、changelog | `tools/*.sh` | 这些脚本在 zsh 运行时之外执行（安装前/升级时），与运行时加载逻辑正交 | [生命周期工具](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/05-lifecycle) |
 
 ![模块依赖关系](/vibe-reading/images/articles/ohmyzsh-master/module-dependencies.svg)
 

@@ -5,7 +5,7 @@ source:
   url: "https://github.com/ohmyzsh/ohmyzsh"
 title: "核心库"
 date: "2026-08-13T20:12:36+08:00"
-category: [Tools, Oh-My-Zsh, CodeWiki, "master"]
+category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master"]
 tags: ["ohmyzsh", "Shell", "omz CLI", "git prompt", "异步"]
 description: "解读 lib/ 核心库：omz CLI 命名空间、git prompt 底层函数、异步渲染、跨平台抽象与 hook 机制。"
 readingTime: "14 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/00-overview)
 
 ---
 

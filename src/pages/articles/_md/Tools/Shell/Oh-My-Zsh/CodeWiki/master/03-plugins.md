@@ -5,7 +5,7 @@ source:
   url: "https://github.com/ohmyzsh/ohmyzsh"
 title: "插件系统"
 date: "2026-08-13T20:12:36+08:00"
-category: [Tools, Oh-My-Zsh, CodeWiki, "master"]
+category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master"]
 tags: ["ohmyzsh", "Shell", "插件系统", "约定优于配置", "别名"]
 description: "解读 Oh My Zsh 插件系统：.plugin.zsh 约定、fpath 注入、custom 覆盖链与 359 个插件生态。"
 readingTime: "10 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Oh-My-Zsh/CodeWiki/master/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/00-overview)
 
 ---
 

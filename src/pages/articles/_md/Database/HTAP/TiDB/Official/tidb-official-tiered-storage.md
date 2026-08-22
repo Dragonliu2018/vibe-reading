@@ -7,7 +7,7 @@ source:
   author: "TiDB-平凯数据库"
   site: "TiDB-平凯数据库 微信公众号"
 date: "2026-08-13T19:30:00+08:00"
-category: [Database, TiDB, Official]
+category: [Database, HTAP, TiDB, Official]
 tags: ["TiDB", "分层存储", "Tiered Storage", "冷热数据分离", "对象存储", "S3", "LSM-Tree", "Segment", "平凯数据库", "存算分离"]
 description: "平凯数据库云服务 Tiered Storage 分层存储功能深度解读：基于 TiDB 新一代架构的多树并行 + S3 持久化设计，通过 Segment 分段缓存、IA Manager 智能缓存管理、Region 对齐隔离，实现冷热数据分离存储，用可接受的延迟换取约 50% 的存储成本下降。"
 readingTime: "15 min"

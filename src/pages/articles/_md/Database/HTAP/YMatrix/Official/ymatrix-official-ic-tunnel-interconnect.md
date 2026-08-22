@@ -7,7 +7,7 @@ source:
   author: "YMatrix"
   site: "公众号 YMatrix"
 date: "2026-07-25"
-category: [Database, YMatrix, Official]
+category: [Database, HTAP, YMatrix, Official]
 tags: ["YMatrix", "MPP", "Interconnect", "ic-tunnel", "向量化执行", "数据库"]
 description: "YMatrix 新一代 ic-tunnel 传输协议，从 TCP/UDP 连接模型升级为代理架构，按需拓扑感知 + 主动流控 + 大块传输，破解 MPP 大规模集群通信瓶颈。"
 readingTime: "8 min"

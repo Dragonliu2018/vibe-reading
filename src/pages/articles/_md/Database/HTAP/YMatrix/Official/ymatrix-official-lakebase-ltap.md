@@ -7,7 +7,7 @@ source:
   author: "YMatrix"
   site: "公众号 YMatrix"
 date: "2026-07-25"
-category: [Database, YMatrix, Official]
+category: [Database, HTAP, YMatrix, Official]
 tags: ["YMatrix", "LTAP", "Lakebase", "Databricks", "HTAP", "PostgreSQL", "对象存储"]
 description: "从 Databricks Lakebase 到 LTAP，是旧饭新炒还是新范式？拆解 Lakebase 存储计算分离架构与 LTAP 开放列式权威存储设想，及 Oracle/SingleStore/Snowflake 的分歧。"
 readingTime: "12 min"

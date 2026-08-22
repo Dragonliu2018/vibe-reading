@@ -7,7 +7,7 @@ source:
   author: "段彦"
   site: "公众号 StarRocks"
 date: "2026-08-14T17:02:50+08:00"
-category: [Database, StarRocks, Official]
+category: [Database, OLAP, StarRocks, Official]
 tags: ["StarRocks", "Fluss", "Paimon", "流湖仓", "Union Read", "Native 读写", "ETL", "数据闭环", "段彦"]
 description: "段彦在 Flink Forward Asia 2026 的分享：StarRocks、Fluss 与 Paimon 如何构建流湖仓分析与 ETL 闭环，实现实时与历史数据统一查询，并通过 Native 读写能力完成湖上数据加工与结果回流。"
 readingTime: "15 min"

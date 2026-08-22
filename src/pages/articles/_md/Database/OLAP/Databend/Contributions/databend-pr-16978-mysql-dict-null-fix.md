@@ -7,7 +7,7 @@ source:
   url: "https://github.com/databendlabs/databend/pull/16978"
   prType: "fix"
 date: "2026-07-04"
-category: [Database, Databend, Contributions]
+category: [Database, OLAP, Databend, Contributions]
 tags: ["Databend", "MySQL", "Dictionary", "Bug Fix", "sqlx", "Option"]
 description: "PR #16948 的批量查询宏在解码含 NULL 的 MySQL 值列时崩溃，用 Option<T> 包裹值类型并配合 filter_map 修复，两行改动覆盖标量和批量两条路径。"
 readingTime: "8 min"

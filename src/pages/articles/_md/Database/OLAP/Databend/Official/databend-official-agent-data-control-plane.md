@@ -7,7 +7,7 @@ source:
   author: "吴炳锡"
   site: "公众号 Databend"
 date: "2026-07-25"
-category: [Database, Databend, Official]
+category: [Database, OLAP, Databend, Official]
 tags: ["Databend", "Snowflake", "Databricks", "湖仓", "Agent", "数据控制面", "Context Plane"]
 description: "2026 Snowflake Summit 与 Databricks Data+AI Summit 同步信号：湖仓竞争从 SQL 性能转向 Agent 可靠。拆解 Agent 智能湖仓三层架构 Data Plane/Context Plane/Agent Control Plane，对比两家布局。"
 readingTime: "10 min"

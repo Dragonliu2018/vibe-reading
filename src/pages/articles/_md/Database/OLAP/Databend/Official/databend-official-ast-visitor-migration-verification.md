@@ -7,7 +7,7 @@ source:
   author: "Databend"
   site: "Databend 微信公众号"
 date: "2026-07-30T21:00:00+08:00"
-category: [Database, Databend, Official]
+category: [Database, OLAP, Databend, Official]
 tags: ["Databend", "AST", "Visitor", "代码迁移", "等价性验证", "AI Coding", "覆盖率", "SQL 语义"]
 description: "Databend 以一次 AST Visitor API 迁移为线索，介绍一套可执行的等价性验证闭环：源码扫描采集结构、运行时观测产生 trace、独立比较器判断行为等价、失败定位直接定位差异，再以真实 SQL 语料扩大输入、覆盖率暴露验证盲区。"
 readingTime: "13 min"

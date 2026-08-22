@@ -7,7 +7,7 @@ source:
   url: "https://github.com/databendlabs/databend/pull/16631"
   prType: "feat"
 date: "2026-07-02"
-category: [Database, Databend, Contributions]
+category: [Database, OLAP, Databend, Contributions]
 tags: ["Databend", "SQL", "PIVOT", "子查询", "AST", "Binder"]
 description: "深入解析 Databend 如何扩展 PIVOT 语法以支持子查询——从 AST 枚举设计、Parser 改造，到 Binder 中运行时执行子查询并回填列值的完整实现链路。"
 readingTime: "12 min"

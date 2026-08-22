@@ -7,7 +7,7 @@ source:
   url: "https://github.com/databendlabs/databend/pull/16683"
   prType: "feat"
 date: "2026-07-03"
-category: [Database, Databend, Contributions]
+category: [Database, OLAP, Databend, Contributions]
 tags: ["Databend", "SQL", "Map", "Lambda", "类型系统", "Evaluator"]
 description: "实现 map_filter / map_transform_keys / map_transform_values 及其 JSON 变体。"
 readingTime: "14 min"

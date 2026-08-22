@@ -7,7 +7,7 @@ source:
   author: "Databend"
   site: "Databend 微信公众号"
 date: "2026-07-30T17:00:00+08:00"
-category: [Database, Databend, Official]
+category: [Database, OLAP, Databend, Official]
 tags: ["Databend", "基数估计", "KLL", "Top-N", "Count-Min Sketch", "查询优化器", "直方图"]
 description: "Databend 用 KLL、Top-N 和 Count-Min Sketch（CMS）分工协作改进基数估计：KLL 以低内存构建近似等深直方图，Top-N 精确记录高频值，CMS 补足 Top-N 容量之外的宽热点。"
 readingTime: "12 min"

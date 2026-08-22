@@ -62,7 +62,15 @@ speculative 是 SGLang 的旗舰优化之一。推测解码的核心思想：主
 
 `EAGLEWorkerV2.forward_batch_generation`（`eagle_worker_v2.py:1108`）是模板方法的实例。decode 路径：`activate_step_by_batch`（Adaptive 自适应 step 切换）→ `draft_worker.draft`（`:1180`）→ `verify`（`:1183`）→ `on_publish`（`:1186`）→ `draft_worker._draft_extend_for_decode`（`:1201`）。prefill 路径：target prefill → `on_publish` → `draft_extend_for_prefill`。子类（`FrozenKVMTPWorkerV2`）覆写 `forward_batch_generation` 但复用 `verify` 方法。
 
-`draft` 多步循环（`EagleDraftWorker.draft` `:497`）：`prepare_for_draft` 分配 draft cache locs → `for i in range(speculative_num_steps)`：`select_top_k_tokens(i, ...)` 选 top-k → `draft_runner.forward(forward_batch)` 单步 draft forward → `organize_draft_results` 汇总。CUDA graph 模式下用 `EAGLEDraftCudaGraphRunner` 重放加速，仅 `speculative_num_steps > 1` 时捕获。
+`draft` 多步循环（`EagleDraftWorker.draft` `:497`）：`prepare_for_draft` 分配 draft cache locs → `for i in range(speculative_num_steps)`：`select_top_k_tokens(i, ...)` 选 top-k → `draft_runner.forward(forward_batch)` 单步 draft forward → `organize_draft_results` 汇总。CUDA graph 模式下用 `EAGLEDraftCudaGraphRunner` 重放加速，仅 `speculative_num_steps > 1` 时捕获。`_rebuild_topk1_chain_buffers`（`base_spec_worker.py`）断言 `speculative_num_draft_tokens == speculative_num_steps + 1` 后为 topk=1 链式 spec 预分配 runtime-invariant 的 parent/score buffer，所有 step 复用。
+
+### EAGLE Tree Attention
+
+draft 多步 forward 生成一棵候选 token 树（topk 分叉 × spec_steps 深度）。`build_tree_kernel_efficient`（`eagle_utils.py:147`）调自定义 CUDA/Triton kernel 建 tree attention mask（每 draft token 只能看祖先链+prefix）与三索引数组（`retrieve_index`/`retrieve_next_token`/`retrieve_next_sibling`）描述遍历顺序，返回 `(tree_mask, positions, retrieve_index, retrieve_next_token, retrieve_next_sibling, draft_tokens)`。verify 时 target 一次 forward 处理所有 draft token（batch_size × num_draft_tokens）经 tree mask 实现因果注意力。`TreeMaskMode`（`eagle_utils.py:135`，IntEnum）支持 FULL_MASK/QLEN_ONLY（省内存）/QLEN_ONLY_BITPACKING（位压缩），`default_tree_mask_mode()`（`:141`）在 CPU 返回 QLEN_ONLY、否则 FULL_MASK。
+
+### eagle_sample 树形接受/拒绝
+
+`eagle_sample`（`eagle_utils.py:649`）：greedy 路径（`is_all_greedy` 或 CPU/NPU/HIP/XPU）走 `verify_tree_greedy_func`（`:374`），sampling 走 `tree_speculative_sampling_target_only`（或 topk==1 的 `chain_speculative_sampling_triton` rejection sampling），返回 `num_correct_drafts + 1`（+1 含 bonus token）。sampling 在 TP `world_size>1` 时 broadcast `predict`/`accept_index`/`num_correct_drafts` 保跨 rank 一致，`fill_bonus_tokens_func` 提取 bonus token。`move_accept_tokens_to_target_kvcache`（`eagle_worker_common.py:422`）用 `seq_lens + num_correct_drafts + 1` 作 end_offset 调 `assign_extend_cache_locs`，把 `accept_index` 对应 draft `out_cache_loc` 收集到 `accept_out_cache_loc`，最后 `token_to_kv_pool_allocator.get_kvcache().move_kv_cache(tgt, accept)` 完成搬运。
 
 ### 注册表与契约校验
 
@@ -78,7 +86,11 @@ overlap 模式下 `on_publish`（`eagle_worker_v2.py:1184-1186`）在 verify 完
 
 `FrozenKVMTPWorkerV2`（`frozen_kv_mtp_worker_v2.py:676`）继承 `EAGLEWorkerV2` 但**不调 `EAGLEWorkerV2.__init__`**（`:692` 注释明确说明），因为 EAGLE 的 `__init__` 会构建 `EagleDraftWorker`（有独立 draft KV pool），而 frozen draft 只读 target KV。它只复用 `EAGLEWorkerV2.verify()` 方法，draft worker 和 draft_extend 逻辑是 frozen 专有。
 
-`DFlashWorkerV2`（`dflash_worker_v2.py`）的 draft 模型没有自己的 lm_head（借用 target 的），通过 `__getattr__`（`:551`）委托 `target_worker` 的方法（如 `update_weights_from_tensor`、tokenizer），避免重复代码。`DSparkWorkerV2` 用 ragged verify（per-request 变长验证，`ragged_verify_layout`）。
+`DFlashWorkerV2`（`dflash_worker_v2.py:168`）的 draft 模型没有自己的 lm_head（借用 target 的），通过 `__getattr__`（`:551`）委托 `target_worker` 的方法（如 `update_weights_from_tensor`、tokenizer），避免重复代码。DFlash 不做多步自回归，一次 forward 生成整个 block（block_size 个 token），首位放 bonus token（上轮 verify 产出），其余放 mask token。draft 输出 hidden 后 `_greedy_sample_from_vocab_parallel_head` 借 target 的 `lm_head` 做 argmax——`_DflashDraftSampler`（`dflash_worker_v2.py:90`）持 `target_model.lm_head.weight`，在 CUDA graph 内完成 TP-all-gather+全局 argmax，保证 TP>1 draft token 一致。`compact_draft_cache`（`draft_window_size`，`:197`）滑窗式管 KV，防 draft KV 随序列无限增长。`DSparkWorkerV2` 用 ragged verify（per-request 变长验证，`ragged_verify_layout`）。
+
+### AdaptiveController 自适应步数
+
+`AdaptiveController`（`adaptive_runtime_state.py:61`）的 `on_verify_complete` 调 `params.on_verify_complete`、`activate_step_by_batch` 调 `params.get_steps_for_batch`，之后 `_activate` 调 `worker.apply_runtime_state` 切换 `SpecRuntimeState`（`:19`）中的 draft/target attn backend 与 cuda graph runner。`EAGLEWorkerV2` 的 `build_adaptive_runtime_state`/`apply_runtime_state`/`_override_worker_state` 实现状态构建与临时覆盖——自适应逻辑不侵入主流程。`BaseSpecWorker.on_verify_complete_cpu`/`activate_step_by_batch` 默认 no-op，`EAGLEWorkerV2` 重写以调 `self.adaptive_controller`。
 
 ## 设计模式
 

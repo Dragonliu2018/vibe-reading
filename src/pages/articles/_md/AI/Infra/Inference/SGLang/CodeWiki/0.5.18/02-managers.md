@@ -27,7 +27,7 @@ managers 是 SGLang 运行时的大脑。它把"收请求 → 组批 → 调度 
 
 模块围绕 `Scheduler`（`scheduler.py:383`）组织，但它不是单一大类，而是 **6 个 Mixin 组合**：`SchedulerDisaggregationDecodeMixin`、`SchedulerDisaggregationPrefillMixin`（PD 分离）、`SchedulerMultiplexMixin`（prefill/decode 多路复用）、`SchedulerPPMixin`（流水线并行）、`SchedulerDllmMixin`（扩散 LLM）、`SchedulerMlxOverlapMixin`（MLX 硬件 overlap）。`__init__`（`:393`）被刻意约束为"只编排 init_*/maybe_init_* 调用"（编排器模式，`:405` 注释明确要求），每个 Mixin 独立维护一个垂直特性的逻辑，避免巨型类。
 
-围绕 Scheduler 有四组协作：**数据结构**（`ScheduleBatch`/`Req`/`NextBatchPlan`，CPU 侧批次与请求状态）、**策略**（`SchedulePolicy`（`:216`）排序 + `PrefillAdder`（`:504`）按 KV 预算准入）、**组件**（`scheduler_components/` 子包拆出 IpcChannels/RequestReceiver/BatchResultProcessor/OutputStreamer/MetricsReporter 等 ~12 个组件）、**进程协作**（`TokenizerManager` 接入、`DataParallelController` DP 路由、`DetokenizerManager` 出流、`TpModelWorker` 桥接执行层）。这种"核心类 + Mixin + Component 子包"的拆分，让一个 5000 行的调度核心仍可分域阅读。
+围绕 Scheduler 有四组协作：**数据结构**（`ScheduleBatch`/`Req`/`NextBatchPlan`，CPU 侧批次与请求状态）、**策略**（`SchedulePolicy`（`:216`）排序 + `PrefillAdder`（`:504`）按 KV 预算准入）、**组件**（`scheduler_components/` 子包拆出 IpcChannels/RequestReceiver/BatchResultProcessor/OutputStreamer/MetricsReporter 等 ~20 个组件）、**进程协作**（`TokenizerManager` 接入、`DataParallelController` DP 路由、`DetokenizerManager` 出流、`TpModelWorker` 桥接执行层）。这种"核心类 + Mixin + Component 子包"的拆分，让一个 5000 行的调度核心仍可分域阅读。
 
 ## 调用链路
 
@@ -35,7 +35,7 @@ managers 是 SGLang 运行时的大脑。它把"收请求 → 组批 → 调度 
 
 `event_loop_overlap`（`scheduler.py:1754`）每轮的步骤：`recv_requests`（`:1770`，ZMQ PULL）→ `process_input_requests`（`:1877`，`TypeBasedDispatcher` 路由到 `handle_generate_request`）→ `get_next_batch_to_run`（`:3015`，`SchedulePolicy.calc_priority` 排序 + `PrefillAdder` 按 KV 预算准入）→ `run_batch`（`:3626`，`TpModelWorker.forward_batch_generation` 启动 GPU forward）→ `result_queue.append(batch.copy(), result)`（`:1804`，延迟一步）→ `process_batch_result`（`:3922`，处理**上一轮**结果，output_streamer→ZMQ）。CPU 处理上一轮与 GPU 执行当前轮并行，是 overlap 的核心。
 
-`dispatch_event_loop`（`:4902`）根据 `disaggregation_mode`、`pp_size`、`enable_overlap`、`enable_pdmux` 选择 10 种 event_loop 变体。
+`dispatch_event_loop`（`:4902`）根据 `disaggregation_mode`、`pp_size`、`enable_overlap`、`enable_pdmux` 选择 11 种 event_loop 变体。
 
 <details>
 <summary>方法速查表</summary>
@@ -65,23 +65,25 @@ managers 是 SGLang 运行时的大脑。它把"收请求 → 组批 → 调度 
 
 ### Scheduler 与 overlap 双流
 
-`event_loop_overlap`（`scheduler.py:1754`）是 overlap 调度的核心。关键机制：`result_queue: Deque`（`:1756`）延迟一步处理。第 N 步 `run_batch(batch_N)` 启动 GPU 前向，结果入 `result_queue` 不立即处理；第 N+1 步 `run_batch(batch_{N+1})` 的同时 `pop_and_process()` 处理 batch_N 的结果。CPU 侧的 `process_batch_result`（检查完成状态、增量解码、ZMQ 发送）与 GPU 侧下一个 forward 并行执行，**零开销**。
+`event_loop_overlap`（`scheduler.py:1754`，装饰器 `@DynamicGradMode()` `:1753`）是 overlap 调度的核心。串行模式下 CPU 调度与 GPU forward 串行：`[CPU 5ms][GPU 20ms][CPU 3ms][CPU 5ms][GPU 20ms]`。overlap 模式用 `result_queue: Deque`（`:1756`）暂存上一步结果，本批 forward 一启动（非阻塞）就回头处理上一批：`[CPU 5ms][GPU 20ms ─────][CPU 5ms][GPU 20ms]` 下方并行 `[CPU process 3ms]`，消除 CPU 空闲窗口，**零开销**。
 
-`batch.copy()`（`:1804`）做浅拷贝是因为后续 `filter_batch`/`merge_batch` 会改变 `reqs` 列表。三个 CUDA stream：`forward_stream`（模型前向）、`schedule_stream`（调度逻辑）、`copy_stream`（D2H 结果拷贝）。`FutureMap`（`:1463`）中继下一迭代的 input_ids，因为 `process_batch_result` 修改的 `output_ids` 还没准备好。
+关键实现细节：`batch.copy()`（`:1804`）做浅拷贝——`ScheduleBatch.copy` 只对 `reqs=self.reqs[:]` 切片（不复制 `Req` 对象），只复制 `process_batch_result` 需要的字段（`forward_mode`/`return_logprob`/`spec_algorithm` 等），源码注释说是"defensive snapshot"防 `filter_batch`/`merge_batch` 历史上原地改 list。三个 CUDA stream：`forward_stream`（模型前向）、`schedule_stream`（调度逻辑）、`copy_stream`（D2H 结果拷贝）。`resolve_forward_inputs(batch, self.future_map)`（`:3671`）消费 staging buffer 实现 H2D 与计算重叠。`FutureMap`（`:1463`）中继下一迭代的 input_ids，因为 `process_batch_result` 修改的 `output_ids` 还没准备好。`_apply_war_barrier`（`:1705`）保护 unified memory 共享读取。
 
-禁用 overlap 的场景（`is_disable_overlap_for_batch` `:1828`）：连续两个 prefill batch（优化 TTFT）或 grammar 需要同步（FSM 需要上一批次结果）。
+禁用 overlap 的场景（`is_disable_overlap_for_batch` `:1828`）：连续两个 prefill/extend batch（受 `envs.SGLANG_DISABLE_CONSECUTIVE_PREFILL_OVERLAP` 控制，优化 TTFT）、grammar 需要同步（`batch.grammar_needs_sync()` 且 `is_decode()` 且 `len(result_queue)>0`，FSM 需要上一批次结果）。这三类情况 overlap 会破坏正确性，故强制串行。
 
 ### SchedulePolicy 与 PrefillAdder
 
 `SchedulePolicy`（`schedule_policy.py:216`）含两类策略：`CacheAwarePolicy`（LPM 最长前缀匹配 / DFS_WEIGHT 深度优先加权）和 `CacheAgnosticPolicy`（FCFS / LOF / RANDOM / ROUTING_KEY）。`calc_priority`（`:237`）排序逻辑：当 waiting_queue > 128 时 LPM 降级为 FCFS（避免昂贵的前缀匹配）；Cache-aware 策略先 `_compute_prefix_matches`（`:314`）做 in-batch 前缀匹配，维护独立 `waiting_queue_radix_tree`。
 
-`PrefillAdder`（`:504`）是 prefill 请求的准入控制器。`add_one_req`（`:1201`）逐请求决策：计算 `total_tokens = extend_input_len + max_new + page_size + mamba_gap` → 检查 `rem_total_tokens` → `_lock_node` 锁定 radix 节点 → 三条路径（DLLM / 非 chunked / chunked）→ 返回 `AddReqResult`（CONTINUE / NO_TOKEN / OTHER）。
+`PrefillAdder`（`:504`）是 prefill 请求的准入控制器。`add_one_req`（`:1201`）逐请求决策：计算 `total_tokens = extend_input_len + max_new + page_size + mamba_gap` → 检查 `rem_total_tokens` → `_lock_node` 锁定 radix 节点 → 三条路径（DLLM / 非 chunked / chunked）→ 返回 `AddReqResult`（CONTINUE / NO_TOKEN / OTHER）。准入是多预算门控：`rem_total_tokens = available_size + tree_cache.evictable_size - rem_total_token_offset`（含可驱逐余量），`is_hybrid_swa` 时额外门 `rem_swa_tokens`，有 Mamba 时门 `rem_mamba_slots`；`_update_prefill_budget` 在准入一个请求后把 `extend_input_len + max_new_tokens + page_overhead` 累加进 offset。`SchedulePolicy._determine_active_policy`（`:290`）在 `len(waiting_queue) > 128` 时把 `CacheAwarePolicy.LPM` 降级为 `CacheAgnosticPolicy.FCFS`（省 O(n log n) 排序开销），二者是两个独立 Enum。
 
 ### ScheduleBatch 与 Req
 
-`ScheduleBatch`（`schedule_batch.py:2002`）是 CPU 侧批次数据。`init_new`（`:2190`）从 reqs 列表构建。`prepare_for_extend`（`:2369`）准备 prefill 前向：计算 `input_ids`/`extend_num_tokens`/`seq_lens`/`prefix_lens`。`prepare_for_decode`（`:3038`）准备 decode 前向：分配 1 token 的 KV cache、`seq_lens += 1`。`merge_batch`（`:3211`）合并两个批次（continuous batching）。`retract_decode`（`:2816`）KV 内存不足时驱逐 decode 请求并从 radix cache evict。
+`ScheduleBatch`（`schedule_batch.py:2002`）是 CPU 侧批次数据。`init_new`（`:2190`）从 reqs 列表构建。`prepare_for_extend`（`:2369`）准备 prefill 前向：计算 `input_ids`/`extend_num_tokens`/`seq_lens`/`prefix_lens`，调 `alloc_for_extend` 分配 KV slot 并做 `match_prefix` 前缀匹配。`prepare_for_decode`（`:3038`）准备 decode 前向：分配 1 token 的 KV cache（`alloc_for_decode(token_per_req=1)`）、`seq_lens += 1`。`merge_batch`（`:3211`）合并两个批次（continuous batching）。
 
-`Req`（`schedule_batch.py:803`）是单请求状态：`rid`/`origin_input_ids`/`output_ids`（append-only）/`prefix_indices`/`last_node`/`sampling_params`/`finished_reason`/`to_finish`。
+`retract_decode`（`:2816`）KV 内存不足时驱逐 decode 请求：触发条件是 `check_decode_mem`（`:2809`）发现不足；`_get_decode_retraction_order`（`:2867`）按 `(len(req.output_ids), -len(req.origin_input_ids))` 逆序排序、pop 末尾（产出最少的）先 retract；返回 `(retracted_reqs, new_estimate_ratio, reqs_to_abort)` 三元组。关键兜底：当 `len(sorted_indices) <= 1` 且仍 OOM，不崩 scheduler，而是把最后一个请求 `to_finish = FINISH_ABORT(...)` 并 `release_req`——宁丢请求不丢进程。
+
+`Req`（`schedule_batch.py:803`）是单请求状态：`rid`/`origin_input_ids`/`output_ids`（append-only）/`prefix_indices`/`last_node`/`sampling_params`/`finished_reason`/`to_finish`。完成状态是两段式：`active → to_finish → finished_reason`。`to_finish` 是中间态——overlap 调度中请求可能在结果处理阶段被标记完成，但 forward 结果还在 `result_queue`，不能立即移除；待 `process_batch_result` 的 `update_finish_state` 执行 `if self.to_finish: self.finished_reason = self.to_finish; self.to_finish = None` 才提升为终态，再由 `filter_batch` 移出 batch。`Req.finished()` 只检查 `finished_reason is not None`（不看 `to_finish`），所以设了 `to_finish` 的请求还会再跑一轮 decode。设置 `to_finish` 的场景：客户端断连 `abort_request` 设 `FINISH_ABORT`、`_abort_on_running_timeout` 设 `FINISH_ABORT(..., 503)`、retract 后仍 OOM 把最后请求设 `FINISH_ABORT('Out of memory...')`。终态取值 `None/stop/length/abort/connection_close`。
 
 ### DataParallelController 路由
 

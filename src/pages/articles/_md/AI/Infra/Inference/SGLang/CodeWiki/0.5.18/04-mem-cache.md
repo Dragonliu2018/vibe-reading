@@ -69,6 +69,8 @@ mem_cache 是 RadixAttention 的实现所在，SGLang 的招牌特性。它解�
 
 `match`（`radix_cache.py:181`）分两阶段。阶段 1（指数搜索/galloping）：以倍增窗口 `step=1,2,4,8...` 做 C 级 slice 比较 `t0[lo:hi] != t1[lo:hi]`，在共享段上 O(log n) 次比较到达分歧窗口。阶段 2（二分）：在分歧窗口 `[lo, hi)` 内 `while hi-lo>1: mid=(lo+hi)//2` 缩小分歧位置。总计 O((log m)²)，远优于 O(m) 逐 token Python 循环。注释（`:189-190`）明确："no per-token Python loop on long shared prefixes"。匹配后按 `page_size` 向下取整，bigram 模式下 `matched = max(0, min(matched_tokens-1, len(self), len(other)))`。
 
+`_split_node`（`:704`）在匹配边界分裂使共享前缀成可复用单元：新节点继承 `child.priority`/`hit_count`/`lock_ref`，`new_node.key = child.key[:split_len]`、`child.key = child.key[split_len:]`、`value` 各自 `.clone()` 分离，并经 `split_node_hash_value` 懒分裂 `hash_value`。`inc_lock_ref`（`:622`）/`dec_lock_ref`（`:637`）从节点向 root 遍历（`while node != root`），在 `lock_ref` 0→1 时 `evictable_size_ -= len(key)`、`protected_size_ += len(key)`，1→0 反之，返回净变化量 `delta` 供调度器调整配额。`_update_leaf_status`（`:820`）维护 `evictable_leaves` 集合：节点被移除当 `node.evicted`(value is None) 或 `lock_ref>0` 或存在非 evicted 子节点，被加入当非 evicted + `lock_ref==0` + 无非 evicted 子节点——确保正在用的节点不被驱逐。
+
 ### 三层 MemoryPool 与物理/逻辑分离
 
 三层架构：`ReqToTokenPool`（请求→token 位置映射）→ `TokenToKVPoolAllocator`（KV slot 索引分配回收）→ `KVCache`（物理 KV 张量）。`PagedTokenToKVPoolAllocator`（`allocator/paged.py:105`）以 page 为分配单位：`alloc_extend` 用 Triton kernel `alloc_extend_kernel` 在 GPU 上并行计算分配方案；`free` 先 `torch.unique(free_index // page_size)` 去重再回收；`free_segment` 用 stride slice 避免 data-dependent output shape 导致的 device sync。
@@ -78,6 +80,10 @@ mem_cache 是 RadixAttention 的实现所在，SGLang 的招牌特性。它解�
 ### HiRadixCache 三层缓存
 
 `HiRadixCache`（`hiradix_cache.py:48`）扩展为 L1(GPU)、L2(Host pinned CPU tensor via `HostKVCache`)、L3(Remote via `KVCacheEventMixin` 发出事件)。`init_load_back` 在 `match_prefix` 发现 L2 命中后异步将 host KV 传回 GPU。`HiCacheController` 管理 L2↔L3 的 prefetch/load_back 线程。host pool 类型由 GPU 端 KV cache 类型决定：MHA → `get_mha_host_pool_cls`，MLA → `MLATokenToKVPoolHost`。
+
+三种写策略由 `write_through_threshold` 控制：`write_through`→1、`write_through_selective`(默认)/`write_back`→2。`_inc_hit_count` 在 `write_back` 或 chunked 时直接 return（不维护 hit_count），否则 `hit_count += 1`，当 `not backuped and hit_count >= threshold` 触发 `write_backup`（`:841`）——即 selective 只备热点（hit≥2）防冷数据浪费 host。`evict` 按策略分派：`write_back` 走 `_evict_write_back`（staging 到 host + flush + `_drop_subtree_no_host` 兜底），其余走 `_evict_write_through`。被 evict 的前缀可从 host `load_back` 恢复而非重算，大幅降 TTFT。
+
+**7 种 evict 策略**：`get_eviction_strategy`（`utils.py:67`）工厂创建，`_EVICTION_POLICY_FACTORIES`（`:56`）映射 keys=lru/lfu/fifo/mru/filo/priority/slru。LRU(默认) 返回 `last_access_time`、LFU 返回 `(hit_count, last_access_time)`、FIFO 返回 `creation_time`、MRU 返回 `-last_access_time`、FILO 返回 `-creation_time`、Priority 返回 `(priority, last_access_time)`、SLRU（`protected_threshold=2`）返回 `(is_protected, last_access_time)`——`hit_count >= threshold` → segment 1 protected 段、否则 segment 0 probationary 段，双段防单次长前缀挤占热点。每种返回可比较值，`RadixCache.evict` 建 min-heap 按之驱逐。
 
 ### 注册表与工厂选择链
 

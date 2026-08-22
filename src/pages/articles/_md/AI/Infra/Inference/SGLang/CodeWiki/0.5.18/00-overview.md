@@ -127,7 +127,7 @@ SGLang 的整体设计思想是**"运行时优先"**——把一次推理请求�
 | `TokenizerManager` | tokenize、请求分发、响应聚合（asyncio） | 进程级（主进程） | ZMQ 连 Scheduler/Detokenizer |
 | `Scheduler` | 零开销批量调度，持有 KV cache 与 TpWorker | 子进程级（每 TP rank） | 调 TpModelWorker，管 tree_cache |
 | `ScheduleBatch` / `Req` | 调度批次 / 单请求状态（CPU 侧） | 每 batch / 每请求 | `prepare_for_extend/decode` 转 ForwardBatch |
-| `ForwardBatch` | 一次 forward 的全部 GPU 张量（~80 字段） | 每 batch | 由 `ScheduleBatch` 经 `init_new` 构建 |
+| `ForwardBatch` | 一次 forward 的全部 GPU 张量（~85 字段） | 每 batch | 由 `ScheduleBatch` 经 `init_new` 构建 |
 | `ModelRunner` | 持有 `model: nn.Module`，驱动 forward + sample | 每 Scheduler | 调 `model.forward`，管 cuda graph |
 | `RadixCache` / `TreeNode` | radix tree 前缀缓存 | 跨请求（节点常驻） | value 指向 `KVCache` slot 索引 |
 | `MemoryPool`（`KVCache`） | KV 物理显存张量（per-layer） | 进程级常驻 | 被 allocator 分配、被 attention 层读写 |

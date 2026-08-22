@@ -35,7 +35,7 @@ entrypoints 是 SGLang 与外部世界的边界。它负责两件事：**进程�
 
 启动调用链从 `serve()` 出发：`cli/serve.py:166` 的 `serve()` 解析参数 → 经 `ServeBackendRegistry` 选择后端（LLM / diffusion）→ `run_server`（`launch_server.py:16`）→ `http_server.launch_server`（`:2766`）→ `Engine._launch_subprocesses`（`engine.py:1060`）→ `PortArgs.init_new` 分配 ZMQ 端口 → 三路并行：`_launch_scheduler_processes`（`:856`）启动 Scheduler 子进程、`_launch_detokenizer_subprocesses`（`:974`）启动 Detokenizer、`init_tokenizer_manager_func`（`:1214`）在主进程实例化 TokenizerManager → `wait_for_ready`（`:1225`）等所有子进程就绪 → `SubprocessWatchdog.start` → `_setup_and_run_http_server`（`:2818`）启动 uvicorn。
 
-运行时请求链路：FastAPI route handler → `OpenAIServingBase.handle_request`（`serving_base.py:73`）→ `_convert_to_internal_request`（如 `serving_chat.py:920`）→ `tokenizer_manager.generate_request`（`:765`）→ ZMQ PUSH → Scheduler 子进程。
+运行时请求链路：FastAPI route handler → `OpenAIServingBase.handle_request`（`serving_base.py:73`）→ `_convert_to_internal_request`（如 `serving_chat.py:916`）→ `tokenizer_manager.generate_request`（`:765`）→ ZMQ PUSH → Scheduler 子进程。
 
 <details>
 <summary>方法速查表</summary>
@@ -64,7 +64,13 @@ entrypoints 是 SGLang 与外部世界的边界。它负责两件事：**进程�
 
 ### OpenAI 协议适配
 
-`OpenAIServingBase`（`serving_base.py:26`）是 ABC，定义模板方法 `handle_request`（`:73`）：验证请求 → `_convert_to_internal_request` → 区分 streaming/non-streaming 分发。子类（`OpenAIServingChat` `serving_chat.py:194`、`OpenAIServingCompletion` 等）实现 `_convert_to_internal_request` 和 `_request_id_prefix`。`AnthropicServing`（`anthropic/serving.py:184`）是适配器——将 Anthropic Messages API 适配到 OpenAI Chat Completion，内部 `_convert_to_chat_completion_request` 转换后委托 `OpenAIServingChat`。
+`OpenAIServingBase`（`serving_base.py:26`）是 ABC，定义模板方法 `handle_request`（`:73`）：验证请求 → `_convert_to_internal_request` → 区分 streaming/non-streaming 分发。子类（`OpenAIServingChat` `serving_chat.py:194`、`OpenAIServingCompletion` 等）实现 `_convert_to_internal_request` 和 `_request_id_prefix`。`AnthropicServing`（`anthropic/serving.py:184`）是适配器——将 Anthropic Messages API 适配到 OpenAI Chat Completion，内部 `_convert_to_chat_completion_request` 转换后委托 `OpenAIServingChat`。这种"协议翻译 + 统一后端"让用户用现有客户端（LangChain、Anthropic SDK）零改动接入。
+
+API Key 鉴权刻意做成 **ASGI-native 中间件**（`utils/auth.py`）而非 FastAPI `Depends`。原因是生成请求可能持续数秒到数十秒，FastAPI Depends 在请求开始后无法感知中途断连，ASGI 层中间件能透传 `receive` channel 的 cancel 事件——这对长连接推理避免"客户端走了、服务还在算"至关重要。CORS、请求解压同理用 `app.add_middleware`。
+
+### 控制面 RPC
+
+除流式生成路径外，还有**控制面 RPC 路径**：`Engine.collective_rpc` / `update_weights_from_tensor` 构造 `RpcReqInput`，用 `send_to_rpc`（DEALER socket）`sock_send` 后**同步** `sock_recv(flags=BLOCKY)` 等待 Scheduler 返回——区别于流式路径的异步请求-响应语义，控制面是同步阻塞，适合权重热更新、cache flush 等管理操作。
 
 ### ServeBackend 插件架构
 

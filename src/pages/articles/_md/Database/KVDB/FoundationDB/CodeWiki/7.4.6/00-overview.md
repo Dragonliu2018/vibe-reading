@@ -5,15 +5,15 @@ source:
   url: "https://github.com/apple/foundationdb"
 title: "Overview"
 date: "2026-08-22T15:19:30+08:00"
-category: [Database, KVDB, FoundationDB, CodeWiki, "main-2026-08"]
+category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
 tags: ["FoundationDB", "C++", "KVDB", "分布式事务", "确定性模拟"]
-description: "FoundationDB main-2026-08——Apple 开源分布式事务型 KV 数据库，有序 KV + ACID 严格可串行化 + 角色化分布式架构 + 确定性模拟测试源码解读。"
+description: "FoundationDB 7.4.6——Apple 开源分布式事务型 KV 数据库，有序 KV + ACID 严格可串行化 + 角色化分布式架构 + 确定性模拟测试源码解读。"
 readingTime: "90 min"
 aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> **版本** main-2026-08 · **解读基线** commit [`a6233ad8a9`](https://github.com/apple/foundationdb/commit/a6233ad8a9ebfd99d37ce9e20db97dbcf726ab1b)（2026-08-19，main 分支开发快照，最新可达 tag 为 7.1.0 但已落后 11000+ 提交，故以 main HEAD 为解读基线）· **协议** Apache-2.0 · **语言** C++20 · **代码量** ~450,000 行（核心 cpp/h/actor）
+> **版本** v7.4.6 · **协议** Apache-2.0 · **语言** C++20 · **代码量** ~450,000 行（.cpp/.actor.cpp/.h）· **仓库** [GitHub](https://github.com/apple/foundationdb)
 
 ---
 
@@ -31,16 +31,16 @@ FDB 的核心价值在于把三件难事揉到了一起：**分布式**（跨集
 
 | 特性 | 实现文件 | 说明 |
 | --- | --- | --- |
-| 有序 KV 读写 | `fdbserver/storageserver/storageserver.cpp` | StorageServer 提供 get/getRange/set/clear |
-| ACID 事务 | `fdbserver/commitproxy/CommitProxyServer.cpp`、`fdbserver/resolver/ConflictSet.cpp` | 批量提交 + OCC 冲突检测 |
-| 严格可串行化 | `fdbserver/sequencer/masterserver.cpp` | Master 单点分配单调递增 commit version |
-| 持久化日志 | `fdbserver/tlog/TLogServer.cpp` | TLog 顺序写磁盘队列，mutation 先持久化再落盘 |
-| 自动分片与迁移 | `fdbserver/datadistributor/DataDistribution.cpp` | DataDistributor 按 key range 分 shard 到 team |
-| 故障恢复 | `fdbserver/clustercontroller/ClusterRecovery.cpp` | 9 阶段恢复状态机，generation 切换 |
-| 多区域容灾 | `fdbserver/logrouter/LogRouter.cpp` | LogRouter 跨 region 转发 mutation |
-| 确定性模拟测试 | `fdbserver/SimulatedCluster.cpp`、`fdbrpc/sim2.cpp` | 单进程模拟整个集群，bug 可复现 |
-| 客户端缓存 | `fdbclient/ReadYourWrites.cpp` | RYW 读你的写，减少网络往返 |
-| 管理 keyspace | `fdbclient/SpecialKeySpace.cpp` | `\xff\xff` key 暴露集群管理接口 |
+| 有序 KV 读写 | `fdbserver/storageserver.actor.cpp` | StorageServer 提供 get/getRange/set/clear |
+| ACID 事务 | `fdbserver/CommitProxyServer.actor.cpp`、`fdbserver/SkipList.cpp` | 批量提交 + OCC 冲突检测 |
+| 严格可串行化 | `fdbserver/masterserver.actor.cpp` | Master 单点分配单调递增 commit version |
+| 持久化日志 | `fdbserver/TLogServer.actor.cpp` | TLog 顺序写磁盘队列，mutation 先持久化再落盘 |
+| 自动分片与迁移 | `fdbserver/DataDistribution.actor.cpp` | DataDistributor 按 key range 分 shard 到 team |
+| 故障恢复 | `fdbserver/ClusterRecovery.actor.cpp` | 9 阶段恢复状态机，generation 切换 |
+| 多区域容灾 | `fdbserver/LogRouter.cpp` | LogRouter 跨 region 转发 mutation |
+| 确定性模拟测试 | `fdbserver/SimulatedCluster.actor.cpp`、`fdbrpc/sim2.actor.cpp` | 单进程模拟整个集群，bug 可复现 |
+| 客户端缓存 | `fdbclient/ReadYourWrites.actor.cpp` | RYW 读你的写，减少网络往返 |
+| 管理 keyspace | `fdbclient/SpecialKeySpace.actor.cpp` | `\xff\xff` key 暴露集群管理接口 |
 
 ### 技术栈
 
@@ -62,9 +62,9 @@ FDB 起源于 2009 年左右，2013 年开源，2015 年被 Apple 收购后持�
 - **6.x**：确立 actor 异步模型 + 确定性模拟测试体系；Master 驱动恢复。
 - **7.0**：引入 Redwood（自研 VersionedBTree）存储引擎；DataDistributor / Ratekeeper 从 Master 进程拆出为独立 singleton 角色。
 - **7.1**：当前生产稳定线（7.1.57 为最新 bugfix）。SharedTLog 多 generation 架构成熟，spill-by-reference 大幅降低写放大。
-- **7.3 / 7.4**：开发中（本解读基线 main HEAD），引入 C++20 协程替换旧 actor 编译器、Version Vector unicast、Physical Shard 等实验特性。
+- **7.4**：C++20 协程与旧 actor 编译器并存过渡，Version Vector unicast、satellite TLog、spill-by-reference 等特性成熟。
 
-本解读基于 main 分支 2026-08-19 快照，涵盖 C++20 协程化后的最新架构。
+本解读基于 7.4.6 release tag，涵盖 C++20 协程与旧 actor 编译器并存的过渡期架构。
 
 ### 顶层上下文图
 
@@ -125,25 +125,25 @@ FDB 的架构思想是**读写路径解耦 + 角色化进程 + 单线程协作�
 | 架构层 | 包含目录 | 层职责（为什么这层存在） |
 | --- | --- | --- |
 | 客户端层 | `fdbclient/`、`bindings/` | 暴露事务 API 给应用，封装重试、RYW 缓存、定位缓存 |
-| 控制平面 | `fdbserver/clustercontroller/`、`fdbserver/core/`、`fdbserver/worker/` | 选出单一领导者、招募各角色、驱动恢复、广播拓扑；是容错的大脑 |
-| 事务系统 | `fdbserver/commitproxy/`、`fdbserver/grvproxy/`、`fdbserver/resolver/`、`fdbserver/sequencer/` | 提交事务、授予读版本、检测冲突、分配 commit version；是 ACID 的引擎 |
-| 事务日志 | `fdbserver/tlog/`、`fdbserver/logsystem/`、`fdbserver/logrouter/` | 持久化 mutation、管理日志拓扑与 generation 切换、跨 region 转发 |
-| 存储层 | `fdbserver/storageserver/`、`fdbserver/kvstore/` | 从 TLog pull mutation 落盘、提供 MVCC 读写服务 |
+| 控制平面 | `fdbserver/ClusterController.actor.cpp`、`ClusterRecovery.actor.cpp`、`CoordinatedState.actor.cpp`、`worker.actor.cpp` | 选出单一领导者、招募各角色、驱动恢复、广播拓扑；是容错的大脑 |
+| 事务系统 | `fdbserver/CommitProxyServer.actor.cpp`、`GrvProxyServer.actor.cpp`、`Resolver.actor.cpp`、`masterserver.actor.cpp` | 提交事务、授予读版本、检测冲突、分配 commit version；是 ACID 的引擎 |
+| 事务日志 | `fdbserver/TLogServer.actor.cpp`、`LogSystem.cpp`、`LogRouter.cpp` | 持久化 mutation、管理日志拓扑与 generation 切换、跨 region 转发 |
+| 存储层 | `fdbserver/storageserver.actor.cpp`、`VersionedBTree.actor.cpp` | 从 TLog pull mutation 落盘、提供 MVCC 读写服务 |
 | 基础设施 | `flow/`、`fdbrpc/` | 异步运行时（Future/Promise/协程/事件循环/内存）与 RPC/网络，全栈基石 |
 
-模拟测试（`fdbserver/workloads/`、`fdbserver/SimulatedCluster.cpp`）横切所有层——它复用 flow/fdbrpc 的模拟原语，跑的是同一份 fdbd 业务代码，只是底层 I/O 换成模拟实现。
+模拟测试（`fdbserver/workloads/`、`fdbserver/SimulatedCluster.actor.cpp`）横切所有层——它复用 flow/fdbrpc 的模拟原语，跑的是同一份 fdbd 业务代码，只是底层 I/O 换成模拟实现。
 
 ### 设计模式
 
 | 模式 | 位置 | 为什么用 |
 | --- | --- | --- |
-| Promise/Future 单赋值变量 | `SAV<T>` in `flow/include/flow/flow.h:729` | 协作式异步的通用粘合剂，支持多订阅与回调链 |
-| C++20 协程状态机 | `CoroPromise` in `flow/include/flow/Coroutines.h:325` | 替代旧 actor 编译器，语言级协程，消除预处理工具维护负担 |
-| 乐观并发控制（OCC） | `ConflictSet.cpp:948` `detectConflicts` | 无锁冲突检测，适合短事务高吞吐，冲突直接重试 |
-| 批量提交 | `commitBatcher()` in `CommitProxyServer.cpp:234` | 一批事务共用一次 master/resolver/TLog RPC，摊薄开销 |
-| WAL 读写分离 | `tLogCommit()` in `TLogServer.cpp:2832` | commit 延迟只取决于顺序写 TLog，落盘异步进行 |
-| Generation 恢复 | `ClusterRecovery.cpp:1702` `clusterRecoveryCore` | 故障切换靠递增 generation 号 + Paxos 互斥保证安全 |
-| Test Double 模拟 | `Sim2` in `fdbrpc/sim2.cpp:1021` | 单进程模拟整个集群，确定性可复现并发 bug |
+| Promise/Future 单赋值变量 | `SAV<T>` in `flow/include/flow/flow.h:742` | 协作式异步的通用粘合剂，支持多订阅与回调链 |
+| C++20 协程状态机 | `CoroPromise` in `flow/include/flow/CoroutinesImpl.h:304` | 替代旧 actor 编译器，语言级协程，消除预处理工具维护负担 |
+| 乐观并发控制（OCC） | `SkipList.cpp:934` `detectConflicts` | 无锁冲突检测，适合短事务高吞吐，冲突直接重试 |
+| 批量提交 | `commitBatcher()` in `CommitProxyServer.actor.cpp:377` | 一批事务共用一次 master/resolver/TLog RPC，摊薄开销 |
+| WAL 读写分离 | `tLogCommit()` in `TLogServer.actor.cpp:2378` | commit 延迟只取决于顺序写 TLog，落盘异步进行 |
+| Generation 恢复 | `ClusterRecovery.actor.cpp:1503` `clusterRecoveryCore` | 故障切换靠递增 generation 号 + Paxos 互斥保证安全 |
+| Test Double 模拟 | `Sim2` in `fdbrpc/sim2.actor.cpp` | 单进程模拟整个集群，确定性可复现并发 bug |
 
 ### 核心概念
 
@@ -161,11 +161,11 @@ FDB 的架构思想是**读写路径解耦 + 角色化进程 + 单线程协作�
 
 | 接口/抽象类 | 定义位置 | 实现类 | 注册方式 |
 | --- | --- | --- | --- |
-| `IKeyValueStore` | `fdbserver/kvstore/include/fdbserver/kvstore/IKeyValueStore.h:47` | `KeyValueStoreRedwood`、`KeyValueStoreMemory`、`KeyValueStoreRocksDB` | `openKVStore()` 工厂按 `KeyValueStoreType` 选择 |
-| `IPager2` | `fdbserver/kvstore/IPager.h:625` | `DWALPager` | Redwood 的页面管理层 |
-| `TestWorkload` | `fdbserver/tester/include/fdbserver/tester/workloads.h:66` | 数十个具体 workload（`CycleWorkload`、`MachineAttrition`…） | `WorkloadFactory<T>` 全局对象自动注册 |
-| `ISimulationPolicy` | `fdbserver/core/FDBSimulationPolicy.cpp:58` | `FDBSimulationPolicy` | `installFDBSimulationPolicy()` 安装 |
-| `LogSystem` | `fdbserver/logsystem/include/fdbserver/logsystem/LogSystem.h:262` | tag-partitioned 实现（唯一） | `newEpoch()` 创建 |
+| `IKeyValueStore` | `fdbclient/include/fdbclient/IKeyValueStore.actor.h:57` | `KeyValueStoreRedwood`、`KeyValueStoreMemory`、`KeyValueStoreRocksDB` | `openKVStore()` 工厂按 `KeyValueStoreType` 选择 |
+| `IPager2` | `fdbserver/include/fdbserver/IPager.h:625` | `DWALPager` | Redwood 的页面管理层 |
+| `TestWorkload` | `fdbserver/include/fdbserver/workloads/workloads.actor.h:66` | 数十个具体 workload（`CycleWorkload`、`MachineAttrition`…） | `WorkloadFactory<T>` 全局对象自动注册 |
+| `ISimulator` | `fdbrpc/include/fdbrpc/simulator.h` | `Sim2`（含 `canKillProcesses` 安全策略） | `startNewSimulator()` 创建 |
+| `LogSystem` | `fdbserver/include/fdbserver/LogSystem.h:262` | tag-partitioned 实现（唯一） | `newEpoch()` 创建 |
 
 ```text
                   IKeyValueStore
@@ -182,22 +182,17 @@ foundationdb/
 ├── flow/                  # 异步运行时（~70k 行）：Future/Promise/协程/Net2/FastAlloc/Arena
 ├── fdbrpc/                # RPC 与网络（~34k 行）：FlowTransport/LoadBalance/Sim2
 ├── fdbclient/             # 客户端库（~102k 行）：NativeAPI/RYW/定位缓存/SpecialKeySpace
-├── fdbserver/             # 服务端（~224k 行），按角色分目录：
-│   ├── clustercontroller/ # ClusterController + ClusterRecovery（控制平面）
-│   ├── core/              # ServerDBInfo/CoordinatedState/LeaderElection/MoveKeys/ServerKnobs
-│   ├── worker/            # Worker 进程（承载角色）
-│   ├── commitproxy/       # CommitProxy（提交）
-│   ├── grvproxy/          # GRVProxy（读版本）
-│   ├── resolver/          # Resolver + ConflictSet（冲突检测）
-│   ├── sequencer/         # Master/Sequencer（版本分配）
-│   ├── tlog/               # TLog（持久日志）
-│   ├── logsystem/         # LogSystem（日志拓扑）
-│   ├── logrouter/         # LogRouter（跨 region）
-│   ├── storageserver/     # StorageServer（读写服务 + MVCC）
-│   ├── kvstore/            # 存储引擎：Redwood(VersionedBTree)/Memory/RocksDB
-│   ├── datadistributor/   # DataDistributor（分片/迁移/负载）
-│   ├── workloads/         # 模拟测试 workload（~54k 行）
-│   └── SimulatedCluster.cpp # 模拟集群搭建
+├── fdbserver/             # 服务端（~224k 行），7.4.6 为 flat 布局（.actor.cpp/.actor.h）：
+│   ├── ClusterController.actor.cpp / ClusterRecovery.actor.cpp  # 控制平面
+│   ├── CoordinatedState.actor.cpp / LeaderElection.actor.cpp / worker.actor.cpp / fdbserver.actor.cpp
+│   ├── CommitProxyServer.actor.cpp / GrvProxyServer.actor.cpp / Resolver.actor.cpp / masterserver.actor.cpp  # 事务系统
+│   ├── TLogServer.actor.cpp / LogSystem.cpp / LogRouter.cpp     # 事务日志
+│   ├── storageserver.actor.cpp / VersionedBTree.actor.cpp / KeyValueStoreMemory.actor.cpp  # 存储层
+│   ├── DataDistribution.actor.cpp / DDTeamCollection.actor.cpp / DDRelocationQueue.actor.cpp  # 数据分布
+│   ├── include/fdbserver/         # 头文件：ServerDBInfo/WorkerInterface/MasterInterface/RecoveryState/LogSystem/...
+│   ├── workloads/                 # 模拟测试 workload（~54k 行）
+│   ├── SimulatedCluster.actor.cpp # 模拟集群搭建
+│   └── tester.actor.cpp           # 测试编排
 ├── fdbcli/                # 命令行客户端
 ├── fdbmonitor/            # 进程监控
 ├── fdbbackup/             # 备份恢复
@@ -215,15 +210,15 @@ foundationdb/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 | --- | --- | --- | --- | --- |
-| 异步运行时 | Future/Promise/协程/事件循环 | `flow/Net2.cpp` `Net2::run` | 是全栈唯一的并发原语，所有角色共享一套调度 | [异步运行时](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/01-flow) |
-| RPC 与网络 | 传输/负载均衡/模拟网络 | `fdbrpc/FlowTransport.cpp` | 把网络通信与故障检测从业务逻辑剥离 | [RPC 与网络层](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/02-fdbrpc) |
-| 客户端库 | 事务 API/RYW/定位缓存 | `fdbclient/NativeAPI.actor.cpp` | 用户编程接口，与集群拓扑解耦 | [客户端库与事务 API](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/03-fdbclient) |
-| 集群协调 | 选举/恢复/招募/广播 | `fdbserver/clustercontroller/ClusterController.cpp` | 是容错的大脑，故障切换的单一决策点 | [集群协调层](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/04-cluster-coordination) |
-| 事务系统 | 提交/读版本/冲突检测 | `fdbserver/commitproxy/CommitProxyServer.cpp` | ACID 引擎，可独立横向扩展 | [事务系统](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/05-transaction-system) |
-| 事务日志 | 持久 mutation/日志拓扑 | `fdbserver/tlog/TLogServer.cpp` | 读写分离的关键，commit 延迟只取决于它 | [事务日志](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/06-transaction-log) |
-| 存储引擎 | MVCC/读写服务/落盘 | `fdbserver/storageserver/storageserver.cpp` | 数据最终落盘与读取服务的地方 | [存储引擎](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/07-storage-engine) |
-| 数据分布 | 分片/迁移/负载均衡 | `fdbserver/datadistributor/DataDistribution.cpp` | 弹性伸缩与容错的数据平面 | [数据分布](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/08-data-distribution) |
-| 模拟测试 | 确定性模拟/workload | `fdbserver/SimulatedCluster.cpp` | FDB 可靠性的根本保障，横切全栈 | [模拟测试体系](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/main-2026-08/09-simulation-testing) |
+| 异步运行时 | Future/Promise/协程/事件循环 | `flow/Net2.actor.cpp` `Net2::run` | 是全栈唯一的并发原语，所有角色共享一套调度 | [异步运行时](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/01-flow) |
+| RPC 与网络 | 传输/负载均衡/模拟网络 | `fdbrpc/FlowTransport.actor.cpp` | 把网络通信与故障检测从业务逻辑剥离 | [RPC 与网络层](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/02-fdbrpc) |
+| 客户端库 | 事务 API/RYW/定位缓存 | `fdbclient/NativeAPI.actor.cpp` | 用户编程接口，与集群拓扑解耦 | [客户端库与事务 API](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/03-fdbclient) |
+| 集群协调 | 选举/恢复/招募/广播 | `fdbserver/ClusterController.actor.cpp` | 是容错的大脑，故障切换的单一决策点 | [集群协调层](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/04-cluster-coordination) |
+| 事务系统 | 提交/读版本/冲突检测 | `fdbserver/CommitProxyServer.actor.cpp` | ACID 引擎，可独立横向扩展 | [事务系统](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/05-transaction-system) |
+| 事务日志 | 持久 mutation/日志拓扑 | `fdbserver/TLogServer.actor.cpp` | 读写分离的关键，commit 延迟只取决于它 | [事务日志](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/06-transaction-log) |
+| 存储引擎 | MVCC/读写服务/落盘 | `fdbserver/storageserver.actor.cpp` | 数据最终落盘与读取服务的地方 | [存储引擎](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/07-storage-engine) |
+| 数据分布 | 分片/迁移/负载均衡 | `fdbserver/DataDistribution.actor.cpp` | 弹性伸缩与容错的数据平面 | [数据分布](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/08-data-distribution) |
+| 模拟测试 | 确定性模拟/workload | `fdbserver/SimulatedCluster.actor.cpp` | FDB 可靠性的根本保障，横切全栈 | [模拟测试体系](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/09-simulation-testing) |
 
 > 模块间的动态调用顺序见「运行时行为 > 核心运行流程」。
 
@@ -232,7 +227,7 @@ foundationdb/
 ### 启动流程
 
 ```text
-fdbserver main()                                   [fdbserver.cpp:1865]
+fdbserver main()                                   [fdbserver.actor.cpp:2015]
   └─ fdbd()                                        [worker.cpp:4060]
       ├─ coordinationServer()          # 若配置 coordFolder，运行协调器进程
       ├─ clusterController() 或 monitorLeader()   # 基于 processClass 决定是否竞选 CC
@@ -262,7 +257,7 @@ FDB 的运行时核心是**事务提交链路**与**故障恢复链路**。前�
 
 ![事务提交数据流](/vibe-reading/images/articles/foundationdb-internals/data-flow.svg)
 
-数据从客户端的 `CommitTransactionRequest`（含 mutations + read/write conflict ranges）出发，经 CommitProxy 的 `commitBatcher()` 批量收集后进入 `commitBatch()`：`preresolutionProcessing` 向 Sequencer 的 `getVersion()`（`masterserver.cpp:74`）请求并拿到 `commitVersion + prevVersion`；`getResolution` 把事务拆分发给 Resolver 的 `resolveBatch()`（`Resolver.cpp:263`），后者用 `ConflictSet::detectConflicts()`（`ConflictSet.cpp:948`，SkipList + MiniConflictSet bitmap）做 OCC 检测；`postResolution` 给每条 mutation 按 shard 边界分配 storage server tag，再 `logSystem->push()` 推给 TLog。TLog 的 `tLogCommit()`（`TLogServer.cpp:2832`）把 mutation 写入 per-tag 内存队列与磁盘队列，`commitQueue` actor 调 `persistentQueue->commit()` 做 fsync，持久化后回复 proxy。proxy 再 `reply` 给客户端，并 `reportLiveCommittedVersion` 给 Sequencer。StorageServer 在后台通过 `peekSingle()`（`storageserver.cpp:12210`）按自己负责的 tag 从 TLog pull mutation，应用到内存 MVCC（`VersionedMap`）后发送 `TLogPopRequest` 回收。整条链路的设计精髓是**读写分离**——commit 延迟只取决于 TLog 顺序写，落盘异步进行；以及**批量提交**——一批事务共用三次 RPC。
+数据从客户端的 `CommitTransactionRequest`（含 mutations + read/write conflict ranges）出发，经 CommitProxy 的 `commitBatcher()` 批量收集后进入 `commitBatch()`：`preresolutionProcessing` 向 Sequencer 的 `getVersion()`（`masterserver.cpp:74`）请求并拿到 `commitVersion + prevVersion`；`getResolution` 把事务拆分发给 Resolver 的 `resolveBatch()`（`Resolver.cpp:263`），后者用 `ConflictSet::detectConflicts()`（`SkipList.cpp:934`，SkipList + MiniConflictSet bitmap）做 OCC 检测；`postResolution` 给每条 mutation 按 shard 边界分配 storage server tag，再 `logSystem->push()` 推给 TLog。TLog 的 `tLogCommit()`（`TLogServer.actor.cpp:2378`）把 mutation 写入 per-tag 内存队列与磁盘队列，`commitQueue` actor 调 `persistentQueue->commit()` 做 fsync，持久化后回复 proxy。proxy 再 `reply` 给客户端，并 `reportLiveCommittedVersion` 给 Sequencer。StorageServer 在后台通过 `peekSingle()`（`storageserver.cpp:12210`）按自己负责的 tag 从 TLog pull mutation，应用到内存 MVCC（`VersionedMap`）后发送 `TLogPopRequest` 回收。整条链路的设计精髓是**读写分离**——commit 延迟只取决于 TLog 顺序写，落盘异步进行；以及**批量提交**——一批事务共用三次 RPC。
 
 #### 读链路：读取与读版本授予
 
@@ -274,17 +269,17 @@ FDB 的运行时核心是**事务提交链路**与**故障恢复链路**。前�
 
 ![Recovery 状态机](/vibe-reading/images/articles/foundationdb-internals/state-flow.svg)
 
-`ClusterRecovery` actor（`ClusterRecovery.cpp:1702` `clusterRecoveryCore`）驱动状态机：从协调器读 cstate（`READING_CSTATE`）→ Paxos 写锁定 cstate 并锁旧 TLog（`LOCKING_CSTATE`，`epochEnd` in `LogSystem.cpp:1761`）→ 招募新 TLog/proxy/resolver 并从旧 TLog 复制 `[knownCommittedVersion+1, recoveryVersion]` 区间数据（`RECRUITING`，`recruitEverything`）→ 提交恢复事务通知 SS 回滚预取的未提交版本（`RECOVERY_TRANSACTION`）→ 把新 TLog 写回协调器 cstate（`WRITING_CSTATE`，`trackTlogRecovery`）→ 开始接受提交（`ACCEPTING_COMMITS`）→ 待所有 TLog 招募（`ALL_LOGS_RECRUITED`）→ 旧 generation TLog 清理完（`STORAGE_RECOVERED`）→ `FULLY_RECOVERED`。关键安全保证是写反仲裁 + 读仲裁不变式 `W + (N-R) < F`（`getDurableVersion()` in `LogSystem.cpp:1412`），以及 `recoveryCount` 递增让旧 generation TLog 自行终止。
+`ClusterRecovery` actor（`ClusterRecovery.actor.cpp:1503` `clusterRecoveryCore`）驱动状态机：从协调器读 cstate（`READING_CSTATE`）→ Paxos 写锁定 cstate 并锁旧 TLog（`LOCKING_CSTATE`，`epochEnd` in `fdbserver/LogSystem.cpp`）→ 招募新 TLog/proxy/resolver 并从旧 TLog 复制 `[knownCommittedVersion+1, recoveryVersion]` 区间数据（`RECRUITING`，`recruitEverything`）→ 提交恢复事务通知 SS 回滚预取的未提交版本（`RECOVERY_TRANSACTION`）→ 把新 TLog 写回协调器 cstate（`WRITING_CSTATE`，`trackTlogRecovery`）→ 开始接受提交（`ACCEPTING_COMMITS`）→ 待所有 TLog 招募（`ALL_LOGS_RECRUITED`）→ 旧 generation TLog 清理完（`STORAGE_RECOVERED`）→ `FULLY_RECOVERED`。关键安全保证是写反仲裁 + 读仲裁不变式 `W + (N-R) < F`（`getDurableVersion()` in `fdbserver/LogSystem.cpp`），以及 `recoveryCount` 递增让旧 generation TLog 自行终止。
 
 ### 状态流
 
-恢复状态机的全貌见上图 9 阶段。状态枚举定义在 `fdbserver/core/include/fdbserver/core/RecoveryState.h:31`（`READING_CSTATE=1` … `FULLY_RECOVERED=9`）。转换由 `clusterRecoveryCore` 顺序推进，任意阶段检测到冲突（`coordinated_state_conflict`）或角色失败都会回退到 `READING_CSTATE` 开始新 generation（图中粉色虚线回环）。`RecoveryStatus`（`RecoveryState.h`）是 trace 事件用的诊断状态，运维通过 `MasterRecoveryState` trace 定位卡在哪一阶段。
+恢复状态机的全貌见上图 9 阶段。状态枚举定义在 `fdbserver/include/fdbserver/RecoveryState.h:31`（`READING_CSTATE=1` … `FULLY_RECOVERED=9`）。转换由 `clusterRecoveryCore` 顺序推进，任意阶段检测到冲突（`coordinated_state_conflict`）或角色失败都会回退到 `READING_CSTATE` 开始新 generation（图中粉色虚线回环）。`RecoveryStatus`（`RecoveryState.h`）是 trace 事件用的诊断状态，运维通过 `MasterRecoveryState` trace 定位卡在哪一阶段。
 
 ## 典型修改场景
 
 #### 场景 1：新增一种存储引擎实现
 
-需实现 `IKeyValueStore` 接口（`IKeyValueStore.h:47`）的 `set/clear/commit/readValue/readRange/getStorageBytes`，在 `openKVStore()` 工厂加分支。新引擎**无需实现 MVCC**——StorageServer 的 `versionedData` 负责多版本，引擎只存单版本快照，但必须满足因果一致性契约（commit 后的 read 能看到、commit 前看不到）。对应测试：`fdbserver/kvstore/` 下现有引擎的 unit test + 模拟测试 `tests/fast/StoreRecovery`.
+需实现 `IKeyValueStore` 接口（`fdbclient/include/fdbclient/IKeyValueStore.actor.h:57`）的 `set/clear/commit/readValue/readRange/getStorageBytes`，在 `openKVStore()` 工厂加分支。新引擎**无需实现 MVCC**——StorageServer 的 `versionedData` 负责多版本，引擎只存单版本快照，但必须满足因果一致性契约（commit 后的 read 能看到、commit 前看不到）。对应测试：`fdbserver/` 下现有引擎的 unit test + 模拟测试 `tests/fast/StoreRecovery`.
 
 #### 场景 2：新增一种角色并让 ClusterController 招募
 
@@ -301,7 +296,7 @@ FDB 的测试哲学以**确定性模拟**为核心，辅以单元测试：
 ```text
 tests/                         # 集成/模拟测试用例（.txt/.toml/.ini）
 fdbserver/workloads/          # 模拟 workload（~54k 行）
-fdbserver/FDBServerUnitTestMain.cpp  # 单元测试入口
+fdbserver/ 下各 *UnitTests.actor.cpp  # 单元测试
 flow/CoroTests.cpp             # flow 层单元测试
 fdbrpc/tests/                  # RPC 层测试
 ```
@@ -318,13 +313,13 @@ fdbrpc/tests/                  # RPC 层测试
 ## 阅读源码推荐路线
 
 - **第一遍：理解异步模型与提交主链路**
-  `flow/include/flow/flow.h` 的 `SAV<T>/Future<T>/Promise<T>` → `flow/Net2.cpp` 的 `Net2::run()` 事件循环 → `fdbclient/NativeAPI.actor.cpp` 的 `Transaction::commit()` → `fdbserver/commitproxy/CommitProxyServer.cpp` 的 `commitBatcher()/commitBatch()` → `fdbserver/sequencer/masterserver.cpp` 的 `getVersion()`
+  `flow/include/flow/flow.h` 的 `SAV<T>/Future<T>/Promise<T>` → `flow/Net2.actor.cpp` 的 `Net2::run()` 事件循环 → `fdbclient/NativeAPI.actor.cpp` 的 `Transaction::commit()` → `fdbserver/CommitProxyServer.actor.cpp` 的 `commitBatcher()/commitBatch()` → `fdbserver/masterserver.actor.cpp` 的 `getVersion()`
 - **第二遍：理解冲突检测与日志持久化**
-  `fdbserver/resolver/ConflictSet.cpp` 的 `detectConflicts()` + `SkipList` → `fdbserver/tlog/TLogServer.cpp` 的 `tLogCommit()/commitQueue()` → `fdbserver/logsystem/LogSystem.cpp` 的 `push()/getDurableVersion()`
+  `fdbserver/SkipList.cpp` 的 `detectConflicts()` + `SkipList` → `fdbserver/TLogServer.actor.cpp` 的 `tLogCommit()/commitQueue()` → `fdbserver/LogSystem.cpp` 的 `push()/getDurableVersion()`
 - **第三遍：理解存储与数据分布**
-  `fdbserver/storageserver/storageserver.cpp` 的 `getValueQ()/update()/updateStorage()` → `fdbserver/kvstore/VersionedBTree.cpp` 的 `commit()` → `fdbserver/datadistributor/DataDistribution.cpp` 与 `DDRelocationQueue.cpp` 的 `dataDistributionRelocator()`
+  `fdbserver/storageserver.actor.cpp` 的 `getValueQ()/update()/updateStorage()` → `fdbserver/VersionedBTree.actor.cpp` 的 `commit()` → `fdbserver/DataDistribution.actor.cpp` 与 `DDRelocationQueue.actor.cpp` 的 `dataDistributionRelocator()`
 - **第四遍：理解容错与恢复**
-  `fdbserver/clustercontroller/ClusterController.cpp` 的 `clusterWatchDatabase()` → `ClusterRecovery.cpp` 的 `clusterRecoveryCore()` 9 阶段 → `fdbserver/core/CoordinatedState.cpp` Paxos → `fdbserver/SimulatedCluster.cpp` 看模拟如何复用同一份 fdbd 代码
+  `fdbserver/ClusterController.actor.cpp` 的 `clusterWatchDatabase()` → `fdbserver/ClusterRecovery.actor.cpp` 的 `clusterRecoveryCore()` 9 阶段 → `fdbserver/CoordinatedState.actor.cpp` Paxos → `fdbserver/SimulatedCluster.actor.cpp` 看模拟如何复用同一份 fdbd 代码
 
 ## 附录
 

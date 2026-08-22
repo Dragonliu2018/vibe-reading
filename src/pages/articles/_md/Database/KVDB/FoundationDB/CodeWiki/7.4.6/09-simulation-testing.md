@@ -1,0 +1,137 @@
+---
+source:
+  type: "源码解读"
+  project: "FoundationDB"
+  url: "https://github.com/apple/foundationdb"
+title: "模拟测试体系"
+date: "2026-08-22T15:19:30+08:00"
+category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+tags: ["FoundationDB", "C++", "Simulation", "DeterministicRandom", "Buggify", "FaultInjection", "Workload"]
+description: "模拟测试体系——Sim2 单进程确定性模拟整个集群 + Workload 框架 + FaultInjection/Buggify/SimBugInjector 故障注入，FDB 可靠性的根本保障。"
+readingTime: "38 min"
+aiModel: "Claude Opus 5"
+reviewed: false
+---
+
+> [← 返回概览](/vibe-reading/articles/Database/KVDB/FoundationDB/CodeWiki/7.4.6/00-overview)
+
+---
+
+## 模块定位
+
+`fdbserver/SimulatedCluster.actor.cpp` + `fdbserver/workloads/` + `fdbrpc/sim2.actor.cpp` + `fdbserver/tester.actor.cpp` + flow 的模拟原语，构成 FDB 的杀手锏——**确定性模拟（deterministic simulation）**。通过模拟的机器、网络、文件系统、确定性随机数和故障注入，在一个进程内模拟整个集群，跑数千个并发 workload，复现并发 bug。这是 FDB 可靠性的根本保障——每个 PR 都跑模拟回归。FDB 测试哲学认为分布式 bug 大多源于并发交互，单元测试难以覆盖，确定性模拟是核心策略。
+
+## 模块架构
+
+模拟体系由模拟器、workload 框架、故障注入三层组成：
+
+- **Sim2**（`fdbrpc/sim2.actor.cpp`）——模拟器核心，`ISimulator` + `INetworkConnections`，替代 `Net2` 作 `g_network`。`now()`（`:1058`）返回虚拟时钟、`delay()` 模拟延迟、`connect/listen` 返回 `Sim2Conn`/`Sim2Listener`。`newProcess()` 创建模拟进程、`killProcess/killMachine/killZone/killDataCenter` 精确故障注入、`runLoop()`（`:1405`）单线程事件循环。**`canKillProcesses()`**（`:1633`）是 `ISimulator::canKillProcesses`（`fdbrpc/include/fdbrpc/simulator.h`）的具体 override——7.4.6 中**无独立 `FDBSimulationPolicy` 类**，安全策略直接实现在 `Sim2::canKillProcesses`，根据复制策略判断杀一批进程后集群能否存活，不能则自动降级 KillType。
+- **Sim2Conn**——模拟连接，`std::deque<uint8_t> recvBuf` 模拟 TCP 缓冲，sender/receiver actor 模拟双向传输+延迟，`rollRandomClose()` 0.001% 随机断连。
+- **SimClogging**——模拟网络延迟/丢包/重排：`getSendDelay/getRecvDelay`、`clogPairFor/disconnectPairFor`、`halfLatency()` 99.9% 快速 + 0.1% 长尾。
+- **TestWorkload**（`fdbserver/include/fdbserver/workloads/workloads.actor.h`）——所有 workload 抽象基类，四阶段接口 `setup/start/check/getMetrics`。
+- **WorkloadFactory<T>**（workloads.actor.h，见 `fdbserver/tester.actor.cpp:517` 注册使用）——工厂模式自动注册，全局 `IWorkloadFactory::factories()` map，每 cpp 文件末尾全局对象注册。`REGISTER_WORKLOAD` 宏。
+- **CompoundWorkload**——组合模式，`add()` 子 workload 并发执行，`addFailureInjection()` 按概率注入故障 workload。
+- **FailureInjectionWorkload**——故障注入基类。具体有 `MachineAttrition`、`RandomClogging`、`Rollback`、`DiskFailureInjection` 等（`fdbserver/workloads/*.actor.cpp`）。
+- **DeterministicRandom**（`flow/DeterministicRandom.cpp` + `flow/include/flow/DeterministicRandom.h:38`）——`std::mt19937` 跨平台一致，全局 `deterministicRandom()`。
+- **SimBugInjector**（`flow/include/flow/SimBugInjector.h`）——负面测试 bug 注入框架。
+- **FaultInjection**（`flow/include/flow/FaultInjection.h`）——`INJECT_FAULT` 宏，全局函数指针 `should_inject_fault` 模拟模式下设为 `simulator_should_inject_fault`（`sim2.actor.cpp`）。
+- **Buggify**（`flow/include/flow/Buggify.h`）——概率性代码路径变异。
+- **RemoveServersSafely**（`fdbserver/workloads/RemoveServersSafely.actor.cpp`）——`canKillProcesses` 的调用方之一，杀进程前迭代找出可安全杀死的最大进程集。
+
+## 调用链路
+
+一次模拟测试完整执行：
+
+```text
+fdbserver -r simulation  [fdbserver.actor.cpp main :2015]
+  ├─ startNewSimulator()  [fdbserver.actor.cpp:2119]  g_network = g_simulator = new Sim2()
+  ├─ resetServerKnobs(Randomize::True, IsSimulated::True)  随机化 knobs
+  ├─ simulationSetupAndRun()  [fdbserver/SimulatedCluster.actor.cpp:2907]
+  │   ├─ TestConfig::readFromConfig(testFile)  解析 TOML
+  │   ├─ newProcess("TestSystem") + Sim2FileSystem + FlowTransport::createInstance
+  │   ├─ setupSimulatedSystem()  [:2378]
+  │   │   ├─ SimulationConfig 随机生成集群配置（datacenters/machineCount/processes/coordinators）
+  │   │   ├─ 随机: SSL/IPv6/hostname/assignClasses
+  │   │   └─ for each machine: simulatedMachine → simulatedFDBDRebooter → fdbd()  调用真实 fdbd 代码
+  │   ├─ delay(1.0) 等机器启动
+  │   └─ runTests()  [fdbserver/tester.actor.cpp:2688]
+  │       └─ 编排器: changeConfiguration → quietDatabase → for each TestSpec: runTest → runWorkload
+  │           ├─ [SETUP] workload.setup
+  │           ├─ [EXECUTION] workload.start
+  │           ├─ [CHECK] workload.check（收集 success/failure）
+  │           └─ [METRICS] workload.getMetrics
+  │           ├─ checkConsistency 一致性检查
+  │           ├─ auditStorageCorrectness 存储审计
+  │           └─ clearData 清理
+  │           quietDatabase("End")
+  └─ g_simulator->run()  Sim2::runLoop  [sim2.actor.cpp:1405]
+```
+
+Tester 工作进程侧 workload 创建：按名查 `IWorkloadFactory::create` → `WorkloadFactory<T>::create` → `CompoundWorkload` 组合 + `addFailureInjection` 按概率遍历 `IFailureInjectorFactory` 注入。
+
+<details>
+<summary>方法速查表</summary>
+
+| 方法 | 文件:行 | 职责 |
+| --- | --- | --- |
+| `startNewSimulator` | `fdbserver.actor.cpp:2119` | 创建 Sim2 实例 |
+| `Sim2::runLoop` | `sim2.actor.cpp:1405` | 模拟器主事件循环 |
+| `Sim2::now` | `:1058` | 虚拟时钟 |
+| `Sim2::canKillProcesses` | `:1633` | 安全策略（无 FDBSimulationPolicy） |
+| `simulationSetupAndRun` | `SimulatedCluster.actor.cpp:2907` | 模拟集群搭建+跑测试 |
+| `setupSimulatedSystem` | `:2378` | 随机生成集群配置 |
+| `runTests` | `tester.actor.cpp:2688` | 测试编排器 |
+| `WorkloadFactory` 注册 | `tester.actor.cpp:517` | 工厂创建 workload |
+| `simulator_should_inject_fault` | `sim2.actor.cpp` | 确定性故障注入决策 |
+| `RemoveServersSafely` | `workloads/RemoveServersSafely.actor.cpp` | canKillProcesses 调用方 |
+</details>
+
+## 核心实现
+
+### Test Double（非 mock）
+
+FDB 的模拟不是 mock，而是 **Test Double**：每个模拟进程运行真实 `fdbd()` 代码，只是底层 I/O 换模拟实现。模拟网络：`Sim2` 实现 `INetworkConnections`，`Sim2Conn`/`Sim2Listener` 实现 `IConnection`/`IListener`，有随机延迟（`SimClogging`）、随机断连（`rollRandomClose`）。模拟文件系统：`Sim2FileSystem`，`SimpleFile` 经 `INJECT_FAULT` 注入 I/O 故障，`AsyncFileNonDurable` 模拟非持久化文件。模拟进程：`Sim2::newProcess` 创建 `ProcessInfo` 独立地址/locality/全局变量空间，`runLoop`（`:1405`）单线程事件循环经 `onProcess/onMachine` 切换上下文。
+
+### canKillProcesses 安全策略
+
+**7.4.6 无独立 `FDBSimulationPolicy` 类**——安全策略直接实现为 `Sim2::canKillProcesses`（`sim2.actor.cpp:1633-1854`），是 `ISimulator::canKillProcesses`（`simulator.h`）纯虚函数的具体 override。它根据 tLog/storage 复制策略、anti-quorum、region 配置判断杀死一批进程后集群能否存活——不能则自动降级 KillType（`KillInstantly`→`Reboot`）。`RemoveServersSafely.actor.cpp:311`（`canKillProcesses` 的调用方，见 `SimulatedCluster.actor.cpp:2034`）在杀进程前调用它迭代找出可安全杀死的最大进程集，避免假阳性（杀死超过复制策略能容忍的进程数）。
+
+### FaultInjection
+
+全局函数指针 `should_inject_fault`（`flow/FaultInjection.cpp`）模拟模式下设为 `simulator_should_inject_fault`（`sim2.actor.cpp`），用确定性随机 + 进程的 `fault_injection_p1/p2` 决定是否注入。`INJECT_FAULT(io_timeout, "SimpleFile::read")` 宏在文件 I/O 抛模拟错误。故障注入在 `killProcess_internal` 通过设 `fault_injection_p1=0.1; fault_injection_p2=random01()` 激活。
+
+### Buggify（概率性代码路径变异）
+
+FDB 独创测试技术。`buggify(probability)`（`Buggify.h`）激活时以指定概率返回 true 进入不常走路径。两层随机性：(1) 每调用点（file:line）首次执行以 `P_GENERAL_BUGGIFIED_SECTION_ACTIVATED`(25%) 被激活，结果缓存；(2) 激活后每次执行以 25% 实际触发。保证同一次运行内同调用点行为一致，不同运行间路径组合不同。
+
+### 策略模式 Workload 框架
+
+`TestWorkload` 定义 `setup/start/check/getMetrics` 四阶段策略接口；`WorkloadFactory<T>` 模板自动注册；`CompoundWorkload` 组合多 workload + 故障注入并发执行；`FailureInjectionWorkload` 子类实现不同故障策略。`CycleWorkload`（`fdbserver/workloads/Cycle.actor.cpp`）是典型模板——`start` 启动多 `cycleClient` actor 并发执行事务，`check` 验证 cycle 数据完整性。
+
+### 确定性随机
+
+`DeterministicRandom`（`flow/DeterministicRandom.cpp` + `.h:38`）用 `std::mt19937` 跨编译器/平台一致。全局 `deterministicRandom()`，种子在 `startNewSimulator` 由命令行参数设定。`peek()` 不消耗地窥探下一值。`bindDeterministicRandomToOpenssl()`（`flow.cpp`）甚至替换 OpenSSL `RAND_bytes` 为确定性随机——让涉及加密的模拟也完全可复现。
+
+### SimBugInjector（负面测试）
+
+注释明确区分：Buggify 注入 FDB **必须正确处理**的故障（磁盘错误、网络延迟），验证容错能力；SimBugInjector 注入**实际 bug**（数据损坏、错误计算），用于**负面测试**——验证测试套件能否发现它该发现的 bug。`ISimBug::hit()` 执行 bug 行为，`enable()` 前置条件 `g_network->isSimulated()`。解决"测试的测试"问题。
+
+## 设计模式
+
+| 模式 | 位置 | 为什么用 |
+| --- | --- | --- |
+| Test Double 模拟 | `Sim2` in `sim2.actor.cpp` | 跑真实 fdbd 代码，发现的 bug 是真 bug |
+| 安全策略 | `Sim2::canKillProcesses` `sim2.actor.cpp:1633` | 直接 override，避免杀超复制容忍进程 |
+| 故障注入 FaultInjection | `FaultInjection.h` | 确定性可控注入 I/O 故障 |
+| Buggify 路径变异 | `Buggify.h` | 概率性走不常路径，两层随机保证一致 |
+| 策略模式 Workload | `workloads.actor.h` + `tester.actor.cpp:517` | 四阶段接口 + 工厂自动注册 |
+| 确定性随机 | `DeterministicRandom.h:38` | 种子固定→bug 100% 可复现 |
+| 负面测试 SimBugInjector | `SimBugInjector.h` | 验证测试能否发现它该发现的 bug |
+
+## 模块间交互
+
+依赖 flow（`DeterministicRandom`/确定性原语）、fdbrpc（`sim2` 模拟网络）。被 fdbserver（`-r simulation` 入口）调用。**关键**：模拟复用真实代码路径——模拟进程运行完全相同的 `fdbd()`（`SimulatedCluster.actor.cpp`），区别仅在：网络层 `FlowTransport::createInstance(true)` 底层是 `Sim2` 非 `Net2`；文件系统 `Sim2FileSystem` 替换真实，所有文件操作经 `SimpleFile`/`AsyncFileNonDurable` 在 `INJECT_FAULT` 注入错误；时间 `Sim2::now()` 由 `runLoop` 推进与真实无关；随机 `deterministicRandom()` 全局确定性。storage/tlog/dd/proxy 的**全部业务逻辑**在模拟中与生产运行同一份代码，只是底层 I/O 换模拟实现。
+
+## 扩展方式
+
+新增 Workload：在 `fdbserver/workloads/` 新建 `MyWorkload.actor.cpp`，实现 `TestWorkload` 子类提供 `NAME` 和 `setup/start/check/getMetrics`，文件末尾 `WorkloadFactory<MyWorkload> MyWorkloadFactory(UntrustedMode::False);` 自动注册，TOML 引用 `testName = "MyWorkload"`。参考 `Cycle.actor.cpp`。新增故障注入：继承 `FailureInjectionWorkload` 实现 `initFailureInjectionMode`/`shouldInject`，注册 `FailureInjectorFactory<T>` 全局对象自动加入 `IFailureInjectorFactory::factories()`，`start` 中调 `killProcess/killMachine`。参考 `MachineAttrition.actor.cpp`。新增 I/O 故障注入：在目标 I/O 操作加 `INJECT_FAULT(error_type, "context")`，支持 `io_timeout`/`io_error`/`platform_error`，参考 `sim2.actor.cpp` 的 `SimpleFile::read_impl`。

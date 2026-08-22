@@ -5,7 +5,7 @@ source:
   url: "https://github.com/ohmyzsh/ohmyzsh"
 title: "生命周期工具"
 date: "2026-08-13T20:12:36+08:00"
-category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master"]
+category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master-2026-08"]
 tags: ["ohmyzsh", "Shell", "安装", "升级", "changelog"]
 description: "解读 tools/ 生命周期工具：curl|sh 安装、后台非阻塞升级检查、Conventional Commits changelog 与幂等性设计。"
 readingTime: "12 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master-2026-08/00-overview)
 
 ---
 

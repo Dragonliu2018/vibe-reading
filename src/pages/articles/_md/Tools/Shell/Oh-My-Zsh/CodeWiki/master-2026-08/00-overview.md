@@ -5,7 +5,7 @@ source:
   url: "https://github.com/ohmyzsh/ohmyzsh"
 title: "Overview"
 date: "2026-08-13T20:12:36+08:00"
-category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master"]
+category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master-2026-08"]
 tags: ["ohmyzsh", "Shell", "zsh", "插件系统", "启动加载"]
 description: "Oh My Zsh 是最流行的 zsh 配置框架。本文从引导引擎、核心库、插件系统、主题系统到生命周期工具，全面解读其 master 分支的 Shell 内部实现。"
 readingTime: "30 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> **版本** master (b54a7197) · **协议** MIT · **语言** Zsh · **代码量** ~5,300 行（核心）+ 359 插件 + 143 主题 · **仓库** [GitHub](https://github.com/ohmyzsh/ohmyzsh)
+> **版本** master-2026-08 · **解读基线** commit [`b54a7197`](https://github.com/ohmyzsh/ohmyzsh/commit/b54a71977574cfcf659cc2f15a5e6422f17a8da7)（2026-08-11，开发分支快照，无 release tag）· **协议** MIT · **语言** Zsh · **代码量** ~5,300 行（核心）+ 359 插件 + 143 主题 · **仓库** [GitHub](https://github.com/ohmyzsh/ohmyzsh)
 
 ---
 
@@ -78,7 +78,7 @@ Oh My Zsh 的架构思想是**分层 + 约定驱动 + 覆盖链**。它不像传
 
 分层从上到下是：用户配置驱动引导引擎，引导引擎调用核心库函数并加载插件/主题扩展，生命周期工具横切管理框架自身的安装与升级。依赖方向严格自上而下——插件和主题依赖核心库（调 `git_prompt_info` 等），核心库不反向依赖插件。
 
-![Oh My Zsh 分层架构](/vibe-reading/images/articles/ohmyzsh-master/architecture.svg)
+![Oh My Zsh 分层架构](/vibe-reading/images/articles/ohmyzsh-master-2026-08/architecture.svg)
 
 各层职责与目录映射：
 
@@ -174,13 +174,13 @@ ohmyzsh/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 | --- | --- | --- | --- | --- |
-| 引导引擎 | zsh 启动时按序装配路径、compinit、lib、插件、主题 | `oh-my-zsh.sh` | 它是唯一控制加载顺序与覆盖机制的层，独立出来核心库才能保持纯函数化 | [引导引擎](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/01-bootstrap) |
-| 核心库 | 内置基础函数：omz CLI、git prompt、completion、键绑定 | `lib/*.zsh` | 这些函数被所有插件和主题依赖，是框架的"标准库"，独立成层保证可被 custom 覆盖 | [核心库](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/02-core-lib) |
-| 插件系统 | 约定式扩展机制，359 个生态插件 | `plugins/` + `is_plugin` | 插件是框架的核心价值载体，独立于 lib 保证可按需加载、可被 custom 覆盖 | [插件系统](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/03-plugins) |
-| 主题系统 | prompt 外观定义，143 个主题 + 异步渲染 | `themes/` + `lib/async_prompt.zsh` | 主题通过变量契约与 lib 协作，独立于插件因为 prompt 渲染是独立关注点 | [主题系统](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/04-themes) |
-| 生命周期工具 | 框架自身的安装、升级、卸载、changelog | `tools/*.sh` | 这些脚本在 zsh 运行时之外执行（安装前/升级时），与运行时加载逻辑正交 | [生命周期工具](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master/05-lifecycle) |
+| 引导引擎 | zsh 启动时按序装配路径、compinit、lib、插件、主题 | `oh-my-zsh.sh` | 它是唯一控制加载顺序与覆盖机制的层，独立出来核心库才能保持纯函数化 | [引导引擎](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master-2026-08/01-bootstrap) |
+| 核心库 | 内置基础函数：omz CLI、git prompt、completion、键绑定 | `lib/*.zsh` | 这些函数被所有插件和主题依赖，是框架的"标准库"，独立成层保证可被 custom 覆盖 | [核心库](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master-2026-08/02-core-lib) |
+| 插件系统 | 约定式扩展机制，359 个生态插件 | `plugins/` + `is_plugin` | 插件是框架的核心价值载体，独立于 lib 保证可按需加载、可被 custom 覆盖 | [插件系统](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master-2026-08/03-plugins) |
+| 主题系统 | prompt 外观定义，143 个主题 + 异步渲染 | `themes/` + `lib/async_prompt.zsh` | 主题通过变量契约与 lib 协作，独立于插件因为 prompt 渲染是独立关注点 | [主题系统](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master-2026-08/04-themes) |
+| 生命周期工具 | 框架自身的安装、升级、卸载、changelog | `tools/*.sh` | 这些脚本在 zsh 运行时之外执行（安装前/升级时），与运行时加载逻辑正交 | [生命周期工具](/vibe-reading/articles/Tools/Shell/Oh-My-Zsh/CodeWiki/master-2026-08/05-lifecycle) |
 
-![模块依赖关系](/vibe-reading/images/articles/ohmyzsh-master/module-dependencies.svg)
+![模块依赖关系](/vibe-reading/images/articles/ohmyzsh-master-2026-08/module-dependencies.svg)
 
 模块间依赖方向：引导引擎 source 核心库和生命周期工具（`check_for_upgrade.sh`）；插件和主题依赖核心库（调用 `git_prompt_info` 等 prompt 函数）；`lib/cli.zsh` 的 `omz update` 调用 `tools/upgrade.sh`。`custom/` 目录对 lib、plugins、themes 提供同级覆盖，是贯穿三层的横切机制。所有跨模块数据通过全局变量（`$ZSH`、`$plugins`、`$ZSH_THEME`）和 source 副作用传递，无函数参数传递。
 
@@ -215,7 +215,7 @@ Oh My Zsh 没有"进程启动"概念——它在 zsh 进程启动时被 `.zshrc`
 
 业务流程：zshrc 设置变量 → 引导引擎推导路径 → 后台升级检查 → completion 初始化 → 逐层 source 注入函数/别名/主题 → prompt 就绪。
 
-![Shell 启动数据流](/vibe-reading/images/articles/ohmyzsh-master/data-flow.svg)
+![Shell 启动数据流](/vibe-reading/images/articles/ohmyzsh-master-2026-08/data-flow.svg)
 
 文字描述：从 `source ~/.zshrc` 起，`$ZSH`/`$plugins`/`$ZSH_THEME` 三大变量驱动全程。引导引擎先做环境保护和路径推导，再 `source check_for_upgrade.sh`（默认后台 `&|` 非阻塞，通过 GitHub API 比对 HEAD）。fpath 装配必须在 compinit 前——插件的 `_{name}` completion 文件需先在 fpath 就位。compinit 用 revision+fpath 指纹检测 zcompdump 缓存是否有效，有效则跳过扫描，再 `zrecompile` 编译 `.zwc` 字节码。随后按序 source 21 个 lib、各插件、custom 配置、主题，每步通过 source 副作用注入状态。整个链路是纯同步顺序执行，唯一并发是升级检查的后台分支。
 

@@ -7,7 +7,7 @@ source:
   author: "digoal德哥"
   site: "digoal德哥 微信公众号"
 date: "2026-07-30T18:30:00+08:00"
-category: [Database, MotherDuck, Informal]
+category: [Database, OLAP, MotherDuck, Informal]
 tags: ["MotherDuck", "DuckDB", "分布式", "Serverless", "数据仓库", "MPP", "Duckling"]
 description: "MotherDuck 的分布式不是传统 MPP：单条查询单节点执行，平台用更多 Duckling 扩展租户和并发。本文拆解 workload-level distribution、单节点优势的物理天花板、Duckling 三层扩展与 Serverless 计费的真相边界。"
 readingTime: "9 min"

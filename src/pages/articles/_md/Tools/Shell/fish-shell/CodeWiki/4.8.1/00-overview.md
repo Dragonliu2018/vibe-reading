@@ -5,7 +5,7 @@ source:
   url: "https://github.com/fish-shell/fish-shell"
 title: "Overview"
 date: "2026-08-14T11:44:53+08:00"
-category: ["Tools", "fish-shell", "CodeWiki", "4.8.1"]
+category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
 tags: ["fish-shell", "Rust", "Shell", "Parser", "Interactive"]
 description: "fish-shell 是一个智能且用户友好的交互式命令行 shell。本文从分层架构、解析管线、交互读取层、补全引擎到执行模型，全面解读 fish v4.8.1 的 Rust 内部实现。"
 readingTime: "40 min"
@@ -190,15 +190,15 @@ fish-shell/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| 解析引擎 | 词法→语法→AST | `ast::parse` in `ast.rs` | tokenize/parse/AST 是一切的基础，且需支持部分解析（高亮/补全用） | [解析引擎](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/01-parsing) |
-| 执行与进程 | AST→Job/Process→fork/exec | `exec_job` in `exec.rs` | 把结构化 AST 变成运行进程，与解析是两个关注点 | [执行与进程](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/02-execution) |
-| 交互读取层 | 按键编辑+屏幕重绘+autosuggest | `reader_read` in `reader/reader.rs` | 交互编辑循环是 shell 之所以"交互"的核心 | [交互读取层](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/03-reader) |
-| 补全引擎 | Tab 补全生成与匹配 | `complete` in `complete.rs` | 补全是 fish 旗舰特性，有独立规则库与模糊匹配 | [补全引擎](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/04-completion) |
-| 环境变量 | 变量存储+作用域+universal | `EnvStack` in `env/environment.rs` | 高扇入核心状态，需独立处理作用域与跨进程同步 | [环境变量](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/05-environment) |
-| 历史记录 | 命令历史持久化 | `History` in `history/history.rs` | 去重/会话/后台压缩自成体系 | [历史记录](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/06-history) |
-| 语法高亮 | 实时着色+错误检测 | `highlight_shell` in `highlight/highlight.rs` | 需对不完整输入容忍解析，独立关注点 | [语法高亮](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/07-highlight) |
-| 内建命令 | 50 个 builtin + 派发 | `builtin_run` in `builtins/shared/misc.rs` | 命令逻辑与注册机制自成一体 | [内建命令](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/08-builtins) |
-| 基础设施 | 宽字符串/线程/日志/事件/crates | `wstr`/`ThreadPool`/`flog` | 被全代码依赖的底层抽象，&wstr 是 god node #1 | [基础设施](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/09-foundation) |
+| 解析引擎 | 词法→语法→AST | `ast::parse` in `ast.rs` | tokenize/parse/AST 是一切的基础，且需支持部分解析（高亮/补全用） | [解析引擎](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/01-parsing) |
+| 执行与进程 | AST→Job/Process→fork/exec | `exec_job` in `exec.rs` | 把结构化 AST 变成运行进程，与解析是两个关注点 | [执行与进程](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/02-execution) |
+| 交互读取层 | 按键编辑+屏幕重绘+autosuggest | `reader_read` in `reader/reader.rs` | 交互编辑循环是 shell 之所以"交互"的核心 | [交互读取层](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/03-reader) |
+| 补全引擎 | Tab 补全生成与匹配 | `complete` in `complete.rs` | 补全是 fish 旗舰特性，有独立规则库与模糊匹配 | [补全引擎](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/04-completion) |
+| 环境变量 | 变量存储+作用域+universal | `EnvStack` in `env/environment.rs` | 高扇入核心状态，需独立处理作用域与跨进程同步 | [环境变量](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/05-environment) |
+| 历史记录 | 命令历史持久化 | `History` in `history/history.rs` | 去重/会话/后台压缩自成体系 | [历史记录](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/06-history) |
+| 语法高亮 | 实时着色+错误检测 | `highlight_shell` in `highlight/highlight.rs` | 需对不完整输入容忍解析，独立关注点 | [语法高亮](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/07-highlight) |
+| 内建命令 | 50 个 builtin + 派发 | `builtin_run` in `builtins/shared/misc.rs` | 命令逻辑与注册机制自成一体 | [内建命令](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/08-builtins) |
+| 基础设施 | 宽字符串/线程/日志/事件/crates | `wstr`/`ThreadPool`/`flog` | 被全代码依赖的底层抽象，&wstr 是 god node #1 | [基础设施](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/09-foundation) |
 
 ---
 
@@ -315,7 +315,7 @@ src/builtins/...   # 各 builtin 内嵌 #[cfg(test)] 单元测试
 - **第三遍：理解交互前端与异步**
   `src/reader/reader.rs` 的 `handle_char_event`/`handle_readline_command` → `src/screen.rs` 的 `Screen::update`（diff 重绘）→ `src/reader/iothreads.rs` 的 `Debounce` + `src/threads/debounce.rs` → `src/fd_monitor.rs` 的 `FdEventSignaller`
 - **第四遍：选择重点子模块深入**
-  按本文「模块地图」选读各模块文件（[补全引擎](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/04-completion) 的模糊匹配、[环境变量](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/05-environment) 的 universal 同步、[历史记录](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/06-history) 的 vacuum 压缩都值得精读）
+  按本文「模块地图」选读各模块文件（[补全引擎](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/04-completion) 的模糊匹配、[环境变量](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/05-environment) 的 universal 同步、[历史记录](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/06-history) 的 vacuum 压缩都值得精读）
 
 ---
 

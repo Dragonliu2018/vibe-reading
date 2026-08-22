@@ -5,7 +5,7 @@ source:
   url: "https://github.com/fish-shell/fish-shell"
 title: "解析引擎"
 date: "2026-08-14T11:44:53+08:00"
-category: ["Tools", "fish-shell", "CodeWiki", "4.8.1"]
+category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
 tags: ["fish-shell", "Rust", "Parser", "AST", "Tokenizer"]
 description: "fish 的解析引擎：tokenizer 词法分析 → Populator 递归下降 → Ast。Node trait + Kind enum 双重抽象，支持部分解析供高亮/补全使用。"
 readingTime: "18 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/00-overview)
 
 ---
 

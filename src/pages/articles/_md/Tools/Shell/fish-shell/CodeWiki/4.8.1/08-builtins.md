@@ -5,7 +5,7 @@ source:
   url: "https://github.com/fish-shell/fish-shell"
 title: "内建命令"
 date: "2026-08-14T11:44:53+08:00"
-category: ["Tools", "fish-shell", "CodeWiki", "4.8.1"]
+category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
 tags: ["fish-shell", "Rust", "Builtins", "CommandDispatch", "Autoload"]
 description: "fish 的内建命令：BuiltinCmd 统一签名、BUILTIN_DATAS 编译期注册表二分派发、function/autoload 懒加载、fish_indent 双入口。"
 readingTime: "16 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/00-overview)
 
 ---
 

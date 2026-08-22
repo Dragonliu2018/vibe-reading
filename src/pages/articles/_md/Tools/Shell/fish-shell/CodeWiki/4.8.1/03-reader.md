@@ -5,7 +5,7 @@ source:
   url: "https://github.com/fish-shell/fish-shell"
 title: "交互读取层"
 date: "2026-08-14T11:44:53+08:00"
-category: ["Tools", "fish-shell", "CodeWiki", "4.8.1"]
+category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
 tags: ["fish-shell", "Rust", "Reader", "Readline", "Screen"]
 description: "fish 的交互读取层：ReaderData 状态聚合、事件循环、Screen diff 重绘、autosuggest/highlight 后台去抖、按键绑定派发。"
 readingTime: "22 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/00-overview)
 
 ---
 

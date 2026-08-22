@@ -5,7 +5,7 @@ source:
   url: "https://github.com/fish-shell/fish-shell"
 title: "环境变量"
 date: "2026-08-14T11:44:53+08:00"
-category: ["Tools", "fish-shell", "CodeWiki", "4.8.1"]
+category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
 tags: ["fish-shell", "Rust", "Environment", "UniversalVariables", "Scope"]
 description: "fish 的环境变量模块：Environment trait + EnvStack 五层作用域、env_dispatch 观察者、universal variables 文件+信号跨会话同步。"
 readingTime: "16 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Tools/fish-shell/CodeWiki/4.8.1/00-overview)
+> [← 返回概览](/vibe-reading/articles/Tools/Shell/fish-shell/CodeWiki/4.8.1/00-overview)
 
 ---
 

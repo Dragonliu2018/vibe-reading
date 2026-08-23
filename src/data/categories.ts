@@ -94,7 +94,7 @@ function buildTree(): TreeNode[] {
   // 占位/兜底末级）置后按字母序——避免兜底桶夹在项目名中间（如 Papers 混在 SGLang/vLLM 间）
   const TYPE_LABELS = new Set([
     'Papers', 'Contributions', 'CodeWiki', 'PRs',
-    'Official', 'Informal', 'Docs', 'Notes', 'Reading', 'Blogs', 'Ecosystems',
+    'Official', 'Informal', 'Docs', 'Meetups', 'Notes', 'Reading', 'Blogs', 'Ecosystems',
   ]);
   function sortLabels(nodes: TreeNode[]) {
     nodes.sort((a, b) => {

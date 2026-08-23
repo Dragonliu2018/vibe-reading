@@ -5,7 +5,7 @@ category: [Tools, Notes]
 tags: ["Linux", "Mac", "Windows", "Chrome", "vscode", "效率工具", "快捷键"]
 description: "跨 Linux / Mac / Windows / Chrome / vscode 的常用工具与高效使用速查笔记"
 readingTime: "2 min"
-aiModel: "Claude Opus 4.8"
+aiModel: "Claude Opus 5"
 reviewed: false
 ---
 

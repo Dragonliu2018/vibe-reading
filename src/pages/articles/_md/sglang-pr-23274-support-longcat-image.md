@@ -433,5 +433,6 @@ SGLang `DenoisingStage` 直接把 scheduler 原始 timestep（`[0,1000]`）传�
 ## 相关阅读
 
 - [LongCat-Image Technical Report](/vibe-reading/articles/longcat-image-technical-report) — **设计来源**·本 PR 落地的模型原论文（MM-DiT 混合架构 + 三阶段数据精炼 + 多奖励 RLHF）
+- [在 SGLang 中接入 LongCat-AudioDiT](/vibe-reading/articles/sglang-pr-22191-support-longcat-audiodit) — **同设计落地线**·同系列接入 `multimodal_gen` 的文生音频分支，用框架 hooks 把耦合 ODE 纳入标准三段式，与本篇 Diffusers 多组件路径对照
 - [xLLM PR #849：LongCat-Image CUDA 支持](/vibe-reading/articles/xllm-pr-849-longcat-image-cuda) — **同模型另一框架**·LongCat-Image T2I 在 xLLM 的 CUDA 适配
 - [xLLM PR #957：LongCat-Image-Edit CUDA 支持](/vibe-reading/articles/xllm-pr-957-longcat-image-edit-cuda) — **同模型 Edit 分支**·LongCat-Image-Edit 在 xLLM 的 CUDA 适配

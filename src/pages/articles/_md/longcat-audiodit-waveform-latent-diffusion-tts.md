@@ -12,6 +12,7 @@ description: "目的：高保真扩散 TTS。手段：直接在波形隐空间�
 readingTime: "16 min"
 aiModel: "Claude Opus 4.8"
 reviewed: false
+pinned: true
 ---
 
 > **PDF** <a href="/vibe-reading/papers/longcat-audiodit-waveform-latent-diffusion-tts.pdf" target="_blank" rel="noopener">预览</a> · **论文** [LongCat-AudioDiT: High-Fidelity Diffusion Text-to-Speech in the Waveform Latent Space](https://github.com/meituan-longcat/LongCat-AudioDiT) · **作者** Meituan LongCat Team（Detai Xin, Shujie Hu, Chengzuo Yang 等）· **发表** 2026-03 · **项目** https://github.com/meituan-longcat/LongCat-AudioDiT · **解读** 2026-07-26
@@ -230,3 +231,9 @@ Wav-VAE 全面显著优于 Mel-VAE，**SIM 提升尤其剧烈**。这精准印�
 - **减少约束**：当前最优配置（64 维 / 11.72 Hz）是在 1B 参数预算下实证锁定；更大主干下维度-容量权衡是否会变化值得再探；双嵌入文本编码策略已声称模型无关，可推广到其他多语言大模型验证。
 
 **适用边界（批判性）**：LongCat-AudioDiT 的优势**不**由"扩散/波形隐空间"自动保证，而取决于 workload 是否受益于连续表示的高频保真——RQ2 直接证明：更高维 Wav-VAE 重建更好但 TTS 更差，说明"表示容量"与"生成建模负担"是一对张力，简单堆 VAE 容量反噬生成质量。此外 APG 的收益集中在自然度/质量而非可懂度/SIM——对纯克隆保真场景，APG 的边际价值有限；可懂度上仍不及多阶段专有系统，说明端到端简洁性的代价在"对超大规模高质量标注的依赖转移到了架构/数据配比上"。
+
+---
+
+## 相关阅读
+
+- [在 SGLang 中接入 LongCat-AudioDiT](/vibe-reading/articles/sglang-pr-22191-support-longcat-audiodit) — **工程实现**·本论文模型在 SGLang `multimodal_gen` 框架的落地（PR #22191），把论文里耦合在 `forward` 的 ODE/CFG/APG 拆解为框架 hooks + 标准 DenoisingStage 三段式，并新增 OpenAI 兼容 `/v1/audio/speech` API

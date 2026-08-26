@@ -410,6 +410,8 @@ SGLang `DenoisingStage` 直接把 scheduler 原始 timestep（`[0,1000]`）传�
 | Prompt Rewrite | 支持，VLM 改写 | 支持，复用 SGLang 内 Qwen2.5-VL `.generate()` |
 | 编码器 offload | 手动 | ComponentUse + residency manager |
 
+> **后续**：PR [#35995](https://github.com/sgl-project/sglang/pull/35995) 把 LongCat-Image 的 QKNorm 与全宽交错 RoPE 融合进 JIT 核（端到端加速 17%、输出逐字节一致），当时被迫走 diffusers 的 RoPE 路径由此收口，详见[融合 LongCat-Image 的 QKNorm 与全宽交错 RoPE](/vibe-reading/articles/sglang-pr-35995-fuse-longcat-qknorm-rope)。
+
 ---
 
 ## TODO
@@ -418,6 +420,8 @@ SGLang `DenoisingStage` 直接把 scheduler 原始 timestep（`[0,1000]`）传�
 - [ ] 与 diffusers 参考输出做同 seed 像素级对比，确认数值一致。
 - [ ] 扩展支持多 prompt 并行（当前 batch_size 固定为 1）。
 - [ ] 接入 LongCat-Image-Edit（图像编辑 pipeline，需额外处理 image VAE 编码）。
+
+> **后续**：[PR #35829](https://github.com/sgl-project/sglang/pull/35829) 实现了 LongCat-Image-Edit 图像编辑（I2I）pipeline——条件图双路径（VL 联合编码 + VAE 参考隐空间拼接 `[noisy|reference]`）+ RoPE 双模态 id，顺带修复了 conditioning 批次展开、分组驻留管理器、mask 作用域三处框架缺陷。详见 [LongCat-Image-Edit 接入 SGLang：图像编辑（I2I）的隐空间拼接与联合 VL 编码](/vibe-reading/articles/AI/Infra/Inference/SGLang/PRs/sglang-pr-35829-longcat-image-edit)。
 
 ---
 

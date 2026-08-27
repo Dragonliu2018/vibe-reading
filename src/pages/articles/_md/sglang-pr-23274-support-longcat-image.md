@@ -16,7 +16,7 @@ reviewed: false
 pinned: true
 ---
 
-> **PR** [#23274](https://github.com/sgl-project/sglang/pull/23274) · **Issue** - · **commit** [9e07394](https://github.com/sgl-project/sglang/pull/23274/commits/9e073942ecc891953b5e50854d2f2387e559b1f4) · **首发版本** - · **变更行数** +1641 行（10 文件）· **合并时间** -（截至写作时仍处 Open 状态，最新 commit 2026-08-09）
+> **PR** [#23274](https://github.com/sgl-project/sglang/pull/23274) · **Issue** - · **commit** [b764194](https://github.com/sgl-project/sglang/commit/b764194e810f9ca7ad2c21e4d307d86158acfd12) · **首发版本** v0.5.18 · **变更行数** +1641 行（10 文件）· **合并时间** 2026-08-13
 
 ---
 
@@ -358,7 +358,7 @@ sglang generate --model-path meituan-longcat/LongCat-Image --prompt "..."
 
 ## 测试
 
-PR 在 checklist 中标注了 `[ ] Add unit tests`（未勾选），截至写作时尚未补单测。作者在 PR body 中给出了一条 CLI 示例（768×1344、50 步、`guidance-scale=4.0`、`seed=43`），并附了一张生成样图用于人工目视验证，但 `Accuracy Tests` 与 `Speed Tests and Profiling` 两节均留空。
+PR checklist 中 `[ ] Add unit tests` 未勾选，合并时仍未补单测（10 个改动文件无测试文件）。作者在 PR body 中给出了一条 CLI 示例（768×1344、50 步、`guidance-scale=4.0`、`seed=43`），并附了一张生成样图用于人工目视验证，但 `Accuracy Tests` 与 `Speed Tests and Profiling` 两节均留空。
 
 ### 回归验证方式
 
@@ -367,6 +367,17 @@ PR 在 checklist 中标注了 `[ ] Add unit tests`（未勾选），截至写作
 - 算法逻辑（pack/unpack、`_calculate_shift`、CFG renorm、quotation tokenize、system prompt）逐行从 diffusers 移植；
 - 权重键名与 diffusers checkpoint 对齐（FFN `net.0.proj` / `net.1` / `net.2`、单流块 `proj_out` 列范围），保证权重无损加载；
 - Timestep 处理对齐：SGLang `DenoisingStage` 直接传原始 scheduler timestep（`[0,1000]`），DiT 内部不再缩放，等效于 diffusers 的 `pipeline 传 t/1000` + `transformer 内 ×1000`。
+
+---
+
+## Review
+
+PR 经 mickqian 审阅、BBuf 批准合并，交流集中在两点：
+
+- **复用标准 Stage 的程度**：mickqian 建议尽量适配已有 Stage 以获得最优性能。作者回应——pipeline 已最大化复用标准 Stage（文本编码、latent 准备、timestep/mu、去噪、解码），只保留 `LongCatPromptRewriteStage`，因为它跑的是自回归 `.generate()` prompt 改写，没有标准 Stage 覆盖这一步。
+- **系统 prompt 的归属**：初版把中英双语 system prompt 放在单独的 `longcat_image_system_messages.py`，mickqian 建议挪到 `configs/models/sample/longcat_image.py`。作者最终把它**合并进 `model_specific_stages/longcat_image.py`**——让 prompt 常量紧邻唯一消费者 `_rewire_prompt`，与 Qwen-Image-Layered 的约定一致。最终 10 个改动文件里不再有 `system_messages.py`。
+
+BBuf 最终 approve 合并。
 
 ---
 

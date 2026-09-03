@@ -1,12 +1,22 @@
 import { defineConfig } from 'astro/config';
 import { existsSync, readFileSync } from 'fs';
 import { join, extname } from 'path';
+import { fileURLToPath } from 'url';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { rehypeJsdelivrImages } from './scripts/rehype-jsdelivr-images.mjs';
 import { generateSiteManifest } from './scripts/generate-site-manifest.mjs';
 
 const BASE = '/vibe-reading';
+const rawContentMode = process.env.CONTENT_MODE ?? 'public';
+if (rawContentMode !== 'public' && rawContentMode !== 'private') {
+  throw new Error(`Invalid CONTENT_MODE=${JSON.stringify(rawContentMode)}; expected "public" or "private".`);
+}
+const CONTENT_MODE = rawContentMode;
+const PRIVATE_BUILD = CONTENT_MODE === 'private';
+const PAGEFIND_OUTPUT = PRIVATE_BUILD ? 'dist-private' : 'dist';
+const privateArticles = fileURLToPath(new URL('./src/data/private-articles.ts', import.meta.url));
+const privateArticlesStub = fileURLToPath(new URL('./src/data/private-articles-stub.ts', import.meta.url));
 
 const MIME = {
   '.js':   'application/javascript',
@@ -19,6 +29,7 @@ export default defineConfig({
   site: 'https://Dragonliu2018.github.io',
   base: '/vibe-reading',
   output: 'static',
+  outDir: PRIVATE_BUILD ? './dist-private' : './dist',
 
   markdown: {
     remarkPlugins: [remarkMath],
@@ -63,7 +74,29 @@ export default defineConfig({
   }],
 
   vite: {
+    define: {
+      'process.env.CONTENT_MODE': JSON.stringify(CONTENT_MODE),
+    },
+    resolve: {
+      alias: {
+        '@private-articles': PRIVATE_BUILD ? privateArticles : privateArticlesStub,
+      },
+    },
     plugins: [
+      {
+        name: 'forbid-private-articles-in-public-build',
+        enforce: 'pre',
+        load(id) {
+          if (PRIVATE_BUILD) return;
+          const normalized = id.replace(/\\/g, '/');
+          if (normalized.includes('/pages/articles/_private/')) {
+            throw new Error(
+              `Private article loaded during public build: ${id}. ` +
+              'Public mode must not import Corvus sources.',
+            );
+          }
+        },
+      },
       {
         name: 'pagefind-dev-server',
         configureServer(server) {
@@ -79,7 +112,7 @@ export default defineConfig({
             else if (url.startsWith(prefix2)) file = url.slice(prefix2.length);
             if (!file) return next();
 
-            const filePath = join('dist', 'pagefind', file.split('?')[0]);
+            const filePath = join(PAGEFIND_OUTPUT, 'pagefind', file.split('?')[0]);
             if (!existsSync(filePath)) return next();
             res.setHeader('Content-Type', MIME[extname(file)] ?? 'application/octet-stream');
             res.end(readFileSync(filePath));

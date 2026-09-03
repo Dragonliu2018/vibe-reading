@@ -1,6 +1,7 @@
 # Markdown 文章规范
 
-适用于所有 Markdown 格式文章的通用排版规范。PR/commit 文章还需同时参考 `markdown-pr.md`。
+适用于所有 Markdown 格式文章的通用排版规范。PR/commit 文章还需同时参考 `markdown-pr.md`。  
+`visibility: private` 的文章另见 `private-articles.md`（路径、提交、构建差异）。
 
 ---
 

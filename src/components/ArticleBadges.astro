@@ -1,10 +1,10 @@
 ---
 /**
- * 文章徽章组：置顶 / 分类 / 来源 / Review 状态。
+ * 文章徽章组：置顶 / 私有 / 分类 / 来源 / Review 状态。
  *
  * markup 为首页卡片与文章详情页共享的唯一来源；派生逻辑见 src/data/badges.ts。
  * CSS 尺寸由各页作用域定义（首页 .card-meta 下 10.5px，详情页 .article-meta 下 11px），
- * 本组件不内联尺寸样式，仅依赖调用页提供的 .pin-badge/.cat-badge/.origin-badge/.review-badge 类。
+ * 本组件不内联尺寸样式，仅依赖调用页提供的 .pin-badge/.private-badge/.cat-badge/.origin-badge/.review-badge 类。
  */
 import type { BadgeState } from '../data/badges';
 
@@ -13,10 +13,13 @@ interface Props {
 }
 
 const { state } = Astro.props;
-const { pinned, catLabel, catStyle, reviewState, reviewLabel, reviewTitle, originState, originLabel, originTitle } = state;
+const { pinned, isPrivate, catLabel, catStyle, reviewState, reviewLabel, reviewTitle, originState, originLabel, originTitle } = state;
 ---
 {pinned && (
   <span class="pin-badge" title="置顶文章">📌 置顶</span>
+)}
+{isPrivate && (
+  <span class="private-badge" title="仅本地私有构建可见，不会部署到公开站点">Private</span>
 )}
 {catLabel && (
   <span class="cat-badge" style={catStyle}>{catLabel}</span>

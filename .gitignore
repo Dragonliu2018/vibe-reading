@@ -7,3 +7,7 @@ package-lock.json
 .claude/
 .agents/
 skills-lock.json
+
+# Private build output only. Corvus sources live in a nested clone at
+# src/pages/articles/_private/ (do not git add from this repo).
+/dist-private/

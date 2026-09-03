@@ -64,10 +64,14 @@ git push
 
 ```bash
 npm install
-npm run dev      # 启动开发服务器 → http://localhost:4321/vibe-reading/
-npm run build    # 构建静态文件
-npm run preview  # 预览构建结果
+npm run dev      # 公开站 → http://localhost:4321/vibe-reading/
+npm run build    # 构建 dist/（含私有内容泄漏检查）
+npm run preview  # 预览公开构建结果
 ```
+
+## 私有文章
+
+可选能力：本地用 `npm run setup:private` 拉取私有 Markdown 源，`npm run dev:private` 预览。私有内容不参与公开构建与 GitHub Pages 部署。
 
 ## 文章列表
 

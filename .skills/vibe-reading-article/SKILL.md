@@ -9,6 +9,7 @@ description: >
   "写一篇文章解读这个代码库", "把这个论文整理成博客文章",
   "生成 vibe reading 风格的技术文章", "分析这个项目并输出 html/markdown 文章",
   "迁移到博客", "发布到博客", or provides source material and asks to write an article.
+  Also use when writing private/local-only Markdown (visibility: private).
 ---
 
 # Vibe Reading Article Skill
@@ -22,8 +23,9 @@ description: >
 | 论文 | **Markdown** | `references/content-guide.md`（论文节）+ `references/paper-workflow.md` + `references/markdown-style.md` |
 | 技术文章转载（博客/知乎/公众号） | **Markdown** | `references/markdown-repost.md` + `references/markdown-style.md` |
 | 文学 / 电影 / 历史笔记 | **Markdown** | `references/literary-style.md`（沉浸式布局自动启用）|
+| 私有 / 本地-only 文章 | **Markdown** | `references/private-articles.md` + `references/markdown-style.md` |
 
-人工明确指定格式时，以人工为准。
+人工明确指定格式时，以人工为准。人工指定 `visibility: private` 或写入 `_private/` 时，走私有流程。
 
 ## Step 2 — 阅读源材料
 
@@ -35,7 +37,8 @@ description: >
 
 ## Step 3 — 撰写文章
 
-- **Markdown** → `src/pages/articles/_md/<slug>.md`，规范见加载的 references
+- **Markdown（公开）** → `src/pages/articles/_md/<slug>.md`，规范见加载的 references
+- **Markdown（私有）** → `src/pages/articles/_private/articles/<…>/<slug>.md`，见 `references/private-articles.md`
 - **HTML** → `src/pages/articles/html/<slug>.html`，基础模板见 `assets/html-base.html`
 
 ## Step 3.5 — 源码准确性验证（仅 PR / commit 文章）
@@ -58,7 +61,9 @@ exit 0 = 通过；exit 1 = 输出具体错误，按提示修正后重跑。
 
 ## Step 5 — 发布
 
-用户确认满意后：将文件放到对应目录，运行 `npm run build`。
+**公开文章**：用户确认满意后，运行 `npm run build`，用 `commit-article.sh` 提交主仓库。
+
+**私有文章**：用户确认满意后，运行 `npm run build:private` 本地验证，用 `npm run commit:corvus -- <slug>` 提交私有源仓库（见 `references/private-articles.md`）。**不要**把 `_private/` 内容 commit 进 vibe-reading。
 
 ## 并发写作（多 session 同时写博客）
 
@@ -71,6 +76,8 @@ bash .skills/vibe-reading-article/scripts/commit-article.sh <slug>
 ```
 
 脚本只 add `<slug>` 的 md（`src/pages/articles/_md/**/*<slug>*.md`）+ 图（`public/images/articles/<slug>/`）+ PDF（`public/papers/<slug>.pdf`），子仓库 commit + 主 repo commit（文章 + 指针），**不 push**（人工触发）。
+
+私有文章并发写作同理：各自 slug，用 `npm run commit:corvus -- <slug>`，不用 `git add -A`。
 
 优点（替代 worktree）：不开分支无 checkout 切走、子仓库 commit 落主 `.git/modules` 不丢、主 repo dev 4321 共享预览（文章在工作区 HMR 直接看）。根因治的是 `git add -A` 误收——本脚本精确 add 自己 slug 路径。
 

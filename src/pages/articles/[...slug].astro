@@ -3,8 +3,9 @@
  * 统一文章路由
  *
  * 源文件目录（_ 前缀 = Astro 不自动建路由）：
- *   _html/  HTML 文章（渲染为 HtmlArticleLayout + iframe）
- *   _md/    Markdown 文章（import.meta.glob 渲染为 ArticleLayout）
+ *   html/       HTML 文章（渲染为 HtmlArticleLayout + iframe）
+ *   _md/        公开 Markdown（ArticleLayout）
+ *   _private/   Corvus 私有 Markdown（仅 CONTENT_MODE=private 进入路由）
  *
  * 最终 URL 全部统一为 /articles/[...slug]
  * 支持 _md/ 下的子目录（如 _md/myproject/00-overview.md → /articles/myproject/00-overview）
@@ -13,20 +14,14 @@ import { readdirSync } from 'fs';
 import HtmlArticleLayout from '../../layouts/HtmlArticleLayout.astro';
 import ArticleLayout     from '../../layouts/ArticleLayout.astro';
 import { articles as articlesMeta } from '../../data/articles';
-
-// 所有 MD 模块（递归匹配子目录）——模块级声明，渲染时使用
-const mdModules = import.meta.glob('./_md/**/*.md');
+import { markdownEntries, markdownEntryBySlug } from '../../data/article-modules';
 
 export function getStaticPaths() {
   const htmlFiles = readdirSync('./src/pages/articles/html')
     .filter(f => f.endsWith('.html'))
     .map(f => f.slice(0, -5));           // 真实文件名（不含扩展名）
 
-  // 从 import.meta.glob 的 key 提取 slug（相对 _md/ 的路径，去 .md）
-  const allMdPaths = import.meta.glob('./_md/**/*.md');
-  const mdSlugs = new Set(
-    Object.keys(allMdPaths).map(p => p.replace('./_md/', '').replace(/\.md$/, ''))
-  );
+  const mdSlugs = new Set(markdownEntries.map(entry => entry.slug));
 
   return [
     // HTML 文章：与 MD 同名时自动追加 -html，文件名保持不变
@@ -54,9 +49,9 @@ let headings:    any[] = [];
 let frontmatter: any   = {};
 
 if (format === 'md') {
-  const loader = mdModules[`./_md/${flatSlug}.md`];
-  if (loader) {
-    const mod  = await loader() as any;
+  const entry = markdownEntryBySlug.get(flatSlug);
+  if (entry) {
+    const mod  = entry.module as any;
     Content    = mod.default;
     headings   = mod.getHeadings?.() ?? [];
     const meta = articlesMeta.find(a => a.slug === flatSlug || a.slug === mdSlug);

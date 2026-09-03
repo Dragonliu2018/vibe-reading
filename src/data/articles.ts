@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from 'fs';
+import { markdownEntries, type ContentVisibility } from './article-modules';
 
 export type PrType = 'feat' | 'perf' | 'enhancement' | 'fix' | 'refactor';
 
@@ -25,6 +26,8 @@ export interface Article {
   aiModel?:     string;
   reviewed?:    boolean;     // frontmatter 显式声明已 review；与 src/data/reviewed.ts 数组取并集，构建期静态决定徽章状态
   pinned?:      boolean;     // frontmatter 显式声明顶置；首页排序 pinned 优先于 date，并显示「置顶」徽章
+  visibility?:  ContentVisibility; // private 文章仅在 CONTENT_MODE=private 时进入集合
+  comments?:    boolean;     // false 时禁用评论；private 文章在布局层强制关闭
 }
 
 /**
@@ -63,31 +66,13 @@ export function badgeCat(category: string[] = []): string {
 }
 
 // ── MD 文章：从 frontmatter 自动读取 ──────────────────────────────
-const mdModules = import.meta.glob<{
-  frontmatter: {
-    title:        string;
-    date:         string;
-    category?:    string[];
-    alsoCategories?: string[][];
-    tags?:        string[];
-    description?: string;
-    readingTime?: string;
-    aiModel?:     string;
-    source?:      ArticleSource;
-    reviewed?:    boolean;
-    pinned?:      boolean;
-  };
-}>('../pages/articles/_md/**/*.md', { eager: true });
-
-const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
-  // slug = 相对于 _md/ 的路径去扩展名（如 'myproject/00-overview' 或 'flat-article'）
-  const slug = path.replace('../pages/articles/_md/', '').replace(/\.md$/, '');
-  const fm   = mod.frontmatter;
+const mdArticles: Article[] = markdownEntries.map(({ slug, module: mod }) => {
+  const fm = mod.frontmatter;
   const cat = fm.category ?? [];
   return {
     slug,
     title:        fm.title,
-    source:       fm.source       || undefined,
+    source:       (fm.source as ArticleSource | undefined) || undefined,
     date:         fm.date,
     category:     cat,
     categoryPath: cat,
@@ -98,6 +83,8 @@ const mdArticles: Article[] = Object.entries(mdModules).map(([path, mod]) => {
     aiModel:      fm.aiModel       || undefined,
     reviewed:     fm.reviewed      || undefined,
     pinned:       fm.pinned        || false,
+    visibility:   fm.visibility    || 'public',
+    comments:     fm.comments,
   };
 });
 

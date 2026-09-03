@@ -2,7 +2,7 @@
 import type { TreeNode } from '../data/categories';
 import type { ToolNode } from '../data/tools-tree';
 import { articles, sourceLabel } from '../data/articles';
-import { categoryTree, findActivePath } from '../data/categories';
+import { categoryTree, findActivePath, splitRootCategoryTree } from '../data/categories';
 import { toolsTree } from '../data/tools-tree';
 
 export interface Props {
@@ -44,8 +44,9 @@ function renderNode(node: TreeNode, depth: number = 0): string {
       const label = sourceLabel(source, article?.categoryPath ?? []);
       if (label) displayTitle = `${label} ${prTypeLabel}${baseTitle}`;
     }
+    const privateMark = article?.visibility === 'private' ? '🔒 ' : '';
     const active = slug === currentSlug ? ' active' : '';
-    return `<a class="tree-article${active}" href="${base}/articles/${slug}" data-tip="${esc(displayTitle)}">${esc(displayTitle)}</a>`;
+    return `<a class="tree-article${active}" href="${base}/articles/${slug}" data-tip="${esc(displayTitle)}">${privateMark}${esc(displayTitle)}</a>`;
   }).join('');
 
   return `<div class="tree-node">
@@ -77,8 +78,11 @@ function renderToolNode(node: ToolNode, depth: number = 0): string {
 </div>`;
 }
 
-const treeHtml     = categoryTree.map(n => renderNode(n)).join('');
-const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
+const { publicRoots, privateRoots } = splitRootCategoryTree(categoryTree);
+const publicTreeHtml  = publicRoots.map((n) => renderNode(n)).join('');
+const privateTreeHtml = privateRoots.map((n) => renderNode(n)).join('');
+const hasPrivateZone  = privateRoots.length > 0;
+const toolTreeHtml    = toolsTree.map(n => renderToolNode(n)).join('');
 ---
 
 <!-- Sidebar：文章/工具双模式 -->
@@ -104,7 +108,24 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
   ) : (
     <>
       <p class="tree-label">Categories</p>
-      <Fragment set:html={treeHtml} />
+      {hasPrivateZone && (
+        <div class="tree-zone-divider tree-zone-divider--public" role="separator" aria-label="Public categories">
+          <span class="tree-zone-divider-line" aria-hidden="true"></span>
+          <span class="tree-zone-divider-label">Public</span>
+          <span class="tree-zone-divider-line" aria-hidden="true"></span>
+        </div>
+      )}
+      {publicTreeHtml && <Fragment set:html={publicTreeHtml} />}
+      {hasPrivateZone && (
+        <>
+          <div class="tree-zone-divider tree-zone-divider--private" role="separator" aria-label="Private categories">
+            <span class="tree-zone-divider-line" aria-hidden="true"></span>
+            <span class="tree-zone-divider-label">Private</span>
+            <span class="tree-zone-divider-line" aria-hidden="true"></span>
+          </div>
+          <Fragment set:html={privateTreeHtml} />
+        </>
+      )}
     </>
   )}
 
@@ -335,6 +356,38 @@ const toolTreeHtml = toolsTree.map(n => renderToolNode(n)).join('');
     font-size: 13.5px; font-weight: 700; letter-spacing: 0.4px;
     text-transform: uppercase; color: rgba(235,235,245,0.28);
     margin-bottom: 6px; padding: 0 6px;
+  }
+
+  /* public / private 顶层分类分隔（private 模式双区；public 模式不渲染） */
+  .tree-zone-divider {
+    display: flex; align-items: center; gap: 8px;
+    margin: 8px 6px;
+    user-select: none;
+  }
+  .tree-zone-divider--public  { margin-top: 2px; margin-bottom: 6px; }
+  .tree-zone-divider--private { margin-top: 14px; margin-bottom: 8px; }
+  .tree-zone-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--zone-line, rgba(255,255,255,0.12)) 20%,
+      var(--zone-line, rgba(255,255,255,0.12)) 80%,
+      transparent
+    );
+  }
+  .tree-zone-divider--public {
+    --zone-line: rgba(41,151,255,0.24);
+    --zone-label: rgba(41,151,255,0.68);
+  }
+  .tree-zone-divider--private {
+    --zone-line: rgba(248,81,73,0.22);
+    --zone-label: rgba(248,81,73,0.62);
+  }
+  .tree-zone-divider-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.85px;
+    text-transform: uppercase; white-space: nowrap;
+    color: var(--zone-label, rgba(235,235,245,0.45));
   }
 
   /* ── 顶级分类之间留间隙 ── */

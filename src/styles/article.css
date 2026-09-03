@@ -247,6 +247,13 @@ a { color: inherit; text-decoration: none; }
   color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30);
 }
 
+/* Private 徽章：红，仅本地 Corvus 构建出现，与其余徽章色域不重合 */
+.private-badge {
+  font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px;
+  cursor: default; white-space: nowrap;
+  color: #f85149; background: rgba(248,81,73,.12); border: 1px solid rgba(248,81,73,.30);
+}
+
 .article-title {
   font-size: clamp(26px, 4vw, 38px);
   font-weight: 700; letter-spacing: -0.8px; line-height: 1.18;

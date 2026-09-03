@@ -49,6 +49,19 @@ function placeSlug(roots: TreeNode[], path: string[], slug: string) {
   });
 }
 
+// ── 判断分类分支是否仅含私有文章（如 Corvus）────────────────────────
+function collectSlugs(node: TreeNode): string[] {
+  const slugs = [...(node.slugs ?? [])];
+  for (const child of node.children ?? []) slugs.push(...collectSlugs(child));
+  return slugs;
+}
+
+function isPrivateBranch(node: TreeNode): boolean {
+  const slugs = collectSlugs(node);
+  if (!slugs.length) return false;
+  return slugs.every((slug) => articles.find((a) => a.slug === slug)?.visibility === 'private');
+}
+
 // ── 从 articles 自动构建分类树 ──────────────────────────────────────
 function buildTree(): TreeNode[] {
   const roots: TreeNode[] = [];
@@ -96,14 +109,20 @@ function buildTree(): TreeNode[] {
     'Papers', 'Contributions', 'CodeWiki', 'PRs',
     'Official', 'Informal', 'Docs', 'Meetups', 'Notes', 'Reading', 'Blogs', 'Ecosystems',
   ]);
-  function sortLabels(nodes: TreeNode[]) {
+  function sortLabels(nodes: TreeNode[], depth = 0) {
     nodes.sort((a, b) => {
+      // 顶层：私有命名空间（Corvus 等）排在全部公开分类之后
+      if (depth === 0) {
+        const aPrivate = isPrivateBranch(a);
+        const bPrivate = isPrivateBranch(b);
+        if (aPrivate !== bPrivate) return aPrivate ? 1 : -1;
+      }
       const aType = TYPE_LABELS.has(a.label);
       const bType = TYPE_LABELS.has(b.label);
       if (aType !== bType) return aType ? 1 : -1;   // 类型词置后
       return a.label.localeCompare(b.label, 'en');  // 同组内字母序
     });
-    nodes.forEach(n => n.children && sortLabels(n.children));
+    nodes.forEach((n) => n.children && sortLabels(n.children, depth + 1));
   }
   sortLabels(roots);
 
@@ -111,6 +130,16 @@ function buildTree(): TreeNode[] {
 }
 
 export const categoryTree: TreeNode[] = buildTree();
+
+/** 顶层分类按 public / private 分区（private 命名空间如 Corvus 置后） */
+export function splitRootCategoryTree(roots: TreeNode[] = categoryTree) {
+  const publicRoots: TreeNode[] = [];
+  const privateRoots: TreeNode[] = [];
+  for (const node of roots) {
+    (isPrivateBranch(node) ? privateRoots : publicRoots).push(node);
+  }
+  return { publicRoots, privateRoots };
+}
 
 // ── 找出包含指定 slug 的所有祖先节点 key 集合 ─────────────────────
 // 多分类下同一 slug 可能命中多个叶子（主分类 + 各副分类），需收集全部命中链，

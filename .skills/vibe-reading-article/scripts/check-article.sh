@@ -60,6 +60,13 @@ process.stdin.on("end", () => {
     fi
   done
 
+  # 3b. 私有文章额外约束
+  if [[ "$FILE" == *"/_private/"* ]]; then
+    if ! grep -qE '^visibility:[[:space:]]*private[[:space:]]*$' "$FILE"; then
+      ERRORS+=("私有文章必须声明 visibility: private")
+    fi
+  fi
+
   # 3. source 字段完整性
   if grep -qE '^source:' "$FILE"; then
     # 先提取 source.type，据此决定哪些子字段必填

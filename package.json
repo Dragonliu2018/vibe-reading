@@ -3,9 +3,17 @@
   "type": "module",
   "version": "0.1.0",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
-    "preview": "astro preview",
+    "dev": "CONTENT_MODE=public astro dev",
+    "dev:private": "CONTENT_MODE=private astro dev",
+    "build": "CONTENT_MODE=public astro build && pagefind --site dist && node scripts/check-private-leak.mjs dist",
+    "build:private": "CONTENT_MODE=private astro build && pagefind --site dist-private",
+    "preview": "CONTENT_MODE=public astro preview",
+    "preview:private": "CONTENT_MODE=private astro preview",
+    "setup:private": "node scripts/setup-private.mjs",
+    "commit:corvus": "node scripts/commit-corvus.mjs",
+    "push:corvus": "node scripts/push-corvus.mjs",
+    "test:content-mode": "node --test scripts/check-private-leak.test.mjs",
+    "guard:staged": "node scripts/guard-public-repo-staged.mjs",
     "add-image": "node scripts/add-image.mjs"
   },
   "engines": {

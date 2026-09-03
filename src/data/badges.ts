@@ -5,8 +5,8 @@
  * 此前 BADGE_PALETTE / catColorMap / badgeStyle / 状态派生在 index.astro 与 ArticleLayout.astro
  * 各存一份副本，容易漂移；本模块收口为单一来源。
  *
- * 仅用蓝紫系——绿/橙黄留给 review-badge、粉/teal 留给 origin-badge、金留给 pin-badge，
- * 五类徽章色域不重合。CSS 尺寸（首页 10.5px / 详情页 11px）仍由各页作用域决定，不在此处。
+ * 仅用蓝紫系——绿/橙黄留给 review-badge、粉/teal 留给 origin-badge、金留给 pin-badge、红留给 private-badge，
+ * 六类徽章色域不重合。CSS 尺寸（首页 10.5px / 详情页 11px）仍由各页作用域决定，不在此处。
  */
 import { articles, badgeCat, type ArticleSource } from './articles';
 
@@ -40,6 +40,7 @@ export function badgeStyle(label: string): string {
 // ── 徽章状态派生 ────────────────────────────────────────────────────
 export interface BadgeState {
   pinned:       boolean;
+  isPrivate:    boolean;
   catLabel:     string;          // 分类徽章标签（空字符串表示不渲染）
   catStyle:     string;          // 分类徽章 inline style
   reviewState:  'reviewed' | 'pending';
@@ -55,16 +56,18 @@ export interface BadgeState {
  * 用最小交集接口适配两处，避免把整个 Article/frontmatter 类型耦合进来。
  */
 export function deriveBadges(input: {
-  pinned?:   boolean;
-  category?: string[];
-  reviewed?: boolean;
-  source?:   ArticleSource;
+  pinned?:     boolean;
+  category?:   string[];
+  reviewed?:   boolean;
+  source?:     ArticleSource;
+  visibility?: 'public' | 'private';
 }): BadgeState {
   const catLabel = badgeCat(input.category ?? []);
   const isReviewed = !!input.reviewed;
   const isRepost   = input.source?.type === 'article';
   return {
     pinned:       !!input.pinned,
+    isPrivate:    input.visibility === 'private',
     catLabel,
     catStyle:     badgeStyle(catLabel),
     reviewState:  isReviewed ? 'reviewed' : 'pending',

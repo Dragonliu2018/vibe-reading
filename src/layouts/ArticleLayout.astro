@@ -23,6 +23,8 @@ export interface Props {
     aiModel?:     string;
     reviewed?:    boolean;
     pinned?:      boolean;
+    visibility?:  'public' | 'private';
+    comments?:    boolean;
     source?: {
       project: string;        // 项目名，如 Doris / ClickHouse
       type:    string;        // 引用类型，如 PR / Issue / RFC / arxiv / commit
@@ -35,7 +37,7 @@ export interface Props {
 }
 
 const { frontmatter, headings = [] } = Astro.props;
-const { title, date, category, alsoCategories = [], tags = [], description, readingTime, aiModel, source, reviewed, pinned } = frontmatter;
+const { title, date, category, alsoCategories = [], tags = [], description, readingTime, aiModel, source, reviewed, pinned, visibility = 'public', comments } = frontmatter;
 
 // source 前缀（统一用 articles.ts 的 sourceLabel helper，避免 4 处副本漂移）
 const srcLabel    = source ? sourceLabel(source, category ?? []) : '';
@@ -73,28 +75,34 @@ const pathname    = Astro.url.pathname;
 const currentSlug = pathname.replace(/.*\/articles\//, '').replace(/\/$/, '');
 
 // 源文件路径（用于跳转到 IDE 查看对应文件）
-const sourceFilePath = `src/pages/articles/_md/${currentSlug}.md`;
+const isPrivateArticle = visibility === 'private';
+const sourceFilePath = isPrivateArticle
+  ? `src/pages/articles/_private/articles/${currentSlug}.md`
+  : `src/pages/articles/_md/${currentSlug}.md`;
 // 生产环境 GitHub 链接
-const githubSourceUrl = `https://github.com/Dragonliu2018/vibe-reading/blob/main/${sourceFilePath}`;
+const githubSourceUrl = isPrivateArticle
+  ? `https://github.com/Dragonliu2018/Corvus/blob/main/articles/${currentSlug}.md`
+  : `https://github.com/Dragonliu2018/vibe-reading/blob/main/${sourceFilePath}`;
 // 构建时获取项目根目录绝对路径（用于 localhost 跳转 VS Code）
 const projectRoot = process.cwd();
 // 本地 VS Code 链接
 const vscodeSourceUrl = `vscode://file${projectRoot}/${sourceFilePath}`;
 
 // 徽章状态（pinned / 分类 / origin / review）统一由 deriveBadges 派生，与首页共享同一来源
-const badges = deriveBadges({ pinned, category, reviewed, source });
+const badges = deriveBadges({ pinned, category, reviewed, source, visibility });
 
 // TOC: h2 + h3 + h4 only
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.depth === 4);
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-content-visibility={visibility}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{displayTitle} · Vibe Reading</title>
   {description && <meta name="description" content={description} />}
+  {isPrivateArticle && <meta name="robots" content="noindex,nofollow,noarchive" />}
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   <SWRegister />
   {layoutMode === 'literary' && (
@@ -232,7 +240,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
           <slot />
         </article>
 
-        <GiscusComments />
+        {!isPrivateArticle && comments !== false && <GiscusComments />}
 
       </div>
 

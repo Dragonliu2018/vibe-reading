@@ -260,7 +260,7 @@ String sql = String.format("ADMIN SET %s CONFIG (\"%s\" = \"%s\");",
 
 - [x] `applyToAll` 不再被 masterOnly 特判清 false —— 本 PR（[#54409](https://github.com/apache/doris/pull/54409)）修复
 - [x] `redirectStatus` 字段接通 `Redirect.toRedirectStatus()` —— [#54762](https://github.com/apache/doris/pull/54762) 修复
-- [x] 扇出语句保留 `ALL FRONTENDS` + `Env.setConfig` 增加 `isProxy` 防回环 —— [#55016](https://github.com/apache/doris/pull/55016) 修复
+- [x] 扇出语句保留 `ALL FRONTENDS` + `Env.setConfig` 增加 `isProxy` 防回环 —— [#55016](https://github.com/apache/doris/pull/55016) 修复，详见[扇出语句被降级再回环：SET ALL FRONTENDS 转发链的收口修复](/vibe-reading/articles/Database/OLAP/Apache-Doris/PRs/doris-pr-55016-fanout-forward-loop)
 - [ ] 动态配置仍是纯内存态：**任何 FE 重启都会丢**（无论是否 ALL），持久化只能靠 fe.conf 或 HTTP 接口的 `persist` 参数，SQL 路径没有等价物
 - [ ] `validate()` 强制 `configs.size() == 1`，一条 SET 只能改一个 key，多 key 批量修改仍需多条语句
 
@@ -268,4 +268,5 @@ String sql = String.format("ADMIN SET %s CONFIG (\"%s\" = \"%s\");",
 
 ## 相关阅读
 
+- [扇出语句被降级再回环：SET ALL FRONTENDS 转发链的收口修复](/vibe-reading/articles/Database/OLAP/Apache-Doris/PRs/doris-pr-55016-fanout-forward-loop) —— **后续收口**：#55016 修复本 PR 留下的扇出语句回环问题（保留 ALL 原样转发 + `isProxy` 防二次扇出），两篇合起来是这条转发链路修复的完整故事。
 - [修复事务导入连接 Follower FE 时事务上下文丢失](/vibe-reading/articles/Database/OLAP/Apache-Doris/PRs/doris-pr-35075-txn-insert-follower-fe) —— **同机制**：同样走 FE 间 thrift 转发（`FEOpExecutor` / `proxyExecute`），那篇看的是转发时上下文丢失，本篇看的是转发决策本身被构造器篡改，可对照阅读 FE 转发链路的两个故障面。

@@ -34,9 +34,18 @@ export interface Props {
     };
   };
   headings?: { depth: number; slug: string; text: string }[];
+  slug?: string; // 文件系统 slug（未百分号编码），用于源路径 / 侧边栏高亮
 }
 
-const { frontmatter, headings = [] } = Astro.props;
+function decodePathSegment(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+const { frontmatter, headings = [], slug: fileSlug } = Astro.props;
 const { title, date, category, alsoCategories = [], tags = [], description, readingTime, aiModel, source, reviewed, pinned, visibility = 'public', comments } = frontmatter;
 
 // source 前缀（统一用 articles.ts 的 sourceLabel helper，避免 4 处副本漂移）
@@ -70,19 +79,22 @@ const LITERARY_DOMAINS = ['Literature', 'Cinema', 'History'];
 const firstCat   = category?.[0] ?? '';
 const layoutMode = LITERARY_DOMAINS.includes(firstCat) ? 'literary' : 'default';
 
-// Derive slug from URL to highlight current article in sidebar
+// 源文件 slug 必须用 glob 里的真实路径（含中文），不能直接用 URL pathname
+// （浏览器会把「哈希」编成 %E5%93%88%E5%B8%8C，Cursor / VS Code 快速打开对不上文件）
 const pathname    = Astro.url.pathname;
-const currentSlug = pathname.replace(/.*\/articles\//, '').replace(/\/$/, '');
+const currentSlug = fileSlug
+  ?? decodePathSegment(pathname.replace(/.*\/articles\//, '').replace(/\/$/, ''));
+const githubSlug  = currentSlug.split('/').map(encodeURIComponent).join('/');
 
 // 源文件路径（用于跳转到 IDE 查看对应文件）
 const isPrivateArticle = visibility === 'private';
 const sourceFilePath = isPrivateArticle
   ? `src/pages/articles/_private/articles/${currentSlug}.md`
   : `src/pages/articles/_md/${currentSlug}.md`;
-// 生产环境 GitHub 链接
+const githubPath = sourceFilePath.split('/').map(encodeURIComponent).join('/');
 const githubSourceUrl = isPrivateArticle
-  ? `https://github.com/Dragonliu2018/Corvus/blob/main/articles/${currentSlug}.md`
-  : `https://github.com/Dragonliu2018/vibe-reading/blob/main/${sourceFilePath}`;
+  ? `https://github.com/Dragonliu2018/Corvus/blob/main/articles/${githubSlug}.md`
+  : `https://github.com/Dragonliu2018/vibe-reading/blob/main/${githubPath}`;
 // 构建时获取项目根目录绝对路径（用于 localhost 跳转 VS Code）
 const projectRoot = process.cwd();
 // 本地 VS Code 链接

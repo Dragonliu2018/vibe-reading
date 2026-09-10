@@ -67,5 +67,5 @@ if (format === 'md') {
 
 {format === 'html'
   ? <HtmlArticleLayout slug={htmlFile} iframeSrc={`${base}/articles/html/${htmlFile}`} />
-  : <ArticleLayout frontmatter={frontmatter} headings={headings}><Content /></ArticleLayout>
+  : <ArticleLayout frontmatter={frontmatter} headings={headings} slug={mdSlug ?? flatSlug}><Content /></ArticleLayout>
 }

@@ -2,8 +2,13 @@
 import type { TreeNode } from '../data/categories';
 import type { ToolNode } from '../data/tools-tree';
 import { articles, sourceLabel } from '../data/articles';
+import { deriveBadges } from '../data/badges';
 import { categoryTree, findActivePath, splitRootCategoryTree } from '../data/categories';
 import { toolsTree } from '../data/tools-tree';
+const reviewIcon = {
+  reviewed: `<svg class="tree-review-icon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 6.15l1.7 1.7 3.1-3.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  pending:  `<svg class="tree-review-icon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M6 3.6v3.1M6 8.55h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+} as const;
 
 export interface Props {
   currentSlug?: string;               // 文章模式：当前文章 slug
@@ -44,9 +49,11 @@ function renderNode(node: TreeNode, depth: number = 0): string {
       const label = sourceLabel(source, article?.categoryPath ?? []);
       if (label) displayTitle = `${label} ${prTypeLabel}${baseTitle}`;
     }
-    const privateMark = article?.visibility === 'private' ? '🔒 ' : '';
+    const review = deriveBadges({ reviewed: article?.reviewed });
+    const reviewMark = `<span class="tree-review-mark" data-review-state="${review.reviewState}" title="${esc(review.reviewTitle)}">${reviewIcon[review.reviewState]}</span>`;
+    const encodedSlug = slug.split('/').map(encodeURIComponent).join('/');
     const active = slug === currentSlug ? ' active' : '';
-    return `<a class="tree-article${active}" href="${base}/articles/${slug}" data-tip="${esc(displayTitle)}">${privateMark}${esc(displayTitle)}</a>`;
+    return `<a class="tree-article${active}" href="${base}/articles/${encodedSlug}" data-tip="${esc(displayTitle)}">${reviewMark}<span class="tree-article-title">${esc(displayTitle)}</span></a>`;
   }).join('');
 
   return `<div class="tree-node">
@@ -443,14 +450,24 @@ const toolTreeHtml    = toolsTree.map(n => renderToolNode(n)).join('');
 
   /* ── 文章链接 ── */
   .tree-article {
-    display: block;
+    display: flex; align-items: center; gap: 6px;
     font-size: 12px; font-weight: 400;
     color: rgba(235,235,245,0.38);
     padding: 4px 6px; border-radius: 5px;
     line-height: 1.4;
     transition: color .12s, background .12s;
+  }
+  .tree-article-title {
+    flex: 1; min-width: 0;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .tree-review-mark {
+    flex-shrink: 0; display: inline-flex;
+    width: 12px; height: 12px;
+  }
+  .tree-review-icon { width: 12px; height: 12px; }
+  .tree-review-mark[data-review-state="pending"]  { color: #ff9f0a; }
+  .tree-review-mark[data-review-state="reviewed"] { color: #3fb950; }
   .tree-article:hover {
     color: rgba(235,235,245,0.70);
     background: rgba(255,255,255,0.05);

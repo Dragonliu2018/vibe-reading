@@ -5,7 +5,7 @@ source:
   url: "https://github.com/1jehuang/jcode"
 title: "Server 与 Swarm"
 date: "2026-09-11T17:39:13+08:00"
-category: [AI, Agent, "Harness Engineering", jcode, CodeWiki, "0.84.0"]
+category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
 tags: ["jcode", "Rust", "Daemon", "Swarm", "Plan DAG", "热重载", "文件冲突检测"]
 description: "jcode Server 与 Swarm——单 server 多客户端 daemon、文件冲突双向通知、mode-gated 递归 spawn、Plan DAG 任务图（seed/expand/complete + 心跳/回收）、exec 热重载"
 readingTime: "24 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/00-overview)
 
 ---
 

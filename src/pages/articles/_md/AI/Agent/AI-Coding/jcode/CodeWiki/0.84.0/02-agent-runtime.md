@@ -5,7 +5,7 @@ source:
   url: "https://github.com/1jehuang/jcode"
 title: "Agent 运行时"
 date: "2026-09-11T17:39:13+08:00"
-category: [AI, Agent, "Harness Engineering", jcode, CodeWiki, "0.84.0"]
+category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
 tags: ["jcode", "Rust", "Agent Loop", "Turn", "Soft Interrupt", "KV Cache"]
 description: "jcode Agent 运行时——turn 循环、provider 流式消费、soft interrupt 注入点、KV cache 追踪与 locked_tools 冻结、memory 非阻塞注入、有界重试恢复"
 readingTime: "22 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/00-overview)
 
 ---
 

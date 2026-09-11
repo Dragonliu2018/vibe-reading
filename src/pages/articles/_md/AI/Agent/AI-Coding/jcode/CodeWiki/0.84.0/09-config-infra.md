@@ -5,7 +5,7 @@ source:
   url: "https://github.com/1jehuang/jcode"
 title: "Config 与基础设施"
 date: "2026-09-11T17:39:13+08:00"
-category: [AI, Agent, "Harness Engineering", jcode, CodeWiki, "0.84.0"]
+category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
 tags: ["jcode", "Rust", "Config", "Session Journal", "Bus", "Compaction", "Skill"]
 description: "jcode Config 与基础设施——config() 热重载（500ms 指纹节流 + leak 静态引用）、session journal/snapshot 双持久化（torn line 修复）、Bus broadcast(256)、三模式压缩管线、skill 分层、跨 provider 用量汇总"
 readingTime: "22 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/00-overview)
 
 ---
 

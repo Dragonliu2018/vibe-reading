@@ -5,7 +5,7 @@ source:
   url: "https://github.com/1jehuang/jcode"
 title: "CLI 入口"
 date: "2026-09-11T17:39:13+08:00"
-category: [AI, Agent, "Harness Engineering", jcode, CodeWiki, "0.84.0"]
+category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
 tags: ["jcode", "Rust", "CLI", "Composition Root", "Multicall", "Hot Exec"]
 description: "jcode CLI 入口层——allocator 调优、multicall 拦截、依赖反转组合根（9 个 provider 工厂 + 5 类 register）、命令分发与 hot exec 热重载"
 readingTime: "20 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/00-overview)
 
 ---
 

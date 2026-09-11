@@ -5,7 +5,7 @@ source:
   url: "https://github.com/1jehuang/jcode"
 title: "TUI 渲染引擎"
 date: "2026-09-11T17:39:13+08:00"
-category: [AI, Agent, "Harness Engineering", jcode, CodeWiki, "0.84.0"]
+category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
 tags: ["jcode", "Rust", "TUI", "ratatui", "StreamBuffer", "InfoWidget", "SSH"]
 description: "jcode TUI 渲染引擎——TuiState 114 方法展示接口、redraw 调度（idle 250ms/deep 5s）、四层 prepared frame 缓存、StreamBuffer 比例控流平滑、InfoWidget 负空间渲染与 settle、远程 SSH attach"
 readingTime: "24 min"
@@ -13,7 +13,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/00-overview)
+> [← 返回概览](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/00-overview)
 
 ---
 

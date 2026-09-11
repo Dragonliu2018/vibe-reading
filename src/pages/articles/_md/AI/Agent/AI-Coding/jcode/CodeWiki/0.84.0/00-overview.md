@@ -5,7 +5,7 @@ source:
   url: "https://github.com/1jehuang/jcode"
 title: "Overview"
 date: "2026-09-11T17:39:13+08:00"
-category: [AI, Agent, "Harness Engineering", jcode, CodeWiki, "0.84.0"]
+category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
 tags: ["jcode", "Rust", "Agent Harness", "TUI", "Memory", "Swarm", "多模型"]
 description: "jcode v0.84.0 源码解读——Rust 编写的极致内存效率编码 agent harness，三层 re-export + 82 crate 编译隔离、agent turn 循环、passive 记忆系统（hybrid 检索 + consensus LLM rerank）、swarm Plan DAG、原生 SSH 远程会话与 harness API/SDK"
 readingTime: "45 min"
@@ -212,16 +212,16 @@ jcode 的 10 个核心模块按职责分化自然形成。依赖方向整体自�
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| CLI 入口与分发 | 进程入口、依赖反转组合根、命令分发 | `startup::run()` | 唯一允许跨层 wiring 的层，隔离进程启动与业务 | [CLI 入口](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/01-cli-entry) |
-| Agent 运行时 | turn 循环、流式、中断、压缩 | `run_turn_streaming_mpsc()` | 编码 agent 的核心循环，自成一域 | [Agent 运行时](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/02-agent-runtime) |
-| Server 与 Swarm | daemon、多会话、Plan DAG、热重载 | `Server::run()` | 多会话与多 agent 协作是独立复杂域 | [Server 与 Swarm](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/03-server-swarm) |
-| Provider 多模型 | LLM 路由、failover、模型目录 | `complete_with_failover()` | provider 适配与 failover 策略自成一域 | [Provider 多模型](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/04-provider) |
-| Memory 记忆系统 | hybrid 检索、consensus rerank、提取 | `process_context()` | passive 记忆是 jcode 智能化的核心差异化 | [Memory 记忆](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/05-memory) |
-| Tool 工具系统 | 30+ 工具、destructive gate、MCP 池 | `Registry::execute()` | 工具执行与安全门控独立于 agent 循环 | [Tool 系统](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/06-tool-system) |
-| TUI 渲染引擎 | 终端 UI、StreamBuffer、InfoWidget、SSH | `App::run_remote()` | 渲染管线与帧调度独立于业务逻辑 | [TUI 引擎](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/07-tui-engine) |
-| Ambient 后台 | 调度、memory gardening、proactive | `AmbientRunnerHandle::run_loop()` | 后台整合是独立运行模式 | [Ambient 后台](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/08-ambient) |
-| Config 与基础设施 | 配置热重载、session journal、Bus、压缩 | `config()` / `Bus::global()` | 被所有模块依赖的底座 | [Config 基础设施](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/09-config-infra) |
-| Harness API 与 SDK | NDJSON 稳定协议、双语言 SDK、ACP | `run_bridge_stream()` | 公开边界与内部协议分离，独立演进 | [Harness API](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.84.0/10-harness-api-sdk) |
+| CLI 入口与分发 | 进程入口、依赖反转组合根、命令分发 | `startup::run()` | 唯一允许跨层 wiring 的层，隔离进程启动与业务 | [CLI 入口](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/01-cli-entry) |
+| Agent 运行时 | turn 循环、流式、中断、压缩 | `run_turn_streaming_mpsc()` | 编码 agent 的核心循环，自成一域 | [Agent 运行时](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/02-agent-runtime) |
+| Server 与 Swarm | daemon、多会话、Plan DAG、热重载 | `Server::run()` | 多会话与多 agent 协作是独立复杂域 | [Server 与 Swarm](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/03-server-swarm) |
+| Provider 多模型 | LLM 路由、failover、模型目录 | `complete_with_failover()` | provider 适配与 failover 策略自成一域 | [Provider 多模型](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/04-provider) |
+| Memory 记忆系统 | hybrid 检索、consensus rerank、提取 | `process_context()` | passive 记忆是 jcode 智能化的核心差异化 | [Memory 记忆](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/05-memory) |
+| Tool 工具系统 | 30+ 工具、destructive gate、MCP 池 | `Registry::execute()` | 工具执行与安全门控独立于 agent 循环 | [Tool 系统](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/06-tool-system) |
+| TUI 渲染引擎 | 终端 UI、StreamBuffer、InfoWidget、SSH | `App::run_remote()` | 渲染管线与帧调度独立于业务逻辑 | [TUI 引擎](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/07-tui-engine) |
+| Ambient 后台 | 调度、memory gardening、proactive | `AmbientRunnerHandle::run_loop()` | 后台整合是独立运行模式 | [Ambient 后台](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/08-ambient) |
+| Config 与基础设施 | 配置热重载、session journal、Bus、压缩 | `config()` / `Bus::global()` | 被所有模块依赖的底座 | [Config 基础设施](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/09-config-infra) |
+| Harness API 与 SDK | NDJSON 稳定协议、双语言 SDK、ACP | `run_bridge_stream()` | 公开边界与内部协议分离，独立演进 | [Harness API](/vibe-reading/articles/AI/Agent/AI-Coding/jcode/CodeWiki/0.84.0/10-harness-api-sdk) |
 
 ---
 

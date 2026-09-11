@@ -120,7 +120,9 @@ Registry::execute(name, input, ctx) [tool/mod.rs:766]
 
 ## 模块间交互
 
-向上被 agent 循环的 `registry.execute` 调用（mpsc 版经 `tokio::spawn` 可后台化）；`BusEvent::FileTouch` 由 read/edit/write/apply_patch 发布（swarm 冲突检测的入口）；`communicate.rs` 的 swarm 工具经 `transport::send_request` 向 server 发 `Request::Comm*` JSON 请求，内部还维护一层动作别名（`inbox`→`read`、`kill`→`stop`）——工具内部再挡一层模型词汇漂移。MCP 工具（`mcp__server__tool` 代理）与固定面（`mcp`/`mcp_search`/`mcp_call`）由 `register_mcp_tools_for_dir` 动态注册。
+向上被 agent 循环的 `registry.execute` 调用（mpsc 版经 `tokio::spawn` 可后台化）；`ToolContext.execution_mode` 区分 `AgentTurn`（模型驱动）与 `Direct`（用户直接调用）。`BusEvent::FileTouch` 由 read/edit/write/apply_patch 发布（swarm 冲突检测的入口）。
+
+**swarm 工具（`communicate.rs`，137.9K）**是 swarm 通信的完整枢纽——一个工具覆盖全部协作面，action enum（`communicate.rs:1968`）分五组：消息（`message`/`broadcast`/`dm`/`read`/`share`/`channel`）、worker 管理（`spawn`/`stop`/`status`/`report`/`await_members`）、plan 图（`propose_plan`/`approve_plan`/`run_plan`/`plan_status`/`assign_task`/`fill_slots`）、任务 DAG（`task_graph`/`expand_node`/`complete_node`/`inject_gap`）、杂项（`list_models`/`cleanup` 等）。经 `transport::send_request` 向 server 发 `Request::Comm*` JSON 请求，内部还维护一层动作别名（`canonical_swarm_action`，`communicate.rs:1936`：`inbox`→`read`、`kill`→`stop`、`whisper`→`dm`）——工具内部再挡一层模型词汇漂移。`run_plan` 有 **driver claim 机制**（`RunPlanDriverClaim` + RAII guard，`communicate.rs:720`）：同 session 并发驱动同一 plan 时只有一个 claim 成立，guard drop 未 `record_task` 即释放——防取消的 spawn 留下 stale claim。MCP 工具（`mcp__server__tool` 代理）与固定面（`mcp`/`mcp_search`/`mcp_call`）由 `register_mcp_tools_for_dir` 动态注册。
 
 ---
 

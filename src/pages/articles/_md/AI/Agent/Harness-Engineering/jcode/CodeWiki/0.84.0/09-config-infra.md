@@ -93,6 +93,10 @@ Session::save() [session/persistence.rs]
 
 `SkillRegistry::shared_registry()` 进程级**只装全局技能**（Claude Code 插件扫描深度 5、`~/.jcode/skills/`、`~/.agents/skills/`）——项目技能若进共享 registry，daemon 启动 cwd 会污染所有会话。项目覆盖：`load_project_overlay(working_dir)` 扫 `./.jcode/skills/` 等，`effective_for_working_dir` = base + overlay（同名胜出），**每次现读磁盘**——编辑免重启可见且不同 repo 会话互不可见。`list()` 强制按 name 排序——HashMap 迭代序随机会使 system prompt 字节不一致，静默打掉 Anthropic strict-prefix KV cache。首次运行 `import_from_external()` 从 Claude Code/Codex 拷贝技能。
 
+### safety、registry 与平台
+
+**SafetySystem**（`safety.rs:150`）持有 `queue: Mutex<Vec<PermissionRequest>>` + `history` + `actions`——ambient 等无人值守场景的权限审批队列；`AUTO_ALLOWED`（`safety.rs:132`）是 Tier-1 只读动作名白名单，命中则自动豁免权限请求，其余默认 `RequiresPermission`。`request_permission()` 入队 + 持久化 + 经 `register_permission_notifier` 注册的 dispatcher 通知用户；决策可以是即时（`Decision`）或等待（TUI 里弹出 `PermissionsApp`，`jcode-tui-permissions` crate）。**ServerRegistry**（`registry.rs:50`）跟踪 `~/.jcode/servers.json` 运行中服务器供客户端发现（server 名持久化，reload 后新进程注册新名）；`cleanup_stale()`（`registry.rs:125`）两轮清理（PID 死亡 + socket 去重），**刻意不清理 socket 文件**（注释：新 server 可能在 reboot/reload 后复用同一 socket）。平台层还有 `platform.rs::raise_nofile_limit` 与 power inhibit（`PowerInhibitor` 让 turn 处理期间屏幕不休眠）。
+
 ### storage 与 usage
 
 `jcode-storage`：**原子写**——temp 文件 → write → fsync → Unix 上先 hard_link 旧 inode 为 `.bak` 再 rename（旧方案 rename-away 会让 primary 短暂 ENOENT，load-all 型读者静默丢条目）→ rename。`runtime_dir()`（Linux `$XDG_RUNTIME_DIR`，socket/易失状态）与 `durable_state_dir()`（`~/.jcode/state`，必须扛住重启——runtime_dir 常是 tmpfs）分离。`active_pids/`（session→PID 注册）+ `streaming_pids/`（StreamingGuard RAII）+ `internal_pids/`（issue #508：presence UI 过滤 swarm worker/调试会话）。

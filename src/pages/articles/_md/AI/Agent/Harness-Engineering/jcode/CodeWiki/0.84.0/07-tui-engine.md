@@ -95,6 +95,10 @@ App::run_remote() [app/run_shell.rs:775]
 
 mermaid 源 → `mermaid_rs_renderer` parse + layout（纯 Rust，取代 mermaid-cli 的 headless Chrome + Node，作者宣称 1800x 快）→ `resvg` 光栅化 PNG → `ratatui_image` 按终端能力选 Kitty/Sixel/iTerm2/halfblock 协议。缓存：磁盘 PNG 缓存（`~/.cache/jcode/mermaid`，512 条目）+ 内存 layout 缓存（32——Layout 是最贵阶段，debug build 中型图 ~580ms）+ 宽度分桶防模糊放大。未命中缓存时向后台渲染线程入队返回 None，UI 先画 placeholder，完成时 `bump_deferred_render_epoch()` 使上游缓存自动失效。Kitty 专项：缓存 virtual-placement id 滚动复用终端侧已传图像，evict 时捎带删除序列回收终端像素内存。
 
+### Synchronized Update 与 KV cache 冷检测
+
+整帧渲染用 crossterm 的 `BeginSynchronizedUpdate` / `EndSynchronizedUpdate` 包裹（`run_shell.rs:476`）——终端原子应用整帧 cell 变更，消除逐 cell 流式输出在 eager-repaint 终端上的可见闪烁。**KV cache 冷检测**：`App.kv_cache: KvCacheState` 追踪 provider 端 prompt 前缀缓存状态——Anthropic Claude cache 5 分钟后冷却，UI 会在 cache went cold 时警告并提示 unexpected cache miss 的 token 成本；redraw 调度里还有专门的 `cache_cold_countdown_redraw_active` 分支（`redraw_schedule.rs:226`）驱动冷却倒计时动画。**布局切换**：默认 left-aligned（消息区占满左侧，InfoWidget 仅右侧 margin）；`Alt+C` / `/alignment` / config 切 centered（widget 分布两侧 margin）。
+
 ### 远程 SSH attach 与内存优化
 
 **SSH**（v0.83.0）：`jcode --ssh dev` → `NativeSsh::connect_with_workspace` 把远端 daemon 的 server socket 桥接到本地 socket path → 本地跑普通 `run_tui_client`——架构是"本地 TUI + 远程执行"，workspace/工具/凭据全留远端。`RemoteConnection`（`backend.rs:235`）的 newline-delimited JSON 读循环用持久 buffer + 扫描游标（防几十 MB History 事件时换行扫描退化 O(n²)）。`/login` 在远程主机执行；`--import-local` 显式同意后一次性拷贝本地凭证且不覆盖远端。

@@ -102,7 +102,15 @@ turn N+1: build_memory_prompt_nonblocking → take_pending_memory
 
 ### 本地 embedding：纯 Rust 推理栈
 
-`jcode-embedding/src/lib.rs`：all-MiniLM-L6-v2 ONNX（HF 自动下载到 `~/.jcode/models/`）+ **tract 0.23**（`tract-onnx`）+ HF `tokenizers`，384 维、MAX_SEQ_LENGTH 256、mean-pooling 后 L2 归一。工程亮点：`input_plan` 按**名字**绑定输入角色（input_ids/attention_mask/token_type_ids）和声明 dtype——不同 exporter 输入顺序不同（MiniLM input_ids 在前，e5/bge attention_mask 在前），为换模型通用化。选 tract 而非 ONNX Runtime 的可核实依据是依赖树纯 Rust（reqwest 用 rustls、tokenizers 只开 onig），无 C/C++ 原生动态库，静态打进 TUI 二进制跨平台分发无 linker 痛点；根 Cargo.toml 对 tract 在 dev profile 强制 opt-level 3（未优化时单次 embed ~666ms 会占住模型让 idle unloader 烧 CPU）。换 embedding 模型无需迁移：`MemoryEntry.embedding_model` 向量空间门控，旧条目走 BM25 路径。
+`jcode-embedding/src/lib.rs`：all-MiniLM-L6-v2 ONNX（HF 自动下载到 `~/.jcode/models/`）+ **tract 0.23**（`tract-onnx`）+ HF `tokenizers`，384 维、MAX_SEQ_LENGTH 256、mean-pooling 后 L2 归一。**按需加载 + 空闲卸载**：`maybe_unload_if_idle()`（`embedding.rs:228`）在模型闲置一段时间后卸载并 `release_retained_heap("embedding_model_idle_unload")` 归还内存——87MB 模型不常驻，这是 "local embedding off" 模式 27.8 MB RSS（开启后 ~167 MB）的关键。工程亮点：`input_plan` 按**名字**绑定输入角色（input_ids/attention_mask/token_type_ids）和声明 dtype——不同 exporter 输入顺序不同（MiniLM input_ids 在前，e5/bge attention_mask 在前），为换模型通用化。选 tract 而非 ONNX Runtime 的可核实依据是依赖树纯 Rust（reqwest 用 rustls、tokenizers 只开 onig），无 C/C++ 原生动态库，静态打进 TUI 二进制跨平台分发无 linker 痛点；根 Cargo.toml 对 tract 在 dev profile 强制 opt-level 3（未优化时单次 embed ~666ms 会占住模型让 idle unloader 烧 CPU）。换 embedding 模型无需迁移：`MemoryEntry.embedding_model` 向量空间门控，旧条目走 BM25 路径。
+
+### Synthetic Entry Provider：skill 也是记忆
+
+`register_synthetic_entry_provider`（`memory.rs:80`）让上层 skill 模块注册回调，把 `SkillRegistry` 转为 synthetic `MemoryEntry` 参与检索——技能也像记忆一样被 embedding 检索自动注入对话。这反转了 `memory → skill` 的向上依赖（skill 层注册适配器，memory 层只认 `SyntheticEntryProvider` 函数指针），组合根在 `src/cli/startup.rs` 完成接线。
+
+### 提取触发与收尾
+
+三种提取触发：topic change（cosine < 0.3 且 ≥4 turn）、periodic（每 12 turn）、**session end**——`trigger_final_extraction()`（`memory_agent.rs:1897`）在会话结束时 fire-and-forget 全量 transcript 提取，已提取的内容不会因会话关闭而丢失。
 
 ### Sidecar
 

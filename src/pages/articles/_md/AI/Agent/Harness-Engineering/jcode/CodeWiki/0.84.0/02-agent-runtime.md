@@ -110,7 +110,7 @@ run_once_streaming_mpsc() [turn_execution.rs:48]
 
 ### 工具执行与后台化
 
-`registry.execute` 在流式版经 `tokio::spawn` 成 `tool_handle`，再 `tokio::select! { biased; tool_handle, bg_signal/shutdown }`——这是 Alt+B 后台化和 server reload 打断的结构基础。**Alt+B 移交**：`background_tool_signal` 触发后 `crate::background::global().adopt(&tc.name, &session_id, tool_handle)` 把工具 handle 过继给全局后台任务管理器，并写入提示模型用 `bg` 工具 `action: "wait"` 的 tool_result。**reload 打断**：bash 类工具给 750ms 宽限后 abort（`allow_reload_handoff` 仅 `tc.name == "bash"`）；`reload_interrupted_tool_result` 对 selfdev 和 wait 类工具（`bg` 的 wait、`swarm` 的 await_members/run_plan）按非错误处理——返回可续传的消息而不是 error result，让重载后能继续。工具结果经 `cap_tool_output_for_history` 截断后入历史。SDK 代执行的结果优先（`sdk_tool_results`），native 工具（`JCODE_NATIVE_TOOLS = ["selfdev", "communicate"]`）在 SDK 报错时回退本地。
+`registry.execute` 在流式版经 `tokio::spawn` 成 `tool_handle`，再 `tokio::select! { biased; tool_handle, bg_signal/shutdown }`——这是 Alt+B 后台化和 server reload 打断的结构基础。**Alt+B 移交**：`background_tool_signal` 触发后 `crate::background::global().adopt(&tc.name, &session_id, tool_handle)` 把工具 handle 过继给全局后台任务管理器，并写入提示模型用 `bg` 工具 `action: "wait"` 的 tool_result。**reload 打断**：bash 类工具给 750ms 宽限后 abort（`allow_reload_handoff` 仅 `tc.name == "bash"`）；`reload_interrupted_tool_result` 对 selfdev 和 wait 类工具（`bg` 的 wait、`swarm` 的 await_members/run_plan）按非错误处理——返回可续传的消息而不是 error result，让重载后能继续。工具结果经 `cap_tool_output_for_history` 截断后入历史——超 `MAX_TOOL_OUTPUT_CHARS_FOR_HISTORY = 512KB`（`tools.rs:5`）的输出截断并附说明：大输出会撑破远程协议消息大小限制、膨胀 session 历史文件、击穿 prompt cache。SDK 代执行的结果优先（`sdk_tool_results`），native 工具（`JCODE_NATIVE_TOOLS = ["selfdev", "communicate"]`）在 SDK 报错时回退本地。
 
 ### batch nudge：教模型用并行工具
 

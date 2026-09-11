@@ -95,7 +95,9 @@ DAG 引擎（`jcode-plan/src/dag/ops.rs`）：`seed`（L19）→ `expand_node`�
 
 客户端 `Request::Reload` → `handle_reload`（非 force 时 `server_has_newer_binary()` 防降级和 reload-loop）→ 先 fanout `ServerEvent::Reloading` 给所有 live 客户端 → `await_reload_signal`（`reload.rs:57`）：写 ReloadPhase 状态文件 → `persist_reload_recovery_intents`（候选为 status=="running" 的成员，按 `ReloadRecoveryRole` 分类：触发会话=Initiator、headless=Headless、其他运行中 peer=InterruptedPeer）→ `graceful_shutdown_sessions`（2s 超时，`RELOAD_GRACEFUL_SHUTDOWN_TIMEOUT`；以会话的 StatusChange 事件或成员 left 为完成信号，无 shutdown_signal 的 running 会话不阻塞）→ **`abort_live_tasks_for_reload()`**（exec 不跑析构，否则 kill_on_drop 子进程泄漏）→ `prepare_server_exec`：unlink 双 socket（防 exec 继承 stale endpoint）+ stdio 全部 detach 为 null（防 SIGPIPE）→ `platform::replace_process` exec 新二进制 → 失败 `exit(42)`。客户端收 `Reloading` 后进入重连循环直到新 daemon 绑定 socket；新 daemon 启动时 `recover_headless_sessions_on_startup` + `resume_background_awaits` 恢复中断现场。
 
-另注意 server 自身的生命周期：全部客户端断开后 `IDLE_TIMEOUT_SECS = 300`（5 分钟）空闲超时，进程以 `EXIT_IDLE_TIMEOUT = 44` 退出码结束（`server.rs:651/683`，与 `docs/SERVER_ARCHITECTURE.md` 的 "All clients close → Server idle-timeout after 5 min" 一致）。
+另注意 server 自身的生命周期：全部客户端断开后 `IDLE_TIMEOUT_SECS = 300`（5 分钟）空闲超时，进程以 `EXIT_IDLE_TIMEOUT = 44` 退出码结束（`server.rs:651/683`，与 `docs/SERVER_ARCHITECTURE.md` 的 "All clients close → Server idle-timeout after 5 min" 一致）。启动时 `socket.rs` 的 `socket_has_live_listener()`（L72）先探测已有 daemon 再决定 bind，防多实例。
+
+**冲突 scope 判定**：`file_activity_scope_label()`（`file_activity.rs:39`）把冲突细分为 "overlapping lines" / "same file, non-overlapping lines" / "same file"——通知文本里带 scope，让被通知的 agent 判断要不要认真处理。**持久化基础设施**：`durable_state.rs` 提供通用 JSON 持久化框架（`load_json_state` / `save_json_state` + session_id 消毒）；swarm 状态经 `swarm_persistence.rs` 落到 `runtime_dir/swarm_state/`，恢复时 `from_persisted_member` 做 ghost 检测（把已死的 persisted `ready` 成员恢复为 live 会产生幽灵）；`swarm_mutation_state.rs` 给 coordinator 变更操作提供持久化去重（`begin_or_replay` / `finish_request`），防重载后重复执行。
 
 ---
 

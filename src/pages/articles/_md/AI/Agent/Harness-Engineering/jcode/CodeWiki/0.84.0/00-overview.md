@@ -62,7 +62,7 @@ jcode 解决的核心问题是：现有编码 agent 普遍臃肿——单会话�
 
 ### 版本历史
 
-jcode 于 2026-01-05 首次提交，两个月内 7400+ commit、78 个 release（v0.34.0 起有 changelog）。演进两条主线：**性能压榨**（allocator 调优 → 82 crate 编译隔离 → StreamBuffer 流式平滑）和**智能化**（基础工具 → passive 记忆 → ambient 后台 → swarm Plan DAG）。相对本博客已解读的 v0.77.1，v0.78.0–v0.84.0 的关键增量：harness API 支持图片（v0.78）、大 MCP 工具目录自动 deferred（v0.79）、集成发现与子 agent 模型选择（v0.80）、embedder 外部唤醒控制（v0.81）、OpenAI Responses WebSocket 预热 + SDK 图片中断（v0.82）、**原生 SSH 远程会话与远程登录**（v0.83）、远程登录 onboarding 改进（v0.84）。swarm 侧正在从 agent-first 转向 **task DAG-first**（`docs/SWARM_TASK_GRAPH.md`，DAG 引擎与 deep/light 模式已上线，channel 迁移进行中）。
+jcode 于 2026-01-05 首次提交，两个月内 7400+ commit、78 个 release（v0.34.0 起有 changelog）。演进两条主线：**性能压榨**（allocator 调优 → 82 crate 编译隔离 → StreamBuffer 流式平滑）和**智能化**（基础工具 → passive 记忆 → ambient 后台 → swarm Plan DAG）。v0.78.0–v0.84.0 相对 v0.77.x 的关键增量：harness API 支持图片（v0.78）、大 MCP 工具目录自动 deferred（v0.79）、集成发现与子 agent 模型选择（v0.80）、embedder 外部唤醒控制（v0.81）、OpenAI Responses WebSocket 预热 + SDK 图片中断（v0.82）、**原生 SSH 远程会话与远程登录**（v0.83）、远程登录 onboarding 改进（v0.84）。swarm 侧正在从 agent-first 转向 **task DAG-first**（`docs/SWARM_TASK_GRAPH.md`，DAG 引擎与 deep/light 模式已上线，channel 迁移进行中）。
 
 ---
 
@@ -373,4 +373,3 @@ jcode 的测试以 crate 内联测试为主（`*_tests.rs` 与源码平级），
 - [OpenAI WebSocket](https://github.com/1jehuang/jcode/blob/master/docs/OPENAI_WEBSOCKET.md)
 - [Native SSH](https://github.com/1jehuang/jcode/blob/master/docs/NATIVE_SSH.md)
 - [mermaid-rs-renderer](https://github.com/1jehuang/mermaid-rs-renderer) — 纯 Rust mermaid 渲染库
-- 本博客先前解读：[jcode v0.77.1 源码解读](/vibe-reading/articles/AI/Agent/Harness-Engineering/jcode/CodeWiki/0.77.1/00-overview)

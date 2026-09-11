@@ -99,6 +99,14 @@ MultiProvider::complete_split() [mod.rs:1756]
 
 安全约束都有实现对应：warmup 不执行工具不产生输出；fork 不继承父的 warmup socket（`PrewarmJob::drop` → `task.abort()`）；**过期凭据跳过 warmup 且投机路径绝不轮换 OAuth refresh token**（取消后可能丢失服务器已轮换的新凭据）——凭据余量检查为 `expires_at` 至少还有 300 秒（5 分钟，`openai_websocket_prewarm.rs:122`），否则跳过预热。
 
+### stream idle timeout：按 reasoning effort 缩放
+
+`stream_timeout.rs` 解决 issue #434——高 effort 模型静默思考数分钟后才吐 token，固定超时会被误判死连接。base 预算来自 `[provider] stream_idle_timeout_secs`（默认 180s），按 effort 缩放：high×2、xhigh×3、max/swarm/swarm-deep×`MAX_STREAM_IDLE_TIMEOUT_MULTIPLIER = 4`。所有 streaming provider 共享此 helper。
+
+### ProviderState：Config + AuthStatus facade
+
+`ProviderState`（`state.rs:13`）把 `Config + AuthStatus` 组合成统一视图——`default_provider_key`/`default_model` 从 config.toml 的 `[provider]` 段与认证状态合并解析，provider 层其余代码不直接碰 config/auth。`MultiProvider::new_with_auth_status` 在构造时 probe 各 provider 凭据决定哪些槽实例化；`on_auth_changed` 后 `spawn_post_auth_model_refresh` 重新 `prefetch_models`（`post_auth_refreshes_pending` 原子计数供查询刷新是否仍在途）。
+
 ### split prompt 为什么提升缓存
 
 Anthropic 路径（`build_system_param_split`）：system 拆多个 `ApiSystemBlock`，**static 块（指令文件、base prompt、skills）带 `cache_control: ephemeral`，dynamic 块（日期、git status、memory）不带**。Anthropic prompt cache 是前缀匹配——dynamic 混进 static 前面会让每轮日期变化打掉整个前缀；分离后 static 前缀字节级稳定，跨轮命中 cache read（约正常 input 价格的 10%）。不支持 split 结构的 provider 走 trait 默认 `complete_split`：dynamic 上下文作为独立消息插在**最后一条 fresh user 消息之后**——位置在尾部，历史前缀仍不变。

@@ -88,8 +88,9 @@ const githubSlug  = currentSlug.split('/').map(encodeURIComponent).join('/');
 
 // 源文件路径（用于跳转到 IDE 查看对应文件）
 const isPrivateArticle = visibility === 'private';
+// 私有文挂在独立 Corvus 工作区，展示/复制路径相对该仓库，不含 vibe-reading 前缀
 const sourceFilePath = isPrivateArticle
-  ? `src/pages/articles/_private/articles/${currentSlug}.md`
+  ? `articles/${currentSlug}.md`
   : `src/pages/articles/_md/${currentSlug}.md`;
 const githubPath = sourceFilePath.split('/').map(encodeURIComponent).join('/');
 const githubSourceUrl = isPrivateArticle
@@ -97,8 +98,10 @@ const githubSourceUrl = isPrivateArticle
   : `https://github.com/Dragonliu2018/vibe-reading/blob/main/${githubPath}`;
 // 构建时获取项目根目录绝对路径（用于 localhost 跳转 VS Code）
 const projectRoot = process.cwd();
-// 本地 VS Code 链接
-const vscodeSourceUrl = `vscode://file${projectRoot}/${sourceFilePath}`;
+const vscodeFilePath = isPrivateArticle
+  ? `src/pages/articles/_private/articles/${currentSlug}.md`
+  : sourceFilePath;
+const vscodeSourceUrl = `vscode://file${projectRoot}/${vscodeFilePath}`;
 
 // 徽章状态（pinned / 分类 / origin / review）统一由 deriveBadges 派生，与首页共享同一来源
 const badges = deriveBadges({ pinned, category, reviewed, source, visibility });

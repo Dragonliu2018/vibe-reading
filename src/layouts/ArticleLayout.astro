@@ -1,5 +1,6 @@
 ---
 import { sourceLabel } from '../data/articles';
+import { encodePathSegment } from '../data/paths';
 import { deriveBadges } from '../data/badges';
 import Sidebar from '../components/Sidebar.astro';
 import ArticleBadges from '../components/ArticleBadges.astro';
@@ -72,7 +73,7 @@ const catCommonPrefix: string[] = (() => {
 })();
 const catHasBranches = catAllPaths.length > 1;
 const catHref = (path: string[], idx: number) =>
-  `${base}/categories/${path.slice(0, idx + 1).map(c => encodeURIComponent(c.replace(/\//g, '-'))).join('/')}`;
+  `${base}/categories/${path.slice(0, idx + 1).map(c => encodePathSegment(c.replace(/\//g, '-'))).join('/')}`;
 
 // 沉浸式阅读模式：文学 / 电影 / 历史 等非技术题材使用衬线字体 + 疏朗排版
 const LITERARY_DOMAINS = ['Literature', 'Cinema', 'History'];

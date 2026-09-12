@@ -5,6 +5,7 @@ import { articles, sourceLabel } from '../data/articles';
 import { deriveBadges } from '../data/badges';
 import { categoryTree, findActivePath, splitRootCategoryTree } from '../data/categories';
 import { toolsTree } from '../data/tools-tree';
+import { encodeArticleSlug } from '../data/paths';
 const reviewIcon = {
   reviewed: `<svg class="tree-review-icon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 6.15l1.7 1.7 3.1-3.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   pending:  `<svg class="tree-review-icon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M6 3.6v3.1M6 8.55h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
@@ -51,7 +52,7 @@ function renderNode(node: TreeNode, depth: number = 0): string {
     }
     const review = deriveBadges({ reviewed: article?.reviewed });
     const reviewMark = `<span class="tree-review-mark" data-review-state="${review.reviewState}" title="${esc(review.reviewTitle)}">${reviewIcon[review.reviewState]}</span>`;
-    const encodedSlug = slug.split('/').map(encodeURIComponent).join('/');
+    const encodedSlug = encodeArticleSlug(slug);
     const active = slug === currentSlug ? ' active' : '';
     return `<a class="tree-article${active}" href="${base}/articles/${encodedSlug}" data-tip="${esc(displayTitle)}">${reviewMark}<span class="tree-article-title">${esc(displayTitle)}</span></a>`;
   }).join('');

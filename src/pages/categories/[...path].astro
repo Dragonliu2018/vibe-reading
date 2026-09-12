@@ -11,6 +11,7 @@
  *   4. 当前分类直属文章列表
  */
 import { articles, sourceLabel, badgeCat } from '../../data/articles';
+import { encodePathSegment } from '../../data/paths';
 import { categoryTree, type TreeNode } from '../../data/categories';
 import NavBar from '../../components/NavBar.astro';
 import Sidebar from '../../components/Sidebar.astro';
@@ -65,7 +66,7 @@ const visibleChildren = (node.children ?? []).filter(c => countArticles(c) > 0);
 
 // ── 面包屑路径 ────────────────────────────────────────────────────
 function catHref(arr: string[]): string {
-  return `${base}/categories/${arr.map(l => encodeURIComponent(l.replace(/\//g, '-'))).join('/')}`;
+  return `${base}/categories/${arr.map(l => encodePathSegment(l.replace(/\//g, '-'))).join('/')}`;
 }
 
 // ── HTML 转义 ────────────────────────────────────────────────────

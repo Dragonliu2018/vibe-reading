@@ -84,6 +84,23 @@ export default defineConfig({
     },
     plugins: [
       {
+        // Astro/Vite 本地路由按字面匹配 `+`，不把 `%2B` 当成同一段。
+        // 侧边栏曾 encodeURIComponent 出 `%2B`，GitHub Pages 能解码，localhost 会 404。
+        name: 'literal-plus-in-path',
+        enforce: 'pre',
+        configureServer(server) {
+          server.middlewares.use((req, _res, next) => {
+            const raw = req.url;
+            if (!raw || !/%2B/i.test(raw)) return next();
+            const q = raw.indexOf('?');
+            const path = q === -1 ? raw : raw.slice(0, q);
+            const query = q === -1 ? '' : raw.slice(q);
+            req.url = path.replace(/%2B/gi, '+') + query;
+            next();
+          });
+        },
+      },
+      {
         name: 'forbid-private-articles-in-public-build',
         enforce: 'pre',
         load(id) {

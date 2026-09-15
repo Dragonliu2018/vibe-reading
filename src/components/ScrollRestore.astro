@@ -7,8 +7,13 @@
  * 导致 A→B→返回 A 时回到顶部。本组件在离开页面前把 `.main-scroll.scrollTop`
  * 按路径存入 sessionStorage，页面加载时在首次绘制前读回恢复。
  *
- * 移动端 `.main-scroll` 退化为 overflow:visible，滚动回到 window，由浏览器原生恢复，
- * 本脚本在移动端直接 return，不干预。
+ * 导航分两条路径，save 都以「离开前的路径」为键：
+ *   - 整页导航 / bfcache：pagehide（此时 location 仍是旧页面）
+ *   - ClientRouter 客户端导航：astro:before-swap（DOM 替换前）；
+ *     之后 location 已指向新页面，所以路径快照在 after-swap 时才更新
+ *
+ * 移动端 `.main-scroll` 退化为 overflow:visible，滚动回到 window，由浏览器
+ * 原生恢复，本脚本在移动端直接 return，不干预。
  *
  * 必须放在 `.main-scroll` 之后使用，确保元素已存在。
  */
@@ -16,25 +21,43 @@
 
 <script is:inline>
   (function () {
-    // 仅桌面端：.main-scroll 是滚动容器
-    if (!window.matchMedia('(min-width: 960px)').matches) return;
-    var el = document.querySelector('.main-scroll');
-    if (!el) return;
+    var firstRun = !window.__mscrollInit;
 
-    var KEY = 'mscroll:' + location.pathname;
-
-    // 离开页面时保存（pagehide 覆盖 bfcache 与普通导航）
-    window.addEventListener('pagehide', function () {
-      try { sessionStorage.setItem(KEY, String(el.scrollTop)); } catch (_) {}
-    });
-
-    // 恢复：立即设一次（首次绘制前，避免闪到顶部）；图片等异步资源加载完后再校准
-    var saved;
-    try { saved = sessionStorage.getItem(KEY); } catch (_) {}
-    if (saved != null) {
-      var top = parseInt(saved, 10) || 0;
-      el.scrollTop = top;
-      window.addEventListener('load', function () { el.scrollTop = top; }, { once: true });
+    // 恢复：整页加载时本脚本在首帧前立即执行；ClientRouter 客户端导航时
+    // 同内容 inline 脚本不会重新执行，改由 page-load 事件触发（location 已指向新页）
+    function restore() {
+      if (!window.matchMedia('(min-width: 960px)').matches) return;
+      var el = document.querySelector('.main-scroll');
+      if (!el) return;
+      var saved;
+      try { saved = sessionStorage.getItem('mscroll:' + location.pathname); } catch (_) {}
+      if (saved != null) el.scrollTop = parseInt(saved, 10) || 0;
     }
+
+    if (firstRun) {
+      window.__mscrollInit = true;
+      window.__mscrollPath = location.pathname;
+
+      var save = function () {
+        var el = document.querySelector('.main-scroll');
+        if (el) { try { sessionStorage.setItem('mscroll:' + window.__mscrollPath, String(el.scrollTop)); } catch (_) {} }
+      };
+      window.addEventListener('pagehide', save);             // 整页导航 / bfcache
+      document.addEventListener('astro:before-swap', save); // ClientRouter 客户端导航
+      document.addEventListener('astro:after-swap', function () {
+        window.__mscrollPath = location.pathname;
+      });
+      document.addEventListener('astro:page-load', restore);
+
+      // 整页首次加载：异步资源（图片）加载完后再校准一次；客户端导航时资源已缓存
+      window.addEventListener('load', function () {
+        var el = document.querySelector('.main-scroll');
+        var saved;
+        try { saved = sessionStorage.getItem('mscroll:' + location.pathname); } catch (_) {}
+        if (el && saved != null) el.scrollTop = parseInt(saved, 10) || 0;
+      }, { once: true });
+    }
+
+    restore();
   })();
 </script>

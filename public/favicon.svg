@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 与 NavBar logo 同款：打开的书 -->
   <rect width="32" height="32" rx="8" fill="#0d1117"/>
-  <text x="16" y="23" font-size="18" text-anchor="middle" font-family="system-ui">🔥</text>
+  <g transform="translate(6 6.5) scale(1)" fill="none" stroke="#2997ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9.5 4.5C7.8 3.4 5.5 3.2 2.8 3.8L2 4v11.2l.8-.2c2.7-.6 5-.4 6.7.7"/>
+    <path d="M10.5 4.5C12.2 3.4 14.5 3.2 17.2 3.8L18 4v11.2l-.8-.2c-2.7-.6-5-.4-6.7.7"/>
+    <path d="M10 4.4V15.9"/>
+  </g>
 </svg>

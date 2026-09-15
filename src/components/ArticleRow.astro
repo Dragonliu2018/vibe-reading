@@ -1,0 +1,86 @@
+---
+/**
+ * 紧凑文章行 — 时间线 / 徽章 / 分类页共用的列表条目
+ *
+ * 渲染：标题（含来源前缀）+ 分类/原创徽章（可选）+ 日期（可选）。
+ * 模板渲染自动转义，取代原先三处各自维护的字符串拼接 renderArticle；
+ * 徽章颜色收敛为 class，不再内联 style。
+ */
+import { sourceLabel, badgeCat, type Article } from '../data/articles';
+
+export interface Props {
+  article:   Article;
+  showDate?:  boolean;   // 默认 true：右侧灰色日期
+  showBadges?: boolean;  // 默认 true：分类徽章 + 转载/AI 生成徽章
+}
+
+const { article, showDate = true, showBadges = true } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const catLabel = badgeCat(article.category);
+const src = article.source;
+let displayTitle = article.title;
+if (src) {
+  const label = sourceLabel(src, article.categoryPath ?? []);
+  if (label) displayTitle = `${label} ${src.prType ? src.prType + ': ' : ''}${article.title}`;
+}
+const isRepost = src?.type === 'article';
+const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
+---
+
+<a class="article-item" href={`${base}/articles/${encodedSlug}`}>
+  <div class="article-item-left">
+    <div class="article-item-title">{displayTitle}</div>
+    {showBadges && (
+      <div class="article-item-meta">
+        {catLabel && <span class="article-item-badge badge-cat">{catLabel}</span>}
+        <span class={`article-item-badge ${isRepost ? 'badge-repost' : 'badge-original'}`}>{isRepost ? '转载' : 'AI 生成'}</span>
+      </div>
+    )}
+  </div>
+  {showDate && <span class="article-item-date">{article.date.slice(0, 10)}</span>}
+</a>
+
+<style is:global>
+  .article-item {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    text-decoration: none;
+    transition: background .12s;
+  }
+  .article-item:last-child { border-bottom: none; }
+  .article-item:hover .article-item-title { color: #58a6ff; }
+  .article-item-left { flex: 1; min-width: 0; }
+  .article-item-title {
+    font-size: 14px; font-weight: 500; color: #e6e6e6;
+    transition: color .12s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .article-item-meta {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 3px;
+  }
+  .article-item-badge {
+    font-size: 10px; font-weight: 600;
+    padding: 1px 6px; border-radius: 20px;
+    letter-spacing: 0.2px;
+  }
+  .article-item-badge.badge-cat {
+    color: #58a6ff; background: rgba(88,166,255,.12);
+    border: 1px solid rgba(88,166,255,.30);
+  }
+  .article-item-badge.badge-repost {
+    color: #2dd4bf; background: rgba(45,212,191,.12);
+    border: 1px solid rgba(45,212,191,.30);
+  }
+  .article-item-badge.badge-original {
+    color: #ff6b9d; background: rgba(255,107,157,.12);
+    border: 1px solid rgba(255,107,157,.30);
+  }
+  .article-item-date {
+    font-size: 11px; color: #666;
+    white-space: nowrap; margin-left: 14px;
+    flex-shrink: 0;
+  }
+</style>

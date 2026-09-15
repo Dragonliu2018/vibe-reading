@@ -93,8 +93,9 @@ const hasPrivateZone  = privateRoots.length > 0;
 const toolTreeHtml    = toolsTree.map(n => renderToolNode(n)).join('');
 ---
 
-<!-- Sidebar：文章/工具双模式 -->
-<aside class="sidebar" id="g-sidebar" data-pagefind-ignore="all">
+<!-- Sidebar：文章/工具双模式。transition:persist 让它在 ClientRouter
+     客户端导航间保活：脚本绑定与交互状态（展开/宽度/滚动）持续有效 -->
+<aside class="sidebar" id="g-sidebar" data-pagefind-ignore="all" transition:persist="sidebar">
 
   <!-- 移动端模式切换（桌面端在 nav 里，移动端在侧边栏顶部）-->
   <div class="mob-mode-toggle">
@@ -159,6 +160,11 @@ const toolTreeHtml    = toolsTree.map(n => renderToolNode(n)).join('');
       var sidebar = document.getElementById('g-sidebar');
       if (!sidebar) return;
 
+      // ClientRouter 客户端导航时侧边栏经 transition:persist 跨页保留，
+      // 展开态/宽度/滚动位置天然延续，跳过重复还原（防止 sessionStorage 旧值跳变）
+      if (sidebar.dataset.restored) return;
+      sidebar.dataset.restored = '1';
+
       // 禁用所有过渡，防止箭头旋转、高度展开等动画在切换文章时触发
       sidebar.classList.add('no-transition');
 
@@ -213,10 +219,10 @@ const toolTreeHtml    = toolsTree.map(n => renderToolNode(n)).join('');
 </script>
 
 <!-- Mobile backdrop (click to close) -->
-<div class="mob-backdrop" id="g-mob-backdrop" aria-hidden="true"></div>
+<div class="mob-backdrop" id="g-mob-backdrop" aria-hidden="true" transition:persist="sidebar-backdrop"></div>
 
 <!-- Draggable divider + collapse toggle -->
-<div class="resize-handle" id="g-resize-handle">
+<div class="resize-handle" id="g-resize-handle" transition:persist="sidebar-resize">
   <button class="sidebar-toggle" id="g-sidebar-toggle"
           title="折叠侧边栏" aria-label="折叠侧边栏">
     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">

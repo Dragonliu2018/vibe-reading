@@ -5,9 +5,8 @@
  */
 ---
 
-<div class="srch-overlay" id="srch-backdrop" aria-hidden="true"></div>
-
-<div class="srch-box" id="srch-dialog" role="dialog" aria-modal="true" aria-label="搜索">
+<div class="srch-overlay" id="srch-backdrop" aria-hidden="true" transition:persist="srch-overlay"></div>
+<div class="srch-box" id="srch-dialog" role="dialog" aria-modal="true" aria-label="搜索" transition:persist="srch-box">
 
   <div class="srch-head">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="srch-head-icon">

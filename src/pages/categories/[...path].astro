@@ -9,15 +9,15 @@
  *   2. 标题 + 文章总数
  *   3. 子分类卡片（每个直接子分类一张卡片，显示名称 + 文章数）
  *   4. 当前分类直属文章列表
+ *
+ * 外壳由 BaseLayout 收敛（theme="github" 保持本页的 GitHub 蓝调色）；
+ * 子孙分类树由 CategorySubtree 组件递归渲染（原生 <details> 折叠）。
  */
-import { articles, sourceLabel, badgeCat } from '../../data/articles';
-import { encodePathSegment } from '../../data/paths';
+import { articles } from '../../data/articles';
 import { categoryTree, type TreeNode } from '../../data/categories';
-import NavBar from '../../components/NavBar.astro';
-import Sidebar from '../../components/Sidebar.astro';
-import SearchModal from '../../components/SearchModal.astro';
-import SWRegister from '../../components/SWRegister.astro';
-import ScrollRestore from '../../components/ScrollRestore.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleRow from '../../components/ArticleRow.astro';
+import CategorySubtree from '../../components/CategorySubtree.astro';
 
 export function getStaticPaths() {
   const paths: { params: { path: string }; props: { node: TreeNode; pathArray: string[] } }[] = [];
@@ -52,7 +52,6 @@ function getArticles(n: TreeNode) {
     .map(slug => articles.find(a => a.slug === slug))
     .filter(Boolean)
     .sort((a, b) => {
-      // Overview 永远排第一
       if (a!.title === 'Overview') return -1;
       if (b!.title === 'Overview') return 1;
       return new Date(b!.date).getTime() - new Date(a!.date).getTime();
@@ -66,448 +65,106 @@ const visibleChildren = (node.children ?? []).filter(c => countArticles(c) > 0);
 
 // ── 面包屑路径 ────────────────────────────────────────────────────
 function catHref(arr: string[]): string {
-  return `${base}/categories/${arr.map(l => encodePathSegment(l.replace(/\//g, '-'))).join('/')}`;
+  return `${base}/categories/${arr.map(l => encodeURIComponent(l.replace(/\//g, '-'))).join('/')}`;
 }
-
-// ── HTML 转义 ────────────────────────────────────────────────────
-function esc(s: string): string {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ── 渲染单个文章条目 ──────────────────────────────────────────────
-function renderArticle(slug: string): string {
-  const a = articles.find(x => x.slug === slug);
-  if (!a) return '';
-  const catLabel = badgeCat(a.category);
-  const src = a.source;
-  let displayTitle = a.title;
-  if (src) {
-    const label = sourceLabel(src, a.categoryPath ?? []);
-    if (label) displayTitle = `${label} ${src.prType ? src.prType + ': ' : ''}${a.title}`;
-  }
-  const isRepost = src?.type === 'article';
-  const originLabel = isRepost ? '转载' : 'AI 生成';
-  const catBadge = catLabel
-    ? `<span class="article-item-badge" style="color:#58a6ff;background:rgba(88,166,255,.12);border:1px solid rgba(88,166,255,.30);">${catLabel}</span>`
-    : '';
-  const originBadge = isRepost
-    ? `<span class="article-item-badge" style="color:#2dd4bf;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.30);">转载</span>`
-    : `<span class="article-item-badge" style="color:#ff6b9d;background:rgba(255,107,157,.12);border:1px solid rgba(255,107,157,.30);">AI 生成</span>`;
-  return `<a class="article-item" href="${base}/articles/${a.slug}">
-      <div class="article-item-left">
-        <div class="article-item-title">${esc(displayTitle)}</div>
-        <div class="article-item-meta">${catBadge}${originBadge}</div>
-      </div>
-      <span class="article-item-date">${a.date.slice(0, 10)}</span>
-    </a>`;
-}
-
-// ── 递归渲染子树（带缩进层级）──────────────────────────────────────
-function renderSubtree(n: TreeNode, ancestors: string[], depth: number): string {
-  const childPath = [...ancestors, n.label];
-  const href = catHref(childPath);
-  const count = countArticles(n);
-  const arts = getArticles(n);
-  const hasContent = arts.length > 0 || (n.children && n.children.some(c => countArticles(c) > 0));
-  let html = '';
-
-  html += `<div class="subtree-node" style="margin-left:${depth * 20}px">`;
-
-  // 分类标题行：chevron（折叠/展开）+ 名称链接（跳转）+ 计数
-  html += '<div class="subtree-head">';
-  if (hasContent) {
-    html += '<button class="subtree-toggle" aria-label="展开/折叠"></button>';
-  } else {
-    html += '<span class="subtree-toggle-placeholder"></span>';
-  }
-  html += `<a class="subtree-cat" href="${href}"><span class="subtree-cat-name">${esc(n.label)}</span></a>`;
-  html += `<span class="subtree-cat-count">${count}</span>`;
-  html += '</div>';
-
-  // 可折叠内容区
-  if (hasContent) {
-    html += '<div class="subtree-body">';
-
-    // 该节点直属文章
-    if (arts.length > 0) {
-      html += '<div class="subtree-articles">';
-      for (const a of arts) {
-        html += renderArticle(a!.slug);
-      }
-      html += '</div>';
-    }
-
-    // 递归子分类
-    if (n.children) {
-      const visChildren = n.children.filter(c => countArticles(c) > 0);
-      for (const c of visChildren) {
-        html += renderSubtree(c, childPath, depth + 1);
-      }
-    }
-
-    html += '</div>';
-  }
-
-  html += '</div>';
-  return html;
-}
-
-const subtreeHtml = visibleChildren.map(c => renderSubtree(c, pathArray, 0)).join('');
 
 const totalArticles = countArticles(node);
 const pageTitle = pathArray[pathArray.length - 1];
 ---
 
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{pageTitle} · Vibe Reading</title>
-  <meta name="description" content={`${pageTitle} 分类下的 ${totalArticles} 篇文章`} />
-  <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
-  <SWRegister />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<BaseLayout
+  title={`${pageTitle} · Vibe Reading`}
+  description={`${pageTitle} 分类下的 ${totalArticles} 篇文章`}
+  theme="github"
+  mainClass="narrow"
+>
 
-    :root {
-      --bg:            #000000;
-      --bg-secondary:  #0a0a0f;
-      --text:          #e6e6e6;
-      --text-muted:    #999;
-      --text-dim:      #666;
-      --border:        #1a1a22;
-      --accent:        #58a6ff;
-    }
-
-    html, body { height: 100%; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.6;
-      display: flex; flex-direction: column;
-    }
-
-    /* ── Two-column layout (与首页/文章页一致) ── */
-    .layout {
-      flex: 1; overflow: hidden;
-      display: flex; align-items: stretch;
-    }
-    @media (max-width: 959px) {
-      .layout { flex: none; overflow: visible; display: block; }
-    }
-
-    .main-scroll {
-      flex: 1; min-width: 0;
-      height: 100%; overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.1) transparent;
-    }
-    .main-scroll::-webkit-scrollbar { width: 4px; }
-    .main-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-    @media (max-width: 959px) {
-      .main-scroll { flex: none; height: auto; overflow: visible; }
-    }
-
-    .main-col { min-width: 0; padding: 0 8% 120px 52px; }
-    @media (max-width: 959px) { .main-col { padding: 0 6% 80px; } }
-
-    /* ── 面包屑 ── */
-    .cat-breadcrumb {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
-      font-size: 13px; color: var(--text-dim);
-      margin-top: 40px; margin-bottom: 28px;
-      line-height: 1.6;
-    }
-    .cat-breadcrumb a {
-      color: var(--text-dim);
-      text-decoration: none;
-      transition: color .15s;
-      white-space: nowrap;
-    }
-    .cat-breadcrumb a:hover { color: var(--text); }
-    .cat-breadcrumb .bc-sep {
-      margin: 0 6px; opacity: 0.4;
-      font-size: 14px; font-weight: 300;
-    }
-    .cat-breadcrumb .bc-current {
-      color: var(--text-muted); font-weight: 500;
-    }
-
-    /* ── 标题 ── */
-    .cat-header { margin-bottom: 36px; }
-    .cat-title {
-      font-size: 28px; font-weight: 700; letter-spacing: -0.5px;
-      color: var(--text); margin-bottom: 6px;
-    }
-    .cat-count {
-      font-size: 14px; color: var(--text-dim);
-    }
-
-    /* ── 子分类卡片 ── */
-    .subcat-section { margin-bottom: 40px; }
-    .subcat-section-title {
-      font-size: 14px; font-weight: 600; letter-spacing: 0.3px;
-      text-transform: uppercase; color: var(--text-dim);
-      margin-bottom: 14px;
-    }
-    .subcat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 10px;
-    }
-    .subcat-card {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px; border-radius: 10px;
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.06);
-      text-decoration: none;
-      transition: background .15s, border-color .15s, transform .15s;
-    }
-    .subcat-card:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.12);
-      transform: translateY(-1px);
-    }
-    .subcat-name {
-      font-size: 15px; font-weight: 500; color: var(--text);
-    }
-    .subcat-count {
-      font-size: 12px; color: var(--text-dim);
-      background: rgba(255,255,255,0.06);
-      padding: 2px 8px; border-radius: 20px;
-      white-space: nowrap;
-    }
-
-    /* ── 文章列表 ── */
-    .article-section { margin-bottom: 40px; }
-    .article-section-title {
-      font-size: 14px; font-weight: 600; letter-spacing: 0.3px;
-      text-transform: uppercase; color: var(--text-dim);
-      margin-bottom: 14px;
-    }
-
-    .empty-state {
-      text-align: center; padding: 40px 0;
-      color: var(--text-dim); font-size: 14px;
-    }
-
-    .footer {
-      text-align: center; padding: 40px 0;
-      font-size: 13px; color: var(--text-dim);
-    }
-    .footer a { color: var(--text-dim); text-decoration: none; }
-    .footer a:hover { color: var(--text-muted); }
-  </style>
-
-  <!-- Global styles: set:html 注入的内容不被 Astro scoped CSS 选中，必须用 is:global -->
-  <style is:global>
-    .article-item {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      text-decoration: none;
-      transition: background .12s;
-    }
-    .article-item:last-child { border-bottom: none; }
-    .article-item:hover .article-item-title { color: #58a6ff; }
-    .article-item-left { flex: 1; min-width: 0; }
-    .article-item-title {
-      font-size: 14px; font-weight: 500; color: #e6e6e6;
-      transition: color .12s;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .article-item-meta {
-      display: flex; align-items: center; gap: 6px;
-      margin-top: 3px;
-    }
-    .article-item-badge {
-      font-size: 10px; font-weight: 600;
-      padding: 1px 6px; border-radius: 20px;
-      letter-spacing: 0.2px;
-    }
-    .article-item-date {
-      font-size: 11px; color: #666;
-      white-space: nowrap; margin-left: 14px;
-      flex-shrink: 0;
-    }
-
-    /* ── 子孙分类层级树 ── */
-    .subtree-section { margin-bottom: 40px; }
-    .subtree-node { margin-bottom: 2px; }
-
-    .subtree-head {
-      display: flex; align-items: center; gap: 4px;
-      padding: 7px 10px; border-radius: 8px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.05);
-      transition: background .15s, border-color .15s;
-      margin-bottom: 2px;
-    }
-    .subtree-head:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.12);
-    }
-
-    .subtree-toggle {
-      width: 18px; height: 18px; flex-shrink: 0;
-      border: none; background: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: #666; padding: 0;
-      transition: color .15s, transform .2s cubic-bezier(0.4,0,0.2,1);
-    }
-    .subtree-toggle::before {
-      content: '▸'; font-size: 12px;
-    }
-    .subtree-toggle:hover { color: #aaa; }
-    .subtree-node.collapsed > .subtree-head .subtree-toggle {
-      transform: rotate(0deg);
-    }
-    .subtree-node:not(.collapsed) > .subtree-head .subtree-toggle {
-      transform: rotate(90deg);
-      color: #888;
-    }
-    .subtree-toggle-placeholder { width: 18px; flex-shrink: 0; }
-
-    .subtree-cat {
-      flex: 1; text-decoration: none;
-      font-size: 14px; font-weight: 500; color: #e6e6e6;
-      transition: color .15s;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .subtree-cat:hover .subtree-cat-name { color: #58a6ff; }
-
-    .subtree-cat-name { color: inherit; }
-    .subtree-cat-count {
-      font-size: 11px; color: #666;
-      background: rgba(255,255,255,0.06);
-      padding: 1px 7px; border-radius: 20px;
-      white-space: nowrap; flex-shrink: 0;
-    }
-
-    .subtree-body {
-      overflow: hidden;
-      max-height: 9999px;
-      transition: max-height .26s cubic-bezier(0.4,0,0.2,1);
-      padding-left: 24px;
-    }
-    .subtree-node.collapsed > .subtree-body {
-      max-height: 0;
-    }
-
-    .subtree-articles {
-      margin-bottom: 4px;
-    }
-  </style>
-</head>
-<body>
-
-  <NavBar />
-
-  <div class="layout">
-
-    <!-- 左侧：分类树 -->
-    <Sidebar />
-
-    <!-- 右侧：分类内容 -->
-    <div class="main-scroll">
-      <div class="main-col">
-
-        <!-- 面包屑 -->
-        <nav class="cat-breadcrumb" aria-label="分类路径">
-          <a href={`${base}/`}>首页</a>
-          {pathArray.map((cat, i) => (
-            <>
-              <span class="bc-sep">›</span>
-              {i === pathArray.length - 1 ? (
-                <span class="bc-current">{cat}</span>
-              ) : (
-                <a href={catHref(pathArray.slice(0, i + 1))}>{cat}</a>
-              )}
-            </>
-          ))}
-        </nav>
-
-        <!-- 标题 -->
-        <div class="cat-header">
-          <h1 class="cat-title">{pageTitle}</h1>
-          <p class="cat-count">{totalArticles} 篇文章</p>
-        </div>
-
-        <!-- 当前分类直属文章 -->
-        {directArticles.length > 0 && (
-          <div class="article-section">
-            <div class="article-section-title">本分类文章</div>
-            {directArticles.map(article => {
-              const a = article!;
-              const catLabel = badgeCat(a.category);
-              const src = a.source;
-              let displayTitle = a.title;
-              if (src) {
-                const label = sourceLabel(src, a.categoryPath ?? []);
-                if (label) displayTitle = `${label} ${src.prType ? src.prType + ': ' : ''}${a.title}`;
-              }
-              const isRepost = src?.type === 'article';
-              const originLabel = isRepost ? '转载' : 'AI 生成';
-              return (
-                <a class="article-item" href={`${base}/articles/${a.slug}`}>
-                  <div class="article-item-left">
-                    <div class="article-item-title">{displayTitle}</div>
-                    <div class="article-item-meta">
-                      {catLabel && (
-                        <span class="article-item-badge" style="color:#58a6ff;background:rgba(88,166,255,.12);border:1px solid rgba(88,166,255,.30);">
-                          {catLabel}
-                        </span>
-                      )}
-                      <span class="article-item-badge" style={isRepost ? 'color:#2dd4bf;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.30);' : 'color:#ff6b9d;background:rgba(255,107,157,.12);border:1px solid rgba(255,107,157,.30);'}>
-                        {originLabel}
-                      </span>
-                    </div>
-                  </div>
-                  <span class="article-item-date">{a.date.slice(0, 10)}</span>
-                </a>
-              );
-            })}
-          </div>
+  <!-- 面包屑 -->
+  <nav class="cat-breadcrumb" aria-label="分类路径">
+    <a href={`${base}/`}>首页</a>
+    {pathArray.map((cat, i) => (
+      <>
+        <span class="bc-sep">›</span>
+        {i === pathArray.length - 1 ? (
+          <span class="bc-current">{cat}</span>
+        ) : (
+          <a href={catHref(pathArray.slice(0, i + 1))}>{cat}</a>
         )}
+      </>
+    ))}
+  </nav>
 
-        {/* 子孙分类层级树（含所有文章） */}
-        {visibleChildren.length > 0 && (
-          <div class="subtree-section">
-            <div class="subcat-section-title">子分类</div>
-            <Fragment set:html={subtreeHtml} />
-          </div>
-        )}
-
-        {directArticles.length === 0 && visibleChildren.length === 0 && (
-          <div class="empty-state">该分类下暂无文章</div>
-        )}
-
-      </div>
-
-      <footer class="footer" data-pagefind-ignore="all">
-        Vibe Reading · AI-drafted · Human-reviewed &nbsp;·&nbsp;
-        <a href={`${base}/`}>← 返回首页</a>
-      </footer>
-    </div>
-
+  <!-- 标题 -->
+  <div class="cat-header">
+    <h1 class="cat-title">{pageTitle}</h1>
+    <p class="cat-count">{totalArticles} 篇文章</p>
   </div>
 
-  <SearchModal />
-  <ScrollRestore />
+  <!-- 当前分类直属文章 -->
+  {directArticles.length > 0 && (
+    <div class="article-section">
+      <div class="article-section-title">本分类文章</div>
+      {directArticles.map(article => <ArticleRow article={article!} />)}
+    </div>
+  )}
 
-  <script>
-    // 子分类折叠/展开
-    document.querySelectorAll('.subtree-toggle').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const node = btn.closest('.subtree-node');
-        if (node) node.classList.toggle('collapsed');
-      });
-    });
-  </script>
-</body>
-</html>
+  <!-- 子孙分类层级树（含所有文章） -->
+  {visibleChildren.length > 0 && (
+    <div class="subtree-section">
+      <div class="subcat-section-title">子分类</div>
+      {visibleChildren.map(c => <CategorySubtree node={c} ancestors={pathArray} />)}
+    </div>
+  )}
+
+  {directArticles.length === 0 && visibleChildren.length === 0 && (
+    <div class="empty-state">该分类下暂无文章</div>
+  )}
+
+</BaseLayout>
+
+<style>
+  /* ── 面包屑 ── */
+  .cat-breadcrumb {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
+    font-size: 13px; color: var(--text-dim);
+    margin-top: 40px; margin-bottom: 28px;
+    line-height: 1.6;
+  }
+  .cat-breadcrumb a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color .15s;
+    white-space: nowrap;
+  }
+  .cat-breadcrumb a:hover { color: var(--text); }
+  .cat-breadcrumb .bc-sep {
+    margin: 0 6px; opacity: 0.4;
+    font-size: 14px; font-weight: 300;
+  }
+  .cat-breadcrumb .bc-current {
+    color: var(--text-muted); font-weight: 500;
+  }
+
+  /* ── 标题 ── */
+  .cat-header { margin-bottom: 36px; }
+  .cat-title {
+    font-size: 28px; font-weight: 700; letter-spacing: -0.5px;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .cat-count {
+    font-size: 14px; color: var(--text-dim);
+  }
+
+  /* ── 文章列表 ── */
+  .article-section { margin-bottom: 40px; }
+  .article-section-title {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.3px;
+    text-transform: uppercase; color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .empty-state {
+    text-align: center; padding: 40px 0;
+    color: var(--text-dim); font-size: 14px;
+  }
+</style>

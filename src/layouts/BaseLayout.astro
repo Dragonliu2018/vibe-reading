@@ -1,0 +1,182 @@
+---
+/**
+ * 站点基础布局 — 首页 / 分类页 / 多视图页共用的 HTML 外壳
+ *
+ * 收敛此前每页整份复制的 shell：reset、:root 主题、双栏布局、
+ * NavBar / Sidebar / SearchModal / ScrollRestore 装配、footer。
+ *
+ * 页面差异通过 props：
+ *   theme     'apple'（默认，站点主视觉）| 'github'（分类页的 GitHub 蓝调色）
+ *   mainClass 'padded'（主列顶部留白，无 hero 的视图页）| 'narrow'（右内边距 8%，分类页）
+ *
+ * 命名插槽：
+ *   above     主列之前的整幅区块（保留的扩展点，当前无使用方）
+ *   默认       主列内容
+ *   footer    页脚内容（缺省为「← 返回首页」）
+ *   body-end  </body> 前的脚本 / 数据岛
+ *
+ * ClientRouter（View Transitions）让页间导航获得平滑过渡；
+ * NavBar / Sidebar / SearchModal 根元素以 transition:persist 跨导航保活，
+ * 其脚本绑定与交互状态（侧边栏展开/宽度、搜索框）因此持续有效。
+ */
+import { ClientRouter } from 'astro:transitions';
+import NavBar from '../components/NavBar.astro';
+import Sidebar from '../components/Sidebar.astro';
+import SearchModal from '../components/SearchModal.astro';
+import ScrollRestore from '../components/ScrollRestore.astro';
+import SWRegister from '../components/SWRegister.astro';
+
+export interface Props {
+  title:        string;
+  description?: string;
+  navMode?:     'articles' | 'tools';
+  theme?:       'apple' | 'github';
+  mainClass?:   string;            // 'padded' / 'narrow'，见 .main-col 样式
+}
+
+const { title, description, navMode = 'articles', theme = 'apple', mainClass = '' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+  <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  <SWRegister />
+  <ClientRouter />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #000000;
+      --bg-secondary:  #1c1c1e;   /* Apple 系统深灰，卡片实色背景 */
+      --card-bg:       #141416;   /* 比纯黑略亮，有层次感 */
+      --card-border:   rgba(255,255,255,0.10);
+      --card-shadow:   0 1px 3px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.35);
+      --card-shadow-h: 0 4px 8px rgba(0,0,0,0.30), 0 12px 32px rgba(0,0,0,0.45);
+      --text:          #f5f5f7;
+      --text-muted:    #86868b;
+      --text-dim:      #48484a;
+      --accent:        #2997ff;
+      --accent-light:  rgba(41,151,255,0.12);
+      --radius:        18px;
+      --radius-sm:     10px;
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --mono: ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', Menlo, monospace;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 80% 45% at 50% -5%, rgba(41,151,255,0.12) 0%, transparent 70%);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (max-width: 959px) {
+      html, body { height: auto; overflow: visible; }
+      body { display: block; }
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── 分类页主题：GitHub 蓝调色（覆盖 Apple 主题变量，保持既有视觉）── */
+    body.theme-github {
+      --bg-secondary: #0a0a0f;
+      --text:          #e6e6e6;
+      --text-muted:    #999;
+      --text-dim:      #666;
+      --border:        #1a1a22;
+      --accent:        #58a6ff;
+      background-image: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── Two-column layout ── */
+    .layout {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+    @media (max-width: 959px) {
+      .layout { flex: none; overflow: visible; display: block; }
+    }
+
+    /* ── 右侧滚动面板 ── */
+    .main-scroll {
+      flex: 1; min-width: 0;
+      height: 100%; overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .main-scroll::-webkit-scrollbar { width: 4px; }
+    .main-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    @media (max-width: 959px) {
+      .main-scroll { flex: none; height: auto; overflow: visible; }
+    }
+
+    .main-col { min-width: 0; padding: 0 10% 120px 52px; }
+    .main-col.padded { padding-top: 36px; }    /* 视图页：无 hero，主列自带顶距 */
+    .main-col.narrow { padding-right: 8%; }    /* 分类页 */
+    @media (max-width: 959px) {
+      .main-col { padding: 0 6% 80px; }
+      .main-col.padded { padding-top: 24px; }
+    }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 36px 10%; text-align: center;
+      color: var(--text-dim); font-size: 13px; line-height: 1.8;
+    }
+    .footer a { color: #636366; transition: color .15s; }
+    .footer a:hover { color: var(--text-muted); }
+    @media (max-width: 680px) { .footer { padding: 28px 6%; } }
+  </style>
+</head>
+<body class={theme === 'github' ? 'theme-github' : undefined}>
+
+  <NavBar mode={navMode} />
+
+  <div class="layout">
+
+    <!-- 左侧：分类树 -->
+    <Sidebar />
+
+    <!-- 右侧：主内容 -->
+    <div class="main-scroll">
+      <slot name="above" />
+      <div class={`main-col${mainClass ? ' ' + mainClass : ''}`}>
+        <slot />
+      </div>
+      <footer class="footer" data-pagefind-ignore="all">
+        <slot name="footer">
+          Vibe Reading · AI-drafted · Human-reviewed &nbsp;·&nbsp;
+          <a href={`${base}/`}>← 返回首页</a>
+        </slot>
+      </footer>
+    </div>
+
+  </div>
+
+  <ScrollRestore />
+  <SearchModal />
+  <slot name="body-end" />
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+---
+/**
+ * 徽章视图 — 按 4 个维度分组展示文章
+ *
+ * 构建时渲染，前端零数据逻辑。复用 deriveBadges / badgeStyle。
+ * 维度：分类徽章 / 来源 / review 状态 / 是否置顶。
+ * 每个分组是原生 <details>（默认折叠），点击展开看组内文章。
+ */
+import { articles, type Article } from '../data/articles';
+import { deriveBadges, badgeStyle } from '../data/badges';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewTabs from '../components/ViewTabs.astro';
+import ArticleRow from '../components/ArticleRow.astro';
+
+const totalArticles = articles.length;
+
+// ── 分组结构 ─────────────────────────────────────────────────────
+interface Group {
+  label:       string;
+  badgeStyle?: string;     // 分组徽章的 inline style（可选）
+  count:       number;
+  items:       Article[];
+}
+interface Dimension {
+  title:  string;
+  groups: Group[];
+}
+
+// 每篇文章预计算徽章状态
+const artBadges = new Map(articles.map(a => [a.slug, deriveBadges(a)]));
+
+function groupBy(getKey: (a: Article) => string, styleOf?: (label: string) => string | undefined): Group[] {
+  const map = new Map<string, Article[]>();
+  for (const a of articles) {
+    const key = getKey(a);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(a);
+  }
+  return [...map.entries()]
+    .sort((x, y) => y[1].length - x[1].length)
+    .map(([label, items]) => ({ label, badgeStyle: styleOf?.(label), count: items.length, items }));
+}
+
+const originStyles: Record<string, string> = {
+  '转载':    'color:#2dd4bf;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.30);',
+  'AI 生成': 'color:#ff6b9d;background:rgba(255,107,157,.12);border:1px solid rgba(255,107,157,.30);',
+};
+const reviewStyles: Record<string, string> = {
+  'Reviewed': 'color:#3fb950;background:rgba(63,185,80,.12);border:1px solid rgba(63,185,80,.30);',
+  'Draft':    'color:#ff9f0a;background:rgba(255,159,10,.12);border:1px solid rgba(255,159,10,.30);',
+};
+const pinStyles: Record<string, string> = {
+  '置顶': 'color:#ffd60a;background:rgba(255,214,10,.12);border:1px solid rgba(255,214,10,.30);',
+  '普通': 'color:#86868b;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);',
+};
+
+const dimensions: Dimension[] = [
+  { title: '按分类',    groups: groupBy(a => artBadges.get(a.slug)!.catLabel || '未分类', l => l !== '未分类' ? badgeStyle(l) : undefined) },
+  { title: '按来源',    groups: groupBy(a => artBadges.get(a.slug)!.originLabel, l => originStyles[l]) },
+  { title: '按 Review', groups: groupBy(a => artBadges.get(a.slug)!.reviewLabel, l => reviewStyles[l]) },
+  { title: '按置顶',    groups: groupBy(a => artBadges.get(a.slug)!.pinned ? '置顶' : '普通', l => pinStyles[l]) },
+];
+---
+
+<BaseLayout
+  title="徽章 · Vibe Reading"
+  description={`按分类/来源/review/置顶分组的 ${totalArticles} 篇文章`}
+  mainClass="padded"
+>
+  <ViewTabs active="badges" />
+
+  {dimensions.map(dim => (
+    <section class="dimension">
+      <h2 class="dimension-title">{dim.title}</h2>
+      <div class="dimension-groups">
+        {dim.groups.map(g => (
+          <details class="badge-group">
+            <summary class="badge-group-head">
+              <svg class="badge-group-chev" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {g.badgeStyle ? (
+                <span class="group-badge" style={g.badgeStyle}>{g.label}</span>
+              ) : (
+                <span class="group-badge group-badge-plain">{g.label}</span>
+              )}
+              <span class="badge-group-count">{g.count}</span>
+            </summary>
+            <div class="badge-group-articles">
+              {g.items.map(a => <ArticleRow article={a} showBadges={false} />)}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .dimension { margin-bottom: 48px; }
+  .dimension-title {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.3px;
+    text-transform: uppercase; color: var(--text-dim);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .dimension-groups { display: flex; flex-direction: column; gap: 24px; }
+
+  .badge-group-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: background .15s, border-color .15s;
+    margin-bottom: 2px;
+    list-style: none; cursor: pointer; user-select: none;
+  }
+  .badge-group-head::-webkit-details-marker { display: none; }
+  .badge-group-head:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+  /* 文章行与组徽章严格对齐（head padding 10 + chev 18 + gap 8 = 36px） */
+  .badge-group-articles { padding-left: 36px; }
+  /* 徽章语境下的紧凑单行：分组头已表达分类，隐藏行内 meta 徽章 */
+  .badge-group-articles :global(.article-item) { padding: 6px 0; }
+  .badge-group-articles :global(.article-item-meta) { display: none; }
+  .badge-group-chev {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
+    color: #999;
+    transition: color .15s, transform .2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .badge-group-head:hover .badge-group-chev { color: #ccc; }
+  details[open] > .badge-group-head .badge-group-chev { transform: rotate(90deg); }
+  .group-badge {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 9px; border-radius: 20px;
+    letter-spacing: 0.2px; white-space: nowrap;
+  }
+  .group-badge-plain {
+    color: var(--text-muted); background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .badge-group-count {
+    font-size: 12px; color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    padding: 1px 8px; border-radius: 20px;
+    white-space: nowrap;
+  }
+</style>

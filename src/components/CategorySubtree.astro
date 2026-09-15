@@ -1,0 +1,127 @@
+---
+/**
+ * 分类子树 — 递归渲染的层级分类浏览（分类页「子分类」区）
+ *
+ * 折叠用原生 <details>/<summary>：零 JS、键盘可达。summary 内的
+ * 分类名是链接：点击名称跳转分类页，点击其余区域展开/折叠（原生行为）。
+ * 之前由分类页的 renderSubtree 字符串拼接 + toggle 脚本实现。
+ */
+import type { TreeNode } from '../data/categories';
+import { articles, type Article } from '../data/articles';
+import ArticleRow from './ArticleRow.astro';
+import CategorySubtree from './CategorySubtree.astro';   // 递归渲染：自导入
+
+export interface Props {
+  node: TreeNode;
+  ancestors: string[];   // 从根到父级的分类路径
+  depth?: number;
+}
+
+const { node, ancestors, depth = 0 } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// ── 递归统计子树文章总数 ──────────────────────────────────────────
+function countArticles(n: TreeNode): number {
+  let count = n.slugs?.length ?? 0;
+  if (n.children) for (const c of n.children) count += countArticles(c);
+  return count;
+}
+
+// ── 该分类直属文章（按日期降序；title="Overview" 固定排最前）────
+function getArticles(n: TreeNode): Article[] {
+  return (n.slugs ?? [])
+    .map(slug => articles.find(a => a.slug === slug))
+    .filter(Boolean)
+    .sort((a, b) => {
+      if (a!.title === 'Overview') return -1;
+      if (b!.title === 'Overview') return 1;
+      return new Date(b!.date).getTime() - new Date(a!.date).getTime();
+    }) as Article[];
+}
+
+const count = countArticles(node);
+const arts = getArticles(node);
+const visibleChildren = (node.children ?? []).filter(c => countArticles(c) > 0);
+const hasContent = arts.length > 0 || visibleChildren.length > 0;
+
+const childPath = [...ancestors, node.label];
+const href = `${base}/categories/${childPath.map(l => encodeURIComponent(l.replace(/\//g, '-'))).join('/')}`;
+---
+
+<div class="subtree-node" style={`margin-left:${depth * 20}px`}>
+  {hasContent ? (
+    <details class="subtree-details" open>
+      <summary class="subtree-head">
+        <svg class="subtree-chev" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        <a class="subtree-cat" href={href}><span class="subtree-cat-name">{node.label}</span></a>
+        <span class="subtree-cat-count">{count}</span>
+      </summary>
+      <div class="subtree-body">
+        {arts.length > 0 && (
+          <div class="subtree-articles">
+            {arts.map(a => <ArticleRow article={a} />)}
+          </div>
+        )}
+        {visibleChildren.map(c => (
+          <CategorySubtree node={c} ancestors={childPath} depth={depth + 1} />
+        ))}
+      </div>
+    </details>
+  ) : (
+    <div class="subtree-head subtree-head-static">
+      <span class="subtree-chev-placeholder"></span>
+      <a class="subtree-cat" href={href}><span class="subtree-cat-name">{node.label}</span></a>
+      <span class="subtree-cat-count">{count}</span>
+    </div>
+  )}
+</div>
+
+<style is:global>
+  .subtree-node { margin-bottom: 2px; }
+
+  .subtree-head {
+    display: flex; align-items: center; gap: 4px;
+    padding: 7px 10px; border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: background .15s, border-color .15s;
+    margin-bottom: 2px;
+    list-style: none; cursor: pointer; user-select: none;
+  }
+  .subtree-head::-webkit-details-marker { display: none; }
+  .subtree-head:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+  }
+  .subtree-head-static { cursor: default; }
+
+  .subtree-chev {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
+    color: #999;                               /* 提亮：原 #666 + 文本 ▸ 墨迹过细 */
+    transition: color .15s, transform .2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .subtree-head:hover .subtree-chev { color: #ccc; }
+  details[open] > .subtree-head .subtree-chev { transform: rotate(90deg); }
+  .subtree-chev-placeholder { width: 18px; flex-shrink: 0; }
+
+  .subtree-cat {
+    flex: 1; text-decoration: none;
+    font-size: 14px; font-weight: 500; color: #e6e6e6;
+    transition: color .15s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .subtree-cat:hover .subtree-cat-name { color: #58a6ff; }
+  .subtree-cat-name { color: inherit; }
+  .subtree-cat-count {
+    font-size: 11px; color: #666;
+    background: rgba(255,255,255,0.06);
+    padding: 1px 7px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  .subtree-body { padding-left: 24px; }
+  .subtree-articles { margin-bottom: 4px; }
+</style>

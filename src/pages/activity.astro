@@ -1,0 +1,153 @@
+---
+/**
+ * 活跃度视图 — 每日文章数柱状图
+ *
+ * SVG 绘制统一在 src/lib/activityChart.ts，构建时与客户端共用同一实现；
+ * 全量数据点以 JSON island 嵌入页面，区间选择器（30天/90天/全部）
+ * 客户端现场裁剪重绘。默认 SVG 在构建时静态生成（无 JS 也有完整图表）。
+ */
+import { articles } from '../data/articles';
+import { buildActivitySvg, type ActivityPoint } from '../lib/activityChart';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewTabs from '../components/ViewTabs.astro';
+
+// ── 按天统计（升序）───────────────────────────────────────────────
+const byDay = new Map<string, number>();
+for (const a of articles) {
+  const d = a.date.slice(0, 10);
+  byDay.set(d, (byDay.get(d) ?? 0) + 1);
+}
+const allPoints: ActivityPoint[] = [...byDay.entries()]
+  .sort((a, b) => a[0].localeCompare(b[0]))
+  .map(([date, count]) => ({ date, count }));
+
+const totalArticles = articles.length;
+const defaultSvg = buildActivitySvg(allPoints.slice(-30));   // 默认最近 30 个有文章的天
+---
+
+<BaseLayout
+  title="活跃度 · Vibe Reading"
+  description={`每日文章写作活跃度，共 ${totalArticles} 篇`}
+  mainClass="padded"
+>
+  <ViewTabs active="activity" />
+
+  <div class="chart-card">
+    <div class="chart-summary">
+      <div class="summary-item">
+        <span class="summary-value">{totalArticles}</span>
+        <span class="summary-label">总文章数</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-value" id="sum-range">—</span>
+        <span class="summary-label">区间内</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-value" id="sum-peak">—</span>
+        <span class="summary-label">峰值（篇/天）</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-value" id="sum-avg">—</span>
+        <span class="summary-label">日均</span>
+      </div>
+      <div class="range-tabs">
+        <button class="range-tab active" data-range="30">30 天</button>
+        <button class="range-tab" data-range="90">90 天</button>
+        <button class="range-tab" data-range="all">全部</button>
+      </div>
+    </div>
+    <div id="chart-host" set:html={defaultSvg} />
+  </div>
+
+  <Fragment slot="body-end">
+    <script type="application/json" id="activity-data" set:html={JSON.stringify(allPoints).replace(/</g, '\\u003c')} />
+
+    <script>
+      import { buildActivitySvg, type ActivityPoint } from '../lib/activityChart';
+
+      // ClientRouter 客户端导航后 DOM 全新，须重新初始化；
+      // 首次整页加载时该事件同样触发，单一代码路径覆盖两种情况
+      function init() {
+        const host = document.getElementById('chart-host');
+        const dataEl = document.getElementById('activity-data');
+        if (!host || !dataEl || host.dataset.init) return;
+        host.dataset.init = '1';
+
+        let allPoints: ActivityPoint[] = [];
+        try { allPoints = JSON.parse(dataEl.textContent || '[]'); } catch { return; }
+
+        function render(range: string) {
+          const points = range === 'all' ? allPoints : allPoints.slice(-parseInt(range, 10));
+          host.innerHTML = buildActivitySvg(points);
+
+          // 摘要
+          const inRange = points.reduce((s, p) => s + p.count, 0);
+          const peak = points.length ? Math.max(...points.map(p => p.count)) : 0;
+          const avg = points.length ? (inRange / points.length).toFixed(1) : '0';
+          const set = (id: string, v: string) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = v;
+          };
+          set('sum-range', String(inRange));
+          set('sum-peak', String(peak));
+          set('sum-avg', avg);
+        }
+
+        document.querySelectorAll<HTMLButtonElement>('.range-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('.range-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            render(tab.dataset.range!);
+          });
+        });
+
+        // 填充默认区间的摘要数值（SVG 已在构建时生成）
+        render('30');
+      }
+
+      document.addEventListener('astro:page-load', init);
+    </script>
+  </Fragment>
+</BaseLayout>
+
+
+<style>
+  /* 区间切换：图表自属控件（收在摘要行右侧），轻文字形态 */
+  .range-tabs {
+    display: flex; gap: 2px; margin-left: auto; align-self: flex-start;
+  }
+  .range-tab {
+    font-size: 12px; font-weight: 500;
+    padding: 3px 9px; border-radius: 6px;
+    color: var(--text-dim);
+    cursor: pointer; border: none; background: none;
+    transition: color .15s, background .15s;
+    font-family: inherit;
+  }
+  .range-tab:hover { color: var(--text-muted); }
+  .range-tab.active { background: rgba(255,255,255,0.08); color: var(--text); }
+
+  .chart-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  .chart-summary {
+    display: flex; gap: 32px; margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .summary-item { display: flex; flex-direction: column; gap: 2px; }
+  .summary-value { font-size: 22px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .summary-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; }
+</style>
+
+<!-- 图表经 set:html 注入，不带 scoped 标记，必须用 is:global 才能选中 -->
+<style is:global>
+  .activity-chart { width: 100%; height: auto; display: block; }
+  .activity-chart .bar { transition: opacity .15s; }
+  .activity-chart .bar:hover { opacity: 0.75; }
+  .activity-chart .grid-line { stroke: rgba(255,255,255,0.06); stroke-width: 1; }
+  .activity-chart .axis-label { fill: #48484a; font-size: 10px; font-family: var(--font); }
+</style>

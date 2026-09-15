@@ -1,0 +1,154 @@
+---
+/**
+ * 时间线视图 — 按年 › 月 › 日 三级折叠树聚合文章
+ *
+ * 构建时渲染。折叠用原生 <details>/<summary>：零 JS、键盘可达、
+ * 状态语义化（无障碍/爬虫可读）。三级全部默认展开到天。
+ */
+import { articles } from '../data/articles';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewTabs from '../components/ViewTabs.astro';
+import ArticleRow from '../components/ArticleRow.astro';
+
+interface DayNode   { date: string; items: typeof articles }
+interface MonthNode { key: string; label: string; count: number; days: DayNode[] }
+interface YearNode  { key: string; count: number; months: MonthNode[] }
+
+// ── 按日分组 → 年/月/日三级结构（均降序）─────────────────────────
+const byDay = new Map<string, typeof articles>();
+for (const a of articles) {
+  const d = a.date.slice(0, 10);
+  if (!byDay.has(d)) byDay.set(d, []);
+  byDay.get(d)!.push(a);
+}
+
+const years: YearNode[] = [...byDay.keys()]
+  .map(d => d.slice(0, 4))
+  .filter((y, i, arr) => arr.indexOf(y) === i)
+  .sort((a, b) => b.localeCompare(a))
+  .map(y => {
+    const months: MonthNode[] = [...byDay.keys()]
+      .filter(d => d.startsWith(y))
+      .map(d => d.slice(0, 7))
+      .filter((m, i, arr) => arr.indexOf(m) === i)
+      .sort((a, b) => b.localeCompare(a))
+      .map(m => {
+        const days: DayNode[] = [...byDay.entries()]
+          .filter(([d]) => d.startsWith(m))
+          .sort((a, b) => b[0].localeCompare(a[0]))
+          .map(([date, items]) => ({ date, items }));
+        return {
+          key: m,
+          label: `${parseInt(m.slice(5, 7), 10)} 月`,
+          count: days.reduce((s, d) => s + d.items.length, 0),
+          days,
+        };
+      });
+    return { key: y, count: months.reduce((s, m) => s + m.count, 0), months };
+  });
+
+const totalArticles = articles.length;
+---
+
+<BaseLayout
+  title="时间线 · Vibe Reading"
+  description={`按年/月/日聚合的 ${totalArticles} 篇文章时间线`}
+  mainClass="padded"
+>
+  <ViewTabs active="timeline" />
+
+  <div class="tl-tree">
+    {years.map(year => (
+      <details class="tl-node" open>
+        <summary class="tl-head tl-head-year">
+          <svg class="tl-chev" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          <span class="tl-label tl-label-year">{year.key} 年</span>
+          <span class="tl-count">{year.count}</span>
+        </summary>
+        <div class="tl-body">
+          {year.months.map(month => (
+            <details class="tl-node" open>
+              <summary class="tl-head">
+                <svg class="tl-chev" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+                <span class="tl-label">{month.label}</span>
+                <span class="tl-count">{month.count}</span>
+              </summary>
+              <div class="tl-body">
+                {month.days.map(day => (
+                  <details class="tl-node tl-day" open>
+                    <summary class="tl-head tl-head-day">
+                      <svg class="tl-chev" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                        <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="tl-label tl-label-day">{parseInt(day.date.slice(8, 10), 10)} 日</span>
+                      <span class="tl-count">{day.items.length}</span>
+                    </summary>
+                    <div class="tl-articles">
+                      {day.items.map(a => <ArticleRow article={a} showDate={true} />)}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      </details>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .tl-node { margin-bottom: 2px; }
+
+  .tl-head {
+    display: flex; align-items: center; gap: 4px;
+    padding: 7px 10px; border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: background .15s, border-color .15s;
+    margin-bottom: 2px;
+    list-style: none; cursor: pointer; user-select: none;
+  }
+  .tl-head::-webkit-details-marker { display: none; }
+  .tl-head:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+
+  .tl-chev {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
+    color: #999;                               /* 提亮：原 #666 + 文本 ▸ 墨迹过细 */
+    transition: color .15s, transform .2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .tl-head:hover .tl-chev { color: #ccc; }
+  details[open] > .tl-head .tl-chev { transform: rotate(90deg); }
+  .tl-chev-placeholder { width: 18px; flex-shrink: 0; }
+
+  .tl-label {
+    flex: 1; font-size: 14px; font-weight: 500; color: #e6e6e6;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tl-count {
+    font-size: 11px; color: #666;
+    background: rgba(255,255,255,0.06);
+    padding: 1px 7px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  .tl-body { padding-left: 24px; }
+  /* 文章行与层级标签文字严格对齐（日 head 左缘 + padding 10 + chev 18 + gap 4 = 33px） */
+  .tl-articles { padding-left: 33px; margin-bottom: 4px; }
+  /* 时间线语境下的紧凑单行：去掉徽章 meta 行（分类/日期已在层级与行内体现） */
+  .tl-articles :global(.article-item) { padding: 6px 0; }
+  .tl-articles :global(.article-item-meta) { display: none; }
+  @media (max-width: 680px) { .tl-body { padding-left: 16px; } }
+
+  /* ── 年 / 日层级视觉 ── */
+  .tl-head-year { background: rgba(41,151,255,0.06); border-color: rgba(41,151,255,0.15); }
+  .tl-head-year:hover { background: rgba(41,151,255,0.10); border-color: rgba(41,151,255,0.25); }
+  .tl-label-year { font-size: 16px; font-weight: 700; color: #f5f5f7; }
+  .tl-head-day { padding: 5px 10px; background: rgba(255,255,255,0.015); }
+  .tl-label-day { font-size: 13px; font-weight: 500; color: #86868b; }
+</style>

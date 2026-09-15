@@ -2,7 +2,12 @@
 /**
  * 全站统一顶部导航栏
  * 所有 layout 使用同一组件，确保 CSS/HTML 完全一致，消除切换抖动
+ *
+ * 中部哲学语句轮播：navbar 经 transition:persist 跨客户端导航保活，
+ * 轮播脚本绑定一次、永续运行（无多重计时器问题）。仅桌面端显示。
  */
+import { quotes } from '../data/quotes';
+
 export interface Props {
   mode?:     'articles' | 'tools'; // 控制分段控件激活态
   showBack?: boolean;               // 文章详情页显示 ← 返回
@@ -12,17 +17,27 @@ const { mode = 'articles', showBack = false } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<nav class="nav" data-pagefind-ignore="all">
-  <!-- Logo -->
+<nav class="nav" data-pagefind-ignore="all" transition:persist="navbar">
+  <!-- Logo：单色书形符号 + 双色 wordmark（Vibe 粗 / Reading 常规） -->
   <a href={`${base}/`} class="nav-logo">
-    <span class="nav-logo-icon">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M2 10L6 2L10 10" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M3.5 7.5H8.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-    </span>
-    Vibe Reading
+    <svg class="nav-logo-mark" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <!-- 左书页（微微内倾，与右页合拢成打开的书） -->
+      <path d="M9.5 4.5C7.8 3.4 5.5 3.2 2.8 3.8L2 4v11.2l.8-.2c2.7-.6 5-.4 6.7.7"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- 右书页 -->
+      <path d="M10.5 4.5C12.2 3.4 14.5 3.2 17.2 3.8L18 4v11.2l-.8-.2c-2.7-.6-5-.4-6.7.7"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- 书脊 -->
+      <path d="M10 4.4V15.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">Vibe<span class="nav-logo-sub"> Reading</span></span>
   </a>
+
+  <!-- 哲理语句轮播（仅桌面端；首句构建时直出，JS 只负责后续轮播） -->
+  <div class="nav-quote" aria-live="off">
+    <span class="nav-quote-text" id="nav-quote-text" data-script={/[㐀-鿿豈-﫿]/.test(quotes[0].text) ? 'cjk' : 'latin'}>{`“${quotes[0].text}”`}</span>
+    <span class="nav-quote-author" id="nav-quote-author">{quotes[0].author ? `— ${quotes[0].author}` : ''}</span>
+  </div>
 
   <!-- Right group -->
   <div class="nav-right">
@@ -67,6 +82,46 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   </div>
 </nav>
 
+<!-- 哲理语句轮播：navbar 经 transition:persist 跨导航保活，脚本只需绑定一次。
+     首句已在构建时直出，此处只负责后续轮播。 -->
+<script define:vars={{ quotes }}>
+  (function () {
+    const textEl = document.getElementById('nav-quote-text');
+    const authEl = document.getElementById('nav-quote-author');
+    if (!textEl || !authEl || !quotes.length || textEl.dataset.cycle) return;
+    textEl.dataset.cycle = '1';
+
+    const SHOW_MS = 12000;   // 每句展示 12 秒
+    const FADE_MS = 500;     // 淡入淡出 0.5 秒
+    let idx = 0;
+
+    function setQuote(q) {
+      textEl.textContent = '“' + q.text + '”';
+      // 拉丁语料放大 1.5px 与 CJK 视觉等大（见 .nav-quote-text 样式注释）
+      textEl.dataset.script = /[㐀-鿿豈-﫿]/.test(q.text) ? 'cjk' : 'latin';
+      authEl.textContent = q.author ? '— ' + q.author : '';
+    }
+
+    function cycle() {
+      // 淡出
+      textEl.classList.add('fade');
+      authEl.classList.add('fade');
+      setTimeout(() => {
+        idx = (idx + 1) % quotes.length;
+        setQuote(quotes[idx]);
+        // 双帧确保淡出态渲染后再触发淡入
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          textEl.classList.remove('fade');
+          authEl.classList.remove('fade');
+        }));
+        setTimeout(cycle, SHOW_MS);
+      }, FADE_MS);
+    }
+
+    setTimeout(cycle, SHOW_MS);
+  })();
+</script>
+
 <style is:global>
   /* ════ NavBar — 全站唯一 nav 样式，所有 layout 共享 ════ */
   .nav {
@@ -84,16 +139,52 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   @media (max-width: 680px) { .nav { padding: 0 20px; } }
 
   .nav-logo {
-    display: flex; align-items: center; gap: 9px;
-    font-size: 15px; font-weight: 600; letter-spacing: -0.3px;
-    color: #f5f5f7; text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 15px; letter-spacing: -0.3px;
+    text-decoration: none;
+    color: #f5f5f7;                          /* Vibe：粗体白 */
+    font-weight: 700;
   }
-  .nav-logo-icon {
-    width: 22px; height: 22px; border-radius: 7px;
-    background: linear-gradient(135deg, #2997ff 0%, #30d158 100%);
-    display: flex; align-items: center; justify-content: center;
+  .nav-logo-mark {
     flex-shrink: 0;
+    color: #2997ff;                           /* 站点 accent 蓝，单色书形符号 */
+    transition: color .2s;
   }
+  .nav-logo:hover .nav-logo-mark { color: #5eb1ff; }
+  .nav-logo-sub {                            /* Reading：常规 muted */
+    font-weight: 400;
+    color: #86868b;
+    transition: color .15s;
+  }
+  .nav-logo:hover .nav-logo-sub { color: #f5f5f7; }
+
+  /* ── 中部哲理语句轮播（仅桌面端）── */
+  .nav-quote {
+    display: flex; align-items: baseline; justify-content: center; gap: 8px;
+    flex: 1; min-width: 0;                     /* 吸收 logo 与右组的中间空档 */
+    margin: 0 32px;
+    overflow: hidden; white-space: nowrap;
+    /* 渐隐蒙版仅用于超长句截断（紧贴 padding 附近自然淡出），
+       首尾留 32px 空白带避免蒙到正常居中的文字 */
+    padding: 0 32px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+  }
+  .nav-quote-text {
+    font-size: 13px; font-style: italic; font-weight: 400;
+    color: #86868b; letter-spacing: -0.05px;
+    overflow: hidden; text-overflow: ellipsis;
+    transition: opacity .5s cubic-bezier(0.4,0,0.2,1);
+  }
+  /* 拉丁文以 x-height 决定视觉大小（13px 时仅 6.7px），CJK 满字面（9.9px）——
+     纯拉丁语料放大 1.5px 使两者视觉等大 */
+  .nav-quote-text[data-script="latin"] { font-size: 14.5px; }
+  .nav-quote-author {
+    font-size: 11.5px; color: #636366; flex-shrink: 0;
+    transition: opacity .5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .nav-quote-text.fade, .nav-quote-author.fade { opacity: 0; }
+  @media (max-width: 959px) { .nav-quote { display: none; } }
 
   /* ── Right group ── */
   .nav-right {

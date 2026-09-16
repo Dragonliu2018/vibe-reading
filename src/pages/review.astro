@@ -1,0 +1,149 @@
+---
+/**
+ * Review 视图 — 已完成人工 review 的文章
+ *
+ * 含义是"已审阅精选"：只展示 reviewed 的文章（934 篇 Draft 不进此视图），
+ * 展示形式与列表 view 完全一致（同一 Paperclip 卡片格式）。
+ */
+import { articles, sourceLabel } from '../data/articles';
+import { deriveBadges } from '../data/badges';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewTabs from '../components/ViewTabs.astro';
+import ArticleBadges from '../components/ArticleBadges.astro';
+
+const reviewed = [...articles]
+  .filter(a => a.reviewed)
+  .sort((a, b) => {
+    const pa = !!a.pinned, pb = !!b.pinned;
+    if (pa !== pb) return pa ? -1 : 1;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+// 注意：import.meta 只能出现在 frontmatter；模板表达式内使用会触发 Astro 7 编译器 bug
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title="Reviewed · Vibe Reading"
+  description={`已人工 review 的 ${reviewed.length} 篇文章`}
+  mainClass="padded"
+>
+  <ViewTabs active="review" count={reviewed.length} />
+
+  {reviewed.length > 0 ? (
+    <main class="articles">
+      {reviewed.map(article => {
+        const badges = deriveBadges(article);
+        const src = article.source;
+        const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
+        return (
+          <a class="article-card" href={`${base}/articles/${encodedSlug}`}>
+            <div class="card-inner">
+              <div>
+                <div class="card-meta">
+                  <ArticleBadges state={badges} />
+                </div>
+                <div class="card-title">
+                  {(() => {
+                    if (!src) return <>{article.title}</>;
+                    const label = sourceLabel(src, article.categoryPath ?? []);
+                    return <>{label && <span class="card-source-label">{label}</span>}{src.prType && <span class="card-pr-type"> {src.prType}:</span>}{label ? ` ${article.title}` : article.title}</>;
+                  })()}
+                </div>
+                <div class="card-desc">{article.description}</div>
+                <div class="card-tags">
+                  {article.tags.map(tag => <span class="tag">{tag}</span>)}
+                </div>
+              </div>
+              <div class="card-aside">
+                <span class="card-date">{article.date.slice(0, 10)}</span>
+                {article.readingTime && <span class="card-reading">{article.readingTime}</span>}
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </main>
+  ) : (
+    <div class="review-empty">
+      <p class="review-empty-title">还没有已 review 的文章</p>
+      <p class="review-empty-hint">文章 frontmatter 标记 <code>reviewed: true</code> 后出现在这里</p>
+      <a class="review-empty-cta" href={`${base}/`}>去列表逛逛</a>
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  /* 卡片样式与列表 view（index.astro）/ 收藏 view 一致——Paperclip 卡片语言 */
+  .articles { display: flex; flex-direction: column; }
+
+  .article-card {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-bottom: none;
+    padding: 22px 26px;
+    box-shadow: var(--card-shadow);
+    transition: background .22s, transform .25s ease, box-shadow .25s ease;
+    position: relative;
+    text-decoration: none;
+  }
+  .article-card:last-of-type { border-bottom: 1px solid var(--card-border); }
+  .article-card:first-of-type { border-radius: var(--radius) var(--radius) 0 0; }
+  .article-card:last-of-type  { border-radius: 0 0 var(--radius) var(--radius); }
+  .article-card:only-of-type  { border-radius: var(--radius); border-bottom: 1px solid var(--card-border); }
+  .article-card:hover {
+    background: #1a1a1d;
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-h);
+    z-index: 1;
+  }
+  .article-card:hover .card-title { color: var(--accent); }
+
+  .card-inner { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
+  .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
+  :global(.cat-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
+  :global(.pin-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
+  :global(.star-badge)   { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
+  :global(.review-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
+  :global(.review-badge[data-review-state="pending"]) { color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30); }
+  :global(.review-badge[data-review-state="reviewed"]) { color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30); }
+  :global(.origin-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
+  :global(.origin-badge[data-origin="repost"]) { color: #2dd4bf; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.30); }
+  :global(.origin-badge[data-origin="original"]) { color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30); }
+  :global(.private-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #f85149; background: rgba(248,81,73,.12); border: 1px solid rgba(248,81,73,.30); }
+  .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
+  .card-source-label { color: inherit; margin-right: 0.2em; }
+  .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 11px; font-weight: 500; color: var(--text-dim);
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+    padding: 2px 8px; border-radius: 6px; font-family: var(--mono);
+  }
+  .card-aside { text-align: right; flex-shrink: 0; padding-top: 2px; }
+  .card-date { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; display: block; margin-bottom: 3px; white-space: nowrap; }
+  .card-reading { font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
+
+  .review-empty {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; padding: 80px 0 40px; text-align: center;
+  }
+  .review-empty-title { font-size: 16px; font-weight: 600; color: var(--text-muted); }
+  .review-empty-hint { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+  .review-empty-hint code {
+    font-family: var(--mono); font-size: 12px; padding: 1px 6px;
+    border-radius: 4px; background: rgba(255,255,255,0.06);
+  }
+  .review-empty-cta {
+    margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--accent);
+    padding: 7px 18px; border: 1px solid rgba(41,151,255,0.30);
+    border-radius: 100px; transition: background .15s, border-color .15s;
+  }
+  .review-empty-cta:hover { background: rgba(41,151,255,0.10); border-color: rgba(41,151,255,0.50); }
+
+  @media (max-width: 680px) {
+    .card-inner { grid-template-columns: 1fr; gap: 10px; }
+    .card-aside { text-align: left; }
+  }
+</style>

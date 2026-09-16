@@ -50,7 +50,7 @@ function groupBy(
 
 const artBadges = new Map(articles.map(a => [a.slug, deriveBadges(a)]));
 
-// 源类型中文标签（source.type 直出，构建站点已有语料：源码解读/PR/论文解读/commit/article）
+// 源类型中文标签（source.type 直出；article → 转载）
 const SOURCE_TYPE_LABELS: Record<string, string> = {
   'article': '转载',
 };
@@ -71,13 +71,6 @@ const dimensions: Dimension[] = [
     ),
   },
   {
-    title: '按 Review',
-    groups: groupBy(
-      a => ({ key: `review:${artBadges.get(a.slug)!.reviewState}`, label: artBadges.get(a.slug)!.reviewLabel }),
-      { kind: 'badge' }
-    ),
-  },
-  {
     title: '按源类型',
     groups: groupBy(
       a => {
@@ -85,14 +78,16 @@ const dimensions: Dimension[] = [
         return { key: `stype:${t}`, label: SOURCE_TYPE_LABELS[t] ?? t };
       },
       { kind: 'plain' }
-    ).filter(g => g.key !== 'stype:'),   // 无 source 的文章不进此维度
+    ).filter(g => g.key !== 'stype:'),
   },
 ];
+// 按 Review 维度已独立成 /review 视图（流程状态与徽章派生维度语义不同）
+
 ---
 
 <BaseLayout
   title="徽章 · Vibe Reading"
-  description={`按分类/来源/review/源类型分组的 ${totalArticles} 篇文章`}
+  description={`按分类/来源/源类型分组的 ${totalArticles} 篇文章`}
   mainClass="padded"
 >
   <ViewTabs active="badges" />

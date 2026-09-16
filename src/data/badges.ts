@@ -40,6 +40,7 @@ export function badgeStyle(label: string): string {
 // ── 徽章状态派生 ────────────────────────────────────────────────────
 export interface BadgeState {
   pinned:       boolean;
+  starred:      boolean;         // frontmatter star：好文标星（收藏视图聚合）
   isPrivate:    boolean;
   catLabel:     string;          // 分类徽章标签（空字符串表示不渲染）
   catStyle:     string;          // 分类徽章 inline style
@@ -57,6 +58,7 @@ export interface BadgeState {
  */
 export function deriveBadges(input: {
   pinned?:     boolean;
+  star?:       boolean;
   category?:   string[];
   reviewed?:   boolean;
   source?:     ArticleSource;
@@ -67,6 +69,7 @@ export function deriveBadges(input: {
   const isRepost   = input.source?.type === 'article';
   return {
     pinned:       !!input.pinned,
+    starred:      !!input.star,
     isPrivate:    input.visibility === 'private',
     catLabel,
     catStyle:     badgeStyle(catLabel),

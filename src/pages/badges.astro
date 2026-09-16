@@ -155,6 +155,10 @@ const dimensions: Dimension[] = [
   /* 徽章语境下的紧凑单行：分组头已表达分类，隐藏行内 meta 徽章 */
   .badge-group-articles :global(.article-item) { padding: 6px 0; }
   .badge-group-articles :global(.article-item-meta) { display: none; }
+  /* star 徽章例外：可见（好文信号）。:global 防 scoped 编译破坏 :has 匹配 */
+  .badge-group-articles :global(.article-item-meta:has(.star-badge)) {
+    display: flex; margin-top: 2px;
+  }
   .badge-group-chev {
     display: inline-flex; align-items: center; justify-content: center;
     width: 18px; height: 18px; flex-shrink: 0;

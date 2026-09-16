@@ -13,10 +13,13 @@ interface Props {
 }
 
 const { state } = Astro.props;
-const { pinned, isPrivate, catLabel, catStyle, reviewState, reviewLabel, reviewTitle, originState, originLabel, originTitle } = state;
+const { pinned, starred, isPrivate, catLabel, catStyle, reviewState, reviewLabel, reviewTitle, originState, originLabel, originTitle } = state;
 ---
 {pinned && (
   <span class="pin-badge" title="置顶文章">📌 置顶</span>
+)}
+{starred && (
+  <span class="star-badge" title="收藏的好文">⭐ 收藏</span>
 )}
 {isPrivate && (
   <span class="private-badge" title="仅本地私有构建可见，不会部署到公开站点">Private</span>

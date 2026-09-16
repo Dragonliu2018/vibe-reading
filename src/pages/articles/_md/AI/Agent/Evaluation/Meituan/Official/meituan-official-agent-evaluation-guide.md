@@ -1,5 +1,6 @@
 ---
 title: "Agent评测漫谈 —— 由浅入深讲解Agent评测"
+star: true
 source:
   type: "article"
   project: "Meituan"

@@ -26,6 +26,7 @@ export interface Article {
   aiModel?:     string;
   reviewed?:    boolean;     // frontmatter 显式声明已 review；与 src/data/reviewed.ts 数组取并集，构建期静态决定徽章状态
   pinned?:      boolean;     // frontmatter 显式声明顶置；首页排序 pinned 优先于 date，并显示「置顶」徽章
+  star?:        boolean;     // frontmatter 显式声明收藏（好文标星）；收藏视图聚合展示
   visibility?:  ContentVisibility; // private 文章仅在 CONTENT_MODE=private 时进入集合
   comments?:    boolean;     // false 时禁用评论；private 文章在布局层强制关闭
 }
@@ -83,6 +84,7 @@ const mdArticles: Article[] = markdownEntries.map(({ slug, module: mod }) => {
     aiModel:      fm.aiModel       || undefined,
     reviewed:     fm.reviewed      || undefined,
     pinned:       fm.pinned        || false,
+    star:         fm.star          || false,
     visibility:   fm.visibility    || 'public',
     comments:     fm.comments,
   };

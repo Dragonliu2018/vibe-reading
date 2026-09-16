@@ -1,13 +1,15 @@
 ---
 /**
- * 紧凑文章行 — 时间线 / 徽章 / 分类页共用的列表条目
+ * 紧凑文章行 — 时间线 / 徽章 / 分类页 / 收藏页共用的列表条目
  *
  * 渲染：标题（含来源前缀）+ 分类/原创徽章（可选）+ 日期（可选）。
  * 模板渲染自动转义，取代原先三处各自维护的字符串拼接 renderArticle；
  * 徽章颜色收敛为 class，不再内联 style。
+ * star/pinned 为构建期元数据（frontmatter 字段），行内以 ⭐/📌 前缀体现。
  */
 import { sourceLabel, badgeCat, type Article } from '../data/articles';
 import { badgeStyle } from '../data/badges';
+import StarPinBadges from './StarPinBadges.astro';
 
 export interface Props {
   article:   Article;
@@ -27,18 +29,19 @@ if (src) {
 }
 const isRepost = src?.type === 'article';
 const pinned = !!article.pinned;
+const starred = !!article.star;
 const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
 ---
 
 <a class="article-item" href={`${base}/articles/${encodedSlug}`}>
   <div class="article-item-left">
-    <div class="article-item-title">{pinned && <span class="article-item-pin" title="置顶文章">📌 </span>}{displayTitle}</div>
-    {showBadges && (
-      <div class="article-item-meta">
-        {catLabel && <span class="article-item-badge badge-cat" style={badgeStyle(catLabel)}>{catLabel}</span>}
-        <span class={`article-item-badge ${isRepost ? 'badge-repost' : 'badge-original'}`}>{isRepost ? '转载' : 'AI 生成'}</span>
-      </div>
-    )}
+    <div class="article-item-title">{displayTitle}</div>
+    <div class="article-item-meta">
+      {starred && <StarPinBadges type="star" />}
+      {showBadges && pinned && <StarPinBadges type="pin" />}
+      {showBadges && catLabel && <span class="article-item-badge badge-cat" style={badgeStyle(catLabel)}>{catLabel}</span>}
+      {showBadges && <span class={`article-item-badge ${isRepost ? 'badge-repost' : 'badge-original'}`}>{isRepost ? '转载' : 'AI 生成'}</span>}
+    </div>
   </div>
   {showDate && <span class="article-item-date">{article.date.slice(0, 10)}</span>}
 </a>
@@ -63,7 +66,6 @@ const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
     display: flex; align-items: center; gap: 6px;
     margin-top: 3px;
   }
-  .article-item-pin { font-size: 11px; vertical-align: 0.5px; }
   .article-item-badge {
     font-size: 10px; font-weight: 600;
     padding: 1px 6px; border-radius: 20px;
@@ -80,7 +82,6 @@ const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
   }
   .article-item-date {
     font-size: 11px; color: #666;
-    white-space: nowrap; margin-left: 14px;
-    flex-shrink: 0;
+    white-space: nowrap; margin-left: 14px; flex-shrink: 0;
   }
 </style>

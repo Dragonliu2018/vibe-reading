@@ -47,7 +47,7 @@ function decodePathSegment(value: string): string {
 }
 
 const { frontmatter, headings = [], slug: fileSlug } = Astro.props;
-const { title, date, category, alsoCategories = [], tags = [], description, readingTime, aiModel, source, reviewed, pinned, visibility = 'public', comments } = frontmatter;
+const { title, date, category, alsoCategories = [], tags = [], description, readingTime, aiModel, source, reviewed, pinned, star, visibility = 'public', comments } = frontmatter;
 
 // source 前缀（统一用 articles.ts 的 sourceLabel helper，避免 4 处副本漂移）
 const srcLabel    = source ? sourceLabel(source, category ?? []) : '';
@@ -105,7 +105,7 @@ const vscodeFilePath = isPrivateArticle
 const vscodeSourceUrl = `vscode://file${projectRoot}/${vscodeFilePath}`;
 
 // 徽章状态（pinned / 分类 / origin / review）统一由 deriveBadges 派生，与首页共享同一来源
-const badges = deriveBadges({ pinned, category, reviewed, source, visibility });
+const badges = deriveBadges({ pinned, star, category, reviewed, source, visibility });
 
 // TOC: h2 + h3 + h4 only
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.depth === 4);

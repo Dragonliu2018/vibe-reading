@@ -6,7 +6,7 @@
  * 样式复用首页 .filter-tabs 的胶囊风格；用 is:global 让所有引用页共享同一套 CSS。
  * count：可选，显示在 tab 行右端的安静总数（当前仅列表视图使用）。
  */
-export type ViewKey = 'list' | 'timeline' | 'activity' | 'badges';
+export type ViewKey = 'list' | 'timeline' | 'activity' | 'badges' | 'favorites';
 
 interface Props {
   active: ViewKey;
@@ -17,10 +17,11 @@ const { active, count } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const tabs: { key: ViewKey; label: string; href: string }[] = [
-  { key: 'list',     label: '列表',   href: `${base}/`         },
-  { key: 'timeline', label: '时间线', href: `${base}/timeline` },
-  { key: 'activity', label: '活跃度', href: `${base}/activity` },
-  { key: 'badges',   label: '徽章',   href: `${base}/badges`   },
+  { key: 'list',      label: '列表',   href: `${base}/`          },
+  { key: 'favorites', label: '收藏',   href: `${base}/favorites` },
+  { key: 'timeline',  label: '时间线', href: `${base}/timeline`  },
+  { key: 'activity',  label: '活跃度', href: `${base}/activity`  },
+  { key: 'badges',    label: '徽章',   href: `${base}/badges`    },
 ];
 ---
 

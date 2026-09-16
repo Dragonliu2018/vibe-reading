@@ -213,6 +213,9 @@ a { color: inherit; text-decoration: none; }
 .meta-sep  { color: rgba(255,255,255,0.12); }
 .meta-item { font-size: 12.5px; color: var(--text-dim); }
 
+/* 收藏徽章：金色，与 pin-badge 同族（好文标星） */
+.star-badge { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
+
 /* 置顶徽章：金色，与 cat-badge(蓝紫)/review-badge(绿橙)/origin-badge(teal/粉) 色域不重合 */
 .pin-badge {
   font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px;

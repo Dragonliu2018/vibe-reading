@@ -7,7 +7,7 @@ date: "2026-08-15T20:46:47+08:00"
 category: [OS, Linux, Contributions]
 tags: ["Linux", "内核", "开源贡献", "patch", "git send-email", "DCO", "checkpatch", "review", "邮件线程"]
 description: "从获取源码到 patch 合入主线——基于 Linux kernel README 与 Documentation/process 文档的完整贡献流程，含真实 i2c refcount leak 修复案例（v1→v2 两轮 review 后收进 i2c/i2c-fixes）。"
-readingTime: "30 min"
+readingTime: "25 min"
 aiModel: "Claude Opus 5"
 reviewed: false
 ---
@@ -30,7 +30,7 @@ Linux 内核的贡献流程与大多数 GitHub 开源项目**根本不同**：
 
 > 内核**不接受 GitHub PR**——所有 patch 通过邮件列表提交。这是理解整个流程的第一前提。参考 [README](https://github.com/torvalds/linux/blob/master/README) 的 Quick Start 节："Join the community: https://lore.kernel.org/"。
 
-本文基于 Linux kernel 仓库内的 `README` 与 `Documentation/process/` 系列权威文档，结合一个真实的 `i2c: qcom-cci: fix device_node refcount leak` 修复案例（v1 于 2026-08-15 通过 `git send-email` 提交至 linux-i2c 邮件列表；经两轮 review 迭代出 v2，2026-09-16 被 i2c 维护者收进 `i2c/i2c-fixes` 分支），完整讲解从零到提交、到 review 迭代、到最终合入的全流程。案例的技术细节详见[修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-8eacce-qcom-cci-del-adapter-of-node-leak)。
+本文基于 Linux kernel 仓库内的 `README` 与 `Documentation/process/` 系列权威文档，结合一个真实的 `i2c: qcom-cci: fix device_node refcount leak` 修复案例（经两轮 review 迭代，最终被 i2c 维护者收进 `i2c/i2c-fixes`），完整讲解从零到提交、到 review 迭代、到最终合入的全流程。案例技术细节见[修复 qcom-CCI 中 i2c_del_adapter 清零 of_node 引发的引用泄漏](/vibe-reading/articles/OS/Linux/Contributions/linux-commit-8eacce-qcom-cci-del-adapter-of-node-leak)。
 
 ---
 
@@ -526,133 +526,56 @@ submitting-patches.rst:370-372："Wait for a minimum of one week before resubmit
 | `Suggested-by` | 建议者 | submitting-patches.rst:539 |
 | `Reported-by` | 报告者 | submitting-patches.rst:539 |
 
-**本案例实际用到/收到的标签**：
+**使用规则**（submitting-patches.rst:477-635）：
 
-- v2 添加了 `Suggested-by: Konrad Dybcio`——他在 review v1 时建议改用 devm action，v2 采纳了该方案。`Suggested-by` 与 `Cc:`、`Reported-by` 同为**无需对方明确许可即可添加**的三个标签之一（submitting-patches.rst:628-635，前提是建议在公开场合提出）。
-- v2 收到 `Reviewed-by: Vladimir Zapolskiy`——注意 `Reviewed-by` 只能由 reviewer 本人在邮件里给出，作者不能代加；maintainer apply patch 时会把它补进 commit。
-- `Acked-by`/`Reviewed-by` 必须对方**对新版本代码**明确表态：如果 reviewer 在 v1 上给了 R-b 而 v2 改动了代码，需请对方重新确认，或 maintainer 判断改动是否实质。
+- `Acked-by`/`Reviewed-by`/`Tested-by` 只能由对方本人给出，作者不能代加。
+- `Suggested-by`/`Reported-by`/`Cc:` 无需对方许可即可添加（前提：建议/报告在公开场合提出）。
+- 版本迭代后代码有实质改动时，`Acked-by`/`Reviewed-by` 需请对方对新版本重新表态。
 
+### 9.3 发 V2
 
-### 9.3 发 V2：新顶层线程，绝不挂旧版本
+改后发 `[PATCH v2]`——版本间靠 **`[PATCH v2]` 前缀 + changelog + cover letter 里的 lore 链接** 关联，不靠邮件线程头：
 
-如果维护者要求修改，改后发 `[PATCH v2]`。版本间通过三样东西关联——**`[PATCH v2]` 前缀 + changelog + cover letter 里的 lore 链接**——而不是邮件线程头：
-
-```bash title="发 V2（本案例实际命令）"
-git commit --amend            # fold 修改进原 commit
+```bash title="发 V2"
+git commit --amend                    # fold 修改进原 commit
 git format-patch -o outgoing/ -v2 HEAD~1
-# 生成 outgoing/v2-0001-*.patch（Subject 自动带 [PATCH v2]）
-
-git send-email --suppress-cc=self --confirm=never \
-  --to=linux-i2c@vger.kernel.org \
-  --cc-cmd="./scripts/get_maintainer.pl --no-rolestats outgoing/v2-0001-*.patch" \
-  --cc="konrad.dybcio@oss.qualcomm.com,stable@vger.kernel.org" \
-  outgoing/v2-0001-*.patch
-# 注意：没有 --in-reply-to —— V2 是新的顶层线程
+git send-email outgoing/v2-0001-*.patch --to ... --cc ...
+# ⚠️ 不要加 --in-reply-to，V2 是新的顶层线程
 ```
 
 > submitting-patches.rst:380-388：**修改后重发加 V2，不加 RESEND**；RESEND 仅用于未修改的重发。
 
-#### 铁律：不要用 --in-reply-to 挂旧版本
+#### 版本线程规则
 
-`submitting-patches.rst:837-848`（"Explicit In-Reply-To headers" 节）：
-
-> "It can be helpful to manually add In-Reply-To: headers to a patch ... to associate the patch with previous relevant discussion, e.g. to link a bug fix to the email with the bug report. **However, for a multi-patch series, it is generally best to avoid using In-Reply-To: to link to older versions of the series.** This way multiple versions of the patch don't become an unmanageable forest of references in email clients."
+`submitting-patches.rst:837-848`：
 
 | 场景 | 能否用 `--in-reply-to` |
 |------|----------------------|
-| patch 关联**相关讨论**（bug 报告邮件等） | ✅ 可以——这是 In-Reply-To 的正当用途 |
-| v2 挂到 v1 的线程 | ❌ **禁止**——review 树 + 版本树交织成"forest of references" |
+| patch 关联**相关讨论**（如 bug 报告邮件） | ✅ 正当用途 |
+| v2 挂到 v1 的线程 | ❌ 禁止——多版本与 review 交织成 "unmanageable forest of references" |
 | 引用旧版本 | 用 **lore 链接**写在 cover letter / changelog 正文里 |
 
-**本案例的真实教训**：v2 发送时加了 `--in-reply-to=<v1 的 Message-ID>`，2026-09-16 i2c 维护者 Andi Shyti 采纳 patch 时明确反馈：
+`git send-email` 默认就不跨版本串线程——什么都不加即正确，加 `--in-reply-to` 反而违规。
 
-> "Please, next time don't send patches as --in-reply-to. We should train LLM's not to take much freedom as to send the next versions in the same threads."
+#### changelog 写在 `---` 之后
 
-`git send-email` **默认行为本来就是不跨版本串线程**——什么都不加就是对的，画蛇添足加 `--in-reply-to` 反而违规。
+版本差异写在 patch 的 **`---` 分隔线之后、diffstat 之前**：这段区域 `git am` 应用时**自动剥掉**，不进 commit——它是给 reviewer 看的版本说明，与永久 commit message 各司其职（submitting-patches.rst:806-814）。格式：
 
-#### changelog 写在哪：`---` 分隔线之后
-
-版本间改了什么，写在 patch 的 **`---` 分隔线之后、diffstat 之前**。这段区域 `git am` 应用时**自动剥掉**，不进 commit——它是给 reviewer 看的版本说明，与永久 commit message 各司其职（submitting-patches.rst:806-814）：
-
-```text title="v2 patch 的 --- 区域（本案例实际内容）"
+```text title="v2 patch 的 --- 区域"
 ---
 Changes in v2:
-- Rework the fix to use a devm action (cci_put_of_node) instead of
-  caching the pointer before i2c_del_adapter(), per Konrad Dybcio.
-  The pointer is captured at registration, out of reach of the
-  memset() in i2c_del_adapter(); the three manual of_node_put() calls
-  are removed.
-- Use for_each_available_child_of_node_scoped() so the child
-  reference is released if devm_add_action_or_reset() fails mid-loop.
+- <第一条改动>
+- <第二条改动>
 
- drivers/i2c/busses/i2c-qcom-cci.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/i2c/busses/i2c-qcom-cci.c ...
+ <diffstat>
 ```
 
-> changelog 写在 `---` 之后（而非 commit message 里）的验证方法：`git apply --check` / `git am` 后 `git log` 对比——本案例实测 changelog 区域被干净剥离，commit 只含正式 message。
 
-### 9.4 实战：本案例的 v1 → v2 迭代全程
+### 9.4 迭代经验
 
-v1 采用"先缓存指针再 `i2c_del_adapter`"方案（与 i2c-mux 的 `i2c_mux_del_adapters` 同模式），Konrad Dybcio review 时认可了正确性，但指出脆弱性：
-
-> "The fix seems correct, but the way it's done is still fragile - someone/a bot will surely come around in a couple weeks with a ""simplification"" undoing your change. Would a devm action here be a better choice?"
-
-——局部缓存变量在源码层面看不出它防的是 `i2c_del_adapter()` 内部的 `memset`，将来很容易被"简化"回 `of_node_put(adap->dev.of_node)` 让 bug 复活。v2 按建议重构为 devm action：
-
-```c title="v2 核心改动（drivers/i2c/busses/i2c-qcom-cci.c）"
-static void cci_put_of_node(void *data)
-{
-	of_node_put(data);
-}
-
-static int cci_probe(struct platform_device *pdev)
-{
-	...
-	for_each_available_child_of_node_scoped(dev->of_node, child) {
-		...
-		master->adap.dev.of_node = of_node_get(child);
-		ret = devm_add_action_or_reset(dev, cci_put_of_node, child);
-		if (ret)
-			return ret;
-		...
-	}
-	// error_i2c / cci_remove 里的三处手动 of_node_put 全部删除
-}
-```
-
-devm 方案把正确性从**顺序依赖**变成**存储隔离**：`child` 指针在注册时按值捕获、存在 platform device 的 devres 链上，`i2c_del_adapter()` 的 `memset` 清的是 `struct device` 里的 `of_node` 字段（`include/linux/device.h`），两块存储互不相干——谁也"简化"不掉它。
-
-**迭代中两次额外收获**（v2 引入 `return` 后自查发现）：
-
-1. **循环内提前 return 漏迭代器引用**：`for_each_available_child_of_node` 是经典形式，`child` 的引用靠循环自增表达式里的 `of_node_put(prev)` 释放；devm 注册失败时 `return` 跳过自增，OOM 下漏一个引用。修法：换 `for_each_available_child_of_node_scoped()`（`__free(device_node)` 自动 put），并删除函数顶部的 `struct device_node *child;` 声明。
-2. **wrapper vs 函数指针强转**：Vladimir Zapolskiy 给出 `Reviewed-by` 后建议直接 `(void (*)(void *))of_node_put` 省掉 wrapper。经查证未采纳：`void(struct device_node *)` 与 `void(void *)` 不是 compatible type（C99 6.7.5.3p15 + 6.7.5.1p2；C11 编号 6.7.6.3），通过强转调用属 UB（C11 6.3.2.3p8），clang `-Wcast-function-type` 实测报 "converts to incompatible function type"；且 in-tree 唯一同场景先例 `tegra_dc_of_node_put()`（`drivers/gpu/drm/tegra/rgb.c`）用的正是同款 wrapper。**3 行 wrapper 换类型安全 + 遵循既有模式，值得。**
-
-v2 最终 commit message（正文压到两段共 8 行——v1 的 5 段被 review 批评过 verbose，v2 砍掉约 60%）：
-
-```text title="v2 commit message"
-i2c: qcom-cci: fix device_node refcount leak in cci_probe()/cci_remove()
-
-The of_node_put() matching of_node_get() runs after i2c_del_adapter(),
-whose trailing memset() zeroes adap->dev and thus adap->dev.of_node,
-making the put a no-op and leaking the node on every adapter removal
-and error cleanup.
-
-Use a devm action: the pointer is captured at registration, out of
-reach of that memset(), and devres runs the put once on probe failure
-and detach, replacing the three manual of_node_put() calls.  The
-setup loop uses the scoped iterator form so the child node is released
-automatically if devm_add_action_or_reset() fails mid-loop.
-
-Suggested-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Fixes: 02a4a69667a2 ("i2c: qcom-cci: don't put a device tree node before i2c_add_adapter()")
-Cc: stable@vger.kernel.org
-Assisted-by: Claude:claude-opus-5
-Signed-off-by: Liu Zhenlong <dragonliu2018@gmail.com>
-```
-
-> **v2 发送前的验证清单**（全部实测通过）：`git diff HEAD` 确认工作树无未 fold 残留 → `make M=drivers/i2c/busses modules` 编译零告警 → `scripts/checkpatch.pl` 0 errors 0 warnings → 在 pristine base 的临时 worktree `git apply --check` 干净应用 → `git send-email --dry-run` 校验收件人解析。
+- **review 建议重构时优先采纳**：v1 的"缓存指针"方案被 review 指出脆弱（易被后续"简化"还原），v2 重构为 devm action——把正确性从顺序依赖变成存储隔离。技术上更稳的写法值得推倒重来。
+- **commit message 按 review 反馈精简**：v1 的 5 段正文被批 "too verbose"，v2 压到两段。核心 bug 修复的 message 保住"根因 + 修法"两段即可。
+- **v2 发送前验证**：`git diff HEAD`（无未 fold 残留）→ 编译零告警 → `checkpatch.pl` 零错误 → `git apply --check`（pristine base）→ `git send-email --dry-run`（收件人解析）。
 
 ---
 
@@ -671,9 +594,7 @@ Signed-off-by: Liu Zhenlong <dragonliu2018@gmail.com>
 
 参考 `Documentation/maintainer/pull-requests.rst`（维护者视角的 pull request 格式）和 `Documentation/process/development-process.rst`（完整开发周期）。
 
-**本案例的实际落地**：v1（2026-08-15）→ Konrad review 建议重构（08-18）→ v2（08-19）→ Vladimir `Reviewed-by`（08-18/19）→ **2026-09-16 i2c 维护者 Andi Shyti 回复 "pushed to i2c/i2c-fixes"**——patch 进入 i2c 子系统的 fixes 分支，将随 fixes PR 发给 Linus（当时主线处 7.3-rc1 阶段，预计进 7.3-rc2），`Cc: stable` 标签使其随后回 port 到 stable 树。从 v1 发出到被采纳，历时约一个月——期间完全无需催促，review 节奏就是邮件列表的正常速度。
-
-> Andi 在采纳邮件里同时给出的流程反馈（--in-reply-to 问题，见 9.3 节）与 Konrad 关于 `Documentation/process/coding-assistants.rst` 的提醒（AI 辅助贡献须遵循标准流程文档，见第七步），都是 maintainer 对 AI 时代贡献纪律的公开表态——值得写进每个贡献者的肌肉记忆。
+**本案例的实际落地**：v1 → review → v2 → **2026-09-16 维护者回复 "pushed to i2c/i2c-fixes"**——进入子系统 fixes 分支，随 fixes PR 发给 Linus，`Cc: stable` 标签随后触发 stable 回 port。全程约一个月，无需催促。
 
 ### 10.2 时间周期
 

@@ -7,6 +7,7 @@
  * 徽章颜色收敛为 class，不再内联 style。
  */
 import { sourceLabel, badgeCat, type Article } from '../data/articles';
+import { badgeStyle } from '../data/badges';
 
 export interface Props {
   article:   Article;
@@ -25,15 +26,16 @@ if (src) {
   if (label) displayTitle = `${label} ${src.prType ? src.prType + ': ' : ''}${article.title}`;
 }
 const isRepost = src?.type === 'article';
+const pinned = !!article.pinned;
 const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
 ---
 
 <a class="article-item" href={`${base}/articles/${encodedSlug}`}>
   <div class="article-item-left">
-    <div class="article-item-title">{displayTitle}</div>
+    <div class="article-item-title">{pinned && <span class="article-item-pin" title="置顶文章">📌 </span>}{displayTitle}</div>
     {showBadges && (
       <div class="article-item-meta">
-        {catLabel && <span class="article-item-badge badge-cat">{catLabel}</span>}
+        {catLabel && <span class="article-item-badge badge-cat" style={badgeStyle(catLabel)}>{catLabel}</span>}
         <span class={`article-item-badge ${isRepost ? 'badge-repost' : 'badge-original'}`}>{isRepost ? '转载' : 'AI 生成'}</span>
       </div>
     )}
@@ -61,15 +63,13 @@ const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
     display: flex; align-items: center; gap: 6px;
     margin-top: 3px;
   }
+  .article-item-pin { font-size: 11px; vertical-align: 0.5px; }
   .article-item-badge {
     font-size: 10px; font-weight: 600;
     padding: 1px 6px; border-radius: 20px;
     letter-spacing: 0.2px;
   }
-  .article-item-badge.badge-cat {
-    color: #58a6ff; background: rgba(88,166,255,.12);
-    border: 1px solid rgba(88,166,255,.30);
-  }
+  /* 分类徽章颜色由 badgeStyle() inline 提供全站频次调色板（与首页/详情页同色） */
   .article-item-badge.badge-repost {
     color: #2dd4bf; background: rgba(45,212,191,.12);
     border: 1px solid rgba(45,212,191,.30);

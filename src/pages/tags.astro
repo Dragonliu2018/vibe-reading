@@ -1,0 +1,355 @@
+---
+/**
+ * Tag 视图 — 标签云 + 点击过滤的文章流
+ *
+ * 两段式交互（纯构建 + 一段渐进增强脚本）：
+ *   1. 构建期：全部标签按文章数渲染成标签云（字号/色深映射热度），
+ *      下方渲染全部文章卡片（与列表 view 同格式，初始隐藏）
+ *   2. 客户端：点标签 → 只显示含该标签的卡片；再点取消。
+ *      无 JS 时标签云仍可读，卡片流空态提示。
+ */
+import { articles, sourceLabel } from '../data/articles';
+import { deriveBadges } from '../data/badges';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewTabs from '../components/ViewTabs.astro';
+import ArticleBadges from '../components/ArticleBadges.astro';
+
+interface TagEntry { tag: string; count: number; slugs: Set<string> }
+
+const tagMap = new Map<string, TagEntry>();
+for (const a of articles) {
+  for (const t of a.tags) {
+    if (!tagMap.has(t)) tagMap.set(t, { tag: t, count: 0, slugs: new Set() });
+    const e = tagMap.get(t)!;
+    e.count++; e.slugs.add(a.slug);
+  }
+}
+// 热度降序。默认只展示 Top 标签（云保持轻盈）；搜索时在全量标签中匹配
+const tags = [...tagMap.values()].sort((a, b) => b.count - a.count);
+const TOP_N = 60;
+const topTags   = tags.slice(0, TOP_N);
+const restTags  = tags.slice(TOP_N);
+const maxCount = tags[0]?.count ?? 1;
+const minCount = topTags[topTags.length - 1]?.count ?? 1;
+
+// 文章按日期降序（与列表 view 一致）
+const sorted = [...articles].sort((a, b) =>
+  new Date(b.date).getTime() - new Date(a.date).getTime());
+
+// 注意：import.meta 只能出现在 frontmatter；模板表达式内使用会触发 Astro 7 编译器 bug
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// 标签字号/亮度插值：热度 → [12px..19px] / [#86868b..#f5f5f7]
+const logSpan = Math.log(maxCount / minCount) || 1;
+const fontSize = (c: number) => (12 + 7 * Math.log(c / minCount) / logSpan).toFixed(1);
+const colorDepth = (c: number) => {
+  const t = Math.log(c / minCount) / logSpan;
+  const v = Math.round(0x86 + (0xf5 - 0x86) * t).toString(16).padStart(2, '0');
+  return `#${v}${v}${v}`;
+};
+---
+
+<BaseLayout
+  title="Tag · Vibe Reading"
+  description={`按标签浏览 ${articles.length} 篇文章`}
+  mainClass="padded"
+>
+  <ViewTabs active="tags" />
+
+  <div class="tag-toolbar">
+    <div class="tag-search" id="tag-search-wrap">
+      <svg class="tag-search-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input class="tag-search-input" id="tag-search" type="text"
+             placeholder="搜索标签…" autocomplete="off" spellcheck="false" />
+      <span class="tag-search-count" id="tag-search-count"></span>
+    </div>
+  </div>
+
+  <div class="tag-cloud" id="tag-cloud">
+    {topTags.map(e => (
+      <button class="tag-chip" type="button"
+              style={`font-size:${fontSize(e.count)}px;color:${colorDepth(e.count)};`}
+              data-tag={e.tag}
+              title={`${e.tag} · ${e.count} 篇`}>
+        {e.tag}<span class="tag-chip-count">{e.count}</span>
+      </button>
+    ))}
+  </div>
+  <!-- 全量标签池：默认不渲染进 DOM（搜索时脚本动态补插命中项） -->
+  <script type="application/json" id="tag-pool" set:html={JSON.stringify(restTags.map(e => [e.tag, e.count])).replace(/</g, '\u003c')} />
+
+  <div class="tag-result-head" id="tag-result-head" hidden>
+    <span class="tag-result-label" id="tag-result-label"></span>
+    <button class="tag-result-clear" id="tag-result-clear" type="button">× 清除</button>
+  </div>
+
+  <main class="articles" id="tag-articles">
+    {sorted.map(article => {
+      const badges = deriveBadges(article);
+      const src = article.source;
+      const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
+      return (
+        <div class="tag-article" data-tags={article.tags.join('|')} hidden>
+          <a class="article-card" href={`${base}/articles/${encodedSlug}`}>
+            <div class="card-inner">
+              <div>
+                <div class="card-meta">
+                  <ArticleBadges state={badges} />
+                </div>
+                <div class="card-title">
+                  {(() => {
+                    if (!src) return <>{article.title}</>;
+                    const label = sourceLabel(src, article.categoryPath ?? []);
+                    return <>{label && <span class="card-source-label">{label}</span>}{src.prType && <span class="card-pr-type"> {src.prType}:</span>}{label ? ` ${article.title}` : article.title}</>;
+                  })()}
+                </div>
+                <div class="card-desc">{article.description}</div>
+                <div class="card-tags">
+                  {article.tags.map(tag => <span class="tag">{tag}</span>)}
+                </div>
+              </div>
+              <div class="card-aside">
+                <span class="card-date">{article.date.slice(0, 10)}</span>
+                {article.readingTime && <span class="card-reading">{article.readingTime}</span>}
+              </div>
+            </div>
+          </a>
+        </div>
+      );
+    })}
+  </main>
+
+  <div class="tag-empty" id="tag-empty">
+    <p class="tag-empty-hint">点击上方标签浏览对应文章</p>
+  </div>
+
+  <script>
+    // 渐进增强：标签过滤（构建期已渲染全部卡片，脚本只做显隐 + 计数）
+    function initTags() {
+      const cloud = document.getElementById('tag-cloud');
+      const head  = document.getElementById('tag-result-head');
+      const label = document.getElementById('tag-result-label');
+      const clear = document.getElementById('tag-result-clear');
+      const empty = document.getElementById('tag-empty');
+      if (!cloud || !head || !label || !clear || !empty) return;
+
+      const wrapAll = document.querySelectorAll<HTMLElement>('#tag-articles .tag-article');
+      let active = '';
+
+      const apply = () => {
+        // 无选中标签：不显示任何卡片（本视图按需展开，非全量列表）
+        let shown = 0;
+        wrapAll.forEach(el => {
+          const hit = !!active && (el.dataset.tags ?? '').split('|').includes(active);
+          el.hidden = !hit;
+          if (hit) shown++;
+        });
+        head.hidden = !active;
+        empty.hidden = !!active;
+        if (active) label.textContent = `${active} · ${shown} 篇`;
+        cloud.querySelectorAll<HTMLElement>('.tag-chip').forEach(c => {
+          c.classList.toggle('active', active !== '' && c.dataset.tag === active);
+        });
+      };
+
+      cloud.addEventListener('click', e => {
+        const chip = (e.target as HTMLElement).closest<HTMLElement>('.tag-chip');
+        if (!chip) return;
+        const chipTag = chip.dataset.tag ?? '';
+        active = active === chipTag ? '' : chipTag;   // 再点一次取消
+        apply();
+      });
+      clear.addEventListener('click', () => { active = ''; apply(); });
+
+      // ── 标签搜索：Top chips + 全量池动态补插（大小写不敏感，双向包含）──
+      const search  = document.getElementById('tag-search') as HTMLInputElement | null;
+      const sCount  = document.getElementById('tag-search-count');
+      const poolEl  = document.getElementById('tag-pool');
+      // 全量池：[tag, count][]，只解析一次
+      const pool: [string, number][] = poolEl ? JSON.parse(poolEl.textContent || '[]') : [];
+      const tagsTotal = cloud.querySelectorAll('.tag-chip:not(.tag-chip-pooled)').length + pool.length;
+      if (search && sCount) {
+        search.addEventListener('input', () => {
+          const q = search.value.trim().toLowerCase();
+          // 清空搜索：移除动态补插的 chips，恢复 Top 云
+          cloud.querySelectorAll<HTMLElement>('.tag-chip-pooled').forEach(c => c.remove());
+          let shown = 0;
+          if (!q) {
+            cloud.querySelectorAll<HTMLElement>('.tag-chip').forEach(c => { c.hidden = false; shown++; });
+            sCount.textContent = '';
+            return;
+          }
+          // Top chips 显隐
+          cloud.querySelectorAll<HTMLElement>('.tag-chip:not(.tag-chip-pooled)').forEach(c => {
+            const hit = (c.dataset.tag ?? '').toLowerCase().includes(q);
+            c.hidden = !hit;
+            if (hit) shown++;
+          });
+          // 池中命中且 Top 未包含的 → 动态补插（保持热度序）
+          const inTop = new Set(
+            [...cloud.querySelectorAll<HTMLElement>('.tag-chip:not(.tag-chip-pooled)')]
+              .map(c => c.dataset.tag)
+          );
+          const hits = pool.filter(([t]) => t.toLowerCase().includes(q) && !inTop.has(t));
+          for (const [tag, count] of hits.slice(0, 200)) {   // 上限防御
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'tag-chip tag-chip-cold tag-chip-pooled';
+            btn.dataset.tag = tag;
+            btn.title = `${tag} · ${count} 篇`;
+            btn.textContent = tag;
+            cloud.appendChild(btn);
+            shown++;
+          }
+          sCount.textContent = `${shown} / ${tagsTotal}`;
+        });
+      }
+    }
+    document.addEventListener('astro:page-load', initTags);
+  </script>
+</BaseLayout>
+
+<style>
+  /* ── 搜索工具条 ── */
+  .tag-toolbar { margin-bottom: 16px; }
+  .tag-search {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 100px;
+    transition: border-color .15s, background .15s;
+  }
+  .tag-search:focus-within {
+    border-color: rgba(41,151,255,0.50);
+    background: rgba(41,151,255,0.05);
+  }
+  .tag-search-icon { color: var(--text-dim); flex-shrink: 0; }
+  .tag-search-input {
+    border: none; background: none; outline: none;
+    font-family: inherit; font-size: 12.5px; color: var(--text);
+    width: 130px;
+  }
+  .tag-search-input::placeholder { color: var(--text-dim); }
+  .tag-search-count {
+    font-size: 10.5px; color: var(--text-dim);
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+
+  /* ── 标签云：Top 标签自然流（60 个 ≈ 4-5 行），搜索命中多时限高滚动 ── */
+  .tag-cloud {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 3px 9px;
+    margin-bottom: 28px; padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    max-height: 260px; overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+  .tag-cloud::-webkit-scrollbar { width: 4px; }
+  .tag-cloud::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+  .tag-chip {
+    border: none; background: none; cursor: pointer;
+    font-family: inherit; font-weight: 500;
+    padding: 2px 4px; line-height: 1.5;
+    transition: color .15s, background .15s;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .tag-chip:hover { color: var(--accent) !important; background: rgba(41,151,255,0.08); }
+  .tag-chip.active { color: var(--accent) !important; background: rgba(41,151,255,0.12); }
+  .tag-chip-count {
+    font-size: 10px; color: var(--text-dim);
+    margin-left: 3px; vertical-align: super;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tag-chip-cold, .tag-chip-pooled { font-size: 12px; color: var(--text-dim); }
+
+  /* ── 过滤结果头 ── */
+  .tag-result-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; padding: 10px 14px;
+    background: rgba(41,151,255,0.06);
+    border: 1px solid rgba(41,151,255,0.15);
+    border-radius: 10px;
+  }
+  .tag-result-head[hidden] { display: none; }
+  .tag-result-label {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .tag-result-clear {
+    border: none; background: none; cursor: pointer;
+    font-family: inherit; font-size: 12px; color: var(--text-dim);
+    padding: 3px 8px; border-radius: 6px;
+    transition: color .15s, background .15s;
+  }
+  .tag-result-clear:hover { color: #ff6b6b; background: rgba(255,107,107,.08); }
+
+  .tag-empty {
+    padding: 100px 0 60px; text-align: center;
+  }
+  .tag-empty[hidden] { display: none; }
+  .tag-empty-hint { font-size: 14px; color: var(--text-dim); }
+
+  /* ── 文章卡片：与列表 view 完全一致 ── */
+  .articles { display: flex; flex-direction: column; }
+  .tag-article[hidden] { display: none; }
+
+  .article-card {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-bottom: none;
+    padding: 22px 26px;
+    box-shadow: var(--card-shadow);
+    transition: background .22s, transform .25s ease, box-shadow .25s ease;
+    position: relative;
+    text-decoration: none;
+  }
+  .tag-article:last-of-type .article-card { border-bottom: 1px solid var(--card-border); }
+  .tag-article:first-of-type .article-card { border-radius: var(--radius) var(--radius) 0 0; }
+  .tag-article:last-of-type .article-card  { border-radius: 0 0 var(--radius) var(--radius); }
+  .tag-article:only-of-type .article-card  { border-radius: var(--radius); border-bottom: 1px solid var(--card-border); }
+  .article-card:hover {
+    background: #1a1a1d;
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-h);
+    z-index: 1;
+  }
+  .article-card:hover .card-title { color: var(--accent); }
+
+  .card-inner { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
+  .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
+  :global(.cat-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
+  :global(.pin-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
+  :global(.star-badge)   { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
+  :global(.review-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
+  :global(.review-badge[data-review-state="pending"]) { color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30); }
+  :global(.review-badge[data-review-state="reviewed"]) { color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30); }
+  :global(.origin-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
+  :global(.origin-badge[data-origin="repost"]) { color: #2dd4bf; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.30); }
+  :global(.origin-badge[data-origin="original"]) { color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30); }
+  :global(.private-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #f85149; background: rgba(248,81,73,.12); border: 1px solid rgba(248,81,73,.30); }
+  .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
+  .card-source-label { color: inherit; margin-right: 0.2em; }
+  .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 11px; font-weight: 500; color: var(--text-dim);
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+    padding: 2px 8px; border-radius: 6px; font-family: var(--mono);
+  }
+  .card-aside { text-align: right; flex-shrink: 0; padding-top: 2px; }
+  .card-date { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; display: block; margin-bottom: 3px; white-space: nowrap; }
+  .card-reading { font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
+
+  @media (max-width: 680px) {
+    .card-inner { grid-template-columns: 1fr; gap: 10px; }
+    .card-aside { text-align: left; }
+  }
+</style>

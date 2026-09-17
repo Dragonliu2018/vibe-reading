@@ -140,14 +140,10 @@ const totalArticles = articles.length;
   .tl-body { padding-left: 24px; }
   /* 文章行与层级标签文字严格对齐（日 head 左缘 + padding 10 + chev 18 + gap 4 = 33px） */
   .tl-articles { padding-left: 33px; margin-bottom: 4px; }
-  /* 时间线语境下的紧凑单行：去掉徽章 meta 行（分类/日期已在层级与行内体现） */
+  /* 时间线语境下的紧凑单行：徽章 meta 行整个去掉（分类/日期已在层级与行内体现）。
+     收藏以标题行内 ⭐ 体现（ArticleRow 的 starred 前缀），不再占第二行 */
   .tl-articles :global(.article-item) { padding: 6px 0; }
   .tl-articles :global(.article-item-meta) { display: none; }
-  /* star 徽章例外：时间线也可见（收藏是好文信号，值得露出）。
-     :global 防止 scoped 编译给 :has() 内的选择器加本页 cid（StarPinBadges 无此 cid） */
-  .tl-articles :global(.article-item-meta:has(.star-badge)) {
-    display: flex; margin-top: 2px; padding: 0 6px;   /* 6px 与 chevron 宽对齐 */
-  }
   @media (max-width: 680px) { .tl-body { padding-left: 16px; } }
 
   /* ── 年 / 日层级视觉 ── */

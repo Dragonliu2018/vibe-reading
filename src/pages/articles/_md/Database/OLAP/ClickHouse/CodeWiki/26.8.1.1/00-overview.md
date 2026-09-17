@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "C++", "OLAP", "列式存储", "向量化执行", "MergeTree"]
 description: "ClickHouse 26.8.1.1——开源列式 OLAP 数据库，拉模型执行流水线 + MergeTree 存储 + MVCC + Morsel 并行 + 工厂扩展源码解读。"
 readingTime: "90 min"

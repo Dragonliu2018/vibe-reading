@@ -6,6 +6,7 @@ source:
 title: "装配与启动"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Profile", "Bundle", "Boot", "Cordis"]
 description: "dsh 如何用 profile/bundle/patch 分层组合把分散插件装成一棵可 boot 的树，以及 host/client 双 face 编译。"
 readingTime: "14 min"

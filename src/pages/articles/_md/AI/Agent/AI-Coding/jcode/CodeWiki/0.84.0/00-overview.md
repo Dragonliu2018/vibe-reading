@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "Agent Harness", "TUI", "Memory", "Swarm", "多模型"]
 description: "jcode v0.84.0 源码解读——Rust 编写的极致内存效率编码 agent harness，三层 re-export + 82 crate 编译隔离、agent turn 循环、passive 记忆系统（hybrid 检索 + consensus LLM rerank）、swarm Plan DAG、原生 SSH 远程会话与 harness API/SDK"
 readingTime: "45 min"

@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/react-synergizing-reasoning-and-acting.pdf"
 date: "2026-07-31T10:30:00+08:00"
 category: [AI, Agent, Papers]
+contentType: "Papers"
 tags: ["LLM Agent", "Reasoning", "Chain-of-Thought", "Prompting", "ReAct"]
 description: "目的：让 LLM 交错生成推理与动作以协同解题。手段：扩展动作空间纳入语言推理轨迹，推理引导行动、行动获取外部信息。结论：在 QA 与决策任务上显著优于纯推理或纯行动，且更可解释。"
 readingTime: "15 min"

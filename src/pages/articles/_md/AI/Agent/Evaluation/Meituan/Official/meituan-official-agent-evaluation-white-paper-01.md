@@ -8,6 +8,7 @@ source:
   site: "美团技术团队"
 date: "2026-09-14T17:20:00+08:00"
 category: [AI, Agent, Evaluation, Meituan, Official]
+contentType: "Blogs"
 tags: ["美团", "Agent 评测", "评测体系", "离线评测", "在线评测", "Case 挖掘", "观测", "白皮书"]
 description: "美团技术团队《Agent 评测白皮书》系列第一篇：完整拆解 Agent 评测体系——四个模块、三种能力、两条 Loop、一套资产，从离线评测、在线评测与监控、Case 挖掘与归因到观测基建，并附评测体系成熟度自查表。"
 readingTime: "25 min"

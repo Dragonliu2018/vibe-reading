@@ -6,6 +6,7 @@ source:
 title: "领域服务层"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "PullRequest", "分支保护", "MergeQueue", "webhook"]
 description: "Harness 领域服务层：PR 生命周期与 merge 链路、space/repo 树形层级、可组合分支保护规则、事件驱动 webhook 分发、串行化合并队列"
 readingTime: "15 min"

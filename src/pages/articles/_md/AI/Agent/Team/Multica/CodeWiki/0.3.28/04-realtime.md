@@ -6,6 +6,7 @@ source:
 title: "Realtime 实时推送"
 date: "2026-08-11T20:31:27+08:00"
 category: [AI, Agent, Team, Multica, CodeWiki, "0.3.28"]
+contentType: "CodeWiki"
 tags: ["multica", "Go", "WebSocket", "Redis Stream", "Pub-Sub"]
 description: "realtime 模块实现 WebSocket 事件 fanout——Hub 房间模型 + Redis 分片中继实现多节点广播，含 sharded/legacy/dual 三模式渐进迁移。"
 readingTime: "10 min"

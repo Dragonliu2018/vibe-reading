@@ -8,6 +8,7 @@ source:
   site: "腾讯技术工程 微信公众号"
 date: "2026-07-30T21:30:00+08:00"
 category: [AI, Agent, AI Coding, CodeBuddy, Official]
+contentType: "Blogs"
 tags: ["AI Coding", "团队经验", "经验沉淀", "CodeBuddy", "TDev", "Agent", "腾讯", "QQ浏览器"]
 description: "腾讯 QQ 浏览器团队构建团队经验系统：从 AI Coding 对话中捕获、提纯、沉淀工程经验，经 Review/Dedup/Merge 三层治理，让 Agent 带着项目语境进场，打破每次 session 从零开始的循环。"
 readingTime: "16 min"

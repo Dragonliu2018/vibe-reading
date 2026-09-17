@@ -6,6 +6,7 @@ source:
 title: "集群管理与运维"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "clone", "alter", "backup", "TabletScheduler", "Schema Change"]
 description: "Doris 0.14.0 集群运维：TabletScheduler+TabletChecker 副本自均衡、SchemaChangeHandler 在线 Schema Change、BackupHandler 备份恢复、MasterImpl 任务回报、Master FE 后台职责域。"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "表达式与函数"
 date: "2026-08-23T18:36:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "VExpr", "向量化", "SIMD", "CRTP"]
 description: "Doris 表达式与函数：VExpr 表达式树 + IFunction 向量化批处理 + IAggregateFunction CRTP 去虚化。"
 readingTime: "13 min"

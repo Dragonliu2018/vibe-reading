@@ -6,6 +6,7 @@ source:
 title: "Socket API"
 date: "2026-09-17T10:53:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "Unix socket", "JSON API"]
 description: "herdr JSON Socket API：104 个 method 的 schema 驱动协议、事件订阅与 agent.wait 混合等待语义。"
 readingTime: "19 min"

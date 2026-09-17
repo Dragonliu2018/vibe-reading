@@ -6,6 +6,7 @@ source:
 title: "委托与协议"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Subagent", "Workflow", "SDK", "ACP"]
 description: "dsh 把另一个 agent 藏在同接口后——subagent provider、workflow worker-thread、skill registry、ACP/JSON-RPC SDK 与 extensions 自我修改。"
 readingTime: "14 min"

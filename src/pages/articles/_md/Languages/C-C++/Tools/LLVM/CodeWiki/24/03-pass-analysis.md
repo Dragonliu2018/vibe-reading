@@ -6,6 +6,7 @@ source:
 title: "Pass 管理与分析"
 date: "2026-08-20T10:23:42+08:00"
 category: ["Languages", "C/C++", "Tools", "LLVM", "CodeWiki", "24"]
+contentType: "CodeWiki"
 tags: ["LLVM", "PassManager", "AnalysisManager", "PassBuilder", "AliasAnalysis"]
 description: "LLVM 新 Pass Manager——类型擦除调度、AnalysisManager 按需缓存与精确失效、AA 聚合"
 readingTime: "22 min"

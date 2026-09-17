@@ -6,6 +6,7 @@ source:
 title: "列存类型与运行时"
 date: "2026-08-23T18:38:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Block", "Column", "COW", "MemTracker", "ExecEnv"]
 description: "Doris 列存数据载体 Block/Column(COW) + 运行时 RuntimeState + ExecEnv 服务定位器 + MemTracker 内存分级。"
 readingTime: "12 min"

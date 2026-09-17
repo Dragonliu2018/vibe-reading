@@ -6,6 +6,7 @@ source:
 title: "Client & Extension"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "ClientContext", "Extension", "Embedded"]
 description: "DuckDB Client & Extension 模块——DatabaseInstance/ClientContext/Connection 嵌入式门面 + C ABI 扩展动态加载 + Secret 管理。"
 readingTime: "25 min"

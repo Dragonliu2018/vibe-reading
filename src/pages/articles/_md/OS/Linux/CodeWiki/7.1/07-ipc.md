@@ -6,6 +6,7 @@ source:
 title: "进程间通信"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "IPC", "信号量", "共享内存", "消息队列"]
 description: "Linux System V IPC（sem/shm/msg）与 POSIX mqueue——kern_ipc_perm 基类复用、ipcget 模板方法、IPC namespace 隔离。"
 readingTime: "12 min"

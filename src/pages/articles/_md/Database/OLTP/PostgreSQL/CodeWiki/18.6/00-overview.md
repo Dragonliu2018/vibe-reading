@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "C", "OLTP", "MVCC", "WAL", "关系数据库"]
 description: "PostgreSQL 18.6 源码架构解读——世界级开源关系数据库，per-process 架构、四阶段查询流水线、WAL+MVCC 事务引擎、可插拔访问方法全解"
 readingTime: "60 min"

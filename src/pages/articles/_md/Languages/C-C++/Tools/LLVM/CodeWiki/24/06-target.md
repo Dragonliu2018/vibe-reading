@@ -6,6 +6,7 @@ source:
 title: "Target 目标描述"
 date: "2026-08-20T10:23:42+08:00"
 category: ["Languages", "C/C++", "Tools", "LLVM", "CodeWiki", "24"]
+contentType: "CodeWiki"
 tags: ["LLVM", "TableGen", "TargetMachine", "TargetLowering", "Subtarget"]
 description: "LLVM 目标架构抽象——TableGen DSL 声明式描述、TargetLowering 合法化表、静态注册后端"
 readingTime: "22 min"

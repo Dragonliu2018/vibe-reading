@@ -6,6 +6,7 @@ source:
 title: "建模原语"
 date: "2026-08-18T16:40:20+08:00"
 category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
+contentType: "CodeWiki"
 tags: ["transformers", "RoPE", "注意力掩码", "激活函数", "GradientCheckpointingLayer"]
 description: "建模原语是所有 transformer 模型复用的共享构建块——RoPE 旋转位置编码、统一注意力掩码、激活函数注册表、GradientCheckpointingLayer 与 MTP 层。本文解读其注册表驱动与统一接口设计。"
 readingTime: "11 min"

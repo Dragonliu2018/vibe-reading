@@ -6,6 +6,7 @@ source:
 title: "特殊命令"
 date: "2026-08-09T10:40:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
+contentType: "CodeWiki"
 tags: ["mycli", "Python", "特殊命令", "装饰器注册", "Favorite Query"]
 description: "mycli 特殊命令模块深度解读：@special_command 装饰器注册、execute() 调度、ArgType 策略、Favorite Query 模板渲染。"
 readingTime: "7 min"

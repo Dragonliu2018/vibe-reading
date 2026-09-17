@@ -6,6 +6,7 @@ source:
 title: "执行器"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "executor", "Volcano", "迭代器", "ModifyTable", "HashJoin"]
 description: "PostgreSQL executor 模块——Volcano 迭代器模型、函数指针分发、Init/Exec/ReScan/End 四方法、EState/ExprContext、HashJoin、ModifyTable DML"
 readingTime: "30 min"

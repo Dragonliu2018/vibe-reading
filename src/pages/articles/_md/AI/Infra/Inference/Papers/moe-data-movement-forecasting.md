@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/moe-data-movement-forecasting.pdf"
 date: "2026-08-08T17:00:00+08:00"
 category: [AI, Infra, Inference, Papers]
+contentType: "Papers"
 tags: ["MoE", "Data Movement", "Wafer-Scale GPU", "Profiling", "LLM Serving"]
 description: "大规模 MoE LLM 的随机专家选择带来主导性的数据移动开销；对 4 个 200B-1000B SOTA 模型做数据移动中心 profiling，提炼 6 条系统无关 insight，在晶圆级 GPU 上 6.6×、在现有 8×H100 上 1.25× 加速。"
 readingTime: "18 min"

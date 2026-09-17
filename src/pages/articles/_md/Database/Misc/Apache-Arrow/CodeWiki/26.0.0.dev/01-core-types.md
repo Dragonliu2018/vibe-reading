@@ -6,6 +6,7 @@ source:
 title: "核心类型与内存"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "列式格式", "内存管理"]
 description: "Arrow 列式格式的物理与逻辑表示——DataType 类型体系、引用计数 Buffer、可替换 MemoryPool、ArrayData/Array 双层设计与零拷贝切片"
 readingTime: "13 min"

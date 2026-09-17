@@ -8,6 +8,7 @@ source:
   prType: "enhancement"
 date: "2026-07-04"
 category: [Database, OLAP, StarRocks, PRs]
+contentType: "PRs"
 tags: ["StarRocks", "FE", "Checkpoint", "高可用", "元数据"]
 description: "解读 StarRocks FE Checkpoint 的 image push 重试机制：引入 nodesToPushImage 集合跨周期追踪未同步节点，解决 follower 临时下线时推送失败不重试、journal 持续积压的问题。"
 readingTime: "10 min"

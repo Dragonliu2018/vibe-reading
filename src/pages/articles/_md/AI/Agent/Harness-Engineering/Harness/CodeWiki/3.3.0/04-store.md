@@ -6,6 +6,7 @@ source:
 title: "持久化层"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "sqlx", "数据库", "迁移", "缓存", "乐观锁"]
 description: "Harness 持久化层：sqlx + dbtx 事务抽象、内联 SQL + squirrel 动态查询、embed.FS 双方言迁移、TTL 缓存跨实例失效、乐观锁重试"
 readingTime: "13 min"

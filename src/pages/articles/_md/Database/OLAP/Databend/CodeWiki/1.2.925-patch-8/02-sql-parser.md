@@ -6,6 +6,7 @@ source:
 title: "SQL 解析"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "SQL", "Parser", "AST"]
 description: "Databend SQL 解析器——logos 词法分析 + nom/Pratt 混合语法分析，产出 150+ variant 的 Statement AST。"
 readingTime: "14 min"

@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-08-26T14:34:07+08:00"
 category: [AI, Infra, Inference, SGLang, PRs]
+contentType: "PRs"
 tags: ["Diffusion", "DiT", "I2I", "SGLang", "Qwen2.5-VL", "LongCat-Image", "Sequence Parallelism"]
 description: "解读 PR #35829：SGLang 扩散框架接入 LongCat-Image-Edit 图像编辑（I2I），核心是条件图双路径（VL 联合编码 + VAE 参考隐空间拼接 [noisy|reference]）、RoPE 双模态 id 与三处 review 中暴露的框架缺陷修复。"
 readingTime: "18 min"

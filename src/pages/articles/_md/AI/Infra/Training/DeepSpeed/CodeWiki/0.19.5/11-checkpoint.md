@@ -6,6 +6,7 @@ source:
 title: "检查点"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "Checkpoint", "Universal Checkpoint", "3D 并行", "持久化"]
 description: "DeepSpeed 检查点模块负责 ZeRO 分片持久化与 3D 并行协调，通过 Universal 格式解耦训练与加载拓扑，支持子进程异步保存、Megatron 格式 merge/split 及 AutoTP/AutoEP 元数据驱动的参数分片加载。"
 readingTime: "16 min"

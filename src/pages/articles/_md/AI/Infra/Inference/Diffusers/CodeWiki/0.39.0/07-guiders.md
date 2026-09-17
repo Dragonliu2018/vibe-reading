@@ -6,6 +6,7 @@ source:
 title: "引导器"
 date: "2026-08-12T15:35:17+08:00"
 category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
+contentType: "CodeWiki"
 tags: ["Diffusers", "Guider", "CFG", "PAG", "Classifier-Free Guidance"]
 description: "BaseGuidance 策略基类、CFG/PAG 引导计算、多前向管理与步长区间控制。"
 readingTime: "9 min"

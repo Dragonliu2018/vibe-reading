@@ -6,6 +6,7 @@ source:
 title: "LLM Semantic Layer"
 date: "2026-08-10T22:00:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
+contentType: "CodeWiki"
 tags: ["graphify", "LLM", "语义抽取", "多provider", "自适应重试", "prompt安全"]
 description: "graphify LLM 语义层：多 provider 统一接口、自适应二分重试、prompt injection 防御、语义缓存与 semantic_cleanup 安全边界。"
 readingTime: "16 min"

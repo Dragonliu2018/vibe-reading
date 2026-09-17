@@ -6,6 +6,7 @@ source:
 title: "GPORCA 优化器"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C++", "MPP", "ORCA", "Cascades", "优化器"]
 description: "Cloudberry gporca 模块——基于 Cascades 搜索框架的模块化 C++ 代价优化器，五库架构、120+ 变换规则、MPP 多维物理属性驱动搜索。"
 readingTime: "13 min"

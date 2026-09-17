@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T19:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据导入", "导入方式"]
+contentType: "Docs"
 tags: ["Apache Doris", "Broker Load", "S3 Load", "HDFS Load", "异步导入", "数据导入"]
 description: "Apache Doris 3.x 官方文档：Broker Load 通过 MySQL API 异步从远程存储系统（S3/HDFS/Broker）拉取数据导入 Doris，支持 CSV/JSON/Parquet/ORC 格式及多种压缩类型。"
 readingTime: "25 min"

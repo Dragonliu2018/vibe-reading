@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-08-16T02:51:28+08:00"
 category: ["OS", "Linux", "Contributions"]
+contentType: "Contributions"
 tags: ["Linux Kernel", "I2C", "Device Tree", "of_node", "引用计数", "Patch Series", "i2c_del_adapter", "mpc", "cpm", "ibm_iic", "opal", "pnx", "Contributions"]
 description: "一个 5-patch 系列统一修复 mpc/cpm/ibm_iic/opal/pnx 五个 i2c 总线驱动的 device_node 引用计数泄漏：各驱动 probe 里有 of_node_get 却漏了配对的 of_node_put，加上 i2c_del_adapter() 末尾 memset 清零 of_node 使 put 变空操作。系列用同一套 cache-before-del + 错误路径补 put 一次收口，Fixes 分别指向 9fd049/b41a216/470834508f87 三个引入 of_node_get 的源头 commit。"
 readingTime: "14 min"

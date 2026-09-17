@@ -6,6 +6,7 @@ source:
 title: "服务器核心"
 date: "2026-08-17T22:20:51+08:00"
 category: [Database, Ecosystems, Cube, CodeWiki, "1.7.20"]
+contentType: "CodeWiki"
 tags: ["Cube", "TypeScript", "装配", "调度", "依赖注入"]
 description: "组件装配、Context 贯穿与预聚合刷新调度"
 readingTime: "20 min"

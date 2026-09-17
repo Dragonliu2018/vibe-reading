@@ -6,6 +6,7 @@ source:
 title: "CLI 与命令调度"
 date: "2026-08-13T20:07:12+08:00"
 category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
+contentType: "CodeWiki"
 tags: ["uv", "Rust", "Clap", "命令调度"]
 description: "uv 主 crate 的 CLI 入口、三层设置合并与命令分发机制：从 main() 到 run_with_workspace_cache() 的进程模型与对象装配。"
 readingTime: "14 min"

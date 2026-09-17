@@ -6,6 +6,7 @@ source:
 title: "Harness API 与 SDK"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "TypeScript", "NDJSON", "SDK", "ACP", "版本化协议"]
 description: "jcode Harness API 与 SDK——内部协议与公开 API 分离的三明治架构、NDJSON v1 帧格式与版本协商、Rust/TypeScript 双 SDK parity 守卫、transport 抽象、ACP 适配器"
 readingTime: "20 min"

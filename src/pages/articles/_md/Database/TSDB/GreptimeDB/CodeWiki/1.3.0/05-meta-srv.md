@@ -6,6 +6,7 @@ source:
 title: "meta-srv 元数据协调"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "元数据", "procedure", "leader选举", "region迁移"]
 description: "meta-srv——Metasrv 协调组件：leader 选举、procedure 状态机、心跳 handler 链、region 分配与迁移 failover。"
 readingTime: "22 min"

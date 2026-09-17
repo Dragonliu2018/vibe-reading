@@ -6,6 +6,7 @@ source:
 title: "审查会话编排"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "Session", "Resume", "Manifest"]
 description: "OpenCodeReview 审查会话编排——RunManifest coverage 快照、断点续审（resume）、密封身份防 ref 漂移、JSONL append-only 持久化、会话列表查询。"
 readingTime: "20 min"

@@ -6,6 +6,7 @@ source:
 title: "执行引擎"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C/C++", "MPP", "Volcano", "Motion"]
 description: "Cloudberry executor 模块——Volcano 迭代 pull 模型驱动 Plan 树，Motion/Gather/Split 算子把网络 I/O 与分布式更新隐藏在迭代器背后。"
 readingTime: "14 min"

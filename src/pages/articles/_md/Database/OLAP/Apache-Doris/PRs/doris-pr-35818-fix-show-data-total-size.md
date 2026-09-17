@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-29T22:00:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "FE", "OlapTable", "TabletStatMgr", "Bug Fix"]
 description: "Doris 3.0 修复 SHOW DATA 在多副本下总数据量偏小的 bug：TabletStatMgr 把 totalReplicaDataSize 的累加误放在 if 块内，每个 tablet 只计最大副本，三副本被算成一份。"
 readingTime: "8 min"

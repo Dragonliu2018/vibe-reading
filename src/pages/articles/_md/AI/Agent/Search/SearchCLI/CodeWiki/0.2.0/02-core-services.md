@@ -6,6 +6,7 @@ source:
 title: "核心服务层"
 date: "2026-08-19T17:42:29+08:00"
 category: ["AI", "Agent", "Search", "SearchCLI", "CodeWiki", "0.2.0"]
+contentType: "CodeWiki"
 tags: ["SearchCLI", "TypeScript", "API Client", "Config", "Credential Store"]
 description: "SearchCLI 核心服务层——三层 API 客户端、五级配置优先级、三后端凭证存储与六种输出格式。"
 readingTime: "20 min"

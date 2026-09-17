@@ -6,6 +6,7 @@ source:
 title: "编译驱动器"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "spec", "pass 管线", "toplev", "驱动器"]
 description: "GCC 驱动器用 spec 语言编排 cc1/as/ld 子进程；编译器主体 main→toplev::main→do_compile 驱动声明式 pass 管线。"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "虚拟文件系统"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "VFS", "文件系统", "inode", "dentry"]
 description: "Linux VFS 四对象抽象（super_block/inode/dentry/file）——ops 策略模式、path resolution、page cache、mount namespace。"
 readingTime: "16 min"

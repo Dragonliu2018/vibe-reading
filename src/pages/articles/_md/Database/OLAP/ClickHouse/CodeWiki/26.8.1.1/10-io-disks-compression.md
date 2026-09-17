@@ -6,6 +6,7 @@ source:
 title: "I/O、磁盘与压缩"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "ReadBuffer", "IDisk", "Compression", "栈式I/O"]
 description: "ClickHouse I/O、磁盘与压缩源码解读——栈式 ReadBuffer/WriteBuffer、IDisk 磁盘抽象、按 block 压缩与编解码工厂。"
 readingTime: "20 min"

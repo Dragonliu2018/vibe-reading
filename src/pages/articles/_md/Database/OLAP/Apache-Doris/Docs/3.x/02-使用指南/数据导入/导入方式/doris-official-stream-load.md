@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T19:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据导入", "导入方式"]
+contentType: "Docs"
 tags: ["Apache Doris", "Stream Load", "HTTP 导入", "CSV", "JSON", "数据导入", "同步导入"]
 description: "Apache Doris 3.x 官方文档：Stream Load 通过 HTTP 协议将本地文件或数据流同步导入到 Doris，支持 CSV、JSON、Parquet、ORC 格式，适用于 10GB 以下文件导入。"
 readingTime: "25 min"

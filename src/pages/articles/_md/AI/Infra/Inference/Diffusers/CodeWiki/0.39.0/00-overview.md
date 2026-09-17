@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-12T15:35:17+08:00"
 category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
+contentType: "CodeWiki"
 tags: ["Diffusers", "Python", "扩散模型", "Stable Diffusion", "UNet", "VAE", "LoRA", "量化"]
 description: "HuggingFace Diffusers v0.39.0 源码架构解读：管线核心、模型架构、调度器、加载器、模块化管线、前向钩子、引导器、量化器八大模块。"
 readingTime: "15 min"

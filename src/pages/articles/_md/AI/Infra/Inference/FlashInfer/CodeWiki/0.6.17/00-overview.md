@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "CUDA", "Attention", "MoE", "GEMM", "JIT", "推理加速"]
 description: "FlashInfer 是面向 LLM 推理的高性能 GPU kernel 库与生成器，提供 attention / GEMM / MoE / sampling 统一 API，多 backend（FlashAttention、cuDNN、CUTLASS、CuTe DSL、TRT-LLM）+ JIT 编译 + autotuning。本文从系统架构、运行时行为到核心模块，全面解读 v0.6.17 的内部原理。"
 readingTime: "30 min"

@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-07-01"
 category: [Database, OLAP, Apache Doris, Contributions]
+contentType: "Contributions"
 tags: ["Apache Doris", "Java", "DDL", "Nereids"]
 description: "新增 DROP CATALOG RECYCLE BIN 命令，支持按 DbId/TableId/PartitionId 立即清除回收站条目，无需等待后台定时任务。"
 readingTime: "10 min"

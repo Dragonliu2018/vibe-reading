@@ -6,6 +6,7 @@ source:
 title: "驱动与会话"
 date: "2026-08-19T14:56:00+08:00"
 category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
+contentType: "CodeWiki"
 tags: ["Rust", "rustc", "驱动", "CodeWiki"]
 description: "rustc 的驱动主循环、Callbacks 回调注入与 Session 会话装配。"
 readingTime: "12 min"

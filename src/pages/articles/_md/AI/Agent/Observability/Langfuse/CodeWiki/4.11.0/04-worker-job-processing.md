@@ -6,6 +6,7 @@ source:
 title: "后台作业处理"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "Worker", "BullMQ", "Background Migration", "Graceful Shutdown"]
 description: "Langfuse worker 进程：WorkerManager 注册 38+ processor、分片队列、在位迁移、有序优雅关闭。"
 readingTime: "15 min"

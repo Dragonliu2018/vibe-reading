@@ -6,6 +6,7 @@ source:
 title: "Gitspaces 托管开发环境"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "Gitspace", "devcontainer", "Docker", "SCM"]
 description: "Harness Gitspaces：异步事件驱动三段式启动（Trigger→Resume→Finish），devcontainer.json 标准，Factory 模式可插拔 infra/scm/ide/secret"
 readingTime: "14 min"

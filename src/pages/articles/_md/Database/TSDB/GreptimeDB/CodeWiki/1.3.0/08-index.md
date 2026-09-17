@@ -6,6 +6,7 @@ source:
 title: "index 索引引擎"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "倒排索引", "FST", "Roaring Bitmap", "全文索引", "向量索引"]
 description: "index——倒排/全文/bloom/向量索引：FST term 映射、Roaring segment 位图、外部排序与 Puffin blob 存储作为 mito2 external provider。"
 readingTime: "20 min"

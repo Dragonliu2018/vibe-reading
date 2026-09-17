@@ -6,6 +6,7 @@ source:
 title: "项目与语言服务"
 date: "2026-08-18T11:06:09+08:00"
 category: [Tools, IDE, Zed, CodeWiki, "1.15.0"]
+contentType: "CodeWiki"
 tags: ["zed", "Rust", "code editor", "GPUI", "CRDT"]
 description: "Zed 项目资源编排：Store 聚合、LSP 生命周期、LanguageRegistry Tree-sitter"
 readingTime: "18 min"

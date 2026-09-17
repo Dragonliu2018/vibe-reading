@@ -6,6 +6,7 @@ source:
 title: "模型层"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "Layers", "Attention", "MoE", "硬件后端"]
 description: "xLLM 模型层解读：common 共享层 + 各硬件后端（NPU/CUDA/MLU/DCU/ILU/MUSA）的 Attention/MLP/MoE 实现。"
 readingTime: "12 min"

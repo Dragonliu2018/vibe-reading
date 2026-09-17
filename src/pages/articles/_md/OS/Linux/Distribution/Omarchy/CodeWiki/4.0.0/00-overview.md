@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-25T10:44:29+08:00"
 category: [OS, Linux, Distribution, Omarchy, CodeWiki, "4.0.0"]
+contentType: "CodeWiki"
 tags: ["Omarchy", "Bash", "QML", "Hyprland", "Quickshell", "Linux 发行版"]
 description: "DHH 的 Arch + Hyprland 发行版——单一 Quickshell 桌面、元数据驱动 CLI 路由、三层装配、模板主题与 per-user 迁移框架。"
 readingTime: "22 min"

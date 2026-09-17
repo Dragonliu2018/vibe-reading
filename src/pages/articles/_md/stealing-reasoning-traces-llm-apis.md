@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/stealing-reasoning-traces-llm-apis.pdf"
 date: "2026-08-12T10:48:04+08:00"
 category: [AI, Security, Papers]
+contentType: "Papers"
 tags: ["Reasoning Models", "LLM Security", "Encrypted CoT", "Distillation", "Jailbreaking", "Prompt Injection", "API Vulnerability", "AEAD"]
 description: "目的：窃取闭源推理模型的加密思维链。手段：利用加密推理块的跨模型兼容性，注入弱模型做解码预言机。结论：315,320 块解密，367 PII + 182 凭证泄露，四大攻击向量全部验证。"
 readingTime: "25 min"

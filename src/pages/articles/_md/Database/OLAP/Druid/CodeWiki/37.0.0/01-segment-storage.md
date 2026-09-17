@@ -6,6 +6,7 @@ source:
 title: "Segment 存储与列模型"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "列式存储", "Segment", "向量化"]
 description: "Druid 数据内核——不可变列式 Segment 的元数据/读写双路径、IncrementalIndex 增量索引、ColumnSelectorFactory 列选择器桥、向量化与嵌套列、SegmentWriteOutMedium 写出策略。"
 readingTime: "16 min"

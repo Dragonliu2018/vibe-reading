@@ -6,6 +6,7 @@ source:
 title: "查询优化器"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "optimizer", "planner", "GEQO", "代价模型", "EquivalenceClass"]
 description: "PostgreSQL optimizer 模块——Path/Plan 两阶段架构、代价模型 GUC、DP+GEQO 连接枚举、等价类约束传播、Hook 扩展"
 readingTime: "32 min"

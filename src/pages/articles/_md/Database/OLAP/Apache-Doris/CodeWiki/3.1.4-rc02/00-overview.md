@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-23T18:55:05+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Java", "C++", "MPP", "OLAP", "向量化执行", "Cascades 优化器"]
 description: "Apache Doris 3.1.4-rc02 源码架构解读：双优化器过渡版（Nereids 默认 + Legacy 回退）、Pipeline 拉模型、vec 统一向量化、olap 存储引擎的 FE/BE 分离 MPP 数仓。"
 readingTime: "32 min"

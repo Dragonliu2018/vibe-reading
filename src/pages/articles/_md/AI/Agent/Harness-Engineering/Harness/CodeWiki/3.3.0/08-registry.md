@@ -6,6 +6,7 @@ source:
 title: "制品仓库"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "OCI", "Docker", "Maven", "NPM", "distribution"]
 description: "Harness 制品仓库：内嵌 CNCF distribution，多格式（Docker/OCI/Maven/NPM/Cargo/Go/Python）支持，StorageDriver 抽象 FS/S3/GCS，BlobFindAndLock 上传并发安全"
 readingTime: "13 min"

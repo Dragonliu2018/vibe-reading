@@ -6,6 +6,7 @@ source:
 title: "遥测与统计"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "OpenTelemetry", "Telemetry", "Observability"]
 description: "OpenCodeReview 遥测与统计——OpenTelemetry 集成，一次审查一个 trace，span/metric 懒加载，no-op 降级，ContentLogging 隐私开关，OTLP HTTP base path 适配。"
 readingTime: "16 min"

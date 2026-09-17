@@ -6,6 +6,7 @@ source:
 title: "公开 API 与鉴权"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "Public API", "API Key", "RBAC", "限流"]
 description: "Litefuse 公开 API 与鉴权：createAuthedProjectAPIRoute 中间件工厂、project/org 两级 API key 双哈希、RateLimitService 按计划限流、过滤构建。"
 readingTime: "12 min"

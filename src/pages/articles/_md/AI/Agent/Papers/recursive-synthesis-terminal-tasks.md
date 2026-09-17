@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/recursive-synthesis-terminal-tasks.pdf"
 date: "2026-08-10T18:00:00+08:00"
 category: [AI, Agent, Papers]
+contentType: "Papers"
 tags: ["Synthetic Data", "Terminal Agents", "Recursive Synthesis", "RL", "SFT"]
 description: "RST 递归扩展已验证种子任务的参考解决方案并重新对齐验证器与指令，从 639 个种子生成 37,484 个终端 agent 任务（约 $0.05/任务），SFT 和 PPO 训练后 Qwen3.5 在三个基准上显著提升。"
 readingTime: "12 min"

@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T16:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "表类型"]
+contentType: "Docs"
 tags: ["Apache Doris", "聚合表", "Aggregate Key", "AGG_STATE", "表类型", "预聚合"]
 description: "Apache Doris 3.x 官方文档：聚合表（Aggregate Key Table）通过预聚合数据减少重复计算、提升查询性能，支持 SUM/REPLACE/MAX/MIN 等聚合方式及 AGG_STATE 实验特性。"
 readingTime: "10 min"

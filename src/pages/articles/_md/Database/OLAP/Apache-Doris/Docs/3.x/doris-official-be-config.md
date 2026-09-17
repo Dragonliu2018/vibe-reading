@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T12:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x"]
+contentType: "Docs"
 tags: ["Apache Doris", "BE 配置", "be.conf", "配置管理", "存算分离"]
 description: "Apache Doris 3.x 官方文档：BE 配置项参考，涵盖服务、查询、compaction、导入、线程、内存、存储、日志、其他及存算分离模式等全部分类的配置项说明、类型与默认值。"
 readingTime: "30 min"

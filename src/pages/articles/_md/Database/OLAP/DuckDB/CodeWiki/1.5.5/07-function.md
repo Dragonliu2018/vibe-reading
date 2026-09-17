@@ -6,6 +6,7 @@ source:
 title: "Function"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Function", "ScalarFunction", "AggregateFunction", "Cast"]
 description: "DuckDB Function 模块——Scalar/Aggregate/Table/Pragma 函数注册，function pointer 策略模式 + 重载代价选择。"
 readingTime: "25 min"

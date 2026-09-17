@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/longcat-video-avatar-1-5-technical-report.pdf"
 date: "2026-08-12T20:06:36+08:00"
 category: [AI, Models, Video Model, Papers]
+contentType: "Papers"
 tags: ["Talking Head", "Audio-Driven", "Digital Human", "DiT", "GRPO", "Whisper", "DMD2", "RLHF"]
 description: "目的：开源生产级音驱数字人视频生成。手段：DiT + Whisper-large 音频编码 + 逐帧 GRPO + DMD2 八步蒸馏。结论：8 NFE 达到比肩闭源的人类相似度与稳定性。"
 readingTime: "20 min"

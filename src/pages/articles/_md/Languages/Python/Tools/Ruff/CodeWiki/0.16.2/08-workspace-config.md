@@ -6,6 +6,7 @@ source:
 title: "Workspace 与配置"
 date: "2026-08-13T20:14:13+08:00"
 category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
+contentType: "CodeWiki"
 tags: ["ruff", "Rust", "配置", "层级配置", "monorepo", "Resolver"]
 description: "ruff 的配置系统——三级表示、层级级联发现、matchit Router 路由、extend 链合并，monorepo 友好。"
 readingTime: "13 min"

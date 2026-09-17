@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-10T22:00:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
+contentType: "CodeWiki"
 tags: ["graphify", "Python", "知识图谱", "tree-sitter", "社区检测", "AI Coding"]
 description: "graphify 把代码库、文档、PDF、图片映射为可查询的知识图谱。本文从五层架构、tree-sitter 抽取引擎、Leiden 社区检测到 MCP 集成，全面解读 v0.9.38 的内部原理。"
 readingTime: "25 min"

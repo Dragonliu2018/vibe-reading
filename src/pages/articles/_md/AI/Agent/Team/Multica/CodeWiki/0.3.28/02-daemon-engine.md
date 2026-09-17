@@ -6,6 +6,7 @@ source:
 title: "Daemon 执行引擎"
 date: "2026-08-11T20:31:27+08:00"
 category: [AI, Agent, Team, Multica, CodeWiki, "0.3.28"]
+contentType: "CodeWiki"
 tags: ["multica", "Go", "Daemon", "WebSocket", "exec", "worktree"]
 description: "internal/daemon 是跑在用户机器上的执行守护进程——轮询/唤醒领取 task、调用 CLI 子进程、流式上报进度，含 worktree 缓存与心跳。"
 readingTime: "12 min"

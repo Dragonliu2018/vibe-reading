@@ -6,6 +6,7 @@ source:
 title: "metric-engine 引擎"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "metric-engine", "TSID", "多路复用"]
 description: "metric-engine——mito2 之上的 metrics 专用多路复用引擎：metadata region + data region 分离、TSID 聚合、auto-partition 与逻辑/物理表映射。"
 readingTime: "18 min"

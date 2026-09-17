@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-09-17T10:45:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "终端复用器", "Agent 运行时"]
 description: "herdr 是面向 AI coding agent 的终端工作区运行时：单 Rust 二进制的 client-server 终端复用器，后台 server 拥有 PTY 与终端仿真，瘦客户端本地渲染 UI。"
 readingTime: "32 min"

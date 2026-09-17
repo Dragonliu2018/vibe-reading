@@ -6,6 +6,7 @@ source:
 title: "注意力后端"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "Attention", "PagedKVCache", "MLA", "PersistentKernel"]
 description: "FlashInfer 注意力后端解读：BatchAttention 统一 API、plan/run 两阶段、多 backend 选择、MLA、persistent cooperative kernel。"
 readingTime: "18 min"

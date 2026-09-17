@@ -6,6 +6,7 @@ source:
 title: "运行时例程"
 date: "2026-08-19T17:50:32+08:00"
 category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "运行时", "JavaOp", "statepoint"]
 description: "Jeandle 运行时例程：编译期生成供编译代码回访 JVM 的 C/汇编/Hotspot 例程与模板 JavaOp"
 readingTime: "12 min"

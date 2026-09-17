@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-17T22:20:51+08:00"
 category: [Database, Ecosystems, Cube, CodeWiki, "1.7.20"]
+contentType: "CodeWiki"
 tags: ["Cube", "TypeScript", "Rust", "语义层", "BI", "OLAP"]
 description: "Cube.js 开源语义层架构全解：TS 语义编译 + Rust SQL/存储双引擎"
 readingTime: "35 min"

@@ -6,6 +6,7 @@ source:
 title: "表达式引擎"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "exprs", "Expr", "AnyVal", "SlotRef", "AggFnEvaluator", "dlsym"]
 description: "Doris 1.1.5 表达式引擎 exprs（legacy 行式）：Expr 树 get_*_val(TupleRow→AnyVal) 求值、SlotRef 快速路径、BinaryPredicate 宏展开 66 类、AggFnEvaluator UDA 五阶段、dlsym 函数加载。与 vec/exprs 向量化双轨。"
 readingTime: "15 min"

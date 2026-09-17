@@ -6,6 +6,7 @@ source:
 title: "基础设施"
 date: "2026-08-14T11:44:53+08:00"
 category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
+contentType: "CodeWiki"
 tags: ["fish-shell", "Rust", "Wstr", "Threading", "Flog"]
 description: "fish 的基础设施层：&wstr/WString 宽字符串与 PUA 编码、flog 运行时分类日志、Event 事件系统、TopicMonitor generation-count 通知、crates 子库。"
 readingTime: "16 min"

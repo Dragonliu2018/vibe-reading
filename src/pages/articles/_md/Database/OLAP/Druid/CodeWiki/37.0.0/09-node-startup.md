@@ -6,6 +6,7 @@ source:
 title: "节点启动与服务发现"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "Guice", "服务发现", "ZooKeeper", "Leader"]
 description: "Druid 节点启动——Main/Cli 入口、三层 InjectorBuilder Guice 装配、DruidNode/NodeRole、Curator ZK 服务发现/LeaderLatch、Jetty、DiscoverySideEffectsProvider。"
 readingTime: "14 min"

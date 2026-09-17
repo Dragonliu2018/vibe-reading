@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T18:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据导入", "导入方式"]
+contentType: "Docs"
 tags: ["Apache Doris", "INSERT INTO", "导入", "Multi-Catalog", "TVF", "数据导入"]
 description: "Apache Doris 3.x 官方文档：Insert Into Select 同步导入方式，将查询结果导入到目标表，支持与 Multi-Catalog 外部表、TVF 结合导入外部数据。"
 readingTime: "12 min"

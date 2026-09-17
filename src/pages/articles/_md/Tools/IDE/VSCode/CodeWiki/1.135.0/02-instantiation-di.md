@@ -6,6 +6,7 @@ source:
 title: "依赖注入与服务注册"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "依赖注入", "DI", "TypeScript"]
 description: "VS Code 的 createDecorator DI 容器、服务标识符与延迟实例化机制"
 readingTime: "11 min"

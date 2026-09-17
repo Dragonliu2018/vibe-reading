@@ -6,6 +6,7 @@ source:
 title: "Transforms 中端优化"
 date: "2026-08-20T10:23:42+08:00"
 category: ["Languages", "C/C++", "Tools", "LLVM", "CodeWiki", "24"]
+contentType: "CodeWiki"
 tags: ["LLVM", "Transforms", "InstCombine", "Vectorize", "Inliner", "SCCP"]
 description: "LLVM 中端优化 pass——InstCombine worklist 不动点、向量化四阶段、内联代价模型"
 readingTime: "20 min"

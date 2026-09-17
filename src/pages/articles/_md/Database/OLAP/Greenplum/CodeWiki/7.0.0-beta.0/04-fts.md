@@ -6,6 +6,7 @@ source:
 title: "FTS 容错服务"
 date: "2026-08-14T15:39:30+08:00"
 category: [Database, OLAP, Greenplum, CodeWiki, "7.0.0-beta.0"]
+contentType: "CodeWiki"
 tags: ["Greenplum", "容错", "FTS", "failover", "mirror"]
 description: "FTS——coordinator 上的后台探测进程，周期探测 primary/mirror segment 并在故障时触发 mirror 提升。"
 readingTime: "12 min"

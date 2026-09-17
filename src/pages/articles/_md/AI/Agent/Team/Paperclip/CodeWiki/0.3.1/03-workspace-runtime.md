@@ -6,6 +6,7 @@ source:
 title: "工作区与运行时"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 工作区与运行时子系统——git worktree 隔离、sandbox 环境租约、项目文档版本化"
 readingTime: "20 min"

@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/pipo-pair-in-pair-out-latent-multi-token-prediction.pdf"
 date: "2026-07-27"
 category: [AI, Infra, Inference, Papers]
+contentType: "Papers"
 tags: ["LLM Inference", "Multi-Token Prediction", "Latent Compression", "Speculative Decoding", "On-Policy Distillation", "Reasoning"]
 description: "目的：统一输入侧压缩与输出侧多 token 预测并去掉昂贵 verifier。手段：compressor/MTP 镜像对称的 pair-in/pair-out 接口 + 用 OPD 教师分布免费训练的轻量 confidence head 替代 verifier。结论：pass@4 提升 +7.15pp，TTFT 2.64×、TPOT 2.07× 加速。"
 readingTime: "15 min"

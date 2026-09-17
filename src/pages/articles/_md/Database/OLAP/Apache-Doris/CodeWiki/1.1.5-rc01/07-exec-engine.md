@@ -6,6 +6,7 @@ source:
 title: "执行引擎"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "exec", "ExecNode", "Volcano", "RowBatch", "OlapScanNode", "HashJoin"]
 description: "Doris 1.1.5 执行引擎 exec：ExecNode Volcano pull 模型（open/get_next/close）、按 RowBatch 行式、OlapScanNode scanner 线程池生产者-消费者、HashJoin/PartitionedAggregation。1.x 无 Pipeline。"
 readingTime: "15 min"

@@ -6,6 +6,7 @@ source:
 title: "Domain 引擎层"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "Domain", "ABI", "Tunnel"]
 description: "解读 Podman 的引擎抽象层：ContainerEngine/ImageEngine 门面接口与 ABI/Tunnel 双后端分叉，让同一 CLI 既能本地直连 libpod 又能远程走 REST。"
 readingTime: "12 min"

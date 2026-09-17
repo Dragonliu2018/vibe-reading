@@ -8,6 +8,7 @@ source:
   site: "Anthropic Engineering"
 date: "2026-09-14T17:40:00+08:00"
 category: [AI, Agent, Evaluation, Anthropic, Official]
+contentType: "Blogs"
 tags: ["Anthropic", "Agent 评测", "Evals", "Graders", "pass@k", "LLM-as-judge", "Benchmark"]
 description: "The capabilities that make agents useful also make them difficult to evaluate. The strategies that work across deployments combine techniques to match the complexity of the systems they measure."
 readingTime: "35 min"

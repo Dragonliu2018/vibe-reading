@@ -6,6 +6,7 @@ source:
 title: "SQL 解析器"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "parser", "flex", "bison", "ParseState"]
 description: "PostgreSQL parser 模块——flex/bison 两阶段解析（raw parse + semantic analysis）、ParseState 上下文、RangeTblEntry、base_yylex LALR(1) 处理"
 readingTime: "28 min"

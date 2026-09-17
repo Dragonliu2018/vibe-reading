@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "虚拟化", "gRPC", "cloud-init"]
 description: "Canonical 的轻量级 VM 管理器，一行命令拉起 Ubuntu，daemon-client + 平台抽象架构。"
 readingTime: "28 min"

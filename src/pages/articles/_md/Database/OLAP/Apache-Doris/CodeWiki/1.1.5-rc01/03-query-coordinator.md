@@ -6,6 +6,7 @@ source:
 title: "查询协调与协议"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Coordinator", "MySQL 协议", "NIO", "两阶段调度", "SimpleScheduler"]
 description: "Doris 1.1.5 查询协调与协议：Coordinator（2402 行）两阶段 Fragment 调度、MySQL NIO 非阻塞协议、SimpleScheduler 轮询+黑名单选 BE、StmtExecutor 执行模板。1.x 单 Coordinator 类，2.x 才拆分。"
 readingTime: "15 min"

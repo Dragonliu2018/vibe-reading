@@ -6,6 +6,7 @@ source:
 title: "Podman Machine"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "虚拟机", "Mac", "Windows", "provider"]
 description: "解读 pkg/machine：VMProvider 接口抽象多虚拟化后端，让 macOS/Windows 经虚拟机运行 Linux 容器，VM 内再跑 podman 服务端。"
 readingTime: "11 min"

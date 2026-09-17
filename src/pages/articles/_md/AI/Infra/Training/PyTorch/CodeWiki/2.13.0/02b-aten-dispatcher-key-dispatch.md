@@ -6,6 +6,7 @@ source:
 title: "Dispatcher 分发机制详解"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "Dispatcher", "DispatchKeySet", "位集"]
 description: "深度解析 DispatchKeySet 如何用单个 uint64 编码 backend×functionality 笛卡尔积，CLZ O(1) 优先级提取，runtime index 到 dispatch table 数组下标映射。"
 readingTime: "8 min"

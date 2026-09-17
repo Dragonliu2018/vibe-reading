@@ -6,6 +6,7 @@ source:
 title: "远程多机"
 date: "2026-09-17T10:55:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "SSH", "分布式"]
 description: "herdr 远程多机：SSH stdio 桥、ProfileId 身份模型、supervisor 指数退避重连与 --machine 远程 CLI 转发。"
 readingTime: "18 min"

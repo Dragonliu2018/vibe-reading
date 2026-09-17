@@ -6,6 +6,7 @@ source:
 title: "JIT 编译系统"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "JIT", "CUDA", "ninja", "编译系统"]
 description: "FlashInfer JIT 编译系统解读：JitSpec 抽象、build_and_load 模板方法、AOT/cubin 三级缓存策略、nvcc 与 CuTe DSL 双后端。"
 readingTime: "15 min"

@@ -6,6 +6,7 @@ source:
 title: "异步编排"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "RL", "Ray", "Async", "Cell", "Fault Tolerance"]
 description: "RayTrainCell 状态机驱动的异步 RL 编排，rollout 与 training 三层解耦，fully-async DataBuffer 生产者-消费者。"
 readingTime: "26 min"

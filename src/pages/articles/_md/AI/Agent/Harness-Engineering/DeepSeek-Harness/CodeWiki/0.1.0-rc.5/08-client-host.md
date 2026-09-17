@@ -6,6 +6,7 @@ source:
 title: "客户端与 Host"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Web GUI", "BFF", "Typert", "React"]
 description: "dsh 的 Web GUI 双半——host BFF + 浏览器 shell、ConversationNode 渲染系统与 Typert 类型图 RPC。"
 readingTime: "15 min"

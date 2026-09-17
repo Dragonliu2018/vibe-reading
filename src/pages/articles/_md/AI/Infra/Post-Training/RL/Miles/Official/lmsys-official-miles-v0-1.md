@@ -8,6 +8,7 @@ source:
   site: "LMSYS Blog"
 date: "2026-08-19T19:58:46+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "Official"]
+contentType: "Blogs"
 tags: ["Miles", "Post-training", "Reinforcement Learning", "SGLang", "Agentic RL", "Megatron", "FSDP", "MoE", "Blackwell"]
 description: "LMSYS Miles v0.1 是面向前沿后训练的全栈生产级系统：全异步 RL 循环、SGLang agentic rollout、TITO 逐 token 保真、R3 路由重放、Blackwell 低精度训练、P2P/磁盘增量权重更新，以及扩散模型与多硬件支持。"
 readingTime: "25 min"

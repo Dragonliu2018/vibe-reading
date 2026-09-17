@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T17:50:32+08:00"
 category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "Java", "JIT", "LLVM", "OpenJDK"]
 description: "基于 OpenJDK 与 LLVM 的 Java JIT 编译器 Jeandle 源码解读"
 readingTime: "28 min"

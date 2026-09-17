@@ -8,6 +8,7 @@ source:
   site: "Model Context Protocol 官方文档"
 date: "2026-08-01T15:00:00+08:00"
 category: [AI, Agent, MCP, Official]
+contentType: "Blogs"
 tags: ["MCP", "Model Context Protocol", "AI Agent", "Open Protocol", "USB-C for AI"]
 description: "MCP（Model Context Protocol）是连接 AI 应用与外部系统的开源标准——如同 AI 应用的 USB-C 接口，让 Claude、ChatGPT、VS Code、Cursor 等统一接入数据源、工具与工作流，一次构建处处集成。"
 readingTime: "3 min"

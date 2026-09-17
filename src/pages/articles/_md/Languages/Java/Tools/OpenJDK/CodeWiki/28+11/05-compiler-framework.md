@@ -6,6 +6,7 @@ source:
 title: "JIT 编译框架"
 date: "2026-08-19T23:29:36+08:00"
 category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
+contentType: "CodeWiki"
 tags: ["OpenJDK", "HotSpot", "CompileBroker", "CompilationPolicy", "CodeCache", "nmethod", "ci", "Dependencies", "tiered"]
 description: "HotSpot JIT 编译框架——CompileBroker 调度、分层编译策略、ci 适配层、CodeCache 分区、nmethod 三态与依赖失效"
 readingTime: "16 min"

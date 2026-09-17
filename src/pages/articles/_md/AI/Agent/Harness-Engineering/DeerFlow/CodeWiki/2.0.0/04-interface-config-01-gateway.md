@@ -6,6 +6,7 @@ source:
 title: "Gateway"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "FastAPI", "SSE", "Auth"]
 description: "DeerFlow HTTP 网关解析：FastAPI lifespan、Auth/CSRF/Trace 三层中间件、langgraph_runtime DI、24 router 与 LangGraph Platform API 兼容。"
 readingTime: "13 min"

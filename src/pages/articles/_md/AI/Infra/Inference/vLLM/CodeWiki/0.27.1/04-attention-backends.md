@@ -6,6 +6,7 @@ source:
 title: "注意力后端"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "Attention Backend", "PagedAttention", "FlashAttention", "MLA", "selector"]
 description: "解读 vLLM 注意力后端模块：统一 AttentionBackend 接口屏蔽多硬件/多 kernel，ForwardContext 桥接 worker 与 layer，PagedAttention 的 block_table 与 MLA 双路。"
 readingTime: "16 min"

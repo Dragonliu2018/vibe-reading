@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "Plugin", "Agent", "Hooks", "MCP"]
 description: "Claude Code 公开生态仓库解读——13 个官方插件的架构、5 类扩展点契约、hookify 规则引擎与部署示例"
 readingTime: "40 min"

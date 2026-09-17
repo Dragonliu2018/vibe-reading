@@ -6,6 +6,7 @@ source:
 title: "版本遍历与历史"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "revision-walking", "rev_info", "blame"]
 description: "解读 Git 历史遍历——rev_info 巨对象、两阶段 prepare→walk、commit 解析与 commit-graph 加速、log 格式化、blame 逐行归因。"
 readingTime: "13 min"

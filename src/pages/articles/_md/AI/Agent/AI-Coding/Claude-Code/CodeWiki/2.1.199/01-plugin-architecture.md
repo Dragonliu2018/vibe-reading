@@ -6,6 +6,7 @@ source:
 title: "插件架构"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "Plugin", "Agent", "Hooks", "MCP"]
 description: "Claude Code 插件系统契约——plugin.json 清单、5 类扩展点 frontmatter、marketplace 登记、加载与权限层级"
 readingTime: "22 min"

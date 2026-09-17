@@ -6,6 +6,7 @@ source:
 title: "启动与初始化"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "启动", "初始化"]
 description: "Linux 内核启动流程——从汇编 entry 到 start_kernel 装配各子系统、挂载根文件系统、启动 init 进程。"
 readingTime: "12 min"

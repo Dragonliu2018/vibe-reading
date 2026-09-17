@@ -6,6 +6,7 @@ source:
 title: "SQL 执行引擎"
 date: "2026-08-09T10:20:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
+contentType: "CodeWiki"
 tags: ["mycli", "Python", "pymysql", "SQL", "Generator"]
 description: "mycli SQL 执行引擎深度解读：SQLExecute 封装 pymysql、Generator 流式执行、连接管理、三级重连策略、沙箱模式。"
 readingTime: "8 min"

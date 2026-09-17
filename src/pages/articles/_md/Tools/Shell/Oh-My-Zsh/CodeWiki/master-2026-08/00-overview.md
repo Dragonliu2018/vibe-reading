@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-13T20:12:36+08:00"
 category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master-2026-08"]
+contentType: "CodeWiki"
 tags: ["ohmyzsh", "Shell", "zsh", "插件系统", "启动加载"]
 description: "Oh My Zsh 是最流行的 zsh 配置框架。本文从引导引擎、核心库、插件系统、主题系统到生命周期工具，全面解读其 master 分支的 Shell 内部实现。"
 readingTime: "30 min"

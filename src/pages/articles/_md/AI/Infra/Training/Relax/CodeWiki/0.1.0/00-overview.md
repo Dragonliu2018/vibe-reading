@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "Python", "Ray Serve", "Megatron-LM", "SGLang", "强化学习", "后训练", "全模态"]
 description: "小红书开源的 Relax 是面向全模态大模型的异步强化学习后训练引擎。本文从六层服务架构、编排核心、组件层、引擎层、Megatron/SGLang 后端、DCS 分布式权重同步、TransferQueue 全异步数据流到 Agentic 多轮 RL，全面解读 v0.1.0 的内部原理。"
 readingTime: "30 min"

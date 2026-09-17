@@ -6,6 +6,7 @@ source:
 title: "Storage"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Storage", "Columnar", "MVCC", "WAL"]
 description: "DuckDB Storage 模块——列式段存储 + BufferManager 多级淘汰 + MVCC UndoBuffer + WAL/Checkpoint 持久化。"
 readingTime: "30 min"

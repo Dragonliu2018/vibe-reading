@@ -6,6 +6,7 @@ source:
 title: "可观测性"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "Dashboard", "Observability", "FastAPI", "NVML", "Telemetry"]
 description: "自托管 web UI，per-GPU-per-step 行为可视化，三层延迟管线，fire-and-forget 降级保证不阻塞训练。"
 readingTime: "22 min"

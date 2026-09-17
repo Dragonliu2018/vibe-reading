@@ -8,6 +8,7 @@ source:
   site: "vLLM Blog"
 date: "2026-08-07T21:00:00+08:00"
 category: [AI, Infra, Inference, vLLM, Official]
+contentType: "Blogs"
 tags: ["AFD", "Attention-FFN Disaggregation", "MoE", "vLLM", "Ascend NPU", "DeepSeek-V3"]
 description: "An experimental external plugin that brings Attention-FFn Disaggregation (AFD) to vLLM — separating Attention and FFN into independently deployed services for flexible MoE serving on GPU and Ascend NPU."
 readingTime: "9 min"

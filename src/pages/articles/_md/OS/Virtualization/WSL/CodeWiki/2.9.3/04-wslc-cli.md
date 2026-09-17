@@ -6,6 +6,7 @@ source:
 title: "wslc 容器管理 CLI"
 date: "2026-08-16T00:15:00+08:00"
 category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
+contentType: "CodeWiki"
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "WSL 新一代 docker-like 容器 CLI——命令树+Task+Service 三层、per-user 会话运行时与复用 dockerd HTTP API。"
 readingTime: "16 min"

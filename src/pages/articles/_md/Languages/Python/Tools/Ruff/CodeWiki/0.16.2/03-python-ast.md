@@ -6,6 +6,7 @@ source:
 title: "Python AST"
 date: "2026-08-13T20:14:13+08:00"
 category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
+contentType: "CodeWiki"
 tags: ["ruff", "Rust", "AST", "Visitor", "代码生成"]
 description: "ruff 的 Python AST 模块——代码生成的节点定义 + TextRange 位置 + 三层 Visitor，所有消费者的共享地基。"
 readingTime: "11 min"

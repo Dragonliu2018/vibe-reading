@@ -6,6 +6,7 @@ source:
 title: "列式数据模型"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "Block", "IColumn", "COW", "IDataType"]
 description: "ClickHouse 列式数据模型源码解读——Block/IColumn/IDataType/Field 抽象与 DataTypeFactory 工厂。"
 readingTime: "25 min"

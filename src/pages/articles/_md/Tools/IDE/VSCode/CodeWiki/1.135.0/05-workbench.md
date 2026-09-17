@@ -6,6 +6,7 @@ source:
 title: "Workbench 工作台"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "Workbench", "布局", "Parts", "Composite"]
 description: "VS Code 工作台 shell——代码计算布局、Part 抽象、Composite/View 容器与启动编排"
 readingTime: "14 min"

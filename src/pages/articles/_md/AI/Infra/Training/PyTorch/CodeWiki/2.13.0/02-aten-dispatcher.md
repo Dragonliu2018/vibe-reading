@@ -6,6 +6,7 @@ source:
 title: "ATen 算子库与 Dispatcher"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "ATen", "Dispatcher", "DispatchKey", "codegen"]
 description: "ATen 定义 Tensor 类型、native ops 实现与核心 Dispatcher 分发机制——基于 DispatchKey 位集的 O(1) 运行时分发，PyTorch 摒弃虚函数表、支持正交扩展的根基。"
 readingTime: "14 min"

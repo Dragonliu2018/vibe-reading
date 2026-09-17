@@ -6,6 +6,7 @@ source:
 title: "事务日志"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "TLog", "WAL", "Tag", "Spilling", "Generation"]
 description: "事务日志——TLog 持久 mutation 日志 + LogSystem 拓扑管理 + LogRouter 跨 region，tag 分区 + spill-by-reference + generation 切换，FDB 读写分离的关键。"
 readingTime: "42 min"

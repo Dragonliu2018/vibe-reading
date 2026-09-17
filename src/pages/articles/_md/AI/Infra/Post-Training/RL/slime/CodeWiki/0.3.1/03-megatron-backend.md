@@ -6,6 +6,7 @@ source:
 title: "Megatron 训练后端"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "Megatron", "训练后端", "PPO"]
 description: "slime 的 Megatron 训练后端：actor 装配、多模型权重切换、PPO 训练步、checkpoint 转换。"
 readingTime: "20 min"

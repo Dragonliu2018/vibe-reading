@@ -6,6 +6,7 @@ source:
 title: "块 I/O 子系统"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "块设备", "blk-mq", "bio", "I/O调度"]
 description: "Linux 块 I/O 子系统——bio 请求表示、blk-mq 多队列（per-CPU 软队列+per-IRQ 硬件队列）、I/O 调度器、tag 管理。"
 readingTime: "14 min"

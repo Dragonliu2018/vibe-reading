@@ -6,6 +6,7 @@ source:
 title: "编译优化"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "DeepCompile", "torch.compile", "FX Graph", "编译优化"]
 description: "DeepCompile 是 DeepSpeed 基于 torch.compile 的自定义编译后端，通过 FX Graph 变换在计算图中插入 ZeRO 通信 op，实现参数 allgather/release/reduce 的细粒度调度与内存优化。"
 readingTime: "18 min"

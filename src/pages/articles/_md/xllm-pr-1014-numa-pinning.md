@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-07-06"
 category: [AI, Infra, Inference, xLLM, Contributions]
+contentType: "Contributions"
 tags: ["NUMA", "CPU Affinity", "性能优化", "多GPU", "sysfs", "Linux"]
 description: "为 xLLM 实现 NUMA 节点感知的进程/线程绑定：通过 sysfs 查询 GPU 的 NUMA 归属，驱动引擎进程绑定、跨 NUMA worker 强制 spawn、以及内存分配策略锁定，消除多 GPU 服务器上的跨 NUMA 内存访问开销。"
 readingTime: "14 min"

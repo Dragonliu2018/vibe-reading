@@ -6,6 +6,7 @@ source:
 title: "Flight RPC"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "Flight", "gRPC"]
 description: "Arrow Flight RPC——gRPC streaming 数据传输、PATH/CMD 双 descriptor、中间件链与传输层抽象、FlightPayload 与 protobuf 零拷贝对齐"
 readingTime: "11 min"

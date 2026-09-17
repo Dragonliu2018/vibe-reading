@@ -6,6 +6,7 @@ source:
 title: "运行时基础"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "runtime", "ExecEnv", "RuntimeState", "MemTracker", "brpc"]
 description: "Doris 0.14.0 运行时基础：ExecEnv god class 服务定位器、RuntimeState 片段状态、MemTracker 内存追踪、FragmentMgr/DataStreamMgr、doris_main 四服务启动。"
 readingTime: "13 min"

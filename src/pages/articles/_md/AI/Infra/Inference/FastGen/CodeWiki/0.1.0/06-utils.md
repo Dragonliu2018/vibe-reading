@@ -6,6 +6,7 @@ source:
 title: "分布式基础设施"
 date: "2026-08-11T15:46:00+08:00"
 category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏"]
 description: "FastGen 分布式基础设施模块深度解读：DDP/FSDP2 装配、Checkpointer 适配器模式、AutoResumeInterface 策略模式、分布式原语、loguru 日志、S3 IO。"
 readingTime: "9 min"

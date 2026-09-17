@@ -6,6 +6,7 @@ source:
 title: "工作区与布局"
 date: "2026-09-17T10:57:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "BSP 布局", "git worktree"]
 description: "herdr 工作区：workspace/tab/pane 三层容器、BSP 布局的值语义树编辑、git worktree 的 agent 并行隔离。"
 readingTime: "17 min"

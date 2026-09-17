@@ -6,6 +6,7 @@ source:
 title: "Budget & Governance"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 预算与治理——cost 追踪、预算硬停、审批门 enforcement、生产力 review 软停"
 readingTime: "16 min"

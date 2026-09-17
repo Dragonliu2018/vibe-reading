@@ -6,6 +6,7 @@ source:
 title: "API 网关"
 date: "2026-08-17T22:20:51+08:00"
 category: [Database, Ecosystems, Cube, CodeWiki, "1.7.20"]
+contentType: "CodeWiki"
 tags: ["Cube", "TypeScript", "REST", "GraphQL", "SQL", "WebSocket"]
 description: "REST/GraphQL/SQL/WS 四协议统一汇聚到语义层"
 readingTime: "20 min"

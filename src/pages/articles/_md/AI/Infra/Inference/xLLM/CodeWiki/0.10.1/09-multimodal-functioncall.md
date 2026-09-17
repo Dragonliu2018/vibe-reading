@@ -6,6 +6,7 @@ source:
 title: "多模态与工具调用"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "多模态", "Function Call", "Reasoning Parser", "VLM"]
 description: "xLLM 多模态与工具调用解读：图像/视频/音频预处理器、FunctionCall 格式检测、Reasoning 解析。"
 readingTime: "10 min"

@@ -6,6 +6,7 @@ source:
 title: "文件系统与工作区"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "notify", "search", "inverted index"]
 description: "SideX 文件 I/O、notify 文件监听、dashmap+rayon 并行搜索索引与全文搜索"
 readingTime: "13 min"

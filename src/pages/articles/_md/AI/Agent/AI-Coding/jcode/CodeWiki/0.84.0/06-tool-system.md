@@ -6,6 +6,7 @@ source:
 title: "Tool 工具系统"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "Tool Registry", "MCP", "Safety", "Destructive Gate", "Batch"]
 description: "jcode Tool 工具系统——Registry 执行管线（inflight→policy→hook→execute→telemetry）、destructive gate 两阶段门控、batch 并行工具、MCP 共享进程池、intent schema 注入、上下文溢出保护"
 readingTime: "22 min"

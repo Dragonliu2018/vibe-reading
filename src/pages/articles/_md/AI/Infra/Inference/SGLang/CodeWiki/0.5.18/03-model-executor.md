@@ -6,6 +6,7 @@ source:
 title: "执行层"
 date: "2026-08-22T22:29:54+08:00"
 category: [AI, Infra, Inference, SGLang, CodeWiki, "0.5.18"]
+contentType: "CodeWiki"
 tags: ["SGLang", "model_executor", "ForwardBatch", "CUDA Graph", "ModelRunner"]
 description: "SGLang 执行层：ForwardBatch 批次装配、ModelRunner 三路分发、CUDA Graph 分桶重放与 hook 机制。"
 readingTime: "15 min"

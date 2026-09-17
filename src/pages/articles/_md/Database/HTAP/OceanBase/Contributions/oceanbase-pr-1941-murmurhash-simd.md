@@ -8,6 +8,7 @@ source:
   prType: "enhancement"
 date: "2026-08-05T19:30:00+08:00"
 category: [Database, HTAP, OceanBase, Contributions]
+contentType: "Contributions"
 tags: ["OceanBase", "SIMD", "AVX-512", "MurmurHash", "向量化", "C++", "ClickBench"]
 description: "新增 murmurhash64A 批量模板函数，利用 AVX-512 指令同时处理 8~128 个定长 key 的哈希计算，集成到 ObFixedLengthVector 的批量哈希路径，面向 ClickBench Q36 等 Hash Group By 场景。"
 readingTime: "14 min"

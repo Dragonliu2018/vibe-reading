@@ -6,6 +6,7 @@ source:
 title: "编译数据流深读：源码→汇编的 IR 演变"
 date: "2026-08-18T14:16:25+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "data flow", "IR", "GENERIC", "GIMPLE", "SSA", "RTL", "cgraph", "LTO"]
 description: "深读 GCC 一次完整编译的数据流：源码文本→GENERIC→GIMPLE→GIMPLE SSA→RTL→汇编五次 IR 形态演变的边界跨越函数、cgraph_node 生命周期与 LTO 三阶段。"
 readingTime: "14 min"

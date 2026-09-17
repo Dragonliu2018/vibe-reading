@@ -6,6 +6,7 @@ source:
 title: "渲染协议"
 date: "2026-09-17T10:49:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "二进制协议", "增量渲染"]
 description: "herdr wire 协议：私有 bincode 通道与稳定 endpoint JSON 世代并存，surface delta 三级降级最小化跨进程帧流量。"
 readingTime: "18 min"

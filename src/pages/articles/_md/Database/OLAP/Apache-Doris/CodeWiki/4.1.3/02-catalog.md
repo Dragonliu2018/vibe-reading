@@ -6,6 +6,7 @@ source:
 title: "Catalog 元数据"
 date: "2026-08-23T18:24:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Env", "EditLog", "BDBJE", "元数据"]
 description: "Doris 元数据中枢：Env 服务定位器 + OlapTable/Tablet/Partition 元数据 + EditLog/BDBJE 持久化与高可用。"
 readingTime: "13 min"

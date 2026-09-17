@@ -6,6 +6,7 @@ source:
 title: "Agentic 工作流"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "agentic RL", "trajectory", "sandbox"]
 description: "slime 的 agentic 工作流层：多轮消息树、token drift 分类、沙箱与 harness 接入。"
 readingTime: "14 min"

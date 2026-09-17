@@ -8,6 +8,7 @@ source:
   site: "公众号 SelectDB"
 date: "2026-08-12T15:12:50+08:00"
 category: [Database, OLAP, "Apache Doris", Official]
+contentType: "Blogs"
 tags: ["Apache Doris", "Spill to Disk", "OOM", "查询优化", "内存管理", "Hash Join", "Aggregation", "Sort"]
 description: "Apache Doris 4.1 对 Spill to Disk 能力全面重构：核心算子全覆盖、递归重分区应对数据倾斜、主动内存压力感知，单 BE 16G 内存挑战 10TB TPC-DS 基准测试。"
 readingTime: "10 min"

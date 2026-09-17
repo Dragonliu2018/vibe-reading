@@ -6,6 +6,7 @@ source:
 title: "Autograd 引擎"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "Autograd", "反向传播", "DAG", "Engine"]
 description: "tape-based 反向自动微分引擎：AutogradMeta 挂 TensorImpl、Node DAG 多线程拓扑执行、ReadyQueue per-device 并行、弱引用破环。"
 readingTime: "12 min"

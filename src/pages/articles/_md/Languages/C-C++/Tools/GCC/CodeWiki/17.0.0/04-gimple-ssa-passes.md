@@ -6,6 +6,7 @@ source:
 title: "GIMPLE/SSA 优化遍"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "SSA", "GIMPLE", "向量化", "pass 管线", "SCCVN"]
 description: "GCC 中端在 GIMPLE 上构造 SSA，按声明式 passes.def 运行优化遍——SCCVN 值编号、PRE、自动向量化（loop + SLP）。"
 readingTime: "12 min"

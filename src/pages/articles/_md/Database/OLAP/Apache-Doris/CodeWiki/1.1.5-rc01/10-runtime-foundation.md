@@ -6,6 +6,7 @@ source:
 title: "运行时基础设施"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "runtime", "ExecEnv", "RuntimeState", "MemTracker", "doris_main", "brpc", "thrift"]
 description: "Doris 1.1.5 运行时基础：ExecEnv 服务定位器单例（30+ 子系统）、RuntimeState per-fragment 状态+四级 MemTracker、RowBatch 旧版 vs vec::Block 新版、doris_main BE 启动、Thrift+brpc+HTTP+心跳四服务。"
 readingTime: "16 min"

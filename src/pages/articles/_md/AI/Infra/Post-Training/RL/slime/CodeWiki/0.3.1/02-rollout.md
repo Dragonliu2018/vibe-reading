@@ -6,6 +6,7 @@ source:
 title: "Rollout 数据生成"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "SGLang", "rollout", "PD 分离", "GRPO"]
 description: "slime 的 rollout 层：可插拽数据生成契约、SGLang 引擎拓扑、Sample 到训练数据的转换与 DP 切分。"
 readingTime: "22 min"

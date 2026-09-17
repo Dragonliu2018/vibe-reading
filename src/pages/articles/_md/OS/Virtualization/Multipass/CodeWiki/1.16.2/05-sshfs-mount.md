@@ -6,6 +6,7 @@ source:
 title: "SSHFS 挂载"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "SFTP", "libssh", "FUSE"]
 description: "反向 SFTP + UID/GID 双向重写 + 路径沙箱 + 崩溃自愈，主机目录挂载到 VM。"
 readingTime: "12 min"

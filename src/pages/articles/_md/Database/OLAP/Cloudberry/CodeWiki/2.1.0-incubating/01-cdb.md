@@ -6,6 +6,7 @@ source:
 title: "分布式执行内核"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C/C++", "MPP", "Motion", "interconnect", "分布式事务"]
 description: "Cloudberry cdb 模块——把单机 PostgreSQL 改造为 coordinator+segment MPP 的核心层：Locus 驱动 Motion 插入、Gang 派发、interconnect 互联、两阶段提交与分布式快照。"
 readingTime: "18 min"

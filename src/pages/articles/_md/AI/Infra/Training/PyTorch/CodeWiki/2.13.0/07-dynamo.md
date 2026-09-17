@@ -6,6 +6,7 @@ source:
 title: "TorchDynamo 图捕获"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "TorchDynamo", "torch.compile", "PEP 523", "guard"]
 description: "torch.compile 前端：PEP 523 frame evaluation hook 捕获 Python 字节码，InstructionTranslator 转 FX Node，guard 缓存复用，graph break 换覆盖率。"
 readingTime: "13 min"

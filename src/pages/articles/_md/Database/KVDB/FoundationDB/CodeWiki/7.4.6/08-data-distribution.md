@@ -6,6 +6,7 @@ source:
 title: "数据分布"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "DataDistributor", "Shard", "Team", "Relocation", "Wiggler"]
 description: "数据分布——DataDistributor 把 key range 分片到 storage team，监控负载触发迁移，三阶段 moveKeys 协议 + StorageWiggler 渐进轮换，FDB 弹性伸缩与容错的数据平面。"
 readingTime: "38 min"

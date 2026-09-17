@@ -6,6 +6,7 @@ source:
 title: "Provider 多模型"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "Provider", "Failover", "WebSocket", "Prewarm", "模型目录"]
 description: "jcode Provider 多模型——Provider trait、两级 failover（账号级→跨 provider）、8 槽位 + 42 内置 profile、三层模型目录、OpenAI WebSocket v2 预热、split prompt 缓存"
 readingTime: "22 min"

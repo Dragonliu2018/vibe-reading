@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "Tauri 2", "VSCode", "IDE", "Code editor", "Extension"]
 description: "SideX 0.1.3 源码架构解读——用 Tauri 2 + Rust 后端替换 VSCode 的 Electron 层，保留同一套 TypeScript workbench"
 readingTime: "32 min"

@@ -6,6 +6,7 @@ source:
 title: "查询执行"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 查询执行：基于 Apache DataFusion，IOxSessionContext god node，DedicatedExecutor 线程池隔离，三语言统一"
 readingTime: "22 min"

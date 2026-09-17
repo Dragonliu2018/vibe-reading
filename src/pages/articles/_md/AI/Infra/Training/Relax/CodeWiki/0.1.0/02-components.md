@@ -6,6 +6,7 @@ source:
 title: "组件层"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "Ray Serve", "Actor", "Rollout", "barrier", "deployment"]
 description: "解读 Relax 组件层：Base 抽象基类与各角色 run() 模式、Actor 的依赖注入与 barrier 协调、Rollout 的多引擎管理与 OpenAI 兼容 API、Service 部署包装。"
 readingTime: "12 min"

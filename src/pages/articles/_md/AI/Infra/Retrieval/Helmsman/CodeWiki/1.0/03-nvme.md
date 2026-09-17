@@ -6,6 +6,7 @@ source:
 title: "NVMe I/O 层"
 date: "2026-08-18T21:08:07+08:00"
 category: ["AI", "Infra", "Retrieval", "Helmsman", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["Helmsman", "MiniHyperVec", "SPDK", "NVMe", "用户态I/O", "NVMeAllocator"]
 description: "Helmsman NVMe I/O 层：SPDK 用户态 NVMe 驱动、NVMeCtrl 异步 qpair 模型、NVMeManager 多设备门面、NVMeAllocator chunk 分配。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "Optimizer"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Optimizer", "JoinOrder", "Dphyp"]
 description: "DuckDB Optimizer 模块——27+ pass 规则链优化器，含 Dphyp DP Join Order 算法和表达式重写规则引擎。"
 readingTime: "25 min"

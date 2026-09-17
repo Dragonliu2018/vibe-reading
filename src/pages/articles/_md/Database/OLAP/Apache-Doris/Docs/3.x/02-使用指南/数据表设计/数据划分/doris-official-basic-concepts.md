@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T14:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "基本概念", "分区", "分桶", "Tablet", "数据划分", "建表"]
 description: "Apache Doris 3.x 官方文档：数据划分基本概念，介绍行与列、分区与分桶（Partition & Bucket）的概念、建表举例、高级特性（自动分区/动态分区/自动分桶）、分区信息查看与修改。"
 readingTime: "15 min"

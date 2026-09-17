@@ -6,6 +6,7 @@ source:
 title: "流式与异步"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "TaskScheduler", "Aggregator", "异步", "线程池"]
 description: "ArcticDB 流式与异步：Aggregator 流式写入与 TaskScheduler 双线程池"
 readingTime: "13 min"

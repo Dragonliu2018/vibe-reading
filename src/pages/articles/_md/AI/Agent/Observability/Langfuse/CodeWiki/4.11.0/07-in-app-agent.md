@@ -6,6 +6,7 @@ source:
 title: "应用内 Agent"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "In-App Agent", "MicroVM", "AG-UI", "Event Sourcing"]
 description: "Langfuse 应用内 Agent：一个事件日志三种派生、fold once 不变量、durable worker 执行、microvm 沙箱。"
 readingTime: "17 min"

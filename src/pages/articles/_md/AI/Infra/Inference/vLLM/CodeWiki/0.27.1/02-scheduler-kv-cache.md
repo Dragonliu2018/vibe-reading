@@ -6,6 +6,7 @@ source:
 title: "调度器与 KV Cache"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "PagedAttention", "调度器", "KV Cache", "Prefix Caching", "Chunked Prefill"]
 description: "解读 vLLM 调度器与 KV Cache 管理模块：PagedAttention 分页 KV、连续批处理、链式 hash prefix cache、chunked prefill 混批与分层 cache manager。"
 readingTime: "20 min"

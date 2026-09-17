@@ -6,6 +6,7 @@ source:
 title: "开发流程插件组"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "Plugin", "feature-dev", "git", "Agent SDK"]
 description: "三个开发流程插件——feature-dev 7 阶段工作流、commit-commands git 自动化、agent-sdk-dev 项目脚手架与校验"
 readingTime: "24 min"

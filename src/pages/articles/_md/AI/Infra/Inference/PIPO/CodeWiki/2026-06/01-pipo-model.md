@@ -6,6 +6,7 @@ source:
 title: "PIPO 模型与核心组件"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "Python", "Compressor", "MTP"]
 description: "PIPOCompressor / MTP 头 / ConfidenceHead / Qwen3_5ForCausalPIPO 的定义、forward 数据流与设计决策"
 readingTime: "16 min"

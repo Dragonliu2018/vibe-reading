@@ -6,6 +6,7 @@ source:
 title: "GPU Worker 与模型执行"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "GPU Worker", "CUDA Graphs", "ModelRunner", "InputBatch", "采样"]
 description: "解读 vLLM GPU Worker 与模型执行模块：Worker 管资源、GPUModelRunner 管执行，分段 CUDA Graph、地址稳定的 InputBatch、统一 prefill/decode 路径与异步 D2H。"
 readingTime: "19 min"

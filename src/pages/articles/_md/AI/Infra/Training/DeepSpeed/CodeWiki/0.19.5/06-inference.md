@@ -6,6 +6,7 @@ source:
 title: "推理引擎"
 date: "2026-08-12T15:53:09+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "推理", "Ragged Batch", "KV Cache", "Paged Attention"]
 description: "DeepSpeed InferenceEngineV2 是全新推理引擎，以 Ragged Batch 无 padding 拼接、Paged KV-cache 动态分配、graphable forward 三大设计实现连续批处理与 CUDA Graph 兼容。"
 readingTime: "15 min"

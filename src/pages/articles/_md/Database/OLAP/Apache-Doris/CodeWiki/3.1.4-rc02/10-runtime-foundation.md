@@ -6,6 +6,7 @@ source:
 title: "运行时基础"
 date: "2026-08-23T19:05:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "ExecEnv", "FragmentMgr", "MemTracker", "FileSystem", "服务定位器"]
 description: "Doris 3.1.4 运行时基础：ExecEnv god class 服务定位器 + FragmentMgr + 多级 MemTracker + io FileSystem 抽象。"
 readingTime: "10 min"

@@ -6,6 +6,7 @@ source:
 title: "存储引擎"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "StorageServer", "MVCC", "Redwood", "VersionedBTree", "DWALPager"]
 description: "存储引擎——StorageServer MVCC 内存 + pull TLog + Redwood(VersionedBTree) 持久化，FDB 数据最终落盘与读写服务的地方。"
 readingTime: "40 min"

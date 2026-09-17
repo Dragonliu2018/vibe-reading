@@ -6,6 +6,7 @@ source:
 title: "示例与部署"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "GCP", "Terraform", "MDM", "CI", "settings"]
 description: "部署示例与基础设施——GCP gateway 反向代理、企业 MDM 托管、settings 权限预设、CI issue 自动化、devcontainer 隔离"
 readingTime: "25 min"

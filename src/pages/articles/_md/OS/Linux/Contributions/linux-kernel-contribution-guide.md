@@ -5,6 +5,7 @@ source:
   type: "101"
 date: "2026-08-15T20:46:47+08:00"
 category: [OS, Linux, Contributions]
+contentType: "Contributions"
 tags: ["Linux", "内核", "开源贡献", "patch", "git send-email", "DCO", "checkpatch", "review", "邮件线程"]
 description: "从获取源码到 patch 合入主线——基于 Linux kernel README 与 Documentation/process 文档的完整贡献流程，含真实 i2c refcount leak 修复案例（v1→v2 两轮 review 后收进 i2c/i2c-fixes）。"
 readingTime: "25 min"

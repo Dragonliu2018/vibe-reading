@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-27"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Flink", "PipelineX", "External Scan", "Doris", "Bug Fix"]
 description: "Doris 外部读取（Flink/Spark/starrocks）走 pipelineX 时，多个并发 scanner 共用同一个 query_id，一个 scanner 结束会通过 cancel(query_id) 把其余 scanner 一并取消。"
 readingTime: "9 min"

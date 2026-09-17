@@ -6,6 +6,7 @@ source:
 title: "Shell 框架"
 date: "2026-08-25T10:44:29+08:00"
 category: [OS, Linux, Distribution, Omarchy, CodeWiki, "4.0.0"]
+contentType: "CodeWiki"
 tags: ["Omarchy", "QML", "Quickshell", "桌面 Shell"]
 description: "Omarchy 桌面 Shell 的基座——ShellRoot 装配、Commons 原语单例、33 个 Ui 组件、property injection 避免 singleton 副本。"
 readingTime: "8 min"

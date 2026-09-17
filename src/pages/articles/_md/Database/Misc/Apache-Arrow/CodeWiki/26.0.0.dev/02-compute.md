@@ -6,6 +6,7 @@ source:
 title: "计算内核"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "Compute", "向量化"]
 description: "Arrow 计算内核——Function/Kernel 分离调度、Expression AST 的 Bind/Execute 分离、SIMD 多版本分桶与四种 Null 处理策略"
 readingTime: "12 min"

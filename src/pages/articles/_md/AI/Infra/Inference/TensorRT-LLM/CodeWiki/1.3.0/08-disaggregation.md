@@ -6,6 +6,7 @@ source:
 title: "PD 分离"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "PD 分离", "disaggregation", "NIXL", "RDMA", "KV Cache 传输"]
 description: "PD 分离模块——KvCacheTransceiverV2 通过 NIXL RDMA 跨节点传输 KV cache，prefill/decode 分离部署，consensus 机制保证 TP/PP 一致。"
 readingTime: "9 min"

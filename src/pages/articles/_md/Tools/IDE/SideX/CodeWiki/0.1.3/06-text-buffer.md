@@ -6,6 +6,7 @@ source:
 title: "文本缓冲区"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "ropey", "rope", "Myers diff", "UTF-16"]
 description: "SideX 文本缓冲区——ropey rope、Myers diff、Position/Range 共享类型、UTF-16 互操作"
 readingTime: "12 min"

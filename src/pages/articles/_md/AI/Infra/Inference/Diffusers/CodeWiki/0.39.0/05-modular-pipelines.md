@@ -6,6 +6,7 @@ source:
 title: "模块化管线"
 date: "2026-08-12T15:35:17+08:00"
 category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
+contentType: "CodeWiki"
 tags: ["Diffusers", "ModularPipeline", "ComponentSpec", "PipelineState", "组件化"]
 description: "声明式组件规格、PipelineState 数据总线、组合模式 block 嵌套、条件执行与工作流系统。"
 readingTime: "11 min"

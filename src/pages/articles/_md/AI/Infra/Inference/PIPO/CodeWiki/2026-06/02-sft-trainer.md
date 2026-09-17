@@ -6,6 +6,7 @@ source:
 title: "SFT 训练器"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "SFT", "LoRA", "ms-swift"]
 description: "PIPOSeq2SeqTrainer 的随机 PAD 增强、thinking-template masking、conf warm-start 与 swift_plugin 注册机制"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "训练后端"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "Megatron", "FSDP", "SGLang", "Weight Sync", "P2P", "FP8"]
 description: "Megatron/FSDP 双训练后端适配，4 种权重同步策略，7 维并行状态，FP8 低精度数值稳定。"
 readingTime: "30 min"

@@ -8,6 +8,7 @@ source:
   prType: "perf"
 date: "2026-07-04"
 category: [Database, OLAP, Databend, Contributions]
+contentType: "Contributions"
 tags: ["Databend", "MySQL", "Dictionary", "性能优化", "批量查询", "sqlx"]
 description: "将 MySQL 字典查询从逐行 WHERE key = ? 改为批量 WHERE key IN (...)，引入两组宏统一类型分发，附带 SQL 注入安全修复。"
 readingTime: "13 min"

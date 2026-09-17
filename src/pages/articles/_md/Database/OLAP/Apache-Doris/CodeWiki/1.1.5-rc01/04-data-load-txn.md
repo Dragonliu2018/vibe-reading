@@ -6,6 +6,7 @@ source:
 title: "数据导入与事务"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "load", "transaction", "BrokerLoad", "RoutineLoad", "两阶段提交", "PublishVersion"]
 description: "Doris 1.1.5 数据导入与事务：LoadJob 状态机（PENDING→LOADING→COMMITTED→FINISHED）、Broker/Routine/Stream 导入、LoadingTaskPlanner 复用查询优化器、两阶段事务（COMMITTED→VISIBLE）保证原子可见、KafkaProgress offset 管理。"
 readingTime: "16 min"

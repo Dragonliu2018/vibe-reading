@@ -6,6 +6,7 @@ source:
 title: "依赖解析"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "resolver", "依赖解析", "回溯算法"]
 description: "Cargo 依赖解析器解读：NP-hard semver 约束满足的 DFS + 回溯算法、ResolverContext 用 im_rc 持久化结构实现 O(1) 回退、ConflictCache 剪枝、两遍解析与新 feature resolver。"
 readingTime: "20 min"

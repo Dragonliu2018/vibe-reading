@@ -6,6 +6,7 @@ source:
 title: "CLI 与命令分发"
 date: "2026-08-13T20:14:13+08:00"
 category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
+contentType: "CodeWiki"
 tags: ["ruff", "Rust", "CLI", "clap"]
 description: "ruff 的 CLI 入口、参数解析、命令分发与诊断输出——从 main() 到 check/format/server 的完整路径。"
 readingTime: "12 min"

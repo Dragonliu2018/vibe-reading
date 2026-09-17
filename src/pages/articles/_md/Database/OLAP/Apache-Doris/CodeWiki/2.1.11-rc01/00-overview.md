@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-23T19:50:25+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.11-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Java", "C++", "MPP", "OLAP", "向量化执行", "Cascades 优化器", "Pipeline"]
 description: "Apache Doris 2.1.11-rc01 源码架构解读：2.1 LTS 线（Nereids 默认 + Legacy 回退双优化器）、Pipeline 拉模型、vec 统一向量化、olap 列存引擎的 FE/BE 分离 MPP 数仓，Java 8 末代版本。"
 readingTime: "30 min"

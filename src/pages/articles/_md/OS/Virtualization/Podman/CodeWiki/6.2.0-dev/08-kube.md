@@ -6,6 +6,7 @@ source:
 title: "Kubernetes YAML 互操作"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "Kubernetes", "kube play", "YAML"]
 description: "解读 podman kube play/generate：K8s 资源与 podman 资源双向适配，pkg/k8s.io 仅是 vendored 类型，实现在 abi/play+libpod/kube。"
 readingTime: "11 min"

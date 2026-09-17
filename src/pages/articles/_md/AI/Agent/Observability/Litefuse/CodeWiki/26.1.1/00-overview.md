@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "TypeScript", "Apache Doris", "BullMQ", "Next.js", "Observability"]
 description: "开源 LLM 可观测性平台 Litefuse v26.1.1 源码解读：Apache Doris 替代 ClickHouse 的摄入管线、DorisWriter 流式写入、队列分片、events_full 宽表统一与前端 Tracing UI。"
 readingTime: "30 min"

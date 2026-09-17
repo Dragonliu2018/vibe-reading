@@ -6,6 +6,7 @@ source:
 title: "前端 Tracing UI"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "Next.js", "tRPC", "React", "Tracing UI"]
 description: "Litefuse 前端 Tracing UI：Next.js Pages Router、trace2 v2 组件 6 层 Context Provider、tRPC 端到端类型 API、声明式 tableDefinitions+sqlInterface 查询。"
 readingTime: "12 min"

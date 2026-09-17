@@ -6,6 +6,7 @@ source:
 title: "Agent Loop 执行核心"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Agent Loop", "Cordis", "TypeScript"]
 description: "dsh 的 turn/step 驱动器——ReactLoopAgent 的 Phase 状态机、inbox claim、prompt 装配、agent/* waterfall 事件与 Agent handle 取消恢复。"
 readingTime: "17 min"

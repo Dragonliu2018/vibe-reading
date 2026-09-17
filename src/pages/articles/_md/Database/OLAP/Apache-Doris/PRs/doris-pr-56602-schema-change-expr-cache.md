@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-21"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Schema Change", "Rollup", "Doris", "Bug Fix"]
 description: "Doris 在 Schema Change / Rollup 下发任务时用一个共享 objectPool 缓存表达式，列名相同但分属不同索引时会串用，导致 BE 侧 schema 错误。"
 readingTime: "9 min"

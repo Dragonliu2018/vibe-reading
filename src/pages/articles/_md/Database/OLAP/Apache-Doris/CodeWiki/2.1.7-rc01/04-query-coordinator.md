@@ -6,6 +6,7 @@ source:
 title: "查询协调"
 date: "2026-08-24T10:22:21+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.7-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Coordinator", "MySQL", "两阶段调度", "Pipeline", "ScanRange"]
 description: "Doris 2.1.7 查询协调：Coordinator 两阶段下发（prepare→start）+ ConnectProcessor 模板方法 + 三策略 ScanRange 分配 + 黑名单流量控制。"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "查询优化器"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "Cascades", "CBO", "查询优化"]
 description: "ByConity 自研 Cascades 代价优化器：Rewriter 链 + Memo/TaskStack 搜索 + Property 驱动物理算子选择。"
 readingTime: "16 min"

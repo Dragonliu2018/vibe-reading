@@ -2,6 +2,7 @@
 title: "Amazing Tools and Efficient Use"
 date: "2026-08-23T16:15:42+08:00"
 category: [Tools, Notes]
+contentType: "Notes"
 tags: ["Linux", "Mac", "Windows", "Chrome", "vscode", "效率工具", "快捷键"]
 description: "跨 Linux / Mac / Windows / Chrome / vscode 的常用工具与高效使用速查笔记"
 readingTime: "2 min"

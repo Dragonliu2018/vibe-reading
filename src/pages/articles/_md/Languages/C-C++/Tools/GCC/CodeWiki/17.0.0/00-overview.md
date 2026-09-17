@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "编译器", "C", "GIMPLE", "RTL", "SSA", "retargetability"]
 description: "GCC 是 GNU 编译器集合，支持 C/C++/Fortran/Ada/Go/D/Rust 等十余种语言。本文从分层架构、编译数据流到八大核心模块，全面解读 GCC 17 编译器主体的内部实现。"
 readingTime: "42 min"

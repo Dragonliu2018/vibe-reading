@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T01:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "集群管理"]
+contentType: "Docs"
 tags: ["Apache Doris", "SHOW BACKENDS", "BE 节点", "集群管理", "SQL"]
 description: "Apache Doris 3.x 官方文档：SHOW BACKENDS 语句用于查看 BE 节点的基本状态信息，返回 ID、主机、端口、存活状态、磁盘容量、标签等 25 列。"
 readingTime: "5 min"

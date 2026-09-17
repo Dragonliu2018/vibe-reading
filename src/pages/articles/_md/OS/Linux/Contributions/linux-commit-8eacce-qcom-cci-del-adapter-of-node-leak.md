@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-08-16T01:11:22+08:00"
 category: ["OS", "Linux", "Contributions"]
+contentType: "Contributions"
 tags: ["Linux Kernel", "I2C", "Qualcomm CCI", "Device Tree", "of_node", "引用计数", "Memory Leak", "i2c_del_adapter", "Contributions"]
 description: "qcom-CCI 的 cci_probe/cci_remove 把 of_node_put 放在 i2c_del_adapter() 之后，但 i2c_del_adapter 末尾会 memset 清零 adap->dev、连带把 of_node 清成 NULL，使 put 变空操作、引用泄漏。修复是在调 i2c_del_adapter 前快照 of_node 指针，同 i2c-mux / mtd 的做法。"
 readingTime: "12 min"

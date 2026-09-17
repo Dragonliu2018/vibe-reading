@@ -6,6 +6,7 @@ source:
 title: "Scheduler & Autopilot"
 date: "2026-08-11T20:31:27+08:00"
 category: [AI, Agent, Team, Multica, CodeWiki, "0.3.28"]
+contentType: "CodeWiki"
 tags: ["multica", "Go", "Scheduler", "Distributed Lease", "Cron", "Autopilot"]
 description: "scheduler 模块用 sys_cron_executions 表做 DB-backed 分布式定时——租约 + 审计 + crash recovery，驱动 Autopilot 自动创建 issue 派给 agent。"
 readingTime: "11 min"

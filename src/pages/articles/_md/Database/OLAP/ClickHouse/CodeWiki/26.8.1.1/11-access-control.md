@@ -6,6 +6,7 @@ source:
 title: "访问控制"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "Access", "RBAC", "Quota", "RadixTree"]
 description: "ClickHouse 访问控制源码解读——RBAC + 行策略 + 配额、AccessFlags 256-bit bitmap、AccessRights Radix Tree、ContextAccess。"
 readingTime: "20 min"

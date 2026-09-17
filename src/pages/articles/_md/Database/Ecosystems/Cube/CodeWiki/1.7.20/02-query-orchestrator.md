@@ -6,6 +6,7 @@ source:
 title: "查询编排器"
 date: "2026-08-17T22:20:51+08:00"
 category: [Database, Ecosystems, Cube, CodeWiki, "1.7.20"]
+contentType: "CodeWiki"
 tags: ["Cube", "TypeScript", "预聚合", "缓存", "查询队列"]
 description: "预聚合匹配、三层缓存与查询并发控制"
 readingTime: "22 min"

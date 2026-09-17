@@ -6,6 +6,7 @@ source:
 title: "工作执行引擎"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 工作执行引擎子系统——唤醒队列、原子 checkout、周期调度、孤儿恢复"
 readingTime: "20 min"

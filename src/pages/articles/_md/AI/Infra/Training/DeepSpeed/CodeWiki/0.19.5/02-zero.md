@@ -6,6 +6,7 @@ source:
 title: "ZeRO 优化器"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "ZeRO", "参数分片", "ZeRO-Offload", "显存优化"]
 description: "ZeRO 是 DeepSpeed 的旗舰创新，通过将优化器状态、梯度、参数逐级分片消除数据并行冗余。本文解读 Stage 1/2/3 的分片机制、参数协调器的预取与 trace、以及 Offload 到 CPU/NVMe 的设计。"
 readingTime: "15 min"

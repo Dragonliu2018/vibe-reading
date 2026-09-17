@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T14:55:12+08:00"
 category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
+contentType: "CodeWiki"
 tags: ["Rust", "编译器", "rustc", "CodeWiki"]
 description: "Rust 官方编译器 rustc 1.100.0 源码架构解读：从源码到机器码的完整流水线。"
 readingTime: "28 min"

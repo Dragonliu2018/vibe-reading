@@ -6,6 +6,7 @@ source:
 title: "模型架构"
 date: "2026-08-12T15:35:17+08:00"
 category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
+contentType: "CodeWiki"
 tags: ["Diffusers", "UNet", "VAE", "Transformer", "AutoencoderKL"]
 description: "UNet2DConditionModel 的 down/mid/up block 架构、AutoencoderKL 的 KL 散度潜在空间、Transformer2DModel 的三模式输入。"
 readingTime: "12 min"

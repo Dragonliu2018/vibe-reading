@@ -8,6 +8,7 @@ source:
   prType: "enhancement"
 date: "2026-08-10T19:49:45+08:00"
 category: [Database, OLAP, "Apache Doris", PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "C++", "Sort", "BE", "ColumnConst", "Performance"]
 description: "解读 PR #55317：FullSorter 在 append_block 时跳过 ColumnConst 的 convert_to_full_column_if_const 物化开销，直接用 insert_many_from 逐行插入；同时为 MergeSortCursorImpl 新增 columns 缓存成员，消除 merge 阶段逐行 get_columns 的冗余调用。"
 readingTime: "8 min"

@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "RL", "Post-Training", "Megatron", "SGLang", "PPO", "GRPO", "Ray"]
 description: "slime 是连接 Megatron 与 SGLang 的 LLM 强化学习后训练框架，本章为整体架构概览。"
 readingTime: "32 min"

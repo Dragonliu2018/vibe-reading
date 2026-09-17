@@ -6,6 +6,7 @@ source:
 title: "入口与 API 服务"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "CLI", "OpenAI API", "FastAPI", "SSE", "Serving Handler"]
 description: "解读 vLLM 入口与 API 服务模块：CLI 命令分发、vllm serve 启动链、OpenAI 兼容 API server、serving handler 适配器模式与 SSE 流式。"
 readingTime: "16 min"

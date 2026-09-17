@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/memgpt-llms-as-operating-systems.pdf"
 date: "2026-08-01T16:00:00+08:00"
 category: [AI, Agent, Memory & Context, Papers]
+contentType: "Papers"
 tags: ["LLM", "Context Window", "Virtual Memory", "Memory Hierarchy", "Agent", "Function Calling", "Long Context"]
 description: "目的：让固定上下文窗口的 LLM 处理远超窗口的对话/文档。手段：借鉴操作系统虚拟内存分页，设计分层内存（main/external context）+ 函数调用自主管理内存 + 中断驱动控制流。结论：在多轮对话与文档分析两领域大幅超越固定上下文基线。"
 readingTime: "14 min"

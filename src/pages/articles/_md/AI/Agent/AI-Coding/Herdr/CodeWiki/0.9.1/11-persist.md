@@ -6,6 +6,7 @@ source:
 title: "会话持久化"
 date: "2026-09-17T10:56:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "持久化", "快照"]
 description: "herdr 会话持久化：进程不存活但会话可恢复——结构快照原子落盘、BSP 树重建、agent 会话注入式 resume。"
 readingTime: "17 min"

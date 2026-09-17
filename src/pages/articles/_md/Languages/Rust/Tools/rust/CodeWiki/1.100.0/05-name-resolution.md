@@ -6,6 +6,7 @@ source:
 title: "名称解析"
 date: "2026-08-19T15:00:00+08:00"
 category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
+contentType: "CodeWiki"
 tags: ["Rust", "rustc", "名称解析", "CodeWiki"]
 description: "rustc 的 early/late 两阶段名称解析、作用域链与 glob 导入固定点。"
 readingTime: "12 min"

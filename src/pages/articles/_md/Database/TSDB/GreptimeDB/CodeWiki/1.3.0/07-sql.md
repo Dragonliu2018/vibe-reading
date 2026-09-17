@@ -6,6 +6,7 @@ source:
 title: "sql SQL 解析"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "sqlparser", "SQL解析", "TIME INDEX"]
 description: "sql——基于 sqlparser-rs 扩展的 SQL 解析：GreptimeDB 专有语法（TIME INDEX/PARTITION/TTL）、方言兼容与 transform 规则。"
 readingTime: "16 min"

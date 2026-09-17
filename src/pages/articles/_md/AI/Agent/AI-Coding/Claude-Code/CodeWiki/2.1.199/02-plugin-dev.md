@@ -6,6 +6,7 @@ source:
 title: "plugin-dev 元插件"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "Plugin", "Agent", "Skill", "progressive disclosure"]
 description: "plugin-dev——造插件的插件：7 个 expert skills + 3 个 agent + 8 阶段 /create-plugin 引导，progressive disclosure 的自指性范例"
 readingTime: "25 min"

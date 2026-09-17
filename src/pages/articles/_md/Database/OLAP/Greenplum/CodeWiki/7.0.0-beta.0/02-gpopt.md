@@ -6,6 +6,7 @@ source:
 title: "gpopt 翻译桥"
 date: "2026-08-14T15:39:30+08:00"
 category: [Database, OLAP, Greenplum, CodeWiki, "7.0.0-beta.0"]
+contentType: "CodeWiki"
 tags: ["Greenplum", "C++", "ORCA", "DXL", "翻译器"]
 description: "gpopt——PostgreSQL Query/Plan 与 ORCA DXL 之间的翻译桥，GPDB 调用 GPORCA 的唯一通道。"
 readingTime: "14 min"

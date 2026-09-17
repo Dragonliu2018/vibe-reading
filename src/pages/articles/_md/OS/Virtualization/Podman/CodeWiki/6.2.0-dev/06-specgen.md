@@ -6,6 +6,7 @@ source:
 title: "Specgen OCI 规格生成"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "SpecGenerator", "OCI", "spec"]
 description: "解读 pkg/specgen：SpecGenerator 把用户意图转为 OCI runtime-spec，specgenutil 归一化 CLI/REST/Quadlet 三处输入。"
 readingTime: "11 min"

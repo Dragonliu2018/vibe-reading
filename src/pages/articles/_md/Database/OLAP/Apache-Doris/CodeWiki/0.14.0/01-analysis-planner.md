@@ -6,6 +6,7 @@ source:
 title: "查询解析与优化"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "analysis", "planner", "CUP", "Analyzer", "CBO", "Join 重排"]
 description: "Doris 0.14.0 查询解析与优化：CUP+JFlex 解析、Analyzer 语义分析、ExprRewriter 规则改写、SingleNodePlanner Cost-Based Join 重排、DistributedPlanner Colocate/Bucket/Broadcast/Shuffle。0.x 唯一优化器路径，无 Nereids。"
 readingTime: "15 min"

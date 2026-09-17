@@ -6,6 +6,7 @@ source:
 title: "编排核心"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "Controller", "Ray Serve", "placement group", "全局重启"]
 description: "解读 Relax 编排核心：Controller 训练循环与两阶段全局重启、Service 的 Ray Serve 部署与 placement group 分配、Registry 的 ROLES/ALGOS 算法注册表与 process_role 策略选择。"
 readingTime: "14 min"

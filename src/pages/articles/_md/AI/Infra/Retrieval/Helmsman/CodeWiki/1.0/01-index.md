@@ -6,6 +6,7 @@ source:
 title: "索引层"
 date: "2026-08-18T21:08:07+08:00"
 category: ["AI", "Infra", "Retrieval", "Helmsman", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["Helmsman", "MiniHyperVec", "ANNS", "IndexAbs", "HyperConstImp", "SIMD"]
 description: "Helmsman 索引层：IndexAbs 抽象、HnswImp 内存头索引、HyperConstImp 七步搜索流水线、AVX2/512 int8 内积内核与 Top-K 排序。"
 readingTime: "22 min"

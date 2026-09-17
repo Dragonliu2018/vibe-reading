@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "包管理器", "构建系统", "依赖解析"]
 description: "Cargo v0.100.0 源码架构解读：从 CLI 命令分发、操作编排层、编译引擎（BuildContext/BuildRunner/fingerprint/job_queue）、工作区与清单、源管理 Source trait、依赖解析 DFS 回溯算法到配置上下文 GlobalContext 与诊断 lint 系统的全面 internals 拆解。"
 readingTime: "50 min"

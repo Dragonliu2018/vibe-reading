@@ -6,6 +6,7 @@ source:
 title: "物理表达式"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "PhysicalExpr 求值、等价类与排序/分布传播、Partitioning/Distribution 需求模型。"
 readingTime: "15 min"

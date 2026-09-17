@@ -8,6 +8,7 @@ source:
   site: "字节跳动技术团队 微信公众号"
 date: "2026-07-31T10:00:00+08:00"
 category: [AI, Agent, MCP, ByteDance, Official]
+contentType: "Blogs"
 tags: ["MCP", "Model Context Protocol", "AI Agent", "工具设计", "Function Call", "CRAFTS", "RAG-MCP", "Graph RAG"]
 description: "字节跳动技术团队从 AI 应用开发者视角分享 MCP 工具构建经验：何时选择 MCP、MCP 调用机制剖析、从接口思维到任务思维的设计范式、CRAFTS 框架，以及从工具过载到智能选择的未来演进（RAG-MCP、Graph RAG-Tool Fusion）。"
 readingTime: "22 min"

@@ -6,6 +6,7 @@ source:
 title: "Persistence"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "SQLAlchemy", "Alembic", "Postgres"]
 description: "DeerFlow 持久化层解析：SQLAlchemy 2.0 async ORM、Repository 模式、bootstrap_schema 三路分支、Alembic 迁移与 SQLite/Postgres 双后端。"
 readingTime: "11 min"

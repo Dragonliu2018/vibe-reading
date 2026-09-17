@@ -6,6 +6,7 @@ source:
 title: "跨切面基础设施"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "job", "lock", "pubsub", "livelog", "ssh"]
 description: "Harness 横切基础设施：DB 轮询 job 调度、interface+多实现 lock/pubsub/stream、Redis Streams 事件框架含 reclaiming、gliderlabs/ssh git over ssh"
 readingTime: "15 min"

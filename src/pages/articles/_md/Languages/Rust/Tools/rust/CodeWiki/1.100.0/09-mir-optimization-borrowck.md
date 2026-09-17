@@ -6,6 +6,7 @@ source:
 title: "MIR 优化与借用检查"
 date: "2026-08-19T15:04:00+08:00"
 category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
+contentType: "CodeWiki"
 tags: ["Rust", "rustc", "借用检查", "NLL", "CodeWiki"]
 description: "rustc 的数据流分析框架、MIR 优化 pass 流水线与 NLL 借用检查。"
 readingTime: "15 min"

@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-08-16T01:38:39+08:00"
 category: ["OS", "Linux", "PRs"]
+contentType: "PRs"
 tags: ["Linux Kernel", "I2C", "Device Tree", "OF", "of_node", "引用计数", "of_i2c", "Grant Likely", "v2.6.36"]
 description: "2010 年 Grant Likely 的 of/i2c: Generalize OF support：把 OF_I2C 从 PPC/MICROBLAZE 专用通用化到所有 OF 架构、把 of_register_i2c_devices 改名 of_i2c_register_devices(adap) 读 adap->dev.of_node，并让 3 个 i2c 总线驱动以 adap->dev.of_node = of_node_get(...) 取引用——这套引用计数模式沿用至今，是后来 qcom-CCI of_node 修复的源头。"
 readingTime: "13 min"

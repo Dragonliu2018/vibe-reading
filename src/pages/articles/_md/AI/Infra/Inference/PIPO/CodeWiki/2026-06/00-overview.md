@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "Python", "LLM 推理加速", "多 token 预测"]
 description: "Pair-In, Pair-Out：在 Qwen3.5 上用 latent 压缩 + MTP + 置信度门控加速 LLM 推理的源码解读"
 readingTime: "28 min"

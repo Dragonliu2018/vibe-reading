@@ -6,6 +6,7 @@ source:
 title: "Python 绑定"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "pybind11", "GIL", "绑定", "异常映射"]
 description: "ArcticDB Python 绑定：pybind11 模块、类型转换、GIL 与异常映射"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "Dataset API"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "Dataset", "谓词下推"]
 description: "Arrow Dataset API——三层编排架构（发现/抽象/执行），Scanner 编译 Acero 计划，谓词/投影/分区下推减少 I/O"
 readingTime: "12 min"

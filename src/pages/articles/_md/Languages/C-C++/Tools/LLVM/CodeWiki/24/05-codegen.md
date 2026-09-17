@@ -6,6 +6,7 @@ source:
 title: "CodeGen 后端"
 date: "2026-08-20T10:23:42+08:00"
 category: ["Languages", "C/C++", "Tools", "LLVM", "CodeWiki", "24"]
+contentType: "CodeWiki"
 tags: ["LLVM", "CodeGen", "SelectionDAG", "GlobalISel", "RegAlloc", "MachineInstr"]
 description: "LLVM 后端——SelectionDAG/GlobalISel 指令选择、Greedy 寄存器分配、MachineInstr 机器级 IR"
 readingTime: "24 min"

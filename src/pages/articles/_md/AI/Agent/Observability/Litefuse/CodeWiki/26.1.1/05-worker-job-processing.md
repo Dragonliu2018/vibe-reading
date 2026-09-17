@@ -6,6 +6,7 @@ source:
 title: "Worker 作业处理"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "BullMQ", "LLM-as-judge", "批导出", "清理器"]
 description: "Litefuse Worker 作业处理：评估（creator/executor 两阶段 LLM-as-judge）、批导出、批操作、事件传播与实验回填、PeriodicExclusiveRunner 定时清理。"
 readingTime: "14 min"

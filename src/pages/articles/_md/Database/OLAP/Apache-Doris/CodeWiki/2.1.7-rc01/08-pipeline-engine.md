@@ -6,6 +6,7 @@ source:
 title: "Pipeline 引擎"
 date: "2026-08-24T10:22:21+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.7-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Pipeline", "拉模型", "MLFQ", "Work Stealing", "Backpressure", "pipelineX"]
 description: "Doris 2.1.7 Pipeline 引擎：Pull 拉模型 + MLFQ 多级反馈队列 + Work Stealing + 9 态 Operator 状态机，pipeline/pipelineX 双轨。"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "Trace 系统"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "torch.compile", "Trace", "PlanCapture", "Solution"]
 description: "FlashInfer Trace 系统解读：TraceTemplate/Solution 模板-解决方案模式、plan_capture 捕获-重放、enable_apply monkey-patch、torch.compile 兼容。"
 readingTime: "15 min"

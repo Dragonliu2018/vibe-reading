@@ -6,6 +6,7 @@ source:
 title: "物理优化器"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "PhysicalOptimizerRule 单遍执行、JoinSelection/EnforceDistribution/EnforceSorting 需求驱动模型。"
 readingTime: "15 min"

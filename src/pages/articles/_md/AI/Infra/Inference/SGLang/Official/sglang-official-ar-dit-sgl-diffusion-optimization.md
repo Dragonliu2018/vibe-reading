@@ -8,6 +8,7 @@ source:
   site: "LMSYS Blog"
 date: "2026-08-07T17:30:00+08:00"
 category: [AI, Infra, Inference, SGLang, Official]
+contentType: "Blogs"
 tags: ["SGL-Diffusion", "GLM-Image", "AR+DiT", "Ascend NPU", "Disaggregation", "Performance Optimization"]
 description: "Replaces the HF backend with SRT to accelerate AR modeling and resolve parallelism conflicts, with dedicated TP for AR and SP for DiT; boosts hardware utilization via dynamic batching; implements one-denoiser-per-device parallel DiT execution with AR-DiT overlap."
 readingTime: "12 min"

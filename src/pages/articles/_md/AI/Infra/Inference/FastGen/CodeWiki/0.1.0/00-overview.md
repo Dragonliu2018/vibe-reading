@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-11T15:35:00+08:00"
 category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏", "NVIDIA"]
 description: "NVIDIA FastGen 是基于 PyTorch 的扩散模型蒸馏/加速框架，支持 CM、DMD2、LADD、Self-Forcing 等多种方法与 11 种网络架构。本文从系统架构、运行时行为到核心模块，全面解读 v0.1.0 的内部原理。"
 readingTime: "15 min"

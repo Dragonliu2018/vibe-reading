@@ -6,6 +6,7 @@ source:
 title: "编解码"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "codec", "LZ4", "ZSTD", "压缩"]
 description: "ArcticDB 编解码模块：Segment 落盘格式与 LZ4/ZSTD 压缩"
 readingTime: "11 min"

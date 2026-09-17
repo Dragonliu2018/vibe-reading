@@ -6,6 +6,7 @@ source:
 title: "查询协调与协议"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "coordinator", "MySQL NIO", "brpc", "两阶段调度"]
 description: "Doris 0.14.0 查询协调：MySQL NIO 接入、Coordinator 两阶段 Fragment 调度、brpc 下发执行计划、ResultReceiver 拉取结果。FE 与 BE 的桥。"
 readingTime: "13 min"

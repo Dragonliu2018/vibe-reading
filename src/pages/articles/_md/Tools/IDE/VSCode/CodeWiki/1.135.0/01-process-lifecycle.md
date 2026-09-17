@@ -6,6 +6,7 @@ source:
 title: "进程模型与生命周期"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "Electron", "进程模型", "生命周期"]
 description: "VS Code 的 Electron 多进程架构、启动引导与生命周期阶段管理"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "缓存层"
 date: "2026-08-22T22:29:54+08:00"
 category: [AI, Infra, Inference, SGLang, CodeWiki, "0.5.18"]
+contentType: "CodeWiki"
 tags: ["SGLang", "mem_cache", "RadixAttention", "radix tree", "KV cache", "HiRadixCache"]
 description: "SGLang 缓存层：RadixCache radix tree 前缀共享、MemoryPool 三层架构、HiRadixCache 三层分层缓存与 7 种 evict 策略。"
 readingTime: "16 min"

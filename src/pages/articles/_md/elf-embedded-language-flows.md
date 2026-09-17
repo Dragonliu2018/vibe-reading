@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/elf-embedded-language-flows.pdf"
 date: "2026-08-01T20:00:00+08:00"
 category: [AI, Models, Text Model, Papers]
+contentType: "Papers"
 tags: ["Diffusion Language Model", "Flow Matching", "Continuous Embedding", "Classifier-Free Guidance", "ELF", "Language Modeling"]
 description: "目的：用连续 embedding 空间的 flow matching 做扩散语言模型。手段：全程停留连续空间、末步映射离散 token、共享权重 unembedding + training-time CFG。结论：105M 模型用 32 步/45B token 超越 MDLM/Duo/FLM/LangFlow。"
 readingTime: "16 min"

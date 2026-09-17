@@ -6,6 +6,7 @@ source:
 title: "SQL 解析与规划"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "DFParser 包装 sqlparser，SqlToRel 完成 AST→LogicalPlan 与名字解析（binding），含 CTE/相关子查询。"
 readingTime: "16 min"

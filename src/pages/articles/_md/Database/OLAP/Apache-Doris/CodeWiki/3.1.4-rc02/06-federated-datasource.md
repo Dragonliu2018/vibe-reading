@@ -6,6 +6,7 @@ source:
 title: "联邦数据源"
 date: "2026-08-23T19:01:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "ExternalCatalog", "联邦查询", "懒加载", "元数据缓存"]
 description: "Doris 3.1.4 联邦数据源：ExternalCatalog 懒加载抽象 + CatalogMgr 多 catalog 树 + 外部元数据缓存。"
 readingTime: "9 min"

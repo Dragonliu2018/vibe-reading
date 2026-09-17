@@ -8,6 +8,7 @@ source:
   site: "LMSYS Org Blog"
 date: "2026-08-23T19:52:07+08:00"
 category: [AI, Infra, Inference, SGLang, Official]
+contentType: "Blogs"
 tags: ["SGLang", "LLM Serving", "Fast Recovery", "Weight Cache", "CUDA IPC", "Zero-Copy", "Failover", "FP8", "Megatron"]
 description: "SGLang 引入 Weight Cache Daemon：常驻 GPU 进程持有量化后权重，引擎重启时经 CUDA IPC 零拷贝映射，将权重加载从分钟级降至秒级（Ling-2.6-1T FP8：~495s → ~0.63s，~785× 提速），是面向 <10s 冷重启、<1s 热备切换的 Fast Engine Recovery 框架第一阶段。"
 readingTime: "15 min"

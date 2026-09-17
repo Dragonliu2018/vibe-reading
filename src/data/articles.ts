@@ -17,7 +17,8 @@ export interface Article {
   title:        string;
   source?:      ArticleSource;
   date:         string;        // ISO 8601: YYYY-MM-DDTHH:MM:SS+08:00（北京时间）；排序按完整值，展示截前 10 字符
-  category:     string[];      // 主分类层级路径（frontmatter 第一个分类组）；决定文件位置、徽章、sourceLabel
+  category:     string[];      // 主分类层级路径（frontmatter 第一个分类组）；决定文件位置、面包屑、sourceLabel
+  contentType?: string;       // 内容类型徽章（CodeWiki/Papers/Docs/PRs/Official/Blogs…），frontmatter 显式声明
   categoryPath: string[];      // 同 category，供侧边栏树使用（别名，保持侧边栏逻辑不变）
   alsoCategoryPaths?: string[][]; // 副分类组列表（frontmatter alsoCategories）；每条是一个完整分类路径，文章在树中多处引用，文件仍只在主分类目录
   tags:         string[];
@@ -52,19 +53,7 @@ export function sourceLabel(source: ArticleSource | undefined, categoryPath: str
   return `[${source.project} ${source.type}${idSuffix}]`;
 }
 
-/**
- * 计算文章的「分类徽章」标签：
- *   - 含 Docs 的官方文档分类 → 取 "Docs"（而非版本号/章节等末级）
- *   - 含 CodeWiki 的代码解读分类 → 取 "CodeWiki"（而非版本号末级）
- *   - 其余 → 取 category 末级
- * 首页卡片 / 文章页徽章 / 首页过滤器统一用此函数，避免副本漂移。
- */
-export function badgeCat(category: string[] = []): string {
-  if (!category.length) return '';
-  if (category.includes('Docs')) return 'Docs';
-  if (category.includes('CodeWiki')) return 'CodeWiki';
-  return category[category.length - 1];
-}
+
 
 // ── MD 文章：从 frontmatter 自动读取 ──────────────────────────────
 const mdArticles: Article[] = markdownEntries.map(({ slug, module: mod }) => {
@@ -76,6 +65,7 @@ const mdArticles: Article[] = markdownEntries.map(({ slug, module: mod }) => {
     source:       (fm.source as ArticleSource | undefined) || undefined,
     date:         fm.date,
     category:     cat,
+    contentType:  fm.contentType || undefined,
     categoryPath: cat,
     alsoCategoryPaths: fm.alsoCategories ?? [],
     tags:         fm.tags         ?? [],
@@ -126,6 +116,7 @@ const htmlArticles: Article[] = readdirSync(htmlDir)
       readingTime:  metaContent(html, 'article:readingTime') || undefined,
       aiModel:      metaContent(html, 'article:aiModel')     || undefined,
       pinned:       metaContent(html, 'article:pinned') === 'true',
+      contentType:  metaContent(html, 'article:content-type') || undefined,
     };
   });
 

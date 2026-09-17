@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "OLAP", "列式存储", "向量化执行"]
 description: "DuckDB 1.5.5——高性能嵌入式分析数据库，向量化执行引擎 + 列式段存储 + MVCC 事务 + Morsel-Driven 并行 + 扩展系统源码解读。"
 readingTime: "60 min"

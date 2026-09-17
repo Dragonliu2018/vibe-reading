@@ -6,6 +6,7 @@ source:
 title: "词法与语法分析"
 date: "2026-08-19T14:57:00+08:00"
 category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
+contentType: "CodeWiki"
 tags: ["Rust", "rustc", "解析器", "CodeWiki"]
 description: "rustc 的纯词法层、手写递归下降解析器与 AST 定义。"
 readingTime: "13 min"

@@ -2,6 +2,7 @@
 title: "Hexo 使用教程"
 date: "2026-08-23T17:19:21+08:00"
 category: [Tools, Hexo, Notes]
+contentType: "Notes"
 tags: ["Hexo", "静态博客", "GitHub Pages", "部署", "教程"]
 description: "Hexo 静态博客搭建教程——环境准备、本地运行、pure 主题配置与 GitHub Pages 部署全流程。"
 readingTime: "4 min"

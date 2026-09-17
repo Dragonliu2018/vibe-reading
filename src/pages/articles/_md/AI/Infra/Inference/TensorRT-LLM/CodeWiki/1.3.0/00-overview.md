@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "Python", "C++", "CUDA", "LLM 推理", "连续批处理", "投机解码", "PD 分离"]
 description: "TensorRT-LLM 是 NVIDIA 的高性能 LLM 推理引擎。本文从双后端架构、PyExecutor 执行引擎、模型/算子/注意力后端到投机解码与 PD 分离，全面解读 v1.3.0 的内部原理。"
 readingTime: "28 min"

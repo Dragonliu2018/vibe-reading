@@ -6,6 +6,7 @@ source:
 title: "平台抽象与虚拟化后端"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "虚拟化", "QEMU", "Hyper-V"]
 description: "三层抽象 + 4 后端：VirtualMachine/Factory 接口 → Base* 模板基类 → qemu/hyperv/applevz/virtualbox。"
 readingTime: "14 min"

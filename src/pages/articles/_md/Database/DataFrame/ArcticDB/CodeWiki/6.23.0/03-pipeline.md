@@ -6,6 +6,7 @@ source:
 title: "读写管道"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "pipeline", "slicing", "column stats"]
 description: "ArcticDB 读写管道：切片、并行编解码、段装配与列统计裁剪"
 readingTime: "15 min"

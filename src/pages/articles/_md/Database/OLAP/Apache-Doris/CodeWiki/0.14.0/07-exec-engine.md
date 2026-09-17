@@ -6,6 +6,7 @@ source:
 title: "执行引擎"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "exec", "Volcano", "ExecNode", "RowBatch", "行式执行"]
 description: "Doris 0.14.0 执行引擎：ExecNode Volcano pull 行式执行（open/get_next/close）、create_node 纯 switch 工厂（无 enable_vectorized 分支）、RowBatch 行式、PlanFragmentExecutor。0.x 唯一执行路径，纯 Impala 血统。"
 readingTime: "15 min"

@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T11:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "动态分区", "TTL", "Range 分区", "数据划分", "生命周期管理"]
 description: "Apache Doris 3.x 官方文档：动态分区按照设定规则滚动添加、删除分区，实现表分区生命周期管理（TTL），适用于日志管理、时序数据等场景。"
 readingTime: "10 min"

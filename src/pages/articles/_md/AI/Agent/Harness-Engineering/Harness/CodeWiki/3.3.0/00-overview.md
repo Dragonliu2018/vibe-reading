@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "代码托管", "CI/CD", "Gitspaces", "制品仓库", "DevOps"]
 description: "Harness Open Source v3.3.0 源码解读——Go 编写的开源 DevOps 平台，单进程多协议聚合代码托管（Git）、CI 流水线（Drone 衍生）、Gitspaces 托管开发环境、OCI 制品仓库四大产品面"
 readingTime: "45 min"

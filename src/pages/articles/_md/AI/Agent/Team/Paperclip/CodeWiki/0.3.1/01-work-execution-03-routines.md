@@ -6,6 +6,7 @@ source:
 title: "Routines & Schedules"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 周期任务系统——cron/webhook/API 触发、并发策略、catch-up 与 revision 快照"
 readingTime: "15 min"

@@ -6,6 +6,7 @@ source:
 title: "Memory"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "Agent Memory", "FTS5"]
 description: "DeerFlow 长期记忆模块解析：MemoryManager 三层契约、DeerMem 默认后端、MemoryUpdateQueue 防抖队列、FTS5 检索与多后端可插拔架构。"
 readingTime: "12 min"

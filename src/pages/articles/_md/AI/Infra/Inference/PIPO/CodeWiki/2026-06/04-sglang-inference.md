@@ -6,6 +6,7 @@ source:
 title: "SGLang 推理后端"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "SGLang", "两阶段 decode", "CUDA Graph"]
 description: "PIPO 在 SGLang 上的推理路径：Qwen3_5ForCausalPIPO 模型、两阶段 decode、CUDA graph 与 schedule_batch 的 pipo_* 字段"
 readingTime: "18 min"

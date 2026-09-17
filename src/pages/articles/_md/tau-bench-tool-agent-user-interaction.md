@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/tau-bench-tool-agent-user-interaction.pdf"
 date: "2026-08-01T19:00:00+08:00"
 category: [AI, Agent, Evaluation, Papers]
+contentType: "Papers"
 tags: ["LLM Agent", "Benchmark", "Tool Use", "Function Calling", "pass^k", "Reliability", "User Simulation"]
 description: "目的：评测 agent 在真实场景中与人/工具交互并遵循领域规则的一致性。手段：LM 模拟用户 + 领域 API/策略 + 数据库终态对比奖励 + pass^k 指标。结论：gpt-4o pass^1<50%、pass^8<25%，agent 一致性与规则遵循仍远不够。"
 readingTime: "16 min"

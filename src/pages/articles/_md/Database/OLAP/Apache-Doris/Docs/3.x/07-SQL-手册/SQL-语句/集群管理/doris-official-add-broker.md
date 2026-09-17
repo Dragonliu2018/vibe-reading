@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T01:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "集群管理"]
+contentType: "Docs"
 tags: ["Apache Doris", "ADD BROKER", "Broker", "集群管理", "SQL"]
 description: "Apache Doris 3.x 官方文档：ADD BROKER 语句用于添加一个或多个 BROKER 节点到集群，支持 FQDN。"
 readingTime: "3 min"

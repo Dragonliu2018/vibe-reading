@@ -6,6 +6,7 @@ source:
 title: "执行引擎"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "向量化执行", "Pipeline", "Processor"]
 description: "Databend 执行引擎——借鉴 ClickHouse 的 push-pull 处理器模型，无锁 CAS 背压端口，StableGraph DAG。"
 readingTime: "18 min"

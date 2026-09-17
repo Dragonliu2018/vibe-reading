@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-07-25"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Schema Change", "Light Schema Change", "Doris", "DDL"]
 description: "Doris 在 1.2.1 起将 light_schema_change 默认值从 false 翻为 true，新建表默认走元数据级加减列，同时修正了 SHOW CREATE TABLE 对 MOW 属性的输出。"
 readingTime: "8 min"

@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T17:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "表和视图"]
+contentType: "Docs"
 tags: ["Apache Doris", "ALTER TABLE", "PROPERTY", "Schema Change", "动态分区", "副本数", "SQL"]
 description: "Apache Doris 3.x 官方文档：ALTER TABLE PROPERTY 语句用于修改已有表的属性，支持修改 bloom filter、Colocate、动态分区、副本数、注释、引擎类型、冷热分层等。"
 readingTime: "10 min"

@@ -6,6 +6,7 @@ source:
 title: "Pipeline 引擎"
 date: "2026-08-23T19:03:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Pipeline", "拉模型", "MLFQ", "Work Stealing", "Backpressure"]
 description: "Doris 3.1.4 Pipeline 引擎：Pull 拉模型 + MLFQ 多级反馈队列 + Work Stealing，固定线程池背压调度。"
 readingTime: "12 min"

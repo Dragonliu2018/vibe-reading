@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "OLAP", "云原生数仓", "向量化执行"]
 description: "Databend 1.2.925——Rust 云原生企业级数据仓库，向量化执行 + Cascades 优化器 + Parquet 段存储 + Raft 元服务源码解读。"
 readingTime: "75 min"

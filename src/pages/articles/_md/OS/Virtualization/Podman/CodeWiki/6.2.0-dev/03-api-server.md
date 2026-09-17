@@ -6,6 +6,7 @@ source:
 title: "REST API 服务端"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "REST API", "gorilla/mux", "Docker 兼容"]
 description: "解读 pkg/api：APIServer 同时承载 Docker 兼容 API 与 Libpod 原生 API，双协议共用 router/handler，经 abi 回到 libpod。"
 readingTime: "12 min"

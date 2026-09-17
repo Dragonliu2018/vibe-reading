@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T21:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据导入", "导入方式"]
+contentType: "Docs"
 tags: ["Apache Doris", "日志存储", "日志分析", "倒排索引", "冷热分层", "Routine Load"]
 description: "Apache Doris 3.x 官方文档：日志存储与分析方案，涵盖资源评估、集群部署、FE/BE 配置优化、建表（分区分桶/压缩/Compaction/索引/存储策略）、日志采集（Logstash/Filebeat/Kafka/自定义）及日志查询与可视化分析。"
 readingTime: "20 min"

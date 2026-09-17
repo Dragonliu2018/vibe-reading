@@ -6,6 +6,7 @@ source:
 title: "工作区与清单"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "Manifest", "Workspace", "PackageId"]
 description: "Cargo 工作区与清单层解读：Workspace 装配、Cargo.toml 解析为 Manifest、Package/PackageId/SourceId 三件套领域模型、Profile 与 feature 表。"
 readingTime: "18 min"

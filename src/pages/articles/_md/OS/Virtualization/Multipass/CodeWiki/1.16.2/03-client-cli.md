@@ -6,6 +6,7 @@ source:
 title: "CLI 客户端"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "gRPC", "Qt", "命令模式"]
 description: "multipass CLI：ArgParser 命令查找 + Command 模板方法 + gRPC 双向流，无状态 thin client。"
 readingTime: "11 min"

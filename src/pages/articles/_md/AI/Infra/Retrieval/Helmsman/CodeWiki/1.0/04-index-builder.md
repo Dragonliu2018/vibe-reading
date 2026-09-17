@@ -6,6 +6,7 @@ source:
 title: "离线构建"
 date: "2026-08-18T21:08:07+08:00"
 category: ["AI", "Infra", "Retrieval", "Helmsman", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["Helmsman", "MiniHyperVec", "SpannIndex", "Filling", "SPTAG", "HNSW"]
 description: "Helmsman 离线索引构建：SpannIndex 把 SPTAG SPANN 索引转换为 HV_CONST 格式，含 Filling 算法补齐定长 cluster 与 norm 预算。"
 readingTime: "18 min"

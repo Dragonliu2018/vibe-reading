@@ -6,6 +6,7 @@ source:
 title: "队列基础设施"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "BullMQ", "Redis", "Sharding", "DLQ"]
 description: "Langfuse 队列层：BullMQ 分片 by projectId-eventBodyId、二级队列分流、DLQ 重试、失败追踪。"
 readingTime: "13 min"

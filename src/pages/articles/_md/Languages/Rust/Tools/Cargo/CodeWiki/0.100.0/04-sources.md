@@ -6,6 +6,7 @@ source:
 title: "源管理"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "Source", "registry", "git"]
 description: "Cargo 源管理层解读：Source trait 抽象（query/download/fingerprint）、五种内置源实现（RegistrySource/GitSource/PathSource/DirectorySource/ReplacedSource）、SourceConfigMap 与 [source.*] 配置。"
 readingTime: "18 min"

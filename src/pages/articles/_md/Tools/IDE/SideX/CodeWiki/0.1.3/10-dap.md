@@ -6,6 +6,7 @@ source:
 title: "调试器"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "DAP", "Debug Adapter", "debugger"]
 description: "SideX 调试器——DAP 客户端双层架构，oneshot 请求关联，DebugSession 未接线"
 readingTime: "13 min"

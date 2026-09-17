@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T15:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "表类型"]
+contentType: "Docs"
 tags: ["Apache Doris", "明细表", "Duplicate Key", "表类型", "排序键", "数据模型"]
 description: "Apache Doris 3.x 官方文档：明细表（Duplicate Key Table）是默认建表模型，保留全量原始数据，不去重不聚合，适用于日志存储、用户行为分析、交易数据等场景。"
 readingTime: "6 min"

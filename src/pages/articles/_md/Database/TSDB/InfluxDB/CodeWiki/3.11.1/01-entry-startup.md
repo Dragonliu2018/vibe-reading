@@ -6,6 +6,7 @@ source:
 title: "入口与启动"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 的 CLI 解析、启动流程与 serve 子命令的 44 步子系统装配"
 readingTime: "20 min"

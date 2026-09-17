@@ -6,6 +6,7 @@ source:
 title: "MergeTree 存储引擎"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "MergeTree", "data part", "merge", "mutation"]
 description: "ClickHouse MergeTree 存储引擎源码解读——不可变 data part、后台 merge、mutation 改写、副本与 ZK 队列协调。"
 readingTime: "30 min"

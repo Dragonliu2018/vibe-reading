@@ -6,6 +6,7 @@ source:
 title: "Catalog"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Catalog", "MVCC", "DependencyManager"]
 description: "DuckDB Catalog 模块——MVCC 版本链元数据管理，CatalogSet + DependencyManager 双向依赖图，支持并发 DDL。"
 readingTime: "20 min"

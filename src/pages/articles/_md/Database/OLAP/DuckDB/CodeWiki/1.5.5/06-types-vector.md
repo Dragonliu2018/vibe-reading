@@ -6,6 +6,7 @@ source:
 title: "Types & Vector"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Vector", "LogicalType", "DataChunk"]
 description: "DuckDB 类型系统与向量化数据表示——LogicalType/PhysicalType 双层类型、5 种 Vector 布局、DataChunk 批处理容器。"
 readingTime: "25 min"

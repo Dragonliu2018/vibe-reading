@@ -6,6 +6,7 @@ source:
 title: "Cloud MetaService"
 date: "2026-08-23T19:06:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Cloud", "MetaService", "FoundationDB", "存算分离", "Recycler"]
 description: "Doris 3.1.4 Cloud 存算分离：MetaServiceImpl(FoundationDB) + TxnLazyCommitter + Recycler，元数据移出 FE 进程。"
 readingTime: "10 min"

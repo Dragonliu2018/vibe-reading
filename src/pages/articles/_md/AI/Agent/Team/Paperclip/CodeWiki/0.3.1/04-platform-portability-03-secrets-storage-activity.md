@@ -6,6 +6,7 @@ source:
 title: "Secrets · Storage · Activity"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 密钥存储与审计——secret scrubbing、scoped run 注入、provider 抽象、不可变 activity log"
 readingTime: "15 min"

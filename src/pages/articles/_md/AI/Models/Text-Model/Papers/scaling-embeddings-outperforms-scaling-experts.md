@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/scaling-embeddings-outperforms-scaling-experts.pdf"
 date: "2026-08-12T20:12:00+08:00"
 category: [AI, Models, Text Model, Papers]
+contentType: "Papers"
 tags: ["LongCat", "N-gram Embedding", "MoE", "Sparse Parameters", "Pareto Frontier", "Speculative Decoding", "Inference Optimization", "Meituan"]
 description: "目的：突破 MoE 专家扩展的边际递减。手段：用 N-gram Embedding 在正交维度扩展稀疏参数并配系统优化。结论：68.5B 模型超 30B 参数分给 embedding 优于等参 MoE，agentic/coding 任务领先同量级模型。"
 readingTime: "18 min"

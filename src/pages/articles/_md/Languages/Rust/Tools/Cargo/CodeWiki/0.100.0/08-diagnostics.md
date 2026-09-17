@@ -6,6 +6,7 @@ source:
 title: "诊断系统"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "diagnostics", "lint", "passes"]
 description: "Cargo 诊断系统解读：数据驱动的 pass + rule 模型、Lint 与 lint level（allow/warn/deny/forbids）、parse pass 与编译集成、报告渲染。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "CLI 入口"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "CLI", "Composition Root", "Multicall", "Hot Exec"]
 description: "jcode CLI 入口层——allocator 调优、multicall 拦截、依赖反转组合根（9 个 provider 工厂 + 5 类 register）、命令分发与 hot exec 热重载"
 readingTime: "20 min"

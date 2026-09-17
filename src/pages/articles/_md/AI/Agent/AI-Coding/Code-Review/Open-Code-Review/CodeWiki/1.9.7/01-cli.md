@@ -6,6 +6,7 @@ source:
 title: "命令行接口"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "cobra", "CLI", "bubbletea"]
 description: "OpenCodeReview 命令行接口层——cobra 命令树、flag 解析、装配产物（commonContext/llmRuntime）、provider 交互式 TUI、Markdown/JSON/SARIF 输出格式化。"
 readingTime: "20 min"

@@ -6,6 +6,7 @@ source:
 title: "Windows 公共运行库"
 date: "2026-08-16T00:15:00+08:00"
 category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
+contentType: "CodeWiki"
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "跨二进制共享的 common 运行库——5 通道 IO 中继、按句柄类型分流、COM 客户端封装与互操作剖析。"
 readingTime: "15 min"

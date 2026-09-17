@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-07-10"
 category: [AI, Infra, Inference, xLLM, Contributions]
+contentType: "Contributions"
 tags: ["RWKV-7", "线性注意力", "RNN", "Linear Attention", "KV Cache", "Trie Tokenizer", "CUDA"]
 description: "为 xLLM 实现 RWKV-7-World CUDA 推理：复用 linear-attention KV cache 存 W-matrix 状态、time-mix 的 LoRA 衰减与 in-context learning 修正、channel-mix 门控 FFN、v_first 跨层值残差，以及原生 .pth 到 HF 目录的转换工具。"
 readingTime: "16 min"

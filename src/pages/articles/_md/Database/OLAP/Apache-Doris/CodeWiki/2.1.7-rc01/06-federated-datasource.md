@@ -6,6 +6,7 @@ source:
 title: "联邦数据源"
 date: "2026-08-24T10:22:21+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.7-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "ExternalCatalog", "Multi-Catalog", "Caffeine", "Hive", "Iceberg", "懒加载"]
 description: "Doris 2.1.7 联邦数据源：ExternalCatalog 模板方法 + ExternalMetadataOps 策略 + Caffeine 三级懒缓存（Catalog/DB/Schema）。"
 readingTime: "12 min"

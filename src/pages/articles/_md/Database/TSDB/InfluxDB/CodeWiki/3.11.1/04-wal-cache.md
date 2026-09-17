@@ -6,6 +6,7 @@ source:
 title: "WAL 与缓存"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 的 diskless WAL（对象存储持久化）、Last/Distinct/Parquet 三缓存与 LinearBuffer 内存分配器"
 readingTime: "22 min"

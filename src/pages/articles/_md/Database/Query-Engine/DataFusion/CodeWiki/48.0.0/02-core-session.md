@@ -6,6 +6,7 @@ source:
 title: "核心 API 与会话编排"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "SessionContext/SessionState 分离、SessionStateBuilder 装配与 DefaultPhysicalPlanner 三段式编排。"
 readingTime: "16 min"

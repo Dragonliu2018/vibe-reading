@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T23:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "查询加速", "查询优化实践", "计划调优"]
+contentType: "Docs"
 tags: ["Apache Doris", "Join Shuffle", "Hint", "broadcast", "shuffle", "查询调优", "执行计划"]
 description: "Apache Doris 3.x 官方文档：使用 Distribute Hint（[shuffle] 和 [broadcast]）调整 Join 操作的数据 Shuffle 类型，优化查询性能。"
 readingTime: "5 min"

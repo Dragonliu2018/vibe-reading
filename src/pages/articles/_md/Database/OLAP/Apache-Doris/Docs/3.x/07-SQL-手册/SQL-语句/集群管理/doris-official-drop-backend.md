@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T22:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "集群管理"]
+contentType: "Docs"
 tags: ["Apache Doris", "DROP BACKEND", "BE 节点", "集群管理", "SQL"]
 description: "Apache Doris 3.x 官方文档：DROP BACKEND 语句用于将 BE 节点从集群中删除，高危操作不推荐使用，建议使用 DECOMMISSION BACKEND 优雅下线。"
 readingTime: "4 min"

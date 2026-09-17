@@ -6,6 +6,7 @@ source:
 title: "CubeSQL 与 Tesseract"
 date: "2026-08-17T22:20:51+08:00"
 category: [Database, Ecosystems, Cube, CodeWiki, "1.7.20"]
+contentType: "CodeWiki"
 tags: ["Cube", "Rust", "SQL", "pg-wire", "DataFusion", "e-graph"]
 description: "Rust pg-wire SQL 接口与原生 SQL 规划器"
 readingTime: "25 min"

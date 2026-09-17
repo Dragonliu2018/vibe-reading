@@ -6,6 +6,7 @@ source:
 title: "MoE 专家混合"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "MoE", "Expert Parallel", "Grouped GEMM", "Top-K Gate"]
 description: "DeepSpeed v0.19.5 的 MoE 模块包含三套技术栈：原始训练栈(TopKGate+Experts for-loop+AllToAll)、AutoEP 栈(TokenChoiceTopKRouter+GroupedExperts grouped GEMM+AllToAllV)、推理栈(RaggedTopKGating kernel+CUTLASS MoEGEMM)，覆盖训练、替换注入、推理三个场景。"
 readingTime: "20 min"

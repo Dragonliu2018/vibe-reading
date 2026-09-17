@@ -6,6 +6,7 @@ source:
 title: "Parallel"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Parallel", "Morsel-Driven", "Pipeline", "TaskScheduler"]
 description: "DuckDB Parallel 模块——Morsel-Driven 并行执行，Pipeline 5-Event 状态机，无锁队列工作窃取。"
 readingTime: "25 min"

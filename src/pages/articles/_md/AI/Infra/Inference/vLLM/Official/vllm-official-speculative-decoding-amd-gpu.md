@@ -8,6 +8,7 @@ source:
   site: "vLLM 官方博客（公众号 vLLM）"
 date: "2026-08-27T11:43:39+08:00"
 category: [AI, Infra, Inference, vLLM, Official]
+contentType: "Blogs"
 tags: ["vLLM", "Speculative Decoding", "AMD GPU", "ROCm", "MTP", "EAGLE-3", "DFlash", "DSpark"]
 description: "vLLM 官方博客：在 AMD Instinct GPU 上探索 native MTP、Gemma 4 MTP、EAGLE-3、DFlash 与 DSpark 五种投机解码草稿结构，多个模型与工作负载组合的 output throughput 超过非投机基线两倍，最高 2.87 倍。"
 readingTime: "25 min"

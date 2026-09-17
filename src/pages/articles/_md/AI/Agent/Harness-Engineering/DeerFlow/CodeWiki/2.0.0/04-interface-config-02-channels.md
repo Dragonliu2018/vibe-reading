@@ -6,6 +6,7 @@ source:
 title: "Channels"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "IM", "Feishu", "Buzz"]
 description: "DeerFlow IM 渠道模块解析：Channel 基类、ChannelManager 调度、MessageBus、ChannelRunPolicy 与多平台流式回写。"
 readingTime: "12 min"

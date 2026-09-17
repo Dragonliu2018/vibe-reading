@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T11:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x"]
+contentType: "Docs"
 tags: ["Apache Doris", "SHOW FRONTEND CONFIG", "配置管理", "FE", "SQL", "集群管理"]
 description: "Apache Doris 3.x 官方文档：SHOW FRONTEND CONFIG 语句用于展示当前集群的 FE 配置项，支持 LIKE 模式匹配，返回配置项的值、类型、是否可变、是否仅 Master 等信息。"
 readingTime: "5 min"

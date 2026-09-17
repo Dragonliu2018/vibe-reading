@@ -6,6 +6,7 @@ source:
 title: "Runtime"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "LangGraph", "Runtime", "Asyncio"]
 description: "DeerFlow Runtime 模块解析：RunManager 的 run 生命周期管理、run_agent worker 的流式执行、RunJournal 事件溯源、lease/heartbeat 多 worker 协调与 checkpoint 缓存。"
 readingTime: "14 min"

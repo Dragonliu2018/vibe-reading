@@ -6,6 +6,7 @@ source:
 title: "WslService 服务核心"
 date: "2026-08-16T00:15:00+08:00"
 category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
+contentType: "CodeWiki"
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "wslservice.exe——Session 0 COM 系统服务、HCS 轻量 VM 生命周期、分发版注册与 per-user 会话管理剖析。"
 readingTime: "15 min"

@@ -6,6 +6,7 @@ source:
 title: "LSP 语言服务"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "LSP", "Language Server", "JSON-RPC"]
 description: "SideX LSP 客户端——tokio 子进程、能力协商、通知推送、单服务器请求串行化设计"
 readingTime: "13 min"

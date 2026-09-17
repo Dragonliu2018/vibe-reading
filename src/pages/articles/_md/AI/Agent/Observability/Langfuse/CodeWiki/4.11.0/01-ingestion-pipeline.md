@@ -6,6 +6,7 @@ source:
 title: "摄入管线"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "Ingestion", "OTLP", "Zod"]
 description: "Langfuse 摄入管线：JSON batch 与 OTLP 两路摄入、eventBodyId 去重分组、S3 卸载、延迟入队防乱序。"
 readingTime: "16 min"

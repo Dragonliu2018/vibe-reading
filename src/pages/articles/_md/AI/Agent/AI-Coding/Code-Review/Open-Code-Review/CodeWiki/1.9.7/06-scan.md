@@ -6,6 +6,7 @@ source:
 title: "扫描引擎"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "Scan", "Batch", "FullFile"]
 description: "OpenCodeReview 扫描引擎——全文件审查模式（ocr scan），文件枚举、批次切分（语言/目录亲和）、批内并发+批间串行、去重与全局摘要、预算前视门控。"
 readingTime: "18 min"

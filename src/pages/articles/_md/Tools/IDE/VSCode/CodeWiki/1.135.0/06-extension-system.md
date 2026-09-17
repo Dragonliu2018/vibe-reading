@@ -6,6 +6,7 @@ source:
 title: "扩展系统"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "扩展", "Extension Host", "RPC", "activationEvents"]
 description: "VS Code 扩展系统——多宿主隔离、RPC 协议配对、顾客模式与懒激活"
 readingTime: "15 min"

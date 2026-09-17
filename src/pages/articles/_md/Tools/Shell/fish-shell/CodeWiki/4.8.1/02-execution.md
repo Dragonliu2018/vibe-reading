@@ -6,6 +6,7 @@ source:
 title: "执行与进程"
 date: "2026-08-14T11:44:53+08:00"
 category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
+contentType: "CodeWiki"
 tags: ["fish-shell", "Rust", "Execution", "JobControl", "Fork"]
 description: "fish 的执行与进程模块：AST → Job/Process 翻译、5 阶段展开、fork/exec/posix_spawn、作业控制与 generation-count 进程回收。"
 readingTime: "20 min"

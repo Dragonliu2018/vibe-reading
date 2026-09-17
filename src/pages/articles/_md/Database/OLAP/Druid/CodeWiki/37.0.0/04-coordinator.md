@@ -6,6 +6,7 @@ source:
 title: "Coordinator 数据协调"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "Coordinator", "数据均衡", "Rules", "HA"]
 description: "Druid Coordinator——DruidCoordinator duty 责任链、声明式 Rules 数据生命周期、CostBalancerStrategy 24h 半衰期均衡、HttpLoadQueuePeon 下发、HA leader。"
 readingTime: "15 min"

@@ -6,6 +6,7 @@ source:
 title: "桥接层与命令分发"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "Tauri 2", "IPC", "Service Locator"]
 description: "SideX 前端 TS 与 Rust 后端的 IPC 桥——sidex-bridge.ts + lib.rs 装配 + sidex-asset 协议 + 菜单事件分发"
 readingTime: "14 min"

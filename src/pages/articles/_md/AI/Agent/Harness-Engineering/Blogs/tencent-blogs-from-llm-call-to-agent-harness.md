@@ -9,6 +9,7 @@ source:
   site: "腾讯技术工程"
 date: "2026-09-14T10:35:40+08:00"
 category: [AI, Agent, "Harness Engineering", Blogs]
+contentType: "Blogs"
 tags: ["Agent", "Harness", "Agent Runtime", "Tool Calling", "Memory", "Context Engineering", "Pi", "OpenCode", "Codex", "Hermes"]
 description: "从 LLM 单次调用出发，沿着 Q&A Bot、ReAct、Tool Calling、Memory 的演进看 Agent 如何一步步长出上下文、循环、工具与记忆，再对比 Pi、OpenCode、Codex、Hermes 四个项目的 Harness 设计空间。"
 readingTime: "13 min"

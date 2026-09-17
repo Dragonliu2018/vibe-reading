@@ -6,6 +6,7 @@ source:
 title: "Parquet 列式文件格式"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "Parquet", "列式存储"]
 description: "Apache Parquet 列式文件格式——Thrift 元数据 + 自定义 page encoding、PageReader 迭代器、字典编码与 Parquet↔Arrow schema 转换"
 readingTime: "14 min"

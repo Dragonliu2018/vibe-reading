@@ -6,6 +6,7 @@ source:
 title: "Query & Export"
 date: "2026-08-10T22:00:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
+contentType: "CodeWiki"
 tags: ["graphify", "查询", "导出", "vis.js", "graph.json", "Neo4j"]
 description: "graphify 查询与导出层：query/path/explain 命令查询 graph.json，方向感知最短路径，vis.js 交互式 HTML 导出，Neo4j 图数据库导出。"
 readingTime: "12 min"

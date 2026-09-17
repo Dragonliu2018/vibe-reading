@@ -6,6 +6,7 @@ source:
 title: "Parser"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Parser", "libpg_query", "AST"]
 description: "DuckDB Parser 模块——基于 PostgreSQL libpg_query 的 SQL 解析器，SQL string → PG AST → DuckDB AST 的两阶段转换。"
 readingTime: "20 min"

@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "LangGraph", "Agent", "ByteDance"]
 description: "ByteDance 开源的 super agent harness——基于 LangGraph 编排 sub-agents、memory、sandboxes 与 extensible skills 的端到端架构解读。"
 readingTime: "22 min"

@@ -6,6 +6,7 @@ source:
 title: "查询优化器"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C/C++", "MPP", "并行查询", "物化视图", "优化器"]
 description: "Cloudberry optimizer 模块——PostgreSQL 标准 planner 之上叠加两项原创能力：CBDB 风格并行查询（所有 worker 平等协作）与 AQUMV（planning 期物化视图改写）。"
 readingTime: "16 min"

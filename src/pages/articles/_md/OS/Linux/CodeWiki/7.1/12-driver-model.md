@@ -6,6 +6,7 @@ source:
 title: "驱动模型与基础设施"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "驱动模型", "device", "bus", "driver", "kobject", "sysfs"]
 description: "Linux 设备驱动模型——device/bus/driver 中介者模式、platform bus、probe 自动绑定、kobject 引用计数与 sysfs、lib/ 通用库。"
 readingTime: "14 min"

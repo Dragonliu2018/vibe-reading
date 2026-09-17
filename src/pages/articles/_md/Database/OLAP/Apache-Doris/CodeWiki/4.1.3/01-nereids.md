@@ -6,6 +6,7 @@ source:
 title: "Nereids 优化器"
 date: "2026-08-23T18:22:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Nereids", "Cascades", "CBO", "ANTLR4"]
 description: "Doris Nereids 优化器：ANTLR4 解析 + 启发式重写 + Cascades CBO，SQL 文本到物理计划的全流水线。"
 readingTime: "14 min"

@@ -6,6 +6,7 @@ source:
 title: "领域模型与数据定义"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "Prisma", "Postgres", "ClickHouse", "Domain", "Zod"]
 description: "Langfuse 领域层：Prisma 70+ 模型、domain zod schema、Postgres+ClickHouse 双库分工、时间版本化 DatasetItem、安全默认。"
 readingTime: "16 min"

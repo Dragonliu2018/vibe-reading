@@ -6,6 +6,7 @@ source:
 title: "函数体系"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "ScalarUDF/AggregateUDF/WindowUDF 的 struct+trait 双分离、Accumulator/PartitionEvaluator 状态机与注册宏。"
 readingTime: "17 min"

@@ -6,6 +6,7 @@ source:
 title: "AI Agent 系统"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "Agent", "Sessions", "MCP", "BYOK", "Copilot"]
 description: "VS Code 1.135 AI Agent 系统——Agents Window 会话模型、Agent Host、changeset/checkpoint、MCP 与 BYOK"
 readingTime: "18 min"

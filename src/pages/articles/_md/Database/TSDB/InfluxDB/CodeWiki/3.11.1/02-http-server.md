@@ -6,6 +6,7 @@ source:
 title: "HTTP API 服务"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 的 HTTP API（端口 8181）与 FlightSQL gRPC 同端口复用、路由分发与 Tower 中间件栈"
 readingTime: "18 min"

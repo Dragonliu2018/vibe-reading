@@ -8,6 +8,7 @@ source:
   prType: "perf"
 date: "2026-07-04"
 category: [Database, Ecosystems, mycli, Contributions]
+contentType: "Contributions"
 tags: ["Python Import", "LLM", "启动性能", "MYCLI_LLM_OFF"]
 description: "special/__init__.py 无条件导入 LLM 符号，绕过了 llm.py 和 main.py 已有的 MYCLI_LLM_OFF 守卫。本 PR 在 __init__.py 补上同等守卫，并为四个 LLM 符号提供轻量 stub，使禁用 LLM 时真正跳过模块加载。"
 readingTime: "6 min"

@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "Java", "实时分析", "列式存储", "OLAP"]
 description: "Apache Druid 37.0.0——高性能实时分析数据库，列式 Segment 存储 + Sequence 惰性流式查询 + 批流统一摄入 + 多阶段 SQL 引擎（MSQ）内核解读。"
 readingTime: "55 min"

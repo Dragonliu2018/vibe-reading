@@ -6,6 +6,7 @@ source:
 title: "终端仿真引擎"
 date: "2026-09-17T10:51:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "ghostty", "VT100", "FFI"]
 description: "herdr 终端仿真：vendored libghostty-vt（Zig）+ 手写 FFI 安全层，OSC 拦截与三源 agent 状态仲裁。"
 readingTime: "20 min"

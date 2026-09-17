@@ -8,6 +8,7 @@ source:
   site: "Docs by LangChain 官方文档"
 date: "2026-08-01T17:00:00+08:00"
 category: [AI, Agent, Memory & Context, Blogs]
+contentType: "Blogs"
 tags: ["LangChain", "Short-term Memory", "Agent", "Checkpointer", "Middleware"]
 description: "LangChain 短期记忆：通过 checkpointer 实现 thread 级会话持久化、管理对话历史；介绍 trim/delete/summarize 等消息管理策略与 @before_model/@after_model 中间件。"
 readingTime: "10 min"

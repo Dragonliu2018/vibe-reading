@@ -8,6 +8,7 @@ source:
   site: "知乎 SelectDB"
 date: "2026-07-27"
 category: [Database, OLAP, Apache Doris, Official]
+contentType: "Blogs"
 tags: ["SelectDB", "Apache Doris", "Schema Change", "Light Schema Change", "Flink CDC"]
 description: "Apache Doris 1.2.0 Light Schema Change 设计与实现：加减列只改 FE 元数据实现毫秒级同步，替代 Hard Linked Schema Change，结合 Flink CDC 自动同步 DDL。"
 readingTime: "10 min"

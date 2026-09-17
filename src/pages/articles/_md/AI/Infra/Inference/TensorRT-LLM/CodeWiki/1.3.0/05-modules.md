@@ -6,6 +6,7 @@ source:
 title: "神经网络算子"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "modules", "Attention", "MoE", "融合算子", "torch.compile"]
 description: "modules 是可组合的神经网络算子层——Attention/MLP/MoE/RMSNorm，分离计算逻辑与 kernel 实现，支持 torch.compile 与融合路径。"
 readingTime: "14 min"

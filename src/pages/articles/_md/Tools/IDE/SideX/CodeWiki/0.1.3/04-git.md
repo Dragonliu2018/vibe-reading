@@ -6,6 +6,7 @@ source:
 title: "Git 集成"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "git", "porcelain", "gix"]
 description: "SideX Git 集成——实际走系统 git CLI（gix 预留未用），porcelain v2 解析与安全加固"
 readingTime: "13 min"

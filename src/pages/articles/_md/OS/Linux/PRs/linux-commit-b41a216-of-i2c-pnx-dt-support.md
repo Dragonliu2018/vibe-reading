@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-08-16T02:22:28+08:00"
 category: ["OS", "Linux", "PRs"]
+contentType: "PRs"
 tags: ["Linux Kernel", "I2C", "Device Tree", "OF", "of_node", "PNX", "LPC32xx", "of_match", "v3.5"]
 description: "2012 年 Roland Stigge 给 i2c-pnx（NXP PNX/LPC32xx）驱动加 device tree 支持：新增 of_match 绑定、从 DT 读 clock-frequency、per-instance timeout，并套用 9fd049 立的 adap->dev.of_node = of_node_get() 模式 + of_i2c_register_devices。但只加了 get、漏了配对的 put，留下 imbalance，14 年后由 05515d1 补齐。"
 readingTime: "13 min"

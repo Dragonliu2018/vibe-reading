@@ -6,6 +6,7 @@ source:
 title: "抽象解释器"
 date: "2026-08-19T17:50:32+08:00"
 category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "JIT", "字节码", "LLVM IR"]
 description: "Jeandle 抽象解释器：Java 字节码到 LLVM IR 的逐块翻译与 SSA 构造"
 readingTime: "16 min"

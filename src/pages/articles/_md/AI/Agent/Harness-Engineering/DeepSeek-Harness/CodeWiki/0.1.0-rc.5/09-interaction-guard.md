@@ -6,6 +6,7 @@ source:
 title: "交互与护栏"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Approval", "Guard", "Plan", "Interaction"]
 description: "dsh 横切于 agent/tools 事件的交互护栏——approval/permission/commands、loop hygiene、plan 状态、context 注入与 hook bridge。"
 readingTime: "15 min"

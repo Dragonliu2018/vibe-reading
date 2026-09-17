@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/longcat-sparse-attention.pdf"
 date: "2026-08-05T20:00:00+08:00"
 category: [AI, Models, Text Model, Papers]
+contentType: "Papers"
 tags: ["LongCat", "Sparse Attention", "Meituan", "长上下文", "LLM", "HBM", "Indexer"]
 description: "美团 LongCat 团队提出 LSA，通过 SI/CLI/HI 三个正交机制解决 DSA 的输出不连续和高开销瓶颈，在 1024K 上下文实现 3.60× prefill 加速且质量无损。"
 readingTime: "18 min"

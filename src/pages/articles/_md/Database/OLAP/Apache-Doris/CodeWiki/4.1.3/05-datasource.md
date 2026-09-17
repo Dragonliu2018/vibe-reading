@@ -6,6 +6,7 @@ source:
 title: "联邦数据源"
 date: "2026-08-23T18:30:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "ExternalCatalog", "Hive", "Iceberg", "联邦查询"]
 description: "Doris 联邦数据源：ExternalCatalog 抽象 + Lazy 加载 + 双层元数据缓存 + MVCC 一致性快照。"
 readingTime: "12 min"

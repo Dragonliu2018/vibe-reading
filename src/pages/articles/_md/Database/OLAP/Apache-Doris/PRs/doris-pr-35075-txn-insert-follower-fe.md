@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-08-05T15:00:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "Transaction", "FE", "Java", "Thrift"]
 description: "通过在 MasterOp 请求中携带 TTxnLoadInfo，让 follower FE 转发 DML 到 master 时同步传递事务上下文，修复事务导入连接 follower FE 时数据提前可见的 bug。"
 readingTime: "10 min"

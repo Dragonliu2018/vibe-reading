@@ -6,6 +6,7 @@ source:
 title: "DorisWriter"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "DorisWriter", "Apache Doris", "stream load", "批写入"]
 description: "Litefuse DorisWriter：单例内存批缓冲写入器，按 batch/字节/interval 三触发走 Doris HTTP stream load，含重试退避与丢弃策略。"
 readingTime: "12 min"

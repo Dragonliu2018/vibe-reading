@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T02:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "查询加速", "优化技术原理"]
+contentType: "Docs"
 tags: ["Apache Doris", "Pipeline", "执行引擎", "MPP", "Local Exchange", "查询优化"]
 description: "Apache Doris 3.x 官方文档：Pipeline 执行模型参考 Hyper 论文，充分释放多核 CPU 计算能力并限制查询线程数，解决线程膨胀问题，实现 Query/DDL/DML 并行处理。"
 readingTime: "12 min"

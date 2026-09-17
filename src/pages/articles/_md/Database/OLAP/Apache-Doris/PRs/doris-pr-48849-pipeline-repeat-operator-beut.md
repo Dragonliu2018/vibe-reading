@@ -8,6 +8,7 @@ source:
   prType: "refactor"
 date: "2026-08-11T16:56:24+08:00"
 category: [Database, OLAP, "Apache Doris", PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "C++", "Pipeline", "BE", "单元测试", "Grouping Sets"]
 description: "为 pipeline RepeatOperator 补齐 BE 单元测试，并重构算子使其可测试——统一 pull() 控制流、用 ColumnNullable 高层 API 替代手动 null_map 操作。"
 readingTime: "11 min"

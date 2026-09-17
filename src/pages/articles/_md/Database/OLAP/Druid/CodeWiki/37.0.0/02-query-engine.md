@@ -6,6 +6,7 @@ source:
 title: "查询引擎与处理流水线"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "查询引擎", "Sequence", "向量化", "表达式"]
 description: "Druid 查询引擎——Query/QueryToolChest 策略体系、Aggregator onheap/offheap 双套、Expr 表达式引擎、FilterBundle 位图预过滤、Sequence/Yielder pull 与 Operator push 双流式模型。"
 readingTime: "17 min"

@@ -6,6 +6,7 @@ source:
 title: "集群协调层"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "ClusterController", "Paxos", "Recovery", "ServerDBInfo"]
 description: "集群协调层——ClusterController 经协调器 Paxos 选举 + 9 阶段 Recovery 状态机 + Worker 角色承载 + ServerDBInfo 广播，FDB 容错与一致性的控制平面。"
 readingTime: "42 min"

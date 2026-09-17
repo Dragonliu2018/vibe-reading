@@ -8,6 +8,7 @@ source:
   prType: "perf"
 date: "2026-08-26T14:40:53+08:00"
 category: [AI, Infra, Inference, SGLang, PRs]
+contentType: "PRs"
 tags: ["Diffusion", "DiT", "SGLang", "CUDA", "RoPE", "QKNorm", "JIT Kernel", "LongCat-Image"]
 description: "解读 PR #35995：扩展 JIT QKNorm+RoPE 融合核支持 FP32 全宽交错缓存，落地 LongCat-Image，端到端加速 17% 且输出逐字节一致。"
 readingTime: "16 min"

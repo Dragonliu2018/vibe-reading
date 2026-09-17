@@ -6,6 +6,7 @@ source:
 title: "API 接口层"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "REST", "OpenAPI", "authn", "authz"]
 description: "Harness HTTP API 层：handler→controller→service 三层分工，chi 中间件链，scope/resource/permission 鉴权模型，reflect 推导的 OpenAPI 生成，统一 usererror 翻译"
 readingTime: "14 min"

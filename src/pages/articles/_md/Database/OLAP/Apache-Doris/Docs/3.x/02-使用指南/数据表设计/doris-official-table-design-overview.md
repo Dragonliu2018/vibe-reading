@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T13:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计"]
+contentType: "Docs"
 tags: ["Apache Doris", "数据表设计", "建表", "分桶", "分区", "Schema"]
 description: "Apache Doris 3.x 官方文档：数据表设计概览，介绍建表语句、表名规则、表属性（分桶数、存储介质、副本数、冷热分离）及注意事项。"
 readingTime: "5 min"

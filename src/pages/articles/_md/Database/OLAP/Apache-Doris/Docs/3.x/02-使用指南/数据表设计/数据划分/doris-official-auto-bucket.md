@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T13:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "Auto bucket", "自动分桶", "BUCKETS AUTO", "数据划分"]
 description: "Apache Doris 3.x 官方文档：Auto bucket 自动分桶功能动态推算分桶数，使分桶数始终保持在合理范围内，用户无需关心分桶数的细节。"
 readingTime: "10 min"

@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/eagle-finch-rwkv-matrix-valued-states.pdf"
 date: "2026-08-04T18:00:00+08:00"
 category: [AI, Models, Text Model, RWKV, Papers]
+contentType: "Papers"
 tags: ["RNN", "Matrix-Valued State", "Dynamic Recurrence", "Linear Attention", "RWKV-5", "RWKV-6", "Data-Dependent Decay", "Token Shift", "Multilingual", "LoRA"]
 description: "目的：提升 RWKV 架构表达力。手段：矩阵值状态 + 数据依赖衰减 + DDLerp token shift + 多语言语料。结论：Eagle/Finch 多语言 SOTA，推理 O(d) 内存。"
 readingTime: "16 min"

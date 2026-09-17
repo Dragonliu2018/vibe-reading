@@ -6,6 +6,7 @@ source:
 title: "共享基础"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "Data Contract", "Sample", "TITO", "R3", "Utils"]
 description: "Sample 数据契约约束 rollout↔train 边界，load_function 插件加载，HTTP 分布式 POST，TITO/R3 数据结构。"
 readingTime: "20 min"

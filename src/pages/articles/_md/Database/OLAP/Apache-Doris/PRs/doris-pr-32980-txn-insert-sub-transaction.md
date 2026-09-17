@@ -8,6 +8,7 @@ source:
   prType: "enhancement"
 date: "2026-08-05T14:30:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "Transaction", "FE", "Java", "SubTransaction"]
 description: "通过引入 sub_txn_id 分离 FE 与 BE 的事务标识，让用户可以在一个事务中多次 insert 同一张表，并支持 READ COMMITTED 隔离级别。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "远程开发"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "russh", "bollard", "Docker", "SSH", "remote"]
 description: "SideX 远程开发——russh SSH + bollard Docker + 隧道，exec-based 文件操作，devcontainer 支持"
 readingTime: "13 min"

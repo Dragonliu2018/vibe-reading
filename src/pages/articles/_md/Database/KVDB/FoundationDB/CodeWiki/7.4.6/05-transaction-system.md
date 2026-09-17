@@ -6,6 +6,7 @@ source:
 title: "事务系统"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "CommitProxy", "Resolver", "ConflictSet", "OCC", "Sequencer"]
 description: "事务系统——CommitProxy 批量提交 + GRVProxy 授予读版本 + Resolver OCC 冲突检测 + Sequencer 单点版本分配，FDB ACID 严格可串行化的引擎。"
 readingTime: "45 min"

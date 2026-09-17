@@ -6,6 +6,7 @@ source:
 title: "文件格式与 IO"
 date: "2026-08-23T18:40:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "FileSystem", "Parquet", "ORC", "谓词下推"]
 description: "Doris 文件格式与 IO：FileSystem 抽象 (S3/HDFS/本地) + Parquet/ORC 多级谓词下推 + Lazy 物化。"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "进程与连接架构"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "postmaster", "libpq", "多进程", "进程模型"]
 description: "PostgreSQL per-process 多进程架构——postmaster 主循环、fork backend、辅助进程 X-macro 分发、PMState 状态机、崩溃恢复、libpq 前后端协议与认证"
 readingTime: "35 min"

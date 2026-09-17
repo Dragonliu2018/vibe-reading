@@ -6,6 +6,7 @@ source:
 title: "解释器与上下文"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "Context", "InterpreterFactory", "executeQuery", "服务定位器"]
 description: "ClickHouse 解释器与上下文源码解读——Context 服务定位器(pimpl)、InterpreterFactory 工厂分发、executeQuery 全流程。"
 readingTime: "25 min"

@@ -6,6 +6,7 @@ source:
 title: "搜索调优引擎"
 date: "2026-08-19T17:42:29+08:00"
 category: ["AI", "Agent", "Search", "SearchCLI", "CodeWiki", "0.2.0"]
+contentType: "CodeWiki"
 tags: ["SearchCLI", "TypeScript", "LLM-as-a-Judge", "NDCG", "Search Tuning"]
 description: "SearchCLI 搜索调优引擎——从 query 生成、LLM 相关性判定到策略生成与场景应用的全流水线。"
 readingTime: "22 min"

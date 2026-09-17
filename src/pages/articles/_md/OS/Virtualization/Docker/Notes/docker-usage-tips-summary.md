@@ -2,6 +2,7 @@
 title: "docker 使用技巧汇总"
 date: "2026-08-23T17:06:27+08:00"
 category: [OS, Virtualization, Docker, Notes]
+contentType: "Notes"
 alsoCategories:
   - [Tools, Notes]
 tags: ["docker", "容器", "镜像", "命令速查", "技巧"]

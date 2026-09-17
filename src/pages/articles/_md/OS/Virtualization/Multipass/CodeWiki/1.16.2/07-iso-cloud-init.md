@@ -6,6 +6,7 @@ source:
 title: "ISO 与 Cloud-init"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "cloud-init", "ISO9660", "NoCloud"]
 description: "手写 ISO9660+Joliet 生成 NoCloud seed ISO，4 个 cidata 文件 + instance-id 重生成。"
 readingTime: "8 min"

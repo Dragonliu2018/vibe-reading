@@ -6,6 +6,7 @@ source:
 title: "组织与治理"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 组织与治理子系统——agent 组织架构、身份鉴权、预算与审批门"
 readingTime: "20 min"

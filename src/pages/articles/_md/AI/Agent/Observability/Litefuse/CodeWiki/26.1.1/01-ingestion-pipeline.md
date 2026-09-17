@@ -6,6 +6,7 @@ source:
 title: "摄入管线"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "Ingestion", "OTel", "Apache Doris", "events_full"]
 description: "Litefuse 摄入管线：OTel resourceSpans → S3 暂存 → 队列 → IngestionService 富化 EventRecord → DorisWriter，含 events_full 统一迁移与 SDK direct-write 门控。"
 readingTime: "14 min"

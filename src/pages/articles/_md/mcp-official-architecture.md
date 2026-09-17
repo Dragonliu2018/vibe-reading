@@ -8,6 +8,7 @@ source:
   site: "Model Context Protocol 官方文档"
 date: "2026-08-01T16:00:00+08:00"
 category: [AI, Agent, MCP, Official]
+contentType: "Blogs"
 tags: ["MCP", "Model Context Protocol", "Architecture", "JSON-RPC", "Client-Server", "Primitives"]
 description: "MCP 官方架构概览：客户端-服务端架构、数据层（JSON-RPC 2.0 协议、Discovery、三大原语 Tools/Resources/Prompts、Notifications）与传输层（Stdio / Streamable HTTP），并给出完整的发现、工具调用、实时通知交互示例。"
 readingTime: "12 min"

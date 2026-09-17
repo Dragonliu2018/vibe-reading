@@ -6,6 +6,7 @@ source:
 title: "c10 核心库"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "C++", "TensorImpl", "intrusive_ptr", "DispatchKeySet"]
 description: "c10 是 PyTorch 最底层 C++ 核心库，定义 TensorImpl/Storage/intrusive_ptr/DispatchKeySet/SymInt/CachingAllocator 等基础抽象，零开销分层基石。"
 readingTime: "12 min"

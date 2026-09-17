@@ -6,6 +6,7 @@ source:
 title: "评测系统"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "评测", "SGLang", "LiveCodeBench"]
 description: "sglang_eval.py in-process 评测入口、三阶段评分流水线、benchmark 加载与断点续跑"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "改写引擎"
 date: "2026-08-25T10:45:03+08:00"
 category: [AI, Agent, "AI Coding", RTK, CodeWiki, "0.45.0"]
+contentType: "CodeWiki"
 tags: ["RTK", "Rust", "CLI 代理", "命令改写"]
 description: "RTK discover/ 模块：命令三态分类、复合命令改写流水线、60+ 正则规则集。"
 readingTime: "21 min"

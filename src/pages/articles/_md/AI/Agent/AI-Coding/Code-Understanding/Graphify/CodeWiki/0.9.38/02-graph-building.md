@@ -6,6 +6,7 @@ source:
 title: "Graph Building"
 date: "2026-08-10T22:00:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Understanding", Graphify, CodeWiki, "0.9.38"]
+contentType: "CodeWiki"
 tags: ["graphify", "NetworkX", "Leiden", "社区检测", "去重", "phantom-edge"]
 description: "graphify 图构建层：三层去重策略、NetworkX 组装、Leiden 社区检测降级、god nodes 分析与跨语言 phantom-edge 防护。"
 readingTime: "15 min"

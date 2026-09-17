@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "C", "内核", "操作系统", "调度", "内存管理", "VFS", "网络栈"]
 description: "Linux 7.1 内核源码架构解读——从系统调用入口到进程调度、内存管理、VFS、网络栈、块 I/O、io_uring、LSM 安全框架的 12 个核心子系统 internals。"
 readingTime: "45 min"

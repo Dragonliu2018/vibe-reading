@@ -6,6 +6,7 @@ source:
 title: "CubeStore 存储"
 date: "2026-08-17T22:20:51+08:00"
 category: [Database, Ecosystems, Cube, CodeWiki, "1.7.20"]
+contentType: "CodeWiki"
 tags: ["Cube", "Rust", "OLAP", "Parquet", "列式存储", "分布式"]
 description: "Rust 分布式 OLAP 存储引擎"
 readingTime: "22 min"

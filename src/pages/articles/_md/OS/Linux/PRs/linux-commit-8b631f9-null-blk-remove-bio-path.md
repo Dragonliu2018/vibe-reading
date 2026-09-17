@@ -8,6 +8,7 @@ source:
   prType: "refactor"
 date: "2026-08-16T17:21:21+08:00"
 category: ["OS", "Linux", "PRs"]
+contentType: "PRs"
 tags: ["Linux Kernel", "null_blk", "Block Layer", "blk-mq", "bio", "get_tag", "Lockless Bitmap", "Refactor", "Christoph Hellwig", "v6.9"]
 description: "Christoph Hellwig 删掉 null_blk 的 bio based I/O 路径（NULL_Q_BIO），只留 blk-mq（NULL_Q_MQ）：移除整条 bio 路径的 get_tag/put_tag（无锁位图 tag 分配，find_first_zero_bit + test_and_set_bit_lock）、__alloc_cmd/alloc_cmd/free_cmd、null_handle_bio/null_submit_bio、end_cmd 队列模式分流等，把 cmd->rq 改用 blk_mq_rq_from_pdu 取、end_cmd 内联成 blk_mq_end_request。简化驱动、缩小数据结构、方便日后 block 层 API 改动。queue_mode/NULL_Q_BIO 枚举保留用于错误报告。"
 readingTime: "12 min"

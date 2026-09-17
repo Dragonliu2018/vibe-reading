@@ -3,7 +3,7 @@
  * 徽章视图 — 以徽章为主体分组展示文章
  *
  * 构建时渲染，前端零数据逻辑。一个徽章 = 一个折叠组：
- *   分类（badgeCat 派生，复用全站调色板）/ 来源 / Review / 源类型（source.type，新启用）。
+ *   来源 / 源类型（source.type）。内容类型 → /type 视图，Review → /review 视图。
  * 置顶不设维度——4 篇置顶在列表首屏即见，"普通(917)" 是噪音；
  * 置顶状态在组内行级以 📌 前缀体现。
  * 分组头复用 ArticleBadges 的既有徽章类（is:global），不再维护 inline style 副本。
@@ -57,13 +57,6 @@ const SOURCE_TYPE_LABELS: Record<string, string> = {
 
 const dimensions: Dimension[] = [
   {
-    title: '按分类',
-    groups: groupBy(
-      a => ({ key: `cat:${artBadges.get(a.slug)!.catLabel || '未分类'}`, label: artBadges.get(a.slug)!.catLabel || '未分类' }),
-      { kind: 'inline' }
-    ),
-  },
-  {
     title: '按来源',
     groups: groupBy(
       a => ({ key: `origin:${artBadges.get(a.slug)!.originState}`, label: artBadges.get(a.slug)!.originLabel }),
@@ -81,13 +74,13 @@ const dimensions: Dimension[] = [
     ).filter(g => g.key !== 'stype:'),
   },
 ];
-// 按 Review 维度已独立成 /review 视图（流程状态与徽章派生维度语义不同）
+// 按 Review 维度已独立成 /review 视图；按内容类型已独立成 /type 视图
 
 ---
 
 <BaseLayout
   title="徽章 · Vibe Reading"
-  description={`按分类/来源/源类型分组的 ${totalArticles} 篇文章`}
+  description={`按来源/源类型分组的 ${totalArticles} 篇文章`}
   mainClass="padded"
 >
   <ViewTabs active="badges" />

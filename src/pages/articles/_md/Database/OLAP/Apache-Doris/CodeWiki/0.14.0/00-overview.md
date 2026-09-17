@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Java", "C++", "MPP", "OLAP", "Volcano 执行器", "行式执行", "Catalog god class"]
 description: "Apache Doris 0.14.0 源码架构解读：孵化器时期（incubating）的奠基版本、唯一的 legacy 优化器（CUP+Analyzer，无 Nereids）、纯行式 Volcano pull 执行引擎（无向量化、无 Pipeline）、alpha/beta rowset 迁移期、4 态两阶段事务、FE/BE 分离的 MPP 数仓。"
 readingTime: "34 min"

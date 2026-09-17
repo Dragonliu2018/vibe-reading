@@ -6,6 +6,7 @@ source:
 title: "ClickHouse 写入与存储"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "ClickHouse", "Micro-batching", "Wide Events", "Repository"]
 description: "Langfuse ClickHouse 层：ClickhouseWriter 微批单例、events_core 宽表 SQL helper、30 个仓储、v3→v4 路由 wrapper。"
 readingTime: "18 min"

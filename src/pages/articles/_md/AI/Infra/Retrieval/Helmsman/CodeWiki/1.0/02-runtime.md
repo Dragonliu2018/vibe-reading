@@ -6,6 +6,7 @@ source:
 title: "运行时层"
 date: "2026-08-18T21:08:07+08:00"
 category: ["AI", "Infra", "Retrieval", "Helmsman", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["Helmsman", "MiniHyperVec", "Runtime", "WorkerPool", "ResourcePool", "ClusterMap"]
 description: "Helmsman 运行时层：MiniHyperVecEnv 生命周期、ServingWorkerPool/OfflineWorker、per-worker 无锁资源池、ClusterMap 聚簇映射。"
 readingTime: "18 min"

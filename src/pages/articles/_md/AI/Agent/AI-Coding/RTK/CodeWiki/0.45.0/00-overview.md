@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-25T10:45:03+08:00"
 category: [AI, Agent, "AI Coding", RTK, CodeWiki, "0.45.0"]
+contentType: "CodeWiki"
 tags: ["RTK", "Rust", "CLI 代理", "Token 优化", "AI Coding Agent"]
 description: "RTK 是拦截 LLM 编码代理 CLI 输出并压缩 60-90% token 的高性能 Rust 代理。"
 readingTime: "28 min"

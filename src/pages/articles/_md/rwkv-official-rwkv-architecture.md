@@ -8,6 +8,7 @@ source:
   site: "RWKV 官方文档"
 date: "2026-08-04T15:20:00+08:00"
 category: [AI, Models, Text Model, RWKV, Official]
+contentType: "Blogs"
 tags: ["RWKV", "RNN", "线性注意力", "Linear Attention", "架构", "Token Shift", "矩阵值状态", "State Tuning", "ROSA", "DeepEmbed", "广义 Delta Rule"]
 description: "RWKV 官方架构全景：从 RNN 隐藏状态与 R/W/K/V 命名由来出发，逐代梳理 RWKV-1 到 RWKV-8 的演进——向量到矩阵值状态（RWKV-5 Eagle）、数据依赖的动态衰减 ddlerp（RWKV-6 Finch）、广义 Delta Rule 动态状态演化（RWKV-7 Goose）、DeepEmbed 与 ROSA 后缀自动机（RWKV-8 Heron），并附各代模型发布与 ROSA 实验。"
 readingTime: "28 min"

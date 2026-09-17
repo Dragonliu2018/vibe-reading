@@ -6,6 +6,7 @@ source:
 title: "主题系统"
 date: "2026-08-25T10:44:29+08:00"
 category: [OS, Linux, Distribution, Omarchy, CodeWiki, "4.0.0"]
+contentType: "CodeWiki"
 tags: ["Omarchy", "主题", "TOML", "模板"]
 description: "Omarchy 主题子系统——colors.toml 调色板经 .tpl 模板渲染成 shell.toml，Color/Style 单例消费，原子 staging 切换。"
 readingTime: "9 min"

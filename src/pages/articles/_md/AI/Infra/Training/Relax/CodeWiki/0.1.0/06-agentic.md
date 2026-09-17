@@ -6,6 +6,7 @@ source:
 title: "Agentic RL"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "Agentic RL", "多轮交互", "SessionForest", "loss masking", "VLM", "pipeline"]
 description: "解读 Relax Agentic RL 模块：AgenticResidentPipeline 常驻四域 dataflow、AgenticSessionShard 分片会话与 SessionForest 多轮状态树、FinalizedResultTransport 训练样本回传、loss masking 与 VLM 上下文承接。"
 readingTime: "16 min"

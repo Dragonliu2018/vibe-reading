@@ -6,6 +6,7 @@ source:
 title: "文本模型"
 date: "2026-08-18T11:06:09+08:00"
 category: [Tools, IDE, Zed, CodeWiki, "1.15.0"]
+contentType: "CodeWiki"
 tags: ["zed", "Rust", "code editor", "GPUI", "CRDT"]
 description: "Zed 文本数据结构：SumTree 可聚合 B-tree、Rope 文本存储、Buffer CRDT 协作"
 readingTime: "20 min"

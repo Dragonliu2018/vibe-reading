@@ -6,6 +6,7 @@ source:
 title: "存储与配置"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "rusqlite", "SQLite", "settings", "JSONC", "auto-update"]
 description: "SideX 存储与配置——三个 SQLite 库分工、分层设置、自研更新器、keyring 密钥"
 readingTime: "14 min"

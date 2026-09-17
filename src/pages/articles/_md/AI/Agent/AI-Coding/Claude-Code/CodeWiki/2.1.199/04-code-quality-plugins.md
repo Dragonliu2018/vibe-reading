@@ -6,6 +6,7 @@ source:
 title: "代码质量插件组"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "Plugin", "code-review", "security", "多 Agent"]
 description: "三个代码质量插件——code-review 9 步多模型置信度过滤、pr-review-toolkit 6 专项 agent、security-guidance 3 层安全审查 + 25 模式"
 readingTime: "28 min"

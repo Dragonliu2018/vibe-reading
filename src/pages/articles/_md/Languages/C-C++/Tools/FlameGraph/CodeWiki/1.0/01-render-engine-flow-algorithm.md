@@ -6,6 +6,7 @@ source:
 title: "flow() 栈合并算法"
 date: "2026-08-14T18:07:23+08:00"
 category: ["Languages", "C/C++", "Tools", "FlameGraph", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["FlameGraph", "Perl", "Algorithm", "Visualization"]
 description: "深度解读 flamegraph.pl 的 flow() 算法：如何用相邻行公共前缀增量合并把折叠栈聚成树，%Tmp/%Node 双 hash 的读写定稿机制，以及字母序排序的前提与代价。"
 readingTime: "12 min"

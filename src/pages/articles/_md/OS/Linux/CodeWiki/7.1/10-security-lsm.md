@@ -6,6 +6,7 @@ source:
 title: "安全框架 LSM"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "LSM", "安全", "SELinux", "Landlock", "static call"]
 description: "Linux Security Module 框架——v7.1 从 hlist 迁移到 static call、可叠加 LSM、责任链 call_int_hook、机制与策略分离。"
 readingTime: "13 min"

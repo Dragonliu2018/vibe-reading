@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-31T10:00:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "Nereids", "Repeat", "GROUPING SETS", "物化视图"]
 description: "Nereids 翻译 PhysicalRepeat 时输出槽位顺序与 pre-repeat 表达式顺序不一致，BE 按位置映射列时类型错配触发核心转储；修复让两者统一以 grouping set 表达式优先排列。"
 readingTime: "9 min"

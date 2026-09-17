@@ -6,6 +6,7 @@ source:
 title: "C 前端"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "C 前端", "递归下降", "lang_hooks", "parser"]
 description: "GCC C 前端用手写递归下降 parser 把 C 源码解析成语言无关的 GENERIC 树，通过 lang_hooks 与后端衔接。"
 readingTime: "11 min"

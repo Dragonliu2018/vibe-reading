@@ -6,6 +6,7 @@ source:
 title: "核心引擎"
 date: "2026-08-25T10:45:03+08:00"
 category: [AI, Agent, "AI Coding", RTK, CodeWiki, "0.45.0"]
+contentType: "CodeWiki"
 tags: ["RTK", "Rust", "CLI 代理", "Token 优化"]
 description: "RTK core/ 模块：子进程执行、输出捕获、过滤管道、降级守卫与 token 统计的统一骨架。"
 readingTime: "22 min"

@@ -6,6 +6,7 @@ source:
 title: "Token 统计"
 date: "2026-08-25T10:45:03+08:00"
 category: [AI, Agent, "AI Coding", RTK, CodeWiki, "0.45.0"]
+contentType: "CodeWiki"
 tags: ["RTK", "Rust", "CLI 代理", "Token 统计"]
 description: "RTK analytics/ 模块：rtk gain 仪表盘、ccusage 集成与加权 CPT 账单经济学。"
 readingTime: "18 min"

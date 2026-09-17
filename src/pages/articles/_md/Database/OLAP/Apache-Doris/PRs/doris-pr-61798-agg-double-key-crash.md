@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-31T11:30:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "Schema Change", "AGG_KEYS", "FE", "崩溃"]
 description: "AGG 模型表用 ALTER ADD COLUMNS 加 double/float 列时，AddColumnsClause 未像 AddColumnClause 那样标记 key，导致非法 schema 透传到 BE 在 _full_encode_keys 空指针崩溃；修复补上 setIsKey 让 FE 在 analyze 阶段拒绝。"
 readingTime: "7 min"

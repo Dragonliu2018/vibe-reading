@@ -6,6 +6,7 @@ source:
 title: "Parquet 与对象存储"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 的 Parquet 列式持久化、对象存储抽象（S3/Azure/GCP）、S3-FIFO 内存缓存与双编码元数据"
 readingTime: "18 min"

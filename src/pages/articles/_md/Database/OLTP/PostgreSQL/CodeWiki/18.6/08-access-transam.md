@@ -6,6 +6,7 @@ source:
 title: "访问方法与事务引擎"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "access", "transam", "WAL", "MVCC", "AM", "事务"]
 description: "PostgreSQL access 模块——AM 可插拔抽象、heap_insert/HOT 优化、WAL 预写日志 XLogInsert/FPW、MVCC 多版本并发、两层事务状态机"
 readingTime: "38 min"

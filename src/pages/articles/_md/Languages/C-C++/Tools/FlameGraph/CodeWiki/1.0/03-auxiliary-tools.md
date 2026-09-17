@@ -6,6 +6,7 @@ source:
 title: "辅助分析工具"
 date: "2026-08-14T18:07:23+08:00"
 category: ["Languages", "C/C++", "Tools", "FlameGraph", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["FlameGraph", "Perl", "Profiling"]
 description: "辅助分析工具对 folded/perf 数据做后处理：difffolded.pl 差分计数、range-perf.pl 时间区间分桶、pkgsplit-perf.pl 包路径拆分、files.pl 文件占用、aix-perf.pl 采集。"
 readingTime: "16 min"

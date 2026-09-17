@@ -6,6 +6,7 @@ source:
 title: "内存管理"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "内存管理", "buddy", "slub", "page cache"]
 description: "Linux 内存管理——buddy 分配器、slub sheaves、缺页处理与 COW、mmap/VMA maple tree、vmscan LRU 回收。"
 readingTime: "18 min"

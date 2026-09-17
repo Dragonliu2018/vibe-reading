@@ -6,6 +6,7 @@ source:
 title: "加速器抽象"
 date: "2026-08-12T15:53:22+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "硬件抽象", "CUDA", "ROCm", "多硬件"]
 description: "DeepSpeedAccelerator 通过 50+ 抽象方法统一 9 种硬件后端（CUDA/ROCm/CPU/XPU/NPU/HPU/MLU/SDAA/SUPA），get_accelerator() 单例工厂被全框架 316 处调用，是 DeepSpeed 多硬件适配的基础设施。"
 readingTime: "14 min"

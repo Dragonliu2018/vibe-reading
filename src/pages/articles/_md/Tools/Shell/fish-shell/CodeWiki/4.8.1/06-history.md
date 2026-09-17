@@ -6,6 +6,7 @@ source:
 title: "历史记录"
 date: "2026-08-14T11:44:53+08:00"
 category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
+contentType: "CodeWiki"
 tags: ["fish-shell", "Rust", "History", "Persistence", "Mmap"]
 description: "fish 的历史记录模块：HistoryItem/HistoryImpl 门面、fish 2.0 YAML 格式、去重与会话隔离、后台 vacuum 压缩、mmap 懒加载。"
 readingTime: "14 min"

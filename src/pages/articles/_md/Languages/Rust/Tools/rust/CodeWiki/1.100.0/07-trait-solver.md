@@ -6,6 +6,7 @@ source:
 title: "Trait 求解"
 date: "2026-08-19T15:02:00+08:00"
 category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
+contentType: "CodeWiki"
 tags: ["Rust", "rustc", "trait", "CodeWiki"]
 description: "rustc 的 trait obligation 求解：旧 solver 与 next solver 的迁移与对比。"
 readingTime: "15 min"

@@ -6,6 +6,7 @@ source:
 title: "高层 API"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "LLM API", "模板方法", "策略模式"]
 description: "llmapi 是 TensorRT-LLM 的用户入口——LLM/AsyncLLM 统一 API，通过模板方法与策略模式实现后端可切换。"
 readingTime: "10 min"

@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/longcat-flash-omni-technical-report.pdf"
 date: "2026-08-12T19:51:18+08:00"
 category: [AI, Models, Omni Model, Papers]
+contentType: "Papers"
 tags: ["Omni-Modal", "MoE", "ScMoE", "Real-Time Interaction", "Audio-Visual", "Streaming", "DPO", "SFT", "Early Fusion"]
 description: "目的：560B 开源全模态模型实现实时音视频交互。手段：课程式渐进预训练 + ScMoE 骨干 + 模态解耦并行 + 流式 pipeline。结论：开源全模态 SOTA，多模态训练保持 90% 纯文本吞吐。"
 readingTime: "25 min"

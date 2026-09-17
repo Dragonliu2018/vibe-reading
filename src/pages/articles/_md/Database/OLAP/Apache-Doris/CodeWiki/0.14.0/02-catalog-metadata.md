@@ -6,6 +6,7 @@ source:
 title: "元数据与 Catalog"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "catalog", "BDBJE", "EditLog", "HA", "god class"]
 description: "Doris 0.14.0 元数据与 Catalog：6888 行 Catalog god class 服务定位器、BDBJE 复制选主、EditLog journal、image 持久化、Checkpoint 副本机制。2.x 拆分重命名为 Env。"
 readingTime: "14 min"

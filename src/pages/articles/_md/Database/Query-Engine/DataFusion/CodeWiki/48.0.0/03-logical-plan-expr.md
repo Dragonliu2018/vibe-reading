@@ -6,6 +6,7 @@ source:
 title: "逻辑计划与表达式"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "LogicalPlan DAG（26 变体）与 Expr 表达式树（30+ 变体），Arc 共享子计划，UDF trait 契约层。"
 readingTime: "16 min"

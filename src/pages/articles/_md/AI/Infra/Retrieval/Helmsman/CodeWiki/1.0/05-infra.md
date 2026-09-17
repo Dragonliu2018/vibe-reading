@@ -6,6 +6,7 @@ source:
 title: "基础设施层"
 date: "2026-08-18T21:08:07+08:00"
 category: ["AI", "Infra", "Retrieval", "Helmsman", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["Helmsman", "MiniHyperVec", "CollectionMeta", "PathConfig", "Dataset", "mmap"]
 description: "Helmsman 基础设施层：类型枚举、CollectionMeta、PathConfig 路径约定、Dataset 模板 mmap 加载、GtReader、root.hpp god header。"
 readingTime: "14 min"

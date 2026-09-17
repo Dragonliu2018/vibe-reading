@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-14T18:07:23+08:00"
 category: ["Languages", "C/C++", "Tools", "FlameGraph", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["FlameGraph", "Perl", "Profiling", "Visualization", "SVG"]
 description: "FlameGraph 是 Brendan Gregg 的火焰图可视化工具集。本文从三阶段流水线、folded 格式契约、stackcollapse 折叠器族、flamegraph.pl 渲染引擎到差分/hot-cold 变体，全面解读 v1.0 的 Perl 实现。"
 readingTime: "35 min"

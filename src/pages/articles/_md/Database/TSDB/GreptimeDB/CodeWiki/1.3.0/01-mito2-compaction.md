@@ -6,6 +6,7 @@ source:
 title: "mito2 Compaction 合并机制深读"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "LSM", "compaction", "TWCS", "时序"]
 description: "mito2 compaction 子系统深读——TWCS 时间窗口合并、状态机调度、filter_deleted 安全性、内存预算与 manifest 原子提交。"
 readingTime: "18 min"

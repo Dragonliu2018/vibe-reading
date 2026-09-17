@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T16:40:20+08:00"
 category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
+contentType: "CodeWiki"
 tags: ["transformers", "Python", "PyTorch", "LLM", "模型加载", "生成", "训练"]
 description: "HuggingFace transformers 是 SOTA 预训练模型的“模型定义框架”。本文从分层架构、模型核心（PreTrainedModel + WeightConverter）、配置/分词/缓存/生成/训练/流水线/量化到模型注册表，全面解读 v5.15.0 的内部原理。"
 readingTime: "32 min"

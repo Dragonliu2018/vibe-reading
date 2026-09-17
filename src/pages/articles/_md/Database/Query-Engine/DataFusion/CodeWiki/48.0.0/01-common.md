@@ -6,6 +6,7 @@ source:
 title: "公共基础"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "DataFusion 全仓地基：DFSchema、DataFusionError、TreeNode 递归模型与宏驱动配置系统。"
 readingTime: "14 min"

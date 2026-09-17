@@ -8,6 +8,7 @@ source:
   site: "腾讯程序员"
 date: "2026-08-24T17:18:09+08:00"
 category: [AI, Agent, "Harness Engineering", Blogs]
+contentType: "Blogs"
 tags: ["Multi-Agent", "Token 优化", "成本治理", "CodeBuddy", "AgentLens", "graphify", "rtk", "Harness Engineering", "上下文工程"]
 description: "围绕“让 AI 只看到当前需要的上下文、减少无关的上下文、减少重复的上下文”三个原则，逐一改造架构拆分、稳定前缀、渐进式披露、代码图谱、CLI 替代 MCP、长期记忆按需索引、工具调用并行化等 10 个方向，全流程预估降本 50%~65%。"
 readingTime: "15 min"

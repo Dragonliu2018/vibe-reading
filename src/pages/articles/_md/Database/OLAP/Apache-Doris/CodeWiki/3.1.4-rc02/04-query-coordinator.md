@@ -6,6 +6,7 @@ source:
 title: "查询协调"
 date: "2026-08-23T18:59:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Coordinator", "两阶段调度", "RuntimeFilter", "MySQL 协议"]
 description: "Doris 3.1.4 查询协调：Coordinator 两阶段调度（scanRange 分配 + Fragment 下发）+ MySQL/Arrow Flight 协议接入。"
 readingTime: "11 min"

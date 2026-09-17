@@ -6,6 +6,7 @@ source:
 title: "Identity & Access"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 身份与权限——两种部署模式、actor 追溯、短生命周期 run JWT、company-scoped 隔离"
 readingTime: "16 min"

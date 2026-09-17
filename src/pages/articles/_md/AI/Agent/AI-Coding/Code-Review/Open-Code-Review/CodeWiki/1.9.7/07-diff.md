@@ -6,6 +6,7 @@ source:
 title: "Diff 解析与行号定位"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "Git", "Diff", "LineResolver"]
 description: "OpenCodeReview Diff 解析与行号定位——unified diff 状态机解析、三种 Mode 来源、ResolveLineNumbers 三级字符串匹配、跨文件重定位，解决「位置漂移」的工程解。"
 readingTime: "20 min"

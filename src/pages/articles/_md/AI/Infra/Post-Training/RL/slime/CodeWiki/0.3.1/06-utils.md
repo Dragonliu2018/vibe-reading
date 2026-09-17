@@ -6,6 +6,7 @@ source:
 title: "基础设施"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "utils", "分布式", "tracing", "routing replay"]
 description: "slime 的基础设施层：参数、分布式、DP 调度、健康监控、tracing、内存与 routing replay。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "Session 日志与持久化"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Session Log", "Event Sourcing", "Persistence"]
 description: "dsh 的 append-only SessionEvent log——model-visible 等价于 logged 的真相源，deriveMessages 投影、JSONL/SQLite 持久化、fork/resume 与检索。"
 readingTime: "16 min"

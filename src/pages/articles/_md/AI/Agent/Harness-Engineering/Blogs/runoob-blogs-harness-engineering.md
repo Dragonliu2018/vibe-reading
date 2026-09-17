@@ -8,6 +8,7 @@ source:
   site: "菜鸟教程"
 date: "2026-08-12T11:33:53+08:00"
 category: [AI, Agent, "Harness Engineering", Blogs]
+contentType: "Blogs"
 tags: ["Harness Engineering", "AI Agent", "驾驭工程", "上下文工程", "反馈循环", "熵管理", "AGENTS.md"]
 description: "AI 模型已经能写出 100 万行代码，真正的挑战是怎么驾驭它稳定、可靠、不失控地工作——围绕 AI 智能体构建约束、反馈与控制系统的方法论 Harness Engineering。"
 readingTime: "12 min"

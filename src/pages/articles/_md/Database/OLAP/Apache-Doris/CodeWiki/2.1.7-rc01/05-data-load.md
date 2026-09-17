@@ -6,6 +6,7 @@ source:
 title: "数据导入"
 date: "2026-08-24T10:22:21+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.7-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "StreamLoad", "RoutineLoad", "2PC", "Transaction", "PublishVersion"]
 description: "Doris 2.1.7 数据导入：Stream/Broker/Routine Load + GlobalTransactionMgr 两阶段提交（COMMITTED→VISIBLE）+ PublishVersionDaemon 异步发布。"
 readingTime: "13 min"

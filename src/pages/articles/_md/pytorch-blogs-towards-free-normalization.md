@@ -8,6 +8,7 @@ source:
   site: "PyTorch Blog"
 date: "2026-08-02T15:00:00+08:00"
 category: [AI, Infra, Inference, Blogs]
+contentType: "Blogs"
 tags: ["Normalization", "Kernel Fusion", "GEMM", "FlashAttention", "RMSNorm", "LayerNorm", "Triton", "GPU", "CUDA", "B200"]
 description: "PyTorch 官方博客：通过 Lazy Pre-Norm、Multi-CTA Norm Fusion 等内核融合技术，将 LayerNorm/RMSNorm 融入 GEMM 与 Attention 内核，可隐藏高达 90% 的归一化延迟；FlashNormAttention 在 GDPA 内核上融合多个归一化，实现最高 35% 加速。"
 readingTime: "28 min"

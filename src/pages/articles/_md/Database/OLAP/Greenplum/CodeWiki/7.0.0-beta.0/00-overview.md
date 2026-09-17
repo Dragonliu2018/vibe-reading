@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-14T15:39:30+08:00"
 category: [Database, OLAP, Greenplum, CodeWiki, "7.0.0-beta.0"]
+contentType: "CodeWiki"
 tags: ["Greenplum", "C/C++", "MPP", "数据库", "ORCA"]
 description: "基于 PostgreSQL 的开源 MPP 数据仓库——coordinator/segment 共享无盘架构、GPORCA 代价优化器与分布式执行内核解读。"
 readingTime: "35 min"

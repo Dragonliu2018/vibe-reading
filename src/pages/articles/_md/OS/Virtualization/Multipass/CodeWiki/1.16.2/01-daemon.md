@@ -6,6 +6,7 @@ source:
 title: "守护进程 Daemon"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "虚拟化", "gRPC", "Qt"]
 description: "multipassd 守护进程：gRPC 服务端 + VM 生命周期编排 + 不可变配置装配。"
 readingTime: "12 min"

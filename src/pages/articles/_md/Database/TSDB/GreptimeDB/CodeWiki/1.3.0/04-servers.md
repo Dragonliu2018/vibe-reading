@@ -6,6 +6,7 @@ source:
 title: "servers 协议接入层"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "MySQL", "PostgreSQL", "gRPC", "OTLP", "Prometheus"]
 description: "servers——十种协议的统一接入层：Server/QueryHandler trait 抽象、Builder 组装、协议 codec 归一为 Instance 执行。"
 readingTime: "20 min"

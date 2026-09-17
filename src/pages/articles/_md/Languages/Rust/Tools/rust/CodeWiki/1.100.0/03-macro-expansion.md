@@ -6,6 +6,7 @@ source:
 title: "宏展开"
 date: "2026-08-19T14:58:00+08:00"
 category: [Languages, Rust, Tools, rust, CodeWiki, "1.100.0"]
+contentType: "CodeWiki"
 tags: ["Rust", "rustc", "宏", "CodeWiki"]
 description: "rustc 的宏展开引擎：固定点迭代、placeholder、hygiene 与内建宏注册。"
 readingTime: "13 min"

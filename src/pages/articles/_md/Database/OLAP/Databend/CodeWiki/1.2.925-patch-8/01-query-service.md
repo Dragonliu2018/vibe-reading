@@ -6,6 +6,7 @@ source:
 title: "服务层"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "OLAP", "Interpreter", "分布式调度"]
 description: "Databend 服务层——协议接入、会话管理、Interpreter 工厂分发、查询管道构建与分布式 Fragment 调度。"
 readingTime: "18 min"

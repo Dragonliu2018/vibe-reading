@@ -6,6 +6,7 @@ source:
 title: "分布式训练"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "DDP", "NCCL", "ProcessGroup", "分布式"]
 description: "ProcessGroup 通信抽象 + DDP bucket 梯度同步 + Reducer autograd hook 异步 overlap + NCCL/gloo backend 策略 + comm_hook 扩展。"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "I2C 子系统"
 date: "2026-08-15T23:50:00+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "I2C", "SMBus", "adapter", "i2c-dev", "mux"]
 description: "Linux I2C 子系统核心——adapter/client 设备模型、i2c_algorithm 策略模式、i2c_transfer 传输链、SMBus 协议与回退模拟、i2c-dev 字符设备、mux 多路复用。"
 readingTime: "14 min"

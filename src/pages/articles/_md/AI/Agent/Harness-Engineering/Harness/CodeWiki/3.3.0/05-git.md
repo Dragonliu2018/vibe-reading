@@ -6,6 +6,7 @@ source:
 title: "Git 操作引擎"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "git", "SmartHTTP", "githook", "devcontainer"]
 description: "Harness Git 引擎：git.Interface 抽象 40+ 操作，Service 本地执行原生 git CLI，双路径 githook（CLI 二进制 + 运行时回调），泛型流式 diff/blame"
 readingTime: "14 min"

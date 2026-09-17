@@ -8,6 +8,7 @@ source:
   site: "公众号 Databend"
 date: "2026-08-07T15:20:00+08:00"
 category: [Database, OLAP, Databend, Official]
+contentType: "Blogs"
 tags: ["Databend", "Databend Cloud", "Agent Trace", "Evals", "数据管道", "VARIANT", "Stream", "Task", "Stage", "Masking Policy", "湖仓"]
 description: "Databend Cloud 承载某头部 AI 大模型企业万亿级强化推理大模型的全链路 Agent Trace，以 Stage、VARIANT、Stream、Task 构建贯穿数据接入、增量处理与评测分析的统一数据管道，每小时 TB 级写入独立扩缩容。"
 readingTime: "6 min"

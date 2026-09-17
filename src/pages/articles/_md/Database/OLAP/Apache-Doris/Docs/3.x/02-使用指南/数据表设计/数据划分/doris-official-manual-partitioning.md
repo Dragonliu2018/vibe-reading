@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T11:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "手动分区", "Range 分区", "List 分区", "NULL 分区", "数据划分"]
 description: "Apache Doris 3.x 官方文档：手动分区介绍分区列规则、Range 分区（FIXED RANGE/LESS THAN/BATCH RANGE/MULTI RANGE）、List 分区及 NULL 分区的语法与示例。"
 readingTime: "8 min"

@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T13:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "Manual bucketing", "手动分桶", "Hash 分桶", "Random 分桶", "数据划分"]
 description: "Apache Doris 3.x 官方文档：Manual bucketing 手动分桶，介绍分桶列选择原则、分桶数与数据量建议及 Random 分布的使用场景。"
 readingTime: "6 min"

@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-09-17T11:51:17+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "BE", "Exception", "Coredump", "C++"]
 description: "BE 的异常安全框架只捕获 doris::Exception，代码里残留的 std::runtime_error / std::length_error / std::exception 三处裸抛会逃逸线程函数触发 std::terminate，整个进程 coredump；本 PR 把三处统一替换为带错误码和栈回溯的 doris::Exception。"
 readingTime: "8 min"

@@ -6,6 +6,7 @@ source:
 title: "Gandiva JIT 编译器"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "Gandiva", "LLVM", "JIT"]
 description: "Gandiva LLVM 表达式 JIT 编译器——Node→Dex→IR→机器码编译流程、Validity/Value 分离、编译一次执行多次与三层缓存"
 readingTime: "12 min"

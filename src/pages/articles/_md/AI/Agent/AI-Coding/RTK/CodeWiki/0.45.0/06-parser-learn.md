@@ -6,6 +6,7 @@ source:
 title: "解析与学习"
 date: "2026-08-25T10:45:03+08:00"
 category: [AI, Agent, "AI Coding", RTK, CodeWiki, "0.45.0"]
+contentType: "CodeWiki"
 tags: ["RTK", "Rust", "CLI 代理", "输出解析", "使用模式学习"]
 description: "RTK parser/ + learn/ 模块：三层降级解析框架与 CLI 修正模式自动检测。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "存储后端"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "storage", "S3", "LMDB", "后端抽象"]
 description: "ArcticDB 存储后端：Store/Storage 抽象与 8 种后端实现"
 readingTime: "13 min"

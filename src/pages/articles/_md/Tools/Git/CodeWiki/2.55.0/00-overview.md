@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "版本控制", "内容寻址存储", "分布式"]
 description: "git 是 Linus Torvalds 创作的分布式版本控制系统。本文从分层架构、运行时行为到七大核心模块，全面解读 Git v2.55.0 的 C 语言内部实现。"
 readingTime: "28 min"

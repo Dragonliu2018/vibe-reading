@@ -6,6 +6,7 @@ source:
 title: "命令分发层"
 date: "2026-08-19T17:42:29+08:00"
 category: ["AI", "Agent", "Search", "SearchCLI", "CodeWiki", "0.2.0"]
+contentType: "CodeWiki"
 tags: ["SearchCLI", "TypeScript", "CLI", "oclif", "Front Controller"]
 description: "SearchCLI 的双入口与三域分发架构——为什么放弃 oclif 命令自动发现、自建 standalone 分发层。"
 readingTime: "16 min"

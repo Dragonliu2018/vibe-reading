@@ -6,6 +6,7 @@ source:
 title: "守护进程"
 date: "2026-09-17T10:46:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "Actor 模型", "终端复用器"]
 description: "herdr headless 守护进程：单线程 actor 事件循环如何独占全部状态、把渲染流推给多个客户端、并在自更新时无感交接。"
 readingTime: "22 min"

@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-08-15T17:33:47+08:00"
 category: ["OS", "Linux", "PRs"]
+contentType: "PRs"
 tags: ["Linux Kernel", "I2C", "Device Tree", "of_node", "引用计数", "Race Condition", "Qualcomm CCI", "Use-After-Free"]
 description: "解读 Linux qcom-cci I2C 驱动的一次 device tree 节点引用计数修复：存储 child 指针时未 of_node_get，循环释放后 adapter 持有悬空指针，修复后在所有拆除路径补齐 get/put 配平引用。"
 readingTime: "12 min"

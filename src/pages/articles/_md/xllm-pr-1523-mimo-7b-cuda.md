@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-07-06"
 category: [AI, Infra, Inference, xLLM, Contributions]
+contentType: "Contributions"
 tags: ["MiMo", "Qwen2", "MRoPE", "MTP", "CUDA", "LLM", "推理框架"]
 description: "122 行为 xLLM 添加 MiMo-7B-Base CUDA 推理：解析 LlmModelImplBase 模板复用 Qwen2 层的机制、apply_mrope 的分段选择算法、concat 格式 RoPE 缓存构建，以及 num_nextn_predict_layers 对 MTP 的支持声明。"
 readingTime: "12 min"

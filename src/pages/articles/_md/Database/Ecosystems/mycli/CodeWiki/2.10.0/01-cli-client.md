@@ -6,6 +6,7 @@ source:
 title: "CLI 客户端"
 date: "2026-08-09T10:10:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
+contentType: "CodeWiki"
 tags: ["mycli", "Python", "CLI", "Click", "Mixin"]
 description: "mycli CLI 客户端模块深度解读：Click 参数声明、MyCli Mixin 组合、REPL 主循环、五种运行模式分发。"
 readingTime: "8 min"

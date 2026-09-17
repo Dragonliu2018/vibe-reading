@@ -6,6 +6,7 @@ source:
 title: "LLM 提供商抽象"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "LLM", "Provider", "Retry"]
 description: "OpenCodeReview LLM 提供商抽象层——~25 家内置 provider、三种 API 协议（Chat/Anthropic/Responses）、4 策略端点解析、重试三件套、token 用量统一抽取、API key 从命令动态解析。"
 readingTime: "22 min"

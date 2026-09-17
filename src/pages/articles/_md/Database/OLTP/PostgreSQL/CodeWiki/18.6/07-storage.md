@@ -6,6 +6,7 @@ source:
 title: "存储与缓冲管理"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "storage", "buffer pool", "clock sweep", "smgr", "lock manager"]
 description: "PostgreSQL storage 模块——共享缓冲池 128 分区哈希、clock sweep 淘汰、bgwriter/checkpointer 协作、smgr/md 段文件、两层锁体系"
 readingTime: "30 min"

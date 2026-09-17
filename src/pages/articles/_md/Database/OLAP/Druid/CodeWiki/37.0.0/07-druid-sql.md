@@ -6,6 +6,7 @@ source:
 title: "Druid SQL"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "SQL", "Calcite", "规划", "JDBC"]
 description: "Druid SQL——基于 Apache Calcite 的 SQL 前端，DruidPlanner/DruidQueryRel/PartialDruidQuery 把 SQL 规划为 native query，computeQuery 优先级级联，subquery 限制引出 MSQ。"
 readingTime: "15 min"

@@ -6,6 +6,7 @@ source:
 title: "分词框架"
 date: "2026-08-18T16:40:20+08:00"
 category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
+contentType: "CodeWiki"
 tags: ["transformers", "Tokenizer", "Jinja", "chat template", "Rust backend"]
 description: "分词框架 v5 重构为三后端一基类架构，fast（Rust tokenizers）为唯一公共路径。PreTrainedTokenizerBase 定义流程骨架，chat template 用 Jinja2 沙箱解耦对话格式，special_tokens_map 统一抽象特殊 token。"
 readingTime: "13 min"

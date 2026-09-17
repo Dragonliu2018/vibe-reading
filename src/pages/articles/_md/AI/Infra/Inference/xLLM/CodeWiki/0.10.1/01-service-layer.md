@@ -6,6 +6,7 @@ source:
 title: "服务接口层"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "brpc", "OpenAI API", "pybind"]
 description: "xLLM 服务接口层解读：APIService 的 OpenAI/Anthropic 兼容 API、brpc HTTP 服务注册、C/Python 绑定。"
 readingTime: "10 min"

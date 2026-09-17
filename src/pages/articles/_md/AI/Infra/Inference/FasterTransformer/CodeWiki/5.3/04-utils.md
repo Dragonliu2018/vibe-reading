@@ -6,6 +6,7 @@ source:
 title: "Utils"
 date: "2026-08-10T14:00:00+08:00"
 category: [AI, Infra, Inference, FasterTransformer, CodeWiki, "5.3"]
+contentType: "CodeWiki"
 tags: ["FasterTransformer", "Tensor", "IAllocator", "cuBLAS", "NCCL", "GEMM 调优"]
 description: "FasterTransformer 的基础设施层——Tensor 非拥有式描述符、IAllocator 多后端内存池、cublasMMWrapper GEMM 调优、NCCL 通信与 custom all-reduce。"
 readingTime: "16 min"

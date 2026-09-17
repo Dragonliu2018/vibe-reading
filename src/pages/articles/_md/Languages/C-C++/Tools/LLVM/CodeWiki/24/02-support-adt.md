@@ -6,6 +6,7 @@ source:
 title: "Support 与 ADT"
 date: "2026-08-20T10:23:42+08:00"
 category: ["Languages", "C/C++", "Tools", "LLVM", "CodeWiki", "24"]
+contentType: "CodeWiki"
 tags: ["LLVM", "ADT", "SmallVector", "StringRef", "APInt", "DenseMap", "Error"]
 description: "LLVM 基础设施——SmallVector 小对象优化、StringRef 视图、APInt 任意精度、DenseMap 开寻址、Error 代数类型"
 readingTime: "20 min"

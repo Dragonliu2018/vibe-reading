@@ -6,6 +6,7 @@ source:
 title: "CBDB 并行查询机制"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C/C++", "MPP", "并行查询", "Locus"]
 description: "CBDB 并行查询机制深度解读——所有 worker 平等协作、Locus 嵌入 parallel_workers、Gang 按因子扩展，以及放弃 PostgreSQL Gather leader 模式的三条原因。"
 readingTime: "10 min"

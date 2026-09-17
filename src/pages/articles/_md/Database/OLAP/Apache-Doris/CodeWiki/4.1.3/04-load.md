@@ -6,6 +6,7 @@ source:
 title: "数据导入 Load"
 date: "2026-08-23T18:28:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "StreamLoad", "RoutineLoad", "BrokerLoad", "事务"]
 description: "Doris 数据导入：Stream Load 直写 BE、Routine Load 消费 Kafka、Broker Load 批量编排，Job/Task 两级模型。"
 readingTime: "12 min"

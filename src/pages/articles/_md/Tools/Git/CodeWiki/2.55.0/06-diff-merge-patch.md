@@ -6,6 +6,7 @@ source:
 title: "Diff、合并与补丁"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "diff", "xdiff", "merge-ort", "sequencer"]
 description: "解读 Git 内容变换——diff.c 高层编排与 xdiff 底层算法两层、diffcore 流水线、ORT 合并策略、apply 补丁应用、sequencer commit 重放。"
 readingTime: "15 min"

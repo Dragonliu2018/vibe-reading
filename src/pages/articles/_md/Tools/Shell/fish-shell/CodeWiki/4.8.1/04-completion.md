@@ -6,6 +6,7 @@ source:
 title: "补全引擎"
 date: "2026-08-14T11:44:53+08:00"
 category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
+contentType: "CodeWiki"
 tags: ["fish-shell", "Rust", "Completion", "FuzzyMatch", "Wildcard"]
 description: "fish 的补全引擎：CompleteEntryOpt 规则注册表、7 级 StringFuzzyMatch 模糊匹配、双用途 wildcard、懒加载补全脚本。"
 readingTime: "18 min"

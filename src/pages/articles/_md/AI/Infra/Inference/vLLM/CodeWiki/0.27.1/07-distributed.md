@@ -6,6 +6,7 @@ source:
 title: "分布式推理与平台"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "分布式", "Tensor Parallel", "NCCL", "Custom AllReduce", "Platform 抽象"]
 description: "解读 vLLM 分布式与平台抽象模块：GroupCoordinator 管并行组、DeviceCommunicator 多 backend 级联 dispatch、Platform 屏蔽 N 种硬件、shm 广播与 EP all-to-all。"
 readingTime: "17 min"

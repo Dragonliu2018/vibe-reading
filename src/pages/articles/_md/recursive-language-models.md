@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/recursive-language-models.pdf"
 date: "2026-07-27"
 category: [AI, Infra, Inference, Papers]
+contentType: "Papers"
 tags: ["LLM", "Long Context", "Recursive", "REPL", "Inference-Time Scaling", "Out-of-Core"]
 description: "目的：让 LLM 处理远超上下文窗口的输入。手段：把 prompt 作为 Python REPL 环境中的变量，LLM 写代码查看、分解、递归调用自身。结论：扩展到 10M+ token，在四任务上大幅超越基线且成本相当。"
 readingTime: "14 min"

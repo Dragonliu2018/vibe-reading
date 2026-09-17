@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-10T14:00:00+08:00"
 category: [AI, Infra, Inference, FasterTransformer, CodeWiki, "5.3"]
+contentType: "CodeWiki"
 tags: ["FasterTransformer", "C++/CUDA", "Transformer 推理加速", "Fused Kernel", "Tensor Parallel"]
 description: "NVIDIA FasterTransformer 是基于 CUDA/cuBLAS 的高度优化 transformer 推理库。本文从分层架构、fused kernel、多 GPU 并行到核心模块，全面解读 v5.3 的内部原理。"
 readingTime: "28 min"

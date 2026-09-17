@@ -6,6 +6,7 @@ source:
 title: "启动与依赖注入"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "wire", "依赖注入", "多协议路由"]
 description: "Harness 启动链路：kingpin CLI → google/wire 编译期注入 ~150 个 WireSet → bootstrap 初始化 service principal → errgroup 并行启动 HTTP/SSH/metric 三类 server"
 readingTime: "12 min"

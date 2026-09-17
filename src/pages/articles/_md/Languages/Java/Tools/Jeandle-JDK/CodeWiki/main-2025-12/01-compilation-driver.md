@@ -6,6 +6,7 @@ source:
 title: "编译驱动"
 date: "2026-08-19T17:50:32+08:00"
 category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "JIT", "OpenJDK"]
 description: "Jeandle 编译驱动：JeandleCompiler 与 JeandleCompilation 的装配与流水线编排"
 readingTime: "12 min"

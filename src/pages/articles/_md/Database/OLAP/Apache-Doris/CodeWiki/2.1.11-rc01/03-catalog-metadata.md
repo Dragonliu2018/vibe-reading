@@ -6,6 +6,7 @@ source:
 title: "Catalog 元数据"
 date: "2026-08-23T19:56:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.11-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Env", "BDBJE", "EditLog", "Tablet", "HA", "服务定位器"]
 description: "Doris 2.1.11 Catalog 元数据：Env god class 服务定位器 + TabletInvertedIndex + image/log 持久化 + BDBJE fencing 选主。"
 readingTime: "13 min"

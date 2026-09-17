@@ -6,6 +6,7 @@ source:
 title: "记忆与持久化"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "Memory", "Persistence"]
 description: "DeerFlow 记忆与持久化子系统：长期记忆的多后端架构与应用数据持久层。"
 readingTime: "4 min"

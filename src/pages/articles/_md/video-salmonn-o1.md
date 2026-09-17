@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/video-salmonn-o1.pdf"
 date: "2026-08-04T10:30:00+08:00"
 category: [AI, Models, Video Model, Papers]
+contentType: "Papers"
 tags: ["Audio-visual LLM", "Reasoning", "pDPO", "Video Understanding", "Benchmark", "DPO"]
 description: "目的：将推理优化引入通用视频理解。手段：推理密集型 SFT 数据 + pDPO 步级偏好优化 + RivaBench 基准。结论：较 LLaVA-OneVision 基线提升 3-8%，pDPO 在 RivaBench 上提升 6-8%。"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "Hook 集成"
 date: "2026-08-25T10:45:03+08:00"
 category: [AI, Agent, "AI Coding", RTK, CodeWiki, "0.45.0"]
+contentType: "CodeWiki"
 tags: ["RTK", "Rust", "CLI 代理", "Hook", "AI Coding Agent"]
 description: "RTK hooks/ 模块：11+ LLM 代理的 hook 安装、PreToolUse 拦截、SHA-256 完整性校验与权限模型。"
 readingTime: "23 min"

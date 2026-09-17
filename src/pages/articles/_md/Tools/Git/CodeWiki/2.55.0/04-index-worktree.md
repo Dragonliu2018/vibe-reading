@@ -6,6 +6,7 @@ source:
 title: "索引与工作树"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "index", "unpack-trees", "pathspec"]
 description: "解读 Git 暂存区——index 二进制格式与 cache_entry 扁平数组、unpack_trees 统一解包、pathspec 魔术前缀、git status 三态比较。"
 readingTime: "14 min"

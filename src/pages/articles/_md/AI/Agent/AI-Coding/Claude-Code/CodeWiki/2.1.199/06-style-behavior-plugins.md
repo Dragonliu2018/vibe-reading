@@ -6,6 +6,7 @@ source:
 title: "风格与行为插件组"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "Plugin", "output-style", "ralph-wiggum", "frontend-design"]
 description: "五个风格与行为插件——explanatory/learning 输出风格、ralph-wiggum 自循环、frontend-design 设计 skill、opus-4.5 模型迁移"
 readingTime: "22 min"

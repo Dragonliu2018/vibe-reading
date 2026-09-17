@@ -6,6 +6,7 @@ source:
 title: "代码生成"
 date: "2026-08-19T17:50:32+08:00"
 category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "ELF", "重定位", "Code Cache"]
 description: "Jeandle 代码生成：LLVM ELF 产物解析、重定位、OopMap 与异常表装载入 Code Cache"
 readingTime: "13 min"

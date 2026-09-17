@@ -6,6 +6,7 @@ source:
 title: "查询调度中枢"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "tcop", "PostgresMain", "Portal", "查询流水线"]
 description: "PostgreSQL tcop 模块——PostgresMain 主循环、exec_simple_query 四阶段编排、Simple/Extended Query 协议、Portal 五策略、ProcessUtility 分发"
 readingTime: "30 min"

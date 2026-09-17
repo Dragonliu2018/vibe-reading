@@ -6,6 +6,7 @@ source:
 title: "分布式层"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "DCS", "RolloutManager", "NCCL", "权重同步", "弹性扩缩容", "barrier"]
 description: "解读 Relax 分布式层：DCS 分布式 checkpoint 服务控制面、RolloutManager 多引擎管理与弹性扩缩容、DeviceDirectBackend NCCL 权重广播、barrier 协调与 TransferQueue 数据传输。"
 readingTime: "14 min"

@@ -6,6 +6,7 @@ source:
 title: "元数据管理"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "FoundationDB", "元数据", "MVCC"]
 description: "ByConity 基于 FoundationDB 的分布式元数据管理：Catalog 代理层、多版本可见性与原子提交。"
 readingTime: "14 min"

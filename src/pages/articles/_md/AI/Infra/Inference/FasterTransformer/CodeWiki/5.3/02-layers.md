@@ -6,6 +6,7 @@ source:
 title: "Layers"
 date: "2026-08-10T14:00:00+08:00"
 category: [AI, Infra, Inference, FasterTransformer, CodeWiki, "5.3"]
+contentType: "CodeWiki"
 tags: ["FasterTransformer", "Attention", "Beam Search", "Sampling", "模板方法"]
 description: "FasterTransformer 的层模块——BaseLayer 资源注入、Unfused/Fused/Decoder attention 策略选择、BeamSearch/Sampling 解码、DynamicDecodeLayer 统一调度。"
 readingTime: "16 min"

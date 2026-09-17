@@ -6,6 +6,7 @@ source:
 title: "数据导入与事务"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "load", "transaction", "两阶段提交", "Stream Load", "Routine Load"]
 description: "Doris 0.14.0 数据导入与事务：Stream/Broker/Routine Load、4 态两阶段事务（PREPARE→COMMITTED→VISIBLE，无 PRECOMMITTED）、quorum 副本校验、MemTable→Rowset 刷盘。"
 readingTime: "14 min"

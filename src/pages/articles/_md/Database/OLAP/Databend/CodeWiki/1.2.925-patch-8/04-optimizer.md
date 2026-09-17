@@ -6,6 +6,7 @@ source:
 title: "优化器"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "Cascades", "优化器", "DPhyp"]
 description: "Databend 查询优化器——Cascades 框架 + Memo/Group 搜索空间 + DPhyp Join Reorder + 代价模型。"
 readingTime: "18 min"

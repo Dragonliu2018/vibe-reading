@@ -6,6 +6,7 @@ source:
 title: "报告查看器"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "Viewer", "HTTP", "Security"]
 description: "OpenCodeReview 报告查看器——浏览器端审查会话浏览/回放，JSONL 会话数据懒加载聚合，hostguard 防 DNS rebinding，CSP 安全头，单二进制 embed 部署。"
 readingTime: "16 min"

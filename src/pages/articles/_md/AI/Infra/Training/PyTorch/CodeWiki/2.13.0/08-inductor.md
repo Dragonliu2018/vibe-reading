@@ -6,6 +6,7 @@ source:
 title: "TorchInductor 代码生成"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "TorchInductor", "Triton", "fusion", "codegen"]
 description: "torch.compile 默认后端：GraphLowering FX→IR、Scheduler fusion 划分、TritonKernel/CppKernel codegen、MemoryPlanner 池化、AOTI 持久化部署。"
 readingTime: "14 min"

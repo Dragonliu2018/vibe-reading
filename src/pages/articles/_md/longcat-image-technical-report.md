@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/longcat-image-technical-report.pdf"
 date: "2026-08-11T11:37:36+08:00"
 category: [AI, Models, Image Model, Papers]
+contentType: "Papers"
 tags: ["Image Generation", "DiT", "RLHF", "Chinese Text Rendering", "Image Editing", "DPO", "GRPO", "MPO"]
 description: "目的：6B 双语图像生成与编辑。手段：MM-DiT 混合架构 + 三阶段数据精炼 + 多奖励 RLHF + 字符级中文渲染。结论：性能比肩 20B+ MoE，中文渲染行业领先，全链路开源。"
 readingTime: "20 min"

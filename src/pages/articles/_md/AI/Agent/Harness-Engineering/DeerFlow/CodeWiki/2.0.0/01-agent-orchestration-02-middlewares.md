@@ -6,6 +6,7 @@ source:
 title: "Middlewares"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "LangGraph", "Middleware", "Agent"]
 description: "DeerFlow 中间件栈解析：基于 LangGraph AgentMiddleware 的洋葱模型，15+ 中间件按确定顺序组装，覆盖循环检测、上下文压缩、技能激活、错误重试、安全终止等横切关注点。"
 readingTime: "13 min"

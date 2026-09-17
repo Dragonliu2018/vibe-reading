@@ -6,6 +6,7 @@ source:
 title: "GC 基础设施"
 date: "2026-08-19T19:41:28+08:00"
 category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "LLVM", "GC", "Statepoint", "IR"]
 description: "HotspotGC 策略、地址空间划分、元数据/属性常量与 hotspotcc IR 文本语法"
 readingTime: "14 min"

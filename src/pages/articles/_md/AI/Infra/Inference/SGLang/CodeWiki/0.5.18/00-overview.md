@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T22:29:54+08:00"
 category: [AI, Infra, Inference, SGLang, CodeWiki, "0.5.18"]
+contentType: "CodeWiki"
 tags: ["SGLang", "Python", "LLM 推理", "RadixAttention", "推测解码", "服务框架"]
 description: "SGLang 是高性能大模型推理服务框架。本文从系统架构、三进程运行时、RadixAttention 缓存到核心模块，全面解读 v0.5.18 的内部原理。"
 readingTime: "25 min"

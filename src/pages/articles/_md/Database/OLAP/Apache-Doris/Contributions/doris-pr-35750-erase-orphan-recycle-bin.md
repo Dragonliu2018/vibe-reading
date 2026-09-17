@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-01"
 category: [Database, OLAP, Apache Doris, Contributions]
+contentType: "Contributions"
 tags: ["Apache Doris", "Java"]
 description: "将 eraseDatabaseInstantly / eraseTableInstantly 从早失败改为延迟报错，确保顶层对象（DB/Table）本身不在回收站时，其下的子条目也能被一并清除。"
 readingTime: "6 min"

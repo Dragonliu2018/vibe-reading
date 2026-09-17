@@ -6,6 +6,7 @@ source:
 title: "领域数据模型"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "Prisma", "PostgreSQL", "Doris", "Repository"]
 description: "Litefuse 领域数据模型：Prisma PG 元数据 + Doris 事件双库分工、domain Zod schema、repositories 转换器、API key 与 LLM key 加密。"
 readingTime: "13 min"

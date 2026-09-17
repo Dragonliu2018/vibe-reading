@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T11:06:09+08:00"
 category: [Tools, IDE, Zed, CodeWiki, "1.15.0"]
+contentType: "CodeWiki"
 tags: ["zed", "Rust", "code editor", "GPUI", "CRDT"]
 description: "Zed 高性能多人协作代码编辑器源码架构解读"
 readingTime: "30 min"

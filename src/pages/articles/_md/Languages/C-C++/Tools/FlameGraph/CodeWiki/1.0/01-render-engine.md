@@ -6,6 +6,7 @@ source:
 title: "渲染引擎"
 date: "2026-08-14T18:07:23+08:00"
 category: ["Languages", "C/C++", "Tools", "FlameGraph", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["FlameGraph", "Perl", "Profiling", "Visualization", "SVG"]
 description: "flamegraph.pl 是 FlameGraph 的渲染引擎核心。本文解读 package SVG 命名空间、flow() 前缀合并建树、宽度比例分配、color() 14 调色板、嵌入 JS 交互与 hotcoldgraph 变体。"
 readingTime: "22 min"

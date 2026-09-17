@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-07-31T10:28:00+08:00"
 category: [Database, OLAP, Apache Doris, Official]
+contentType: "Blogs"
 tags: ["Apache Doris", "FE", "BE", "调试", "JVM", "Jemalloc", "TCMalloc", "pprof", "ASAN", "LSAN", "火焰图", "perf"]
 description: "Apache Doris 官方文档：FE/BE 调试工具汇总，涵盖 JVM 监控（jmap/jstat/jstack）、Jemalloc/TCMalloc Heap Profile、LSAN/ASAN 内存检测与 CPU 火焰图分析。"
 readingTime: "15 min"

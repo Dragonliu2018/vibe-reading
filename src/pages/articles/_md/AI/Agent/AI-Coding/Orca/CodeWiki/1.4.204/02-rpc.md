@@ -6,6 +6,7 @@ source:
 title: "统一 RPC 层"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "RPC", "Zod", "Electron IPC"]
 description: "Orca 的统一 RPC 层：590 个 defineMethod、四类客户端共享一个 RpcDispatcher、字节级+类型级双 drift gate 的契约目录、移动端默认拒绝 allowlist 与 E2EE 传输。"
 readingTime: "17 min"

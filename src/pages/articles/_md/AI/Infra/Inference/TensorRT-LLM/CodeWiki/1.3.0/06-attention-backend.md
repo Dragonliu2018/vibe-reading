@@ -6,6 +6,7 @@ source:
 title: "注意力后端"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "attention", "FlashInfer", "TRTLLM", "Paged KV Cache"]
 description: "attention_backend 是注意力 kernel 适配层——AttentionBackend 抽象 + TRTLLM/FlashInfer/Vanilla 多后端，prefill/decode 分支，paged KV cache 适配。"
 readingTime: "12 min"

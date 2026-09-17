@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-01T21:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x"]
+contentType: "Docs"
 tags: ["Apache Doris", "临时分区", "分区", "数据删除", "原子覆盖写"]
 description: "Doris 支持在分区表中添加临时分区，可用于原子覆盖写、修改分桶数、合并/分割分区等场景；临时分区不被常规查询检索，仅在特殊语句中可见。"
 readingTime: "5 min"

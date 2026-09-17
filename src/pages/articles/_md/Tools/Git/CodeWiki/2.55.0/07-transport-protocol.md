@@ -6,6 +6,7 @@ source:
 title: "传输与协议"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "transport", "pkt-line", "protocol-v2", "http"]
 description: "解读 Git 网络传输——transport_vtable 后端策略、pkt-line 帧协议、fetch/push pack 协议、protocol v2 capability 协商、negotiation。"
 readingTime: "14 min"

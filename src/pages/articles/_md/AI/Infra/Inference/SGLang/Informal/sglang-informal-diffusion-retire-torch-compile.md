@@ -8,6 +8,7 @@ source:
   site: "公众号 GiantPandaLLM"
 date: "2026-08-10T21:47:45+08:00"
 category: [AI, Infra, Inference, SGLang, Informal]
+contentType: "Blogs"
 tags: ["SGLang Diffusion", "Torch Compile", "Agent", "Fable", "Kernel Design", "Breakable CUDA Graph"]
 description: "Diffusion 领域苦 Torch Compile 久矣，基于 Agent + Fable 让 SGLang Diffusion 中 Torch Compile 完全退役。"
 readingTime: "8 min"

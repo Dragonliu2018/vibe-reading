@@ -6,6 +6,7 @@ source:
 title: "编排层"
 date: "2026-08-22T22:29:54+08:00"
 category: [AI, Infra, Inference, SGLang, CodeWiki, "0.5.18"]
+contentType: "CodeWiki"
 tags: ["SGLang", "managers", "Scheduler", "continuous batching", "overlap 调度", "ZMQ IPC"]
 description: "SGLang 编排层：Scheduler 零开销双流调度、TokenizerManager/DetokenizerManager 三进程协作、SchedulePolicy 准入控制。"
 readingTime: "18 min"

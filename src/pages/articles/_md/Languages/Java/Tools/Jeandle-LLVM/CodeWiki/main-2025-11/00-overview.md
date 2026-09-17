@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T19:41:28+08:00"
 category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "LLVM", "Java", "JIT", "GC"]
 description: "Jeandle Java JIT 编译器的 LLVM 侧支持——在 LLVM 20.1.0 上添加 Java 专用编译流水线、GC 策略与后端适配"
 readingTime: "30 min"

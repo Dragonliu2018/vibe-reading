@@ -6,6 +6,7 @@ source:
 title: "编译引擎"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "compiler", "fingerprint", "jobserver", "BuildContext"]
 description: "Cargo 编译引擎解读：前端 BuildContext（只读快照）+ 后端 BuildRunner（可变运行态）两段式、fingerprint 增量判定（dirty/fresh）、job_queue jobserver 并发调度、unit_dependencies 把 Resolve 降维成 UnitGraph、custom_build build script 状态机。"
 readingTime: "28 min"

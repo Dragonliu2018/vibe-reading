@@ -6,6 +6,7 @@ source:
 title: "WASM 扩展运行时"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "wasmtime", "WASM", "WIT", "component-model"]
 description: "SideX WASM 扩展运行时深度解读——wasmtime 组件模型、WIT host 契约、provider 调度、沙箱"
 readingTime: "12 min"

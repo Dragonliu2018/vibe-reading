@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T17:42:29+08:00"
 category: ["AI", "Agent", "Search", "SearchCLI", "CodeWiki", "0.2.0"]
+contentType: "CodeWiki"
 tags: ["SearchCLI", "TypeScript", "CLI", "AI Search", "Volcengine", "oclif"]
 description: "火山引擎 AI Search 的开源 CLI 与可安装 Viking skills——为 agent 与业务系统提供稳定、可调、可审查的搜索/推荐/对话检索接入与调优能力。"
 readingTime: "28 min"

@@ -6,6 +6,7 @@ source:
 title: "数据连接器"
 date: "2026-08-19T17:42:29+08:00"
 category: ["AI", "Agent", "Search", "SearchCLI", "CodeWiki", "0.2.0"]
+contentType: "CodeWiki"
 tags: ["SearchCLI", "TypeScript", "Data Connector", "Cursor", "At-Least-Once"]
 description: "SearchCLI 数据连接器——Source/Runner/Sink 管道、游标断点续传与多源策略。"
 readingTime: "16 min"

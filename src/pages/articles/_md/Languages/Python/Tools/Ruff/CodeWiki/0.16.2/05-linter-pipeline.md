@@ -6,6 +6,7 @@ source:
 title: "Linter 核心管线"
 date: "2026-08-13T20:14:13+08:00"
 category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
+contentType: "CodeWiki"
 tags: ["ruff", "Rust", "Linter", "Checker", "Visitor", "Fix"]
 description: "ruff linter 的核心编排——多源 checker 分发、Checker AST 遍历、deferred 延迟分析、noqa 抑制、fix 收敛循环。"
 readingTime: "16 min"

@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T15:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "表类型"]
+contentType: "Docs"
 tags: ["Apache Doris", "主键表", "Unique Key", "写时合并", "读时合并", "UPSERT", "表类型"]
 description: "Apache Doris 3.x 官方文档：主键表（Unique Key Table）保证 Key 列唯一性，支持基于主键的 UPSERT 与去重，提供写时合并与读时合并两种实现方式，适用于高频数据更新场景。"
 readingTime: "8 min"

@@ -6,6 +6,7 @@ source:
 title: "Tools, Extensions & MCP"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "MCP", "Extensions", "Tools"]
 description: "DeerFlow 工具聚合/扩展注入/MCP 集成三模块解析：get_available_tools 四源聚合、PlacementAnchor 语义注入、MCPSessionPool 持久会话。"
 readingTime: "13 min"

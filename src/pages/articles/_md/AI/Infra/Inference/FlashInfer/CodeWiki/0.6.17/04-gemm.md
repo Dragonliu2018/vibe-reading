@@ -6,6 +6,7 @@ source:
 title: "GEMM"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "GEMM", "CUTLASS", "CuTeDSL", "cuDNN", "FP4", "FP8"]
 description: "FlashInfer GEMM 模块解读：多 backend 策略（cuDNN/CUTLASS/CuTe DSL/cuBLASLt/TGV）、@backend_requirement 装饰器、M-bucket autotuning、grouped GEMM、FP4 shuffle 预处理。"
 readingTime: "16 min"

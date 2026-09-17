@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-13T20:07:12+08:00"
 category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
+contentType: "CodeWiki"
 tags: ["uv", "Rust", "Python 包管理", "依赖解析", "PubGrub"]
 description: "uv 是 Astral 用 Rust 编写的极速 Python 包与项目管理器。本文从分层架构、运行时行为到八大核心模块，全面解读 uv 0.12.3 的内部实现。"
 readingTime: "32 min"

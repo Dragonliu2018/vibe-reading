@@ -6,6 +6,7 @@ source:
 title: "公共基础"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "Runtime", "hashtable", "对象存储"]
 description: "Databend 公共基础库——GlobalInstance 单例 + Runtime 线程池 + ErrorCode + 自建 hashtable + OpenDAL 对象存储。"
 readingTime: "14 min"

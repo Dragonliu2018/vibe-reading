@@ -6,6 +6,7 @@ source:
 title: "算子库"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "CUDA", "JIT 编译", "Op Builder", "FusedAdam"]
 description: "DeepSpeed 算子库通过 OpBuilder 体系管理 C++/CUDA 算子的 JIT 编译与多硬件适配，覆盖 FusedAdam、CPUAdam、Transformer 训练/推理等高性能内核，是训练引擎和推理引擎的底层加速基座。"
 readingTime: "15 min"

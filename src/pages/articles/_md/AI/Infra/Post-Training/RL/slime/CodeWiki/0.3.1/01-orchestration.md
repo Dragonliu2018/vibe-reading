@@ -6,6 +6,7 @@ source:
 title: "Ray 编排层"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "Ray", "编排", "placement group"]
 description: "slime 的 Ray 编排层：placement group 资源锁定、训练/rollout 对象装配、训练主循环驱动。"
 readingTime: "14 min"

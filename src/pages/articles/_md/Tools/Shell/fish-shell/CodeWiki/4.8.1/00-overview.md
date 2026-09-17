@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-14T11:44:53+08:00"
 category: ["Tools", "Shell", "fish-shell", "CodeWiki", "4.8.1"]
+contentType: "CodeWiki"
 tags: ["fish-shell", "Rust", "Shell", "Parser", "Interactive"]
 description: "fish-shell 是一个智能且用户友好的交互式命令行 shell。本文从分层架构、解析管线、交互读取层、补全引擎到执行模型，全面解读 fish v4.8.1 的 Rust 内部实现。"
 readingTime: "40 min"

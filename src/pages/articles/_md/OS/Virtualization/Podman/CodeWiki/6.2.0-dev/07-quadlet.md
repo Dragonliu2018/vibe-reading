@@ -6,6 +6,7 @@ source:
 title: "Quadlet systemd 集成"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "Quadlet", "systemd", "generator"]
 description: "解读 Quadlet：systemd generator 把 .container/.pod/.network 等声明式单元转译成 systemd .service，boot 早期一次性产出后退出。"
 readingTime: "11 min"

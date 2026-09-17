@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T00:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "表和视图"]
+contentType: "Docs"
 tags: ["Apache Doris", "SHOW CREATE MATERIALIZED VIEW", "异步物化视图", "SQL", "表和视图"]
 description: "Apache Doris 3.x 官方文档：SHOW CREATE ASYNC MATERIALIZED VIEW 语句用于查看异步物化视图的创建语句。"
 readingTime: "3 min"

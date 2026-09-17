@@ -6,6 +6,7 @@ source:
 title: "Execution"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Execution", "Vectorized", "PhysicalOperator"]
 description: "DuckDB Execution 模块——向量化执行引擎，Pull-Push 混合流水线模型，PhysicalOperator 三角色（Source/Operator/Sink）。"
 readingTime: "30 min"

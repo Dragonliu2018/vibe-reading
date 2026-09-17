@@ -6,6 +6,7 @@ source:
 title: "执行运行时"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "Worker", "Executor", "GraphExecutor", "运行时"]
 description: "xLLM 执行运行时解读：Worker/Executor 单设备执行封装、多后端图执行器、异步调度与 KV Cache 分配。"
 readingTime: "11 min"

@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "KVDB", "分布式事务", "确定性模拟"]
 description: "FoundationDB 7.4.6——Apple 开源分布式事务型 KV 数据库，有序 KV + ACID 严格可串行化 + 角色化分布式架构 + 确定性模拟测试源码解读。"
 readingTime: "90 min"

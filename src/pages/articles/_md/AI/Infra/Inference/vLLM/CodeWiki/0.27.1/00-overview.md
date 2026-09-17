@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "Python", "LLM 推理", "PagedAttention", "连续批处理", "CUDA Graph", "PD 分离"]
 description: "vLLM 是高性能 LLM 推理与服务平台，以 PagedAttention、连续批处理与多进程 V1 引擎为核心。本文全面解读 v0.27.1 的分层架构、调度器、KV Cache、执行运行时与核心数据结构。"
 readingTime: "32 min"

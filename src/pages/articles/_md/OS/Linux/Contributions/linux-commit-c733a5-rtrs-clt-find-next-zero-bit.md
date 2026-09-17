@@ -8,6 +8,7 @@ source:
   prType: "perf"
 date: "2026-08-19T00:00:21+08:00"
 category: ["OS", "Linux", "Contributions"]
+contentType: "Contributions"
 tags: ["Linux Kernel", "RDMA", "RTRS", "RNBD", "Permit", "Bitmap", "find_next_zero_bit", "Lockless", "Performance", "Contributions"]
 description: "rtrs 客户端 __rtrs_get_permit() 从 permits_map 位图里无锁分配空闲 permit，原用 find_first_zero_bit() 每次从 bit 0 扫，竞态失败后回 0 重扫已置位低段。改用 find_next_zero_bit() 从上次位置续扫；扫到末尾后 fallback find_first_zero_bit 从头扫（wrap-around），确保 cursor 下方释放的 permit 也能找到、NULL 只在 map 真满时返回，匹配原始行为。扫描仍非原子、test_and_set_bit_lock 重试逻辑不变。"
 readingTime: "11 min"

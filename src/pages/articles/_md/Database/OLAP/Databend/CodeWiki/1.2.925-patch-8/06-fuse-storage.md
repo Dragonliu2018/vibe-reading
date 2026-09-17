@@ -6,6 +6,7 @@ source:
 title: "存储引擎"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "Parquet", "MVCC", "Fuse"]
 description: "Databend Fuse 存储引擎——Snapshot/Segment/Block 三层 Parquet 段存储 + Copy-on-Write 快照 MVCC + 两阶段裁剪。"
 readingTime: "18 min"

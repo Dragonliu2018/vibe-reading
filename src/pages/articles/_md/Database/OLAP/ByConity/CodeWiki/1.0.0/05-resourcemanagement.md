@@ -6,6 +6,7 @@ source:
 title: "资源管理与服务发现"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "VirtualWarehouse", "资源调度", "服务发现"]
 description: "ByConity Snowflake 风格资源管理：Virtual Warehouse、worker 借用、一致性哈希与 leader 选举。"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "调用约定与目标适配"
 date: "2026-08-19T19:41:28+08:00"
 category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "LLVM", "CallingConv", "X86", "AArch64"]
 description: "Hotspot_JIT 调用约定、线程寄存器预留、栈帧保存与 statepoint 调用点对齐"
 readingTime: "16 min"

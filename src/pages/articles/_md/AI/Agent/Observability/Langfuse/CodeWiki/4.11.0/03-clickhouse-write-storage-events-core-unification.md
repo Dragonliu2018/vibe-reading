@@ -6,6 +6,7 @@ source:
 title: "events_core 宽表统一"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "ClickHouse", "Wide Events", "MaterializedView", "v4 Migration"]
 description: "Langfuse v4 把 traces/observations/scores 三表统一进 events_core 宽表：Wide Events 原则、argMaxIf 去重、MV 自动填充、三态写入路由。"
 readingTime: "11 min"

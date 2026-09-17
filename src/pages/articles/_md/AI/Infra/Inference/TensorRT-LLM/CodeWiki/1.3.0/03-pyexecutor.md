@@ -6,6 +6,7 @@ source:
 title: "执行引擎"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "PyExecutor", "连续批处理", "KV Cache", "调度器"]
 description: "pyexecutor 是 Torch 后端执行引擎——PyExecutor 主循环、KVCacheV2Scheduler 两阶段调度、TorchSampler 分组采样、KVCacheManagerV2 分页缓存。"
 readingTime: "16 min"

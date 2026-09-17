@@ -6,6 +6,7 @@ source:
 title: "query 查询引擎"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "DataFusion", "查询引擎", "分布式计划"]
 description: "query——基于 DataFusion（Greptime fork）的查询引擎：逻辑/物理计划、DistPlanner 分布式下沉、分区裁剪与 MergeScan scatter。"
 readingTime: "20 min"

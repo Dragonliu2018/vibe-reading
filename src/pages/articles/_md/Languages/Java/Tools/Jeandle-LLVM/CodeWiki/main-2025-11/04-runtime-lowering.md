@@ -6,6 +6,7 @@ source:
 title: "运行时降级"
 date: "2026-08-19T19:41:28+08:00"
 category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "LLVM", "TLS", "GC-Barrier", "Card-Table"]
 description: "TLSPointerRewrite 与 InsertGCBarriers——把抽象的 addrspace 指针与堆写操作具体化"
 readingTime: "14 min"

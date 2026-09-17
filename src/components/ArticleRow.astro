@@ -7,7 +7,7 @@
  * 徽章颜色收敛为 class，不再内联 style。
  * star/pinned 为构建期元数据（frontmatter 字段），标题行内以 ⭐/📌 前缀体现。
  */
-import { sourceLabel, badgeCat, type Article } from '../data/articles';
+import { sourceLabel, type Article } from '../data/articles';
 import { badgeStyle } from '../data/badges';
 
 export interface Props {
@@ -19,7 +19,7 @@ export interface Props {
 const { article, showDate = true, showBadges = true } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const catLabel = badgeCat(article.category);
+const contentType = article.contentType ?? '';
 const src = article.source;
 let displayTitle = article.title;
 if (src) {
@@ -37,7 +37,7 @@ const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
     <div class="article-item-title">{starred && <span class="article-item-star-mark" title="收藏的好文">⭐ </span>}{pinned && <span class="article-item-pin" title="置顶文章">📌 </span>}{displayTitle}</div>
     {showBadges && (
       <div class="article-item-meta">
-        {catLabel && <span class="article-item-badge badge-cat" style={badgeStyle(catLabel)}>{catLabel}</span>}
+        {contentType && <span class="article-item-badge badge-cat" style={badgeStyle(contentType)}>{contentType}</span>}
         <span class={`article-item-badge ${isRepost ? 'badge-repost' : 'badge-original'}`}>{isRepost ? '转载' : 'AI 生成'}</span>
       </div>
     )}

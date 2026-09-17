@@ -6,6 +6,7 @@ source:
 title: "Git Worktree 生命周期"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "Git", "Worktree"]
 description: "Orca 并行卖点的物理基础：worktree 预创建池（5 分钟 TTL）、552 个海洋生物名退休注册表、五重删除 fence，以及按执行主机隔离的 GitCapabilityCache。"
 readingTime: "18 min"

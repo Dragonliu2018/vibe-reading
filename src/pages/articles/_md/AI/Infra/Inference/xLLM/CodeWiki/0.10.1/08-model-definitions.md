@@ -6,6 +6,7 @@ source:
 title: "模型定义"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "Models", "DeepSeek", "Qwen", "GLM", "注册表"]
 description: "xLLM 模型定义解读：ModelRegistry 注册表机制、LLM/VLM/DiT/Rec 四类模型架构与宏注册扩展。"
 readingTime: "10 min"

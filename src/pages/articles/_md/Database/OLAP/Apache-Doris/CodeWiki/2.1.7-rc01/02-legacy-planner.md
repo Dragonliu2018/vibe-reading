@@ -6,6 +6,7 @@ source:
 title: "旧版优化器"
 date: "2026-08-24T10:22:21+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.7-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Analyzer", "OriginalPlanner", "CUP", "Legacy", "回退"]
 description: "Doris 2.1.7 旧版优化器：CUP/JFlex 解析 + Analyzer 绑定 + SingleNodePlanner/DistributedPlanner 规则式计划，Nereids 失败时的回退安全网。"
 readingTime: "12 min"

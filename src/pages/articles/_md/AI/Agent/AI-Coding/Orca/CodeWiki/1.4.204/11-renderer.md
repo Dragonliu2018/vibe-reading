@@ -6,6 +6,7 @@ source:
 title: "Renderer UI"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "React", "zustand", "性能"]
 description: "167 万行 React 的组织法：单 store 45 个 slice、selector identity 纪律变成 CI 性能门、copy-on-write record、表面级可恢复错误边界与 overlap 式启动水合。"
 readingTime: "16 min"

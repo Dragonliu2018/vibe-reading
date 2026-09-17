@@ -6,6 +6,7 @@ source:
 title: "存储引擎"
 date: "2026-08-23T19:02:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "olap", "Tablet", "Rowset", "Compaction", "MoW", "Delete Bitmap"]
 description: "Doris 3.1.4 存储引擎 olap：Tablet/Rowset/Segment 不可变列存 + 三级 Compaction + MoW Delete Bitmap。"
 readingTime: "13 min"

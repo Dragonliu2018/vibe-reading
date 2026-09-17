@@ -6,6 +6,7 @@ source:
 title: "语义编译器"
 date: "2026-08-17T22:20:51+08:00"
 category: [Database, Ecosystems, Cube, CodeWiki, "1.7.20"]
+contentType: "CodeWiki"
 tags: ["Cube", "TypeScript", "语义层", "SQL 编译"]
 description: "Cube.js 语义层核心：数据模型编译与跨方言 SQL 生成"
 readingTime: "25 min"

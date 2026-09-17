@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T10:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "数据分布", "分区", "分桶", "Tablet", "Colocate Join", "数据划分"]
 description: "Apache Doris 3.x 官方文档：数据分布概念，介绍通过分区和分桶策略将数据高效映射到 Tablet，涵盖分区类型、分桶策略、Colocate Join、分区裁剪及数据分布目标。"
 readingTime: "6 min"

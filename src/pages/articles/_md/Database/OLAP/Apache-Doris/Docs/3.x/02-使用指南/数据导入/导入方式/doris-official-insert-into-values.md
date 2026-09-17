@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T20:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据导入", "导入方式"]
+contentType: "Docs"
 tags: ["Apache Doris", "INSERT INTO VALUES", "同步导入", "数据导入", "SQL"]
 description: "Apache Doris 3.x 官方文档：Insert Into Values 将 SQL 中的值同步导入到 Doris 表，语法与 MySQL 一致，适用于少量假数据验证，不建议生产环境大量导入。"
 readingTime: "10 min"

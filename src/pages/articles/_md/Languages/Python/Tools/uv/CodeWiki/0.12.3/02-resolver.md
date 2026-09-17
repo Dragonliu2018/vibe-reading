@@ -6,6 +6,7 @@ source:
 title: "依赖解析器"
 date: "2026-08-13T20:07:12+08:00"
 category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
+contentType: "CodeWiki"
 tags: ["uv", "Rust", "PubGrub", "依赖解析"]
 description: "uv-resolver 基于 PubGrub 算法的依赖解析器：双线程求解架构、fork 分叉机制、候选选择与 batch prefetch 优化。"
 readingTime: "16 min"

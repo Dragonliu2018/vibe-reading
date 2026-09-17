@@ -6,6 +6,7 @@ source:
 title: "认证授权"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 认证授权：双层 trait 体系（core/authz + influxdb3_authz）、SHA-512 token、三维 bitmap 权限与 RBAC"
 readingTime: "18 min"

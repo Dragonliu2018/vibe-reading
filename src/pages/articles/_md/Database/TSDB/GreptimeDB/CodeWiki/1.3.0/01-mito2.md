@@ -6,6 +6,7 @@ source:
 title: "mito2 存储引擎"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "LSM", "存储引擎", "WAL", "compaction"]
 description: "mito2——Datanode 的核心 region 存储引擎：worker 单写多读、WAL+memtable 写路径、CoW Version 读快照、LSM compaction 与分层 cache 解读。"
 readingTime: "30 min"

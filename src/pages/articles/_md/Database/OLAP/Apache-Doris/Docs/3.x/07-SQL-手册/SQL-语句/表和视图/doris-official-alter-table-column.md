@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T10:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "表和视图"]
+contentType: "Docs"
 tags: ["Apache Doris", "ALTER TABLE", "COLUMN", "Schema Change", "SQL", "表和视图"]
 description: "Apache Doris 3.x 官方文档：ALTER TABLE COLUMN 用于对已有表进行 Schema Change 操作，支持添加列、删除列、修改列类型及列排序，schema change 是异步的。"
 readingTime: "10 min"

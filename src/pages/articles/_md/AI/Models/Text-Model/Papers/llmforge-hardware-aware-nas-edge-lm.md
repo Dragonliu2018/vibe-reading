@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/llmforge-hardware-aware-nas-edge-lm.pdf"
 date: "2026-09-14T10:36:52+08:00"
 category: [AI, Models, Text Model, Papers]
+contentType: "Papers"
 tags: ["NAS", "Hardware-Aware", "Edge LLM", "Attention", "IHA", "NSGA-II", "Surrogate Model", "Pareto Front", "rDXE", "Sub-Billion"]
 description: "目的：为边缘设备搜索亚十亿参数 LLM 架构。手段：IHA 解耦注意力四参数（空间扩 400×）+ Forge-Former 编码器代理 + Forge-DSE 多后端 NSGA-II 联合搜架构与芯片。结论：300M 档三个变体全面超越 SmolLM2-360M/Qwen-0.5B 基线：精度最优 val loss 2.798、能耗省 40%、延迟降 43%。"
 readingTime: "18 min"

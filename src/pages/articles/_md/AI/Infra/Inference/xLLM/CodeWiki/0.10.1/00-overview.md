@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "C++", "LLM 推理", "国产加速器", "PD 分离", "KV Cache"]
 description: "xLLM 是京东开源的高效 LLM 推理框架，专为国产 AI 加速器优化，采用服务-引擎解耦架构。本文全面解读 v0.10.1 的分层架构、调度器、执行运行时与核心数据结构。"
 readingTime: "28 min"

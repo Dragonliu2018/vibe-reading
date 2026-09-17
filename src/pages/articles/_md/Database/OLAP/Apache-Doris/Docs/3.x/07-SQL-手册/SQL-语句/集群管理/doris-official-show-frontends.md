@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T00:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "集群管理"]
+contentType: "Docs"
 tags: ["Apache Doris", "SHOW FRONTENDS", "FE 节点", "集群管理", "SQL"]
 description: "Apache Doris 3.x 官方文档：SHOW FRONTENDS 语句用于查看 FE 节点的基本状态信息，返回名称、主机、端口、角色、存活状态等 19 列。"
 readingTime: "4 min"

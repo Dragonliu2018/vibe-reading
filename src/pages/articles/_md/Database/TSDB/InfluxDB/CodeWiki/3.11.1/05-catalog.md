@@ -6,6 +6,7 @@ source:
 title: "Catalog 元数据"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 的 Catalog 元数据管理：事件溯源（ordered_records）、版本化 format/log/snapshot、CatalogOp trait 与乐观并发"
 readingTime: "24 min"

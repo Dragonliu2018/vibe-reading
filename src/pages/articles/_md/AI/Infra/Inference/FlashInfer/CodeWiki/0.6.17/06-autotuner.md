@@ -6,6 +6,7 @@ source:
 title: "Autotuner"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "Autotuner", "Profiling", "Tuning", "Cache"]
 description: "FlashInfer Autotuner 解读：AutoTuner singleton、TunableRunner 策略、四级缓存、M-bucketing、CUDA Graph 计时、跨 rank 同步。"
 readingTime: "14 min"

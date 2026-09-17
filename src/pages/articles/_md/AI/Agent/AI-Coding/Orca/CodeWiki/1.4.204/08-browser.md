@@ -6,6 +6,7 @@ source:
 title: "嵌入式浏览器"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "浏览器", "CDP"]
 description: "506 个文件的浏览器子系统：跨机器页面所有权 lease、Design Mode 采集链与主侧三重清洗安全网、headless offscreen 回退、agent-browser 独立守护进程自动化。"
 readingTime: "15 min"

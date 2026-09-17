@@ -6,6 +6,7 @@ source:
 title: "Contrib 贡献系统"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "Contribution", "注册机制", "生命周期阶段"]
 description: "VS Code 贡献系统——内置功能插件化注册、阶段化实例化与 .contribution.ts 文件模式"
 readingTime: "12 min"

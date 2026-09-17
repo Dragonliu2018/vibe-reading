@@ -6,6 +6,7 @@ source:
 title: "模型注入"
 date: "2026-08-12T15:52:44+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "AutoTP", "AutoEP", "模型替换", "张量并行"]
 description: "模型注入模块负责将 HuggingFace 模型的 nn.Linear 层替换为 DeepSpeed 优化的 Tensor Parallel / Expert Parallel 层。本文解读 AutoTP 自动张量并行、Policy+Container 模型适配、AutoEP 专家并行三条核心路径。"
 readingTime: "18 min"

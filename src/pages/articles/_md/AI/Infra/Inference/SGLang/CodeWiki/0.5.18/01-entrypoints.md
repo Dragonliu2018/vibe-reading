@@ -6,6 +6,7 @@ source:
 title: "接口层"
 date: "2026-08-22T22:29:54+08:00"
 category: [AI, Infra, Inference, SGLang, CodeWiki, "0.5.18"]
+contentType: "CodeWiki"
 tags: ["SGLang", "entrypoints", "Engine", "FastAPI", "ZMQ IPC"]
 description: "SGLang 接口层：Engine 装配三进程、HTTP/gRPC/OpenAI 兼容 API、ASGI 中间件与子进程监控。"
 readingTime: "14 min"

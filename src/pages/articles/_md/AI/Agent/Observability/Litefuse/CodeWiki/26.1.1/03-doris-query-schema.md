@@ -6,6 +6,7 @@ source:
 title: "Doris 查询与表层"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "Apache Doris", "queryDoris", "stream load", "events_full"]
 description: "Litefuse Doris 查询与表层：DorisClient（mysql2 pool + stream load）、queryDoris 多租户过滤、events_full 宽表统一、声明式表定义与迁移 DDL。"
 readingTime: "13 min"

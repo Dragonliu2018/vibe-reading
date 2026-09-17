@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-09-03T11:21:12+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["RowsetBuilder", "Compaction", "TOO_MANY_VERSION", "Load", "Storage"]
 description: "Doris 版本数超限错误 TOO_MANY_VERSION 被内存软限提前返回与 disable_auto_compaction 跳过整个检查双重掩盖，本 PR 将错误判定前置为无条件分支，并补上回归测试。"
 readingTime: "8 min"

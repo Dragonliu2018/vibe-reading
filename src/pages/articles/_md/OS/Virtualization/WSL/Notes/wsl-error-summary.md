@@ -2,6 +2,7 @@
 title: "wsl 报错汇总"
 date: "2026-08-23T17:13:24+08:00"
 category: [OS, Virtualization, WSL, Notes]
+contentType: "Notes"
 alsoCategories:
   - [Tools, Notes]
 tags: ["wsl", "systemd", "报错", "故障排查", "技巧"]

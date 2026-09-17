@@ -6,6 +6,7 @@ source:
 title: "向量化执行"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "vec", "Block", "IColumn", "COW", "CRTP", "IFunction", "ClickHouse"]
 description: "Doris 1.1.5 向量化执行 vec：源自 ClickHouse 的自包含列式栈（Block/IColumn COW/DataType/VExpr/IFunction 三层/IAggregateFunction CRTP），21 个 V*Node，enable_vectorized_engine 默认开启。2.x 起统一向量化。"
 readingTime: "16 min"

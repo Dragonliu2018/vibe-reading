@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/windowed-mtp-draft-kv-tax.pdf"
 date: "2026-08-07T10:30:00+08:00"
 category: [AI, Infra, Inference, SGLang, Papers]
+contentType: "Papers"
 tags: ["Speculative Decoding", "Long Context", "MTP", "SGLang"]
 description: "百万 token 下内置 MTP 草稿头在全 KV 上跑注意力使草稿成本随长度线性增长；Windowed-MTP 仅对草稿注意力加窗+sink，训练-free、无损地削减每解码步成本 28–44%。"
 readingTime: "16 min"

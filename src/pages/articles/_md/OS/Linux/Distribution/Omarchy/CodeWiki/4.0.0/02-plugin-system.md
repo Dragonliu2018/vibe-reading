@@ -6,6 +6,7 @@ source:
 title: "插件系统"
 date: "2026-08-25T10:44:29+08:00"
 category: [OS, Linux, Distribution, Omarchy, CodeWiki, "4.0.0"]
+contentType: "CodeWiki"
 tags: ["Omarchy", "QML", "插件", "Quickshell", "IPC"]
 description: "Omarchy 桌面的扩展点——manifest 驱动的插件发现/校验/加载、6 种 kind 分流、shell.json 持久化与 IPC 契约。"
 readingTime: "12 min"

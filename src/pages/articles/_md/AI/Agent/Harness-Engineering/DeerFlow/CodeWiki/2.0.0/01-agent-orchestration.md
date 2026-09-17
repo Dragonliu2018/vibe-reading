@@ -6,6 +6,7 @@ source:
 title: "Agent 编排与运行时"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "LangGraph", "Agent"]
 description: "DeerFlow Agent 编排与运行时子系统：Lead Agent 装配、中间件栈、Run 生命周期管理的协作关系。"
 readingTime: "5 min"

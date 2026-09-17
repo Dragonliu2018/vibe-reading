@@ -6,6 +6,7 @@ source:
 title: "执行能力生态"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Capability Seam", "Sandbox", "Subprocess", "Shell"]
 description: "capability seam 三角色在 fs/shell/subprocess/sandbox/terminal/lsp/web 的落地——一次 provider swap 如何搬动整个 execution world。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "摄入引擎"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "摄入", "Kafka", "Appenderator", "exactly-once"]
 description: "Druid 摄入引擎——Task 抽象与 AbstractTask 模板方法、批/流统一 InputSource、Appenderator 拆分、流摄入 checkpoint exactly-once、并行批 partial→merge、Compaction 编排。"
 readingTime: "16 min"

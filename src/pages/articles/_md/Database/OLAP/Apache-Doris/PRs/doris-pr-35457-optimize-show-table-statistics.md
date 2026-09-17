@@ -8,6 +8,7 @@ source:
   prType: "perf"
 date: "2026-07-29T20:30:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "FE", "OlapTable", "锁优化", "TabletStatMgr"]
 description: "Doris 把 OlapTable 的数据量/副本数/行数统计从每次 SHOW DATA 现场遍历加读锁，改成 TabletStatMgr 周期预计算 + volatile 快照读取，读取路径 O(1) 且无需持锁。"
 readingTime: "9 min"

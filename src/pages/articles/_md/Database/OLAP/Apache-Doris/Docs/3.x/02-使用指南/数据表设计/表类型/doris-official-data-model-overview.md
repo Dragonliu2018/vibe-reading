@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T14:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "表类型"]
+contentType: "Docs"
 tags: ["Apache Doris", "表类型", "明细表", "主键表", "聚合表", "排序键", "数据模型"]
 description: "Apache Doris 3.x 官方文档：表类型概述，介绍明细表、主键表、聚合表三种表类型的适用场景、排序键选择建议及表类型能力对比。"
 readingTime: "6 min"

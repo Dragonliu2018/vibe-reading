@@ -6,6 +6,7 @@ source:
 title: "CI 流水线引擎"
 date: "2026-08-18T15:14:37+08:00"
 category: [AI, Agent, "Harness Engineering", Harness, CodeWiki, "3.3.0"]
+contentType: "CodeWiki"
 tags: ["Harness", "Gitness", "Go", "Drone", "CI", "Docker", "流水线"]
 description: "Harness CI 引擎：Drone 衍生，Pipeline→Execution→Stage→Step 四级模型，DB 轮询调度，embedded client 进程内调用 drone-runner-docker，双层取消"
 readingTime: "15 min"

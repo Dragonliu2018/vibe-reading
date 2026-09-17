@@ -6,6 +6,7 @@ source:
 title: "版本引擎"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "版本链", "VersionMap", "tombstone"]
 description: "ArcticDB 版本引擎：不可变版本链、VersionMap 缓存、快照与 symbol list"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "CLI 命令生态"
 date: "2026-08-25T10:44:29+08:00"
 category: [OS, Linux, Distribution, Omarchy, CodeWiki, "4.0.0"]
+contentType: "CodeWiki"
 tags: ["Omarchy", "Bash", "CLI", "路由"]
 description: "Omarchy 的用户操作面——元数据驱动路由器扫描文件头注释自动注册 ~425 个命令，两阶段分发，helper facade 标准化底层工具。"
 readingTime: "10 min"

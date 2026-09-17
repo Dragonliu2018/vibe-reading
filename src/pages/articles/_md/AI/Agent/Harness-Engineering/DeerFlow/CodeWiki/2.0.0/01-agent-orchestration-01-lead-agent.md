@@ -6,6 +6,7 @@ source:
 title: "Lead Agent & Client"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "LangGraph", "Agent", "ByteDance"]
 description: "DeerFlow 的 Lead Agent 图装配入口、DeerFlowClient 嵌入式 facade、SubagentExecutor 子代理执行器与多 provider LLM 工厂的实现解析。"
 readingTime: "14 min"

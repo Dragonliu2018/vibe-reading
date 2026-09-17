@@ -6,6 +6,7 @@ source:
 title: "nn.Module 模块系统"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "nn.Module", "Parameter", "组合模式", "hook"]
 description: "nn.Module 组合模式管理参数/子模块，__setattr__ 自动注册、_call_impl hook 编排、state_dict 序列化，PyTorch Pythonic 体验的核心。"
 readingTime: "11 min"

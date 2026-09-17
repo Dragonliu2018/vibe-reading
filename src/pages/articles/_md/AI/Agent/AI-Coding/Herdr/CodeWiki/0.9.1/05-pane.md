@@ -6,6 +6,7 @@ source:
 title: "Pane 运行时"
 date: "2026-09-17T10:50:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "PTY", "Agent"]
 description: "PaneRuntime：一个 pane 的完整生命周期——spawn 五步组装、PTY I/O、检测任务与 scrollback 压缩。"
 readingTime: "19 min"

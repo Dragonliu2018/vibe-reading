@@ -6,6 +6,7 @@ source:
 title: "语法高亮与 TextMate"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "tree-sitter", "TextMate", "grammar", "Oniguruma"]
 description: "SideX 语法高亮——TextMate grammar 栈式状态机 + tree-sitter 结构化解析，binary tokenize 直喂 Monaco"
 readingTime: "15 min"

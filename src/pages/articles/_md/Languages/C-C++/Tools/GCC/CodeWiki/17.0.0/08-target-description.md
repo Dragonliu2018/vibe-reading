@@ -6,6 +6,7 @@ source:
 title: "目标描述机制"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "机器描述", "retargetability", "targetm", "gen", "define_insn"]
 description: "GCC 用机器描述 .md（声明式 DSL）+ targetm 钩子表 + gen* 代码生成器实现可重定向——新增架构不改编译器主体。"
 readingTime: "12 min"

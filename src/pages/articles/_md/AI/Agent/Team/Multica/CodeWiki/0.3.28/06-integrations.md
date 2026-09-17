@@ -6,6 +6,7 @@ source:
 title: "Integrations"
 date: "2026-08-11T20:31:27+08:00"
 category: [AI, Agent, Team, Multica, CodeWiki, "0.3.28"]
+contentType: "CodeWiki"
 tags: ["multica", "Go", "Lark", "WebSocket", "Lease", "Adapter"]
 description: "integrations 模块用 channel 抽象层 + lark 适配器实现飞书集成——WS 长连接 lease 管理、两阶段幂等去重、ACK 与 reply 解耦。"
 readingTime: "10 min"

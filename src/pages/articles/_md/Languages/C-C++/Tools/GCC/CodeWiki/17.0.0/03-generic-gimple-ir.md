@@ -6,6 +6,7 @@ source:
 title: "GENERIC/GIMPLE 中间表示"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "GENERIC", "GIMPLE", "tree_node", "IR", "GGC"]
 description: "GCC 用 GENERIC（语言无关 AST）和 GIMPLE（三地址 SSA-ready）两层 IR 解耦前后端；gimplify 是唯一转换点。"
 readingTime: "13 min"

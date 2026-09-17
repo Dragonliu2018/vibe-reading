@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T12:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "自动分区", "AUTO PARTITION", "Range 分区", "List 分区", "数据划分"]
 description: "Apache Doris 3.x 官方文档：自动分区在数据导入时按需自动创建分区，解决数据分布零散或难以预测时手动/动态分区无法覆盖的场景，支持 Range 和 List 两种分区类型。"
 readingTime: "12 min"

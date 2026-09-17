@@ -2,6 +2,7 @@
 title: "万般滋味，都是生活"
 date: "2026-07-11"
 category: [Literature, 万般滋味都是生活, Reading]
+contentType: "Reading"
 tags: ["丰子恺", "散文", "生活哲学", "童心"]
 description: "丰子恺的散文集——在平淡日常里尝出万般滋味，以童心与佛理化解生活的苦乐。"
 readingTime: "7 min"

@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/longcat-flash-prover.pdf"
 date: "2026-08-12T20:04:29+08:00"
 category: [AI, Models, Text Model, Papers]
+contentType: "Papers"
 tags: ["Formal Reasoning", "Theorem Proving", "Lean4", "MoE", "RLHF", "HisPO", "Auto-formalization", "Reward Hacking"]
 description: "目的：560B MoE 模型做 Lean4 形式化推理。手段：三分解（auto-formalization/sketching/proving）+ Hybrid-Experts 迭代框架 + HisPO 稳定 MoE 训练 + AST 合法检测。结论：MiniF2F-Test 97.1%（72 budget），开源 SOTA。"
 readingTime: "22 min"

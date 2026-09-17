@@ -8,6 +8,7 @@ source:
   site: "公众号"
 date: "2026-08-05T17:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Official]
+contentType: "Blogs"
 tags: ["Apache Doris", "PostgreSQL", "OLAP", "迁移", "Lakehouse", "SelectDB"]
 description: "当分析数据规模达到 80TB，PostgreSQL 只读副本已无法解决单条分析查询的执行效率问题。本文从瓶颈判断、能力依赖、方案选型到迁移架构，系统梳理 PostgreSQL 迁移至 Apache Doris 的实践思考。"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "复制"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "replication", "流复制", "逻辑复制", "复制槽", "syncrep"]
 description: "PostgreSQL replication 模块——物理流复制 walsender/walreceiver、同步复制队列、复制槽 WAL 保留、逻辑解码 ReorderBuffer"
 readingTime: "32 min"

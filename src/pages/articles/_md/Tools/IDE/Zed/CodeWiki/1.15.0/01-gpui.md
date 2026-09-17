@@ -6,6 +6,7 @@ source:
 title: "GPUI 渲染框架"
 date: "2026-08-18T11:06:09+08:00"
 category: [Tools, IDE, Zed, CodeWiki, "1.15.0"]
+contentType: "CodeWiki"
 tags: ["zed", "Rust", "code editor", "GPUI", "CRDT"]
 description: "Zed 自研 GPU 加速 UI 框架：实体系统、Element 三阶段渲染、帧循环"
 readingTime: "20 min"

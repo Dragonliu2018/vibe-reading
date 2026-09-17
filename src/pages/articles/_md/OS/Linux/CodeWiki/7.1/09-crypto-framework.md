@@ -6,6 +6,7 @@ source:
 title: "加密框架"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "crypto", "加密", "模板", "AEAD"]
 description: "Linux 内核加密 API——crypto_alg 注册表、crypto_type 策略 frontend、模板组合（gcm(aes)）、异步 transform 与 larval 自检。"
 readingTime: "13 min"

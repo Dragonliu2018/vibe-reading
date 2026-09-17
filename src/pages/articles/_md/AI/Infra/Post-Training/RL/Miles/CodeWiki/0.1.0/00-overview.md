@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "RL", "Post-Training", "Megatron", "SGLang", "Ray", "GRPO", "Async"]
 description: "Miles 是企业级大规模模型后训练 RL 框架，配 SGLang rollout 与 Megatron 训练，本章为整体架构概览。"
 readingTime: "38 min"

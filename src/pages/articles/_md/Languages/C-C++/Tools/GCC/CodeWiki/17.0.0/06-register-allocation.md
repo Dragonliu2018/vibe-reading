@@ -6,6 +6,7 @@ source:
 title: "寄存器分配"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "寄存器分配", "IRA", "LRA", "reload", "图着色"]
 description: "GCC 寄存器分配分两阶段：IRA 全局分配（循环树区域 + 冲突图着色），LRA 局部修正（迭代式约束求解），传统 reload 为后备。"
 readingTime: "12 min"

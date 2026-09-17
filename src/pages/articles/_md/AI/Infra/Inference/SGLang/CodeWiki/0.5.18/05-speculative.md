@@ -6,6 +6,7 @@ source:
 title: "推测解码"
 date: "2026-08-22T22:29:54+08:00"
 category: [AI, Infra, Inference, SGLang, CodeWiki, "0.5.18"]
+contentType: "CodeWiki"
 tags: ["SGLang", "speculative", "EAGLE", "DFlash", "推测解码", "tree attention"]
 description: "SGLang 推测解码：BaseSpecWorker 统一抽象、EAGLE tree attention、spec_registry 注册表、DFlash block draft 与 CUDA Graph 加速。"
 readingTime: "15 min"

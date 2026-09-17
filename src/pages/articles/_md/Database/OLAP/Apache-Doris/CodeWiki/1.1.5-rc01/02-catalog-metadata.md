@@ -6,6 +6,7 @@ source:
 title: "元数据与 Catalog"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "catalog", "Catalog god class", "EditLog", "BDBJE", "HA", "fencing"]
 description: "Doris 1.1.5 元数据与 Catalog：Catalog god class（7424 行服务定位器单例）、Database/OlapTable/FunctionSet 元数据、EditLog+BDBJE 复制选主 HA、fencing 脑裂防护、journal 回放。2.x 拆分重命名为 Env。"
 readingTime: "15 min"

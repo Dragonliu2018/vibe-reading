@@ -6,6 +6,7 @@ source:
 title: "Monaco 编辑器"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "Monaco", "编辑器", "Piece Tree"]
 description: "Monaco 编辑器内核——Model/ViewModel/View 三层分离、Piece Tree 文本存储与贡献注册"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "表达式引擎"
 date: "2026-08-24T14:30:33+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "0.14.0"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "exprs", "Expr", "AnyVal", "dlsym", "行式求值"]
 description: "Doris 0.14.0 表达式引擎：Expr 树 + AnyVal 行式求值、ExprContext 上下文、SlotRef/FunctionCallExpr/BinaryPredicate、dlsym 函数动态加载。行式表达式路径（无 VExpr）。"
 readingTime: "12 min"

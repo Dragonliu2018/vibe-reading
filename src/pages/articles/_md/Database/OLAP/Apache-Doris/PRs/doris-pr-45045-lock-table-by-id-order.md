@@ -8,6 +8,7 @@ source:
   prType: "enhancement"
 date: "2026-07-30T14:20:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "Nereids", "FE", "表锁", "死锁", "公平读写锁", "Cascades", "MTMV"]
 description: "Doris 把 Nereids 规划期散落在各处的表读锁收口到 StatementContext.lock()，按 table id 升序统一加锁，根治多线程以不同顺序获取读锁与第三线程写锁竞争造成的公平锁死锁；Insert 路径改为分阶段加锁 + schema 变更重试。"
 readingTime: "14 min"

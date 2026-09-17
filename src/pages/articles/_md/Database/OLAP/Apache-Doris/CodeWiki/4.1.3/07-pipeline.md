@@ -6,6 +6,7 @@ source:
 title: "Pipeline 执行引擎"
 date: "2026-08-23T18:34:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Pipeline", "Pull模型", "向量化", "MLFQ调度"]
 description: "Doris Pipeline 执行引擎：物理计划编译为 Operator DAG、Pull 模型流水线、MLFQ 多核 Work Stealing 调度。"
 readingTime: "14 min"

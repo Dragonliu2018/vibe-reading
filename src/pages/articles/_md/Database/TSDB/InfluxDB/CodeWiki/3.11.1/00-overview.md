@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 源码架构解读——Rust 编写的云原生时序数据库，基于 Apache Arrow/DataFusion/Parquet，diskless 对象存储架构"
 readingTime: "35 min"

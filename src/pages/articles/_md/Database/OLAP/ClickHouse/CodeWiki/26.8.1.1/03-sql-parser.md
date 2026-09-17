@@ -6,6 +6,7 @@ source:
 title: "SQL 解析器"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "Parser", "Lexer", "AST", "递归下降"]
 description: "ClickHouse 手写递归下降 SQL 解析器源码解读——Lexer 零拷贝 Token、IParserBase 回溯框架、IAST 组合树。"
 readingTime: "25 min"

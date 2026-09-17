@@ -8,6 +8,7 @@ source:
   site: "阿里技术 微信公众号"
 date: "2026-07-30T17:30:00+08:00"
 category: [AI, Agent, Evaluation, skill-up, Official]
+contentType: "Blogs"
 tags: ["Agent Skill", "skill-up", "评测框架", "回归测试", "CI", "Alibaba", "开源"]
 description: "阿里巴巴开源 skill-up——一个面向 Agent Skill 的命令行评测框架，用声明式 YAML 固化「加载用例→启动 Agent→发送输入→收集回复→判定→生成报告」全流程，支持本地与 CI 复用、跨引擎回放、多轮会话与重型端到端评测。"
 readingTime: "15 min"

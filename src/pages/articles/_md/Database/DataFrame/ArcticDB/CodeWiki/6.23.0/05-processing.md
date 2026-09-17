@@ -6,6 +6,7 @@ source:
 title: "查询处理"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "pushdown", "Clause", "表达式树", "聚合"]
 description: "ArcticDB 查询处理：Clause 管道、表达式引擎与聚合下推"
 readingTime: "15 min"

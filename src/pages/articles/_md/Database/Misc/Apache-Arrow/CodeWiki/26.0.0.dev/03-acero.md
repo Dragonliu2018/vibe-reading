@@ -6,6 +6,7 @@ source:
 title: "Acero 执行引擎"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "Acero", "执行引擎"]
 description: "Acero push-based 流式执行引擎——ExecNode 多输入单输出、单调 counter 背压、双线程池调度与 HashJoin 实现"
 readingTime: "12 min"

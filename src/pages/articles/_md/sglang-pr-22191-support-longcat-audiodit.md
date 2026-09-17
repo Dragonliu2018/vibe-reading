@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-08-26T12:13:40+08:00"
 category: [AI, Infra, Inference, SGLang, Contributions]
+contentType: "Contributions"
 tags: ["Diffusion", "TTS", "Flow Matching", "DiT", "SGLang", "LongCat-AudioDiT", "VAE", "OpenAI API"]
 description: "解读 PR #22191：如何在 SGLang multimodal_gen 中接入 LongCat-AudioDiT 扩散式 TTS——通过子类化标准 DenoisingStage（重写 _prepare_denoising_loop / _predict_noise）把耦合的 ODE 循环纳入 BeforeDenoising→Denoising→Decoding 三段式，prompt 区域重写 / 无条件分支清零 / 每请求 CFG-APG 策略以模块级函数注入，并新增 OpenAI 兼容 /v1/audio/speech API。"
 readingTime: "22 min"

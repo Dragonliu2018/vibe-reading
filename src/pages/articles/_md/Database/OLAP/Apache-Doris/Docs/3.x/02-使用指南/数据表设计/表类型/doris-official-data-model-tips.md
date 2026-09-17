@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T16:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "表类型"]
+contentType: "Docs"
 tags: ["Apache Doris", "数据模型", "聚合模型", "写时合并", "count 查询", "表类型", "注意事项"]
 description: "Apache Doris 3.x 官方文档：数据模型使用注意事项，介绍建表列类型建议、聚合模型的局限性（count(*) 查询问题）、Unique 模型写时合并实现、Duplicate 模型及模型选择建议。"
 readingTime: "10 min"

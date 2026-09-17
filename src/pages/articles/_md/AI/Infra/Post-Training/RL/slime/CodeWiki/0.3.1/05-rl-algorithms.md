@@ -6,6 +6,7 @@ source:
 title: "RL 算法"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "PPO", "GRPO", "GSPO", "CISPO", "advantage"]
 description: "slime 的 RL 算法层：优势估计 dispatch、策略损失、CP 感知归一化与 off-policy 修正。"
 readingTime: "18 min"

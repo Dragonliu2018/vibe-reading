@@ -6,6 +6,7 @@ source:
 title: "Bindings 客户端"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "HTTP 客户端", "bindings", "REST"]
 description: "解读 pkg/bindings：Podman REST API 的 Go 客户端，连接存 context，手写 endpoint + 重试 + 错误模型，是 Tunnel 模式底层。"
 readingTime: "10 min"

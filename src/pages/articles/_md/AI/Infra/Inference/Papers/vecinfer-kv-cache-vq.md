@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/vecinfer-kv-cache-vq.pdf"
 date: "2026-08-08T14:30:00+08:00"
 category: [AI, Infra, Inference, Papers]
+contentType: "Papers"
 tags: ["KV Cache", "Vector Quantization", "Outlier Suppression", "Hadamard Transform", "CUDA Kernel", "LLM Inference"]
 description: "用 smooth+Hadamard 双变换抑制 key cache 离群点使 codebook 全覆盖数据分布，配融合 dequantization-computation 的 CUDA kernel；2-bit 接近全精度，Llama-3.1-8B 196k 上 2.7× 大 batch self-attention 加速、8.3× 单 batch 端到端延迟降低。"
 readingTime: "14 min"

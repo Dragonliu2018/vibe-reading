@@ -8,6 +8,7 @@ source:
   site: "腾讯技术工程"
 date: "2026-07-28T21:13:36+08:00"
 category: [AI, Agent, Graph Engineering, Blogs]
+contentType: "Blogs"
 tags: ["Graph Engineering", "Loop Engineering", "Multi-Agent", "LangGraph", "Anthropic", "Agent Orchestration", "Verifier", "Fan-out Fan-in"]
 description: "目的：理清从 Prompt→Context→Harness→Loop→Graph 的五层演进。手段：拆解 Graph 的四要素（节点/边/状态/策略）+ 三种编排拓扑 + Anthropic 五种工作流模式 + 确定性验证器设计。结论：Graph 是命名事件+视角上移，工程重心从编程单个智能体行为上移到编程一群智能体的组织。"
 readingTime: "15 min"

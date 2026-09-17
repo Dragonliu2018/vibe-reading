@@ -6,6 +6,7 @@ source:
 title: "核心引擎"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "DeepSpeedEngine", "训练循环", "优化器装配"]
 description: "DeepSpeedEngine 是训练系统的中央编排器，包装用户模型，按配置选择 ZeRO/FP16/BF16 策略，编排 forward/backward/step 三段式训练循环。"
 readingTime: "12 min"

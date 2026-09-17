@@ -6,6 +6,7 @@ source:
 title: "Nereids 优化器"
 date: "2026-08-24T10:22:21+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.7-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Nereids", "Cascades", "CBO", "Memo", "DPHyp"]
 description: "Doris 2.1.7 Nereids：Cascades CBO 优化器，Memo 等价空间搜索 + 三阶段规则（analysis/rewrite/implementation）+ DPHyp join reorder + ORCA 式属性强制。"
 readingTime: "14 min"

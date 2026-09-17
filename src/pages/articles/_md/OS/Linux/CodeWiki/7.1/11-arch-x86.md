@@ -6,6 +6,7 @@ source:
 title: "架构层与系统入口"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "x86", "系统调用", "页表", "中断", "汇编"]
 description: "Linux arch/x86 架构层——启动汇编 startup_64、syscall 入口 entry_SYSCALL_64、do_syscall_64 switch-case 分发、中断异常、页表初始化。"
 readingTime: "14 min"

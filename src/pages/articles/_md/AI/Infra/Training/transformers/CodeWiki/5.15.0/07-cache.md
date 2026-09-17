@@ -6,6 +6,7 @@ source:
 title: "KV 缓存"
 date: "2026-08-18T16:40:20+08:00"
 category: [AI, Infra, Training, transformers, CodeWiki, "5.15.0"]
+contentType: "CodeWiki"
 tags: ["transformers", "KV Cache", "DynamicCache", "StaticCache", "torch.compile"]
 description: "cache_utils 用两层抽象 CacheLayerMixin + Cache 统一 KV 缓存。DynamicLayer 动态追加用于标准生成，StaticLayer 预分配原位写用于 torch.compile。本文解读缓存策略的选择与编译友好设计。"
 readingTime: "11 min"

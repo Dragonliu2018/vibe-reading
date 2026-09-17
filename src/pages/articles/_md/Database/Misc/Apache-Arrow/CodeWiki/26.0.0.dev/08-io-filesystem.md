@@ -6,6 +6,7 @@ source:
 title: "I/O 与文件系统"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "I/O", "文件系统"]
 description: "Arrow I/O 接口与文件系统抽象——RandomAccessFile::ReadAt 零拷贝、mmap/pread、BufferedInputStream 装饰器与本地/S3 文件系统"
 readingTime: "10 min"

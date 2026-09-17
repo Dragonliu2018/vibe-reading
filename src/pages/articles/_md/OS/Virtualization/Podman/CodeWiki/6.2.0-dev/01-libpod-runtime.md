@@ -6,6 +6,7 @@ source:
 title: "libpod 核心运行时"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "libpod", "容器运行时", "SQLite"]
 description: "解读 libpod：Runtime/Container/Pod 核心结构、config 与 state 分离、SQLite 持久化、infra container、OCI spec 生成与无 daemon 设计。"
 readingTime: "14 min"

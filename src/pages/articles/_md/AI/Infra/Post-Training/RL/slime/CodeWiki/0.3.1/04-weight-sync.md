@@ -6,6 +6,7 @@ source:
 title: "权重同步"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "权重同步", "NCCL", "CUDA IPC", "delta"]
 description: "slime 的训练↔推理权重同步桥梁：tensor/nccl/disk/disk-delta 四路径与全局命名原语。"
 readingTime: "18 min"

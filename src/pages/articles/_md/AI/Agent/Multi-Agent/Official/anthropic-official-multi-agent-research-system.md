@@ -8,6 +8,7 @@ source:
   site: "Anthropic Engineering"
 date: "2026-08-24T17:35:00+08:00"
 category: [AI, Agent, Multi-Agent, Official]
+contentType: "Blogs"
 tags: ["Multi-Agent", "Anthropic", "Research System", "Orchestrator-Worker", "Subagents", "Prompt Engineering", "Agent Evaluation", "Production Reliability"]
 description: "Anthropic 工程团队分享 Claude Research 多 Agent 系统的构建过程：orchestrator-worker 架构、八条 prompt 工程原则、Agent 评估方法论与生产可靠性工程实践，多 Agent 系统在内部研究评测上比单 Agent 高 90.2%。"
 readingTime: "22 min"

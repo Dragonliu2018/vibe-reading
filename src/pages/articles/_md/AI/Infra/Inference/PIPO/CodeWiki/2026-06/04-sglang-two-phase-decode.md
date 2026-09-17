@@ -6,6 +6,7 @@ source:
 title: "两阶段 Decode 机制"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "CUDA Graph", "两阶段 decode", "偶数长度不变量"]
 description: "PIPO 推理两阶段 decode 的 CUDA graph capture/replay、偶数长度不变量、radix cache 强制 disable 与 PAD 多重角色"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "查询分析器"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "Analyzer", "QueryTree", "语义分析"]
 description: "ClickHouse 查询分析器源码解读——AST→QueryTree 类型化中间表示、QueryAnalyzer 多 Pass 语义分析与标识符解析。"
 readingTime: "25 min"

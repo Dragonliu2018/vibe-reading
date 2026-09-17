@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-04"
 category: [Database, Ecosystems, mycli, Contributions]
+contentType: "Contributions"
 tags: ["MySQL", "Regex"]
 description: "修复通过 Homebrew 安装的 MySQL 启动时版本号不显示的问题：正则漏匹配了无后缀的纯 X.Y.Z 版本字符串。"
 readingTime: "5 min"

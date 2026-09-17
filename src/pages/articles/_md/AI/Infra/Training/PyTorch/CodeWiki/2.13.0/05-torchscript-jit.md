@@ -6,6 +6,7 @@ source:
 title: "TorchScript JIT"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "TorchScript", "JIT", "IR", "GraphExecutor"]
 description: "SSA 风格 IR（Graph/Node/Value/Block）+ 分层 GraphExecutor + pass pipeline 优化 + 符号微分，可序列化部署的图编译器。"
 readingTime: "13 min"

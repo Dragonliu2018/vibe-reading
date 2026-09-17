@@ -6,6 +6,7 @@ source:
 title: "网络协议栈"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "网络", "socket", "sk_buff", "NAPI"]
 description: "Linux 网络协议栈——socket/sock 分离、sk_buff 数据包、四重注册表、NAPI 收发路径、分层架构。"
 readingTime: "16 min"

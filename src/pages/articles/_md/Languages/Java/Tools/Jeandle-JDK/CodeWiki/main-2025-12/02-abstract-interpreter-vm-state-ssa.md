@@ -6,6 +6,7 @@ source:
 title: "VM 状态与 SSA"
 date: "2026-08-19T17:50:32+08:00"
 category: ["Languages", "Java", "Tools", "Jeandle-JDK", "CodeWiki", "main-2025-12"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "SSA", "Phi", "抽象解释"]
 description: "Jeandle 抽象解释器的 SSA 构造：JeandleVMState 的 Phi 合并、循环头状态与死局部失效"
 readingTime: "9 min"

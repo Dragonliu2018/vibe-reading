@@ -6,6 +6,7 @@ source:
 title: "工作区与项目管理"
 date: "2026-08-13T20:07:12+08:00"
 category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
+contentType: "CodeWiki"
 tags: ["uv", "Rust", "workspace", "pyproject"]
 description: "uv-workspace 与 uv-settings：Cargo-style workspace 多成员模型、tool.uv.sources 依赖来源映射与三层配置合并。"
 readingTime: "14 min"

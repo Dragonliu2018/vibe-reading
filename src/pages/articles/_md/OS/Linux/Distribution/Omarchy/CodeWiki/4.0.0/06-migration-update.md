@@ -6,6 +6,7 @@ source:
 title: "迁移与更新"
 date: "2026-08-25T10:44:29+08:00"
 category: [OS, Linux, Distribution, Omarchy, CodeWiki, "4.0.0"]
+contentType: "CodeWiki"
 tags: ["Omarchy", "迁移", "更新", "ALPM", "systemd"]
 description: "Omarchy 的自维护引擎——per-user 幂等迁移、omarchy update 独占管线、ALPM guard 拦截直连 pacman、登录通知。"
 readingTime: "12 min"

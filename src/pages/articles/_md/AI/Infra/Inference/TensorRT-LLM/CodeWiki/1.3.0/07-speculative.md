@@ -6,6 +6,7 @@ source:
 title: "投机解码"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "投机解码", "Eagle3", "MTP", "Ngram", "speculative"]
 description: "投机解码模块——15+ 算法可切换的 SpecWorkerBase 策略体系，draft→verify→accept 循环，dynamic tree 与 one-model KV 隔离。"
 readingTime: "10 min"

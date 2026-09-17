@@ -8,6 +8,7 @@ source:
   site: "公众号 ApacheDoris"
 date: "2026-07-24"
 category: [Database, OLAP, Apache Doris, Official]
+contentType: "Blogs"
 tags: ["Doris", "Compaction", "LSM", "Rowset", "Cumulative Compaction", "Base Compaction"]
 description: "Doris 通过 compaction 机制将不同数据版本聚合、小文件合并为大文件以提升查询性能；本文剖析 producer-consumer 模式、permission 机制、cumulative size_based 策略与 base compaction 流程。"
 readingTime: "12 min"

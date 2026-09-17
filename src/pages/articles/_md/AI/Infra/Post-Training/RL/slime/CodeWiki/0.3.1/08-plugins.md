@@ -6,6 +6,7 @@ source:
 title: "插件机制"
 date: "2026-08-19T23:01:24+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "slime", "CodeWiki", "0.3.1"]
+contentType: "CodeWiki"
 tags: ["slime", "插件", "模型定义", "rollout buffer"]
 description: "slime 的插件层：模型定义（glm/qwen/minimax）与离线数据 buffer 生成。"
 readingTime: "12 min"

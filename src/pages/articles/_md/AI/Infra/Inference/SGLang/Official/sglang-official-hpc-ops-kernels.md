@@ -8,6 +8,7 @@ source:
   site: "LMSYS Blog"
 date: "2026-08-07T18:00:00+08:00"
 category: [AI, Infra, Inference, SGLang, Official]
+contentType: "Blogs"
 tags: ["HPC-Ops", "Attention", "Router GEMM", "MoE", "Tencent Hunyuan", "H20", "H200", "Kernel Optimization"]
 description: "HPC-Ops is an open-source operator library for LLM inference, deployed in Tencent's large-scale production serving. Its core operators — Dynamic Attention, Router GEMM, and Fused MoE — reduce Hy3 TPOT by up to 48.8% and are now integrated into SGLang's main branch."
 readingTime: "20 min"

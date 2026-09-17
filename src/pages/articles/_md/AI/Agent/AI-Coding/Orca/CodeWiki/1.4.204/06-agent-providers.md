@@ -6,6 +6,7 @@ source:
 title: "Agent Provider 适配"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "CLI Agent", "适配器"]
 description: "37 个 CLI agent 的声明式接入：TuiAgent 注册表、六种 prompt 注入策略、从 PTY 字节流识别 readiness 的 scanner，以及 foreground process 多策略检测。"
 readingTime: "18 min"

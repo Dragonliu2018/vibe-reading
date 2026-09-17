@@ -1,0 +1,106 @@
+---
+/**
+ * 类型视图 — 按内容类型（frontmatter contentType）分组展示文章
+ *
+ * 从徽章视图独立出来的视图（原"按内容类型"维度）：
+ * CodeWiki/Papers/Docs/PRs/Official… 一色一标签（BADGE_PALETTE 专属色）。
+ * 分组头复用徽章语言，与徽章视图的折叠组同款交互。
+ */
+import { articles, type Article } from '../data/articles';
+import { badgeStyle } from '../data/badges';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewTabs from '../components/ViewTabs.astro';
+import ArticleRow from '../components/ArticleRow.astro';
+
+const totalArticles = articles.length;
+
+interface Group {
+  label: string;
+  count: number;
+  items: Article[];
+}
+
+function groupByContentType(): Group[] {
+  const map = new Map<string, Article[]>();
+  for (const a of articles) {
+    const t = a.contentType ?? '';
+    if (!map.has(t)) map.set(t, []);
+    map.get(t)!.push(a);
+  }
+  return [...map.entries()]
+    .sort((x, y) => y[1].length - x[1].length)
+    .map(([label, items]) => ({ label, count: items.length, items }));
+}
+
+const groups = groupByContentType();
+---
+
+<BaseLayout
+  title="类型 · Vibe Reading"
+  description={`按内容类型（CodeWiki/Papers/Docs 等）分组的 ${totalArticles} 篇文章`}
+  mainClass="padded"
+>
+  <ViewTabs active="type" />
+
+  {groups.map(g => (
+    <details class="type-group">
+      <summary class="type-group-head">
+        <svg class="type-group-chev" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {g.label ? (
+          <span class="type-group-badge" style={badgeStyle(g.label)}>{g.label}</span>
+        ) : (
+          <span class="type-group-badge type-group-plain">未声明</span>
+        )}
+        <span class="type-group-count">{g.count}</span>
+      </summary>
+      <div class="type-group-articles">
+        {g.items.map(a => <ArticleRow article={a} />)}
+      </div>
+    </details>
+  ))}
+</BaseLayout>
+
+<style>
+  .type-group { margin-bottom: 2px; }
+
+  .type-group-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: background .15s, border-color .15s;
+    margin-bottom: 2px;
+    list-style: none; cursor: pointer; user-select: none;
+  }
+  .type-group-head::-webkit-details-marker { display: none; }
+  .type-group-head:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+  /* 文章行与组徽章严格对齐（head padding 10 + chev 18 + gap 8 = 36px） */
+  .type-group-articles { padding-left: 36px; }
+  .type-group-articles :global(.article-item) { padding: 6px 0; }
+  .type-group-articles :global(.article-item-meta) { display: none; }
+  .type-group-chev {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
+    color: #999;
+    transition: color .15s, transform .2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .type-group-head:hover .type-group-chev { color: #ccc; }
+  details[open] > .type-group-head .type-group-chev { transform: rotate(90deg); }
+  .type-group-badge {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 9px; border-radius: 20px;
+    letter-spacing: 0.2px; white-space: nowrap;
+  }
+  .type-group-plain {
+    color: var(--text-muted); background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .type-group-count {
+    font-size: 12px; color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    padding: 1px 8px; border-radius: 20px;
+    white-space: nowrap;
+  }
+</style>

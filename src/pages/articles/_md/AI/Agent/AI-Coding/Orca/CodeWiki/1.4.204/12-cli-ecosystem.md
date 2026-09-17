@@ -6,6 +6,7 @@ source:
 title: "CLI 与工具生态"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "CLI", "Skills", "Computer Use"]
 description: "orca CLI 的懒加载 handler manifest、skills 的双 manifest bundle 与中立 canonical root、computer use 独立 sidecar 的 EDR/TCC 理由。"
 readingTime: "15 min"

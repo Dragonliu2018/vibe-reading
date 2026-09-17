@@ -6,6 +6,7 @@ source:
 title: "operator 算子层"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "operator", "DDL", "DML", "分区路由"]
 description: "operator——Frontend 与 region engine 之间的算子桥：语句→region 请求翻译、分区路由、按 peer 并行下发与按需建表。"
 readingTime: "18 min"

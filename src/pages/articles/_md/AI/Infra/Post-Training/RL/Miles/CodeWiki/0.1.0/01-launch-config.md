@@ -6,6 +6,7 @@ source:
 title: "启动与配置"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "RL", "Launch", "typer", "true_on_policy"]
 description: "Miles launch script 如何把 recipe 编译为 Ray job，true_on_policy 契约如何保证推理与训练数值一致。"
 readingTime: "22 min"

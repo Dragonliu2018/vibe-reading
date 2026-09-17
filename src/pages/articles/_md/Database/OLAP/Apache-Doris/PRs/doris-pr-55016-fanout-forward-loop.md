@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-09-07T20:13:39+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["FE", "Config", "masterOnly", "RedirectStatus", "isProxy", "HighAvailability"]
 description: "ADMIN SET ALL FRONTENDS CONFIG 扇出到其他 FE 的语句被降级成不带 ALL 的版本，masterOnly key 在目标 FE 触发二次转发、被 isProxy 防环保护拦下报错；本 PR 让扇出语句原样保留 ALL，并用 isProxy 参数防止二次扇出。"
 readingTime: "8 min"

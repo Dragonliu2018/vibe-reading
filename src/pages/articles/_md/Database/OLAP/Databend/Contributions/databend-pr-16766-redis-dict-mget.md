@@ -8,6 +8,7 @@ source:
   prType: "perf"
 date: "2026-07-04"
 category: [Database, OLAP, Databend, Contributions]
+contentType: "Contributions"
 tags: ["Databend", "Redis", "Dictionary", "性能优化", "mget", "批量查询"]
 description: "将 Redis 字典查询从逐行 OpenDAL get 改为 redis crate mget 批量拉取，附带 key 去重，实现 1kw 行 114 倍提速。"
 readingTime: "12 min"

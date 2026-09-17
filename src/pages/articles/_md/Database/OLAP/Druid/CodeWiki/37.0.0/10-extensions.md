@@ -6,6 +6,7 @@ source:
 title: "扩展系统"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "SPI", "扩展", "Deep Storage", "Guice"]
 description: "Druid 扩展系统——DruidModule + ServiceLoader 加载、Deep/Metadata storage SPI、Jackson @JsonSubTypes 多态、Guice Multibinder 注册、代表性扩展。"
 readingTime: "13 min"

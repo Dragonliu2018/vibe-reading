@@ -6,6 +6,7 @@ source:
 title: "Agent 工具集与 MCP"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "AgentTools", "MCP", "ToolCalling"]
 description: "OpenCodeReview Agent 工具集与 MCP——场景化蒸馏的六个内建工具、tool.Provider 注册表、CommentCollector 评论收集、MCP 客户端接入外部工具。"
 readingTime: "20 min"

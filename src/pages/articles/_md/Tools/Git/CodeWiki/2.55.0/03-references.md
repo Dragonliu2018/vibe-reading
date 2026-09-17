@@ -6,6 +6,7 @@ source:
 title: "引用管理"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "refs", "reftable", "事务"]
 description: "解读 Git 引用管理——files/packed/reftable 三后端策略、ref_transaction 原子事务、ref 迭代器组合、命名空间抽象。"
 readingTime: "13 min"

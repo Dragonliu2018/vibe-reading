@@ -6,6 +6,7 @@ source:
 title: "Planner"
 date: "2026-08-22T14:18:13+08:00"
 category: [Database, OLAP, DuckDB, CodeWiki, "1.5.5"]
+contentType: "CodeWiki"
 tags: ["DuckDB", "C++", "Planner", "Binder", "LogicalPlan"]
 description: "DuckDB Planner 模块——AST 绑定与逻辑计划生成，Binder 将名称解析到 Catalog 并产出 LogicalOperator 树。"
 readingTime: "25 min"

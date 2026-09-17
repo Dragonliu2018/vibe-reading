@@ -6,6 +6,7 @@ source:
 title: "Cordis 插件内核"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "Cordis", "Plugin", "TypeScript"]
 description: "dsh 的底座——vendored Cordis 如何用 Context/Service/Fiber/Events 实现 everything is a plugin：reversible effects、typed events、waterfall 与 scope。"
 readingTime: "16 min"

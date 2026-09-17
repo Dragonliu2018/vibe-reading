@@ -8,6 +8,7 @@ source:
   site: "minimaxi.com"
 date: "2026-07-28T20:14:27+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Blogs"]
+contentType: "Blogs"
 tags: ["Agent RL", "Forge", "MiniMax M2.5", "CISPO", "Windowed FIFO", "Prefix Tree Merging", "Prefix Cache", "PD 分离", "强化学习", "RLHF"]
 description: "目的：在大规模 Agent RL 中平衡吞吐量、训练稳定性与 Agent 灵活性。手段：原生异步 Agent RL 系统 Forge——标准化 Agent-LLM 交互协议解耦引擎与脚手架 + Windowed FIFO 混合调度 + Prefix Tree Merging 40× 训练加速 + 全局 L3 KV Cache + Dense/Process Reward。结论：数十万 Agent 脚手架 + 200K 上下文下日吞吐百万级样本，造就 MiniMax M2.5 性能突破。"
 readingTime: "12 min"

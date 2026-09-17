@@ -6,6 +6,7 @@ source:
 title: "输入解码"
 date: "2026-09-17T10:52:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "kitty keyboard protocol", "输入处理"]
 description: "herdr 输入解码：kitty keyboard protocol 三级解析瀑布、按 pane 协商重编码、lease 键归属记账。"
 readingTime: "18 min"

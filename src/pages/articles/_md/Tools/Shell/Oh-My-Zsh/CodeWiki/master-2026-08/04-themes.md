@@ -6,6 +6,7 @@ source:
 title: "主题系统"
 date: "2026-08-13T20:12:36+08:00"
 category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master-2026-08"]
+contentType: "CodeWiki"
 tags: ["ohmyzsh", "Shell", "主题", "prompt", "异步渲染"]
 description: "解读 Oh My Zsh 主题系统：.zsh-theme 变量契约、git_prompt_info 解耦、agnoster 函数式架构与异步渲染。"
 readingTime: "11 min"

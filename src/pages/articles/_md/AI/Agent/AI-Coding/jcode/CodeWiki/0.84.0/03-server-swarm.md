@@ -6,6 +6,7 @@ source:
 title: "Server 与 Swarm"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "Daemon", "Swarm", "Plan DAG", "热重载", "文件冲突检测"]
 description: "jcode Server 与 Swarm——单 server 多客户端 daemon、文件冲突双向通知、mode-gated 递归 spawn、Plan DAG 任务图（seed/expand/complete + 心跳/回收）、exec 热重载"
 readingTime: "24 min"

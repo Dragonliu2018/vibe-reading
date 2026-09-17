@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-22T14:15:24+08:00"
 category: [Database, "Query Engine", DataFusion, CodeWiki, "48.0.0"]
+contentType: "CodeWiki"
 tags: ["DataFusion", "Rust", "查询引擎", "Apache Arrow"]
 description: "Apache DataFusion 是 Rust 编写的可扩展查询引擎，以 Apache Arrow 为内存格式，提供 SQL 与 DataFrame API、向量化流式执行与全链路可扩展点。"
 readingTime: "35 min"

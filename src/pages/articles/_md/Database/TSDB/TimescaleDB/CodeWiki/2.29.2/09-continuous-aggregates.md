@@ -6,6 +6,7 @@ source:
 title: "连续聚合"
 date: "2026-08-21T15:27:49+08:00"
 category: [Database, TSDB, TimescaleDB, CodeWiki, "2.29.2"]
+contentType: "CodeWiki"
 
 alsoCategories:
   - [Database, OLTP, PostgreSQL, Extension, TimescaleDB, CodeWiki, "2.29.2"]

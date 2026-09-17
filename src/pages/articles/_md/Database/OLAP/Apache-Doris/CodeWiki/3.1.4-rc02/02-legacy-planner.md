@@ -6,6 +6,7 @@ source:
 title: "旧版优化器"
 date: "2026-08-23T18:57:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Analyzer", "Legacy Planner", "Impala"]
 description: "Doris 3.1.4 旧版优化器：Impala 式 Analyzer + DistributedPlanner，Nereids 不支持时的回退安全网。"
 readingTime: "9 min"

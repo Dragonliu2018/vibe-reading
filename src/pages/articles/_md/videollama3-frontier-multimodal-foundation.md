@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/videollama3-frontier-multimodal-foundation.pdf"
 date: "2026-08-04T15:00:00+08:00"
 category: [AI, Models, Multimodal, Papers]
+contentType: "Papers"
 tags: ["Vision LLM", "Multimodal", "Video Understanding", "Image Understanding", "AVT", "DiffFP", "Qwen2.5", "SigLIP", "Vision-Centric"]
 description: "目的：统一图像与视频理解。手段：视觉中心四阶段训练 + AVT 动态分辨率 + DiffFP 帧压缩。结论：图像视频双模态 SOTA。"
 readingTime: "14 min"

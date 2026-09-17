@@ -6,6 +6,7 @@ source:
 title: "Environments & Cloud"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 环境与云——driver 抽象、租约管理、云上游 run 对账"
 readingTime: "15 min"

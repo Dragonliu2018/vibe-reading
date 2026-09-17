@@ -6,6 +6,7 @@ source:
 title: "操作编排层"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "ops", "编排", "cargo_compile"]
 description: "Cargo 操作编排层解读：cargo_compile 的七步编译流水线（compile/create_bcx）、resolve_ws_with_opts 解析编排、registry Web API、add/new/install/vendor/lockfile 命令操作全景。"
 readingTime: "20 min"

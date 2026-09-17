@@ -6,6 +6,7 @@ source:
 title: "向量化与函数"
 date: "2026-08-23T19:04:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "向量化", "CRTP", "IFunction", "Block", "COW", "ClickHouse"]
 description: "Doris 3.1.4 向量化与函数 vec：VExpr + IFunction/IAggregateFunction(CRTP) + Block/Column COW，源自 ClickHouse。"
 readingTime: "12 min"

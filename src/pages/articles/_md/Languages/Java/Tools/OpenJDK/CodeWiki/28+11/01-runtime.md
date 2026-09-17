@@ -6,6 +6,7 @@ source:
 title: "运行时与 VM 生命周期"
 date: "2026-08-19T23:29:36+08:00"
 category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
+contentType: "CodeWiki"
 tags: ["OpenJDK", "HotSpot", "Threads", "Safepoint", "ObjectMonitor", "Continuation"]
 description: "HotSpot 运行时模块——VM 生命周期、JavaThread 状态机、Safepoint、synchronized 锁升级、反优化与虚拟线程续体"
 readingTime: "16 min"

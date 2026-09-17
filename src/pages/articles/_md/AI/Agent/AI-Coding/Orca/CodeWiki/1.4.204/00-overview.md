@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "TypeScript", "Electron", "Agent IDE"]
 description: "Orca v1.4.204 全景解读：370 万行 TypeScript 的并行 agentic 开发 IDE——五层架构、12 个核心模块、统一 RPC 面、orcad 终端守护进程与跨机器 agent 会话租约。"
 readingTime: "30 min"

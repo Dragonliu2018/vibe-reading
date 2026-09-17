@@ -6,6 +6,7 @@ source:
 title: "编译流水线"
 date: "2026-08-19T19:41:28+08:00"
 category: [Languages, Java, Tools, Jeandle-LLVM, CodeWiki, "main-2025-11"]
+contentType: "CodeWiki"
 tags: ["Jeandle", "LLVM", "PassManager", "Pipeline"]
 description: "Jeandle 6 阶段编译流水线的编排机制与 PassBuilder/opt 集成"
 readingTime: "12 min"

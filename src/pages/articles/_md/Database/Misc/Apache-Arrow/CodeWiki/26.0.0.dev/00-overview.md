@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "列式格式", "内存分析"]
 description: "Apache Arrow C++ 源码架构解读——通用列式内存格式与多语言工具箱，零拷贝内存模型、计算内核、Acero 流式执行引擎、IPC/Flight 传输、Parquet 与 Dataset 的完整内幕"
 readingTime: "22 min"

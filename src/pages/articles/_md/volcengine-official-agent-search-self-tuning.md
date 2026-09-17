@@ -8,6 +8,7 @@ source:
   site: "字节跳动技术团队 微信公众号"
 date: "2026-07-30T18:00:00+08:00"
 category: [AI, Agent, Search, SearchCLI, Official]
+contentType: "Blogs"
 tags: ["火山引擎", "SearchCLI", "搜索调优", "Agent", "SPA", "自迭代", "开源"]
 description: "火山引擎在开源项目 SearchCLI 中开放 vs search tune，由 Agent 驱动搜索策略自迭代：Query 校验、实验规划、候选策略生成、批量搜索、相关性标注、指标对比到候选配置输出，配合 SPA（Strategy Population Annealing）框架在有限预算下把评测机会留给更有希望的策略。"
 readingTime: "14 min"

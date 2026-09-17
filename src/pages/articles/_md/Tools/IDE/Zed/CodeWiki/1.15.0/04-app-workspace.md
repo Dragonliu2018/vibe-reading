@@ -6,6 +6,7 @@ source:
 title: "应用与工作区"
 date: "2026-08-18T11:06:09+08:00"
 category: [Tools, IDE, Zed, CodeWiki, "1.15.0"]
+contentType: "CodeWiki"
 tags: ["zed", "Rust", "code editor", "GPUI", "CRDT"]
 description: "Zed 应用入口与工作区管理：多模式二进制、Workspace 根 View、Pane/Dock 布局"
 readingTime: "18 min"

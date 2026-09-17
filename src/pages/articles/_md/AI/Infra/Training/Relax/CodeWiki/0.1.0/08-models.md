@@ -6,6 +6,7 @@ source:
 title: "模型集成"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "Qwen3-Omni", "Dots-OCR", "GLM-MoE-DSA", "Megatron Bridge", "全模态"]
 description: "解读 Relax 模型集成层：Qwen3-Omni 全模态模型、GLM-MoE-DSA 融合注意力、Dots-OCR 双侧适配，以及 Megatron Bridge 桥接模式与 HF↔Megatron 权重转换。"
 readingTime: "11 min"

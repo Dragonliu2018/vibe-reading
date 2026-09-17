@@ -6,6 +6,7 @@ source:
 title: "Models"
 date: "2026-08-10T14:00:00+08:00"
 category: [AI, Infra, Inference, FasterTransformer, CodeWiki, "5.3"]
+contentType: "CodeWiki"
 tags: ["FasterTransformer", "ParallelGpt", "Tensor Parallel", "Pipeline Parallel", "模型编排"]
 description: "FasterTransformer 的模型编排层——ParallelGpt 的 forward 两阶段调度、Megatron 式权重切分、Context/Generation 分离、MoE 框架。"
 readingTime: "17 min"

@@ -6,6 +6,7 @@ source:
 title: "RTL 生成与优化"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "RTL", "rtx", "cfgexpand", "指令调度", "recog"]
 description: "GCC 把 GIMPLE 展开为接近机器的 RTL（rtx_def），运行 CSE/combine/指令调度等低层优化遍，并经 recog 做指令识别。"
 readingTime: "11 min"

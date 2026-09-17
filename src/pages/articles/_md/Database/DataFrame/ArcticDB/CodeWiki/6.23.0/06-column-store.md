@@ -6,6 +6,7 @@ source:
 title: "列式存储"
 date: "2026-08-21T10:16:26+08:00"
 category: [Database, DataFrame, ArcticDB, CodeWiki, "6.23.0"]
+contentType: "CodeWiki"
 tags: ["ArcticDB", "SegmentInMemory", "Column", "列式"]
 description: "ArcticDB 列式存储：SegmentInMemory、Column、StringPool 与 ChunkedBuffer"
 readingTime: "13 min"

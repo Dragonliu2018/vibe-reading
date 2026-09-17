@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T21:08:07+08:00"
 category: ["AI", "Infra", "Retrieval", "Helmsman", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["Helmsman", "MiniHyperVec", "ANNS", "C++", "SPDK", "NVMe", "HNSW"]
 description: "OSDI 2026 论文 Helmsman 的开源 PoC（MiniHyperVec）——基于 SPDK NVMe 的聚簇式近似最近邻搜索服务系统源码解读。"
 readingTime: "28 min"

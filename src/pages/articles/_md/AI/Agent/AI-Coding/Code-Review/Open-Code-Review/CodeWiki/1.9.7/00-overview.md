@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "代码审查", "AI Agent", "LLM", "MCP", "OpenTelemetry"]
 description: "OpenCodeReview v1.9.7 源码架构解读——阿里开源 AI 代码审查 CLI，确定性工程 × Agent 混合架构，从 CLI 命令到 Agent 引擎、LLM 工具循环、行号定位、会话续审的 11 个核心模块 internals。"
 readingTime: "55 min"

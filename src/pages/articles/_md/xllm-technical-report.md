@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/xllm-technical-report.pdf"
 date: "2026-08-04T16:00:00+08:00"
 category: [AI, Infra, Inference, xLLM, Papers]
+contentType: "Papers"
 tags: ["LLM Inference", "Serving", "PD Disaggregation", "EPD", "KV Cache", "xTensor", "Ascend", "Qwen", "DeepSeek", "JD.com"]
 description: "目的：企业级 LLM 推理框架。手段：服务-引擎解耦 + 动态 PD 分离 + EPD 多模态 + xTensor 内存。结论：Qwen/DeepSeek 多模型 SOTA。"
 readingTime: "16 min"

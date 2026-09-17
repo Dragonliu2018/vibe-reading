@@ -6,6 +6,7 @@ source:
 title: "服务运行时与查询服务"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "Broker", "QueryLifecycle", "fan-out", "背压"]
 description: "Druid 服务运行时——QuerySegmentWalker 按节点多态、QueryLifecycle 阶段化、CachingClusteredClient fan-out、DirectDruidClient 异步 HTTP+背压、QueryScheduler lanes、流式 Pusher。"
 readingTime: "16 min"

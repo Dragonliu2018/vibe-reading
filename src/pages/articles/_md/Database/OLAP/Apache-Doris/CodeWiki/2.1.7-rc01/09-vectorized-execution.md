@@ -6,6 +6,7 @@ source:
 title: "向量化执行"
 date: "2026-08-24T10:22:21+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.7-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "向量化", "Block", "IColumn", "COW", "CRTP", "IFunction", "ClickHouse"]
 description: "Doris 2.1.7 向量化 vec/：Block/IColumn COW + VExpr 表达式 + IFunction 函数 + IAggregateFunction CRTP 聚合，源自 ClickHouse。"
 readingTime: "14 min"

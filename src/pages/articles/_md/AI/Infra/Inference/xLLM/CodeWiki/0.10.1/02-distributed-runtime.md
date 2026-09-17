@@ -6,6 +6,7 @@ source:
 title: "分布式主从运行时"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "Master", "Engine", "分布式", "PD 分离"]
 description: "xLLM 分布式主从运行时解读：Master/Engine 双角色编排、多节点 DistManager 协调、PD 分离与推测解码引擎。"
 readingTime: "12 min"

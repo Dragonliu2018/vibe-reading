@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-11T20:31:27+08:00"
 category: [AI, Agent, Team, Multica, CodeWiki, "0.3.28"]
+contentType: "CodeWiki"
 tags: ["multica", "Go", "TypeScript", "Agent Platform", "Coding Agent", "WebSocket", "PostgreSQL"]
 description: "Multica 是开源的托管编码智能体平台——把 Claude Code、Codex 等 CLI 变成真正的团队成员。本文全面解读 v0.3.28 的架构、任务生命周期与核心模块。"
 readingTime: "18 min"

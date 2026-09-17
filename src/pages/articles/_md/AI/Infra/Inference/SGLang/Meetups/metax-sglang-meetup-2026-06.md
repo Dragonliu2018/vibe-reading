@@ -2,6 +2,7 @@
 title: "沐曦芯生，开源共创——SGLang 技术交流meetup"
 date: "2026-08-23T15:58:39+08:00"
 category: [AI, Infra, Inference, SGLang, Meetups]
+contentType: "Meetups"
 tags: ["SGLang", "Mooncake", "HiCache", "RadixAttention", "沐曦", "异构算力", "推理引擎", "PD 分离"]
 description: "2026-06-06 沐曦股份主办的 SGLang 技术交流meetup 技术解读：SGLang Roadmap、HiCache 分层缓存、Mooncake 解耦架构、沐曦 GPU 适配与 AI 性能分析范式。"
 readingTime: "14 min"

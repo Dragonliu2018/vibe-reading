@@ -6,6 +6,7 @@ source:
 title: "元数据服务"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "Raft", "Meta", "KV"]
 description: "Databend 元数据服务——KV/CRUD API 分层 + Ident 类型化 Key + Raft 核心（外部独立仓库）。"
 readingTime: "16 min"

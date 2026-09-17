@@ -6,6 +6,7 @@ source:
 title: "函数库"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "函数", "聚合", "向量化"]
 description: "Databend 函数库——标量函数 Builder 注册 + 聚合函数三阶段分布式设计 + Combinator 组合。"
 readingTime: "14 min"

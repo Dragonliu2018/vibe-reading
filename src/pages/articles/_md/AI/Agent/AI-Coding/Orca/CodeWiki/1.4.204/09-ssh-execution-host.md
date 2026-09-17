@@ -6,6 +6,7 @@ source:
 title: "SSH 远程执行"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "SSH", "远程开发"]
 description: "ExecutionHost 判别联合抽象、SshConnection 双 transport 回退链、重连梯子双计数器、live/unverifiable/exited 三词判决词汇。"
 readingTime: "16 min"

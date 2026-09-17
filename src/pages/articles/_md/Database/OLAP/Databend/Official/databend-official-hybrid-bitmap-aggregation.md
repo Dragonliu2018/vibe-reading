@@ -8,6 +8,7 @@ source:
   site: "Databend 微信公众号"
 date: "2026-07-30T17:30:00+08:00"
 category: [Database, OLAP, Databend, Official]
+contentType: "Blogs"
 tags: ["Databend", "Bitmap", "Roaring Bitmap", "HybridBitmap", "SmallBitmap", "RoaringTreemap", "聚合优化"]
 description: "Databend 引入 HybridBitmap：小集合阶段用轻量 SmallBitmap，仅在集合真正膨胀后切换到 RoaringTreemap，避免大量小 bitmap 被过早反序列化为完整大集合结构，bitmap_intersect、bitmap_union 等聚合函数获显著性能提升。"
 readingTime: "7 min"

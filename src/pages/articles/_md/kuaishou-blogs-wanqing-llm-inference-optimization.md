@@ -8,6 +8,7 @@ source:
   site: "快手技术"
 date: "2026-08-03T16:30:00+08:00"
 category: [AI, Infra, Inference, Blogs]
+contentType: "Blogs"
 tags: ["kLLM", "推理优化", "PD分离", "MLA", "DP Attention", "Ring Attention", "KV Cache", "投机解码", "DSpark", "MoE", "EP", "SLO调度", "GLM-5.2", "DeepSeek-V4", "长上下文"]
 description: "目的：在不损失模型能力的前提下降低新一代大模型（GLM-5.2、DeepSeek-V4）的单位 Token 推理成本并保障 TTFT/TPOT SLO。手段：MLA+DP Attention 解耦 Attention 按请求并行/MoE 按专家并行（节点有效 KV 容量 7.3×）；Ring Attention 分块流水替代 All-Gather CP（吞吐 +16.9%）；DSpark 半自回归投机解码（TPOT -15%）；GPU/CPU/SSD 三级 KV Cache + Cache-Aware 路由（命中率 +20PP，吞吐 +30%）；SLO Load 驱动的大 PD 弹性 + 10 秒级实例启动（扩容生效 60×）；长请求 Chunk 公平调度与 Decode KV 高水位保护。结论：将模型侧理论降本转化为实际的吞吐、时延与单位 Token 成本收益，Provider Uptime 99%+。"
 readingTime: "33 min"

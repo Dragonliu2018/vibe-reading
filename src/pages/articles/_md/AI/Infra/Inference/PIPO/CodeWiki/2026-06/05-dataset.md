@@ -6,6 +6,7 @@ source:
 title: "数据构建"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "数据流水线", "SFT", "蒸馏数据"]
 description: "从 9B teacher rollout 构建 SFT/RL 数据、缓存 dataset 与 swift_plugin 的 max_length 补丁"
 readingTime: "10 min"

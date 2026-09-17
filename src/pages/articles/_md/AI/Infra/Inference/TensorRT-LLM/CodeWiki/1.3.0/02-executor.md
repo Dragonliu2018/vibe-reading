@@ -6,6 +6,7 @@ source:
 title: "请求编排"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "executor", "Future", "生产者-消费者", "IPC"]
 description: "executor 是 TensorRT-LLM 的请求编排层——GenerationExecutor 抽象 + Worker/Proxy/Ray 多拓扑，通过 Future 模式解耦提交与执行。"
 readingTime: "12 min"

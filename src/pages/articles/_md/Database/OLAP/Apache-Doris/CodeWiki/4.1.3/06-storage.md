@@ -6,6 +6,7 @@ source:
 title: "存储引擎"
 date: "2026-08-23T18:32:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Tablet", "Rowset", "Segment", "Compaction", "MergeTree"]
 description: "Doris 存储引擎：Tablet/Rowset/Segment 列存段 + MergeTree 变体 + MVCC 版本图 + Compaction 合并。"
 readingTime: "14 min"

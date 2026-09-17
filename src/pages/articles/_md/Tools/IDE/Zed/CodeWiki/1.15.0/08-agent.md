@@ -6,6 +6,7 @@ source:
 title: "AI 代理"
 date: "2026-08-18T11:06:09+08:00"
 category: [Tools, IDE, Zed, CodeWiki, "1.15.0"]
+contentType: "CodeWiki"
 tags: ["zed", "Rust", "code editor", "GPUI", "CRDT"]
 description: "Zed AI Agent：agentic loop、工具注册表、多 LLM provider 抽象、沙箱权限"
 readingTime: "20 min"

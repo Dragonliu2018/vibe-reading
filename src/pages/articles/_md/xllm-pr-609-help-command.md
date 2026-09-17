@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-07-06"
 category: [AI, Infra, Inference, xLLM, Contributions]
+contentType: "Contributions"
 tags: ["CLI", "gflags", "C++", "Developer Experience"]
 description: "为 xLLM 实现 --help / -h 标志，通过 gflags 注册表动态生成分类帮助文本，改善命令行开发体验。"
 readingTime: "8 min"

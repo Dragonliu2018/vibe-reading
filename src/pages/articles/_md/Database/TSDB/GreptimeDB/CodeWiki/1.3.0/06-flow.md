@@ -6,6 +6,7 @@ source:
 title: "flow 持续流计算"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "Flownode", "流计算", "物化视图", "differential dataflow"]
 description: "flow——Flownode 持续流计算：Streaming（DFIR）/Batching 双引擎、增量物化视图、DirtyTimeWindows 与 checkpoint 切换。"
 readingTime: "20 min"

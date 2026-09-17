@@ -7,6 +7,7 @@ source:
   prType: "fix"
 date: "2026-08-16T18:29:51+08:00"
 category: ["OS", "Linux", "Contributions"]
+contentType: "Contributions"
 tags: ["Linux Kernel", "PCI", "ASPEED", "PCIe", "Clock", "clk_prepare_enable", "Error Path", "Resource Leak", "PHY", "Contributions"]
 description: "aspeed PCIe 端口初始化 aspeed_pcie_port_init() 里 clk_prepare_enable() 开了端口时钟后，如果 phy_init() 或 phy_set_mode_ext() 失败就直接返回、没调 clk_disable_unprepare()，每次 probe 失败都泄漏一个时钟引用。修法是给两个错误路径补 clk_disable_unprepare(port->clk)。Fixes 9aa0cb68fcc1，Cc: stable。"
 readingTime: "9 min"

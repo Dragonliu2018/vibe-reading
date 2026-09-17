@@ -6,6 +6,7 @@ source:
 title: "缓存层"
 date: "2026-08-13T20:07:12+08:00"
 category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
+contentType: "CodeWiki"
 tags: ["uv", "Rust", "缓存", "去重"]
 description: "uv-cache 全局去重缓存：12 桶分类、archive 硬链接去重、Freshness/Refresh 语义与版本化桶升级。"
 readingTime: "12 min"

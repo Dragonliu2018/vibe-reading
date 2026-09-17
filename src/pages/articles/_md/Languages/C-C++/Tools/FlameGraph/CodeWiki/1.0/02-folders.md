@@ -6,6 +6,7 @@ source:
 title: "折叠器族"
 date: "2026-08-14T18:07:23+08:00"
 category: ["Languages", "C/C++", "Tools", "FlameGraph", "CodeWiki", "1.0"]
+contentType: "CodeWiki"
 tags: ["FlameGraph", "Perl", "awk", "Profiling"]
 description: "stackcollapse-* 折叠器族把 13+ 种 profiler 输出折叠为统一的 folded 格式。本文解读 folded 契约、stackcollapse-perf.pl 状态机、PID/comm/event 处理、函数名清理注解及各折叠器差异。"
 readingTime: "20 min"

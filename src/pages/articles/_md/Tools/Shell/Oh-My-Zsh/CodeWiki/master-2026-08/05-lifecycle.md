@@ -6,6 +6,7 @@ source:
 title: "生命周期工具"
 date: "2026-08-13T20:12:36+08:00"
 category: [Tools, "Shell", Oh-My-Zsh, CodeWiki, "master-2026-08"]
+contentType: "CodeWiki"
 tags: ["ohmyzsh", "Shell", "安装", "升级", "changelog"]
 description: "解读 tools/ 生命周期工具：curl|sh 安装、后台非阻塞升级检查、Conventional Commits changelog 与幂等性设计。"
 readingTime: "12 min"

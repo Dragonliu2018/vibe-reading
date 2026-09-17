@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 是开源的 AI agent 编排控制平面——用组织架构图、目标、预算、治理把一组 agent 运营成一家公司"
 readingTime: "45 min"

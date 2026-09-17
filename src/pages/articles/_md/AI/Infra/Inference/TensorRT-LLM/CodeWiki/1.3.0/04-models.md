@@ -6,6 +6,7 @@ source:
 title: "模型定义"
 date: "2026-08-12T12:04:11+08:00"
 category: [AI, Infra, Inference, TensorRT-LLM, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["TensorRT-LLM", "models", "注册表", "懒加载", "权重加载"]
 description: "models 是 80+ 模型家族的定义层——AutoModelForCausalLM 注册表 + 懒加载 + 每模型特化的 HF→TRT-LLM 权重转换。"
 readingTime: "12 min"

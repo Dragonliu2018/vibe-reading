@@ -6,6 +6,7 @@ source:
 title: "过程间分析与调用图"
 date: "2026-08-18T14:16:25+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "IPA", "cgraph", "inline", "devirt", "IPA-CP", "modref", "WHOPR"]
 description: "GCC 的调用图与过程间分析：symtab/cgraph_node/edge 数据结构、analyze_functions 全程序编排、内联/去虚化/IPA-CP/modref 四大 IPA pass，及 WHOPR 三阶段 LTO。"
 readingTime: "16 min"

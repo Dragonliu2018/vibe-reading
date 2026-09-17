@@ -6,6 +6,7 @@ source:
 title: "执行流水线"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "IProcessor", "拉模型", "PipelineExecutor", "WorkStealing"]
 description: "ClickHouse 拉模型执行流水线源码解读——IProcessor DAG、无锁 Port、PipelineExecutor work-stealing 调度与异步 I/O。"
 readingTime: "30 min"

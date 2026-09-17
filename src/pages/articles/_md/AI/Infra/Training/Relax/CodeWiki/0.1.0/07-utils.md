@@ -6,6 +6,7 @@ source:
 title: "共享数据类型"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "Sample", "Envs", "metrics", "autoscaler", "health", "streaming"]
 description: "解读 Relax 共享基础设施：Sample 核心数据结构（god node #1，177 边）、Envs 环境变量单例、MetricsService 多后端适配、HealthManager 自动恢复、AutoscalerService 弹性扩缩容决策引擎。"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "CLI 命令分发"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "CLI", "clap", "命令分发"]
 description: "Cargo CLI 命令分发层解读：main.rs 进程入口、cli.rs clap 子命令树与别名展开、commands/*.rs 薄封装模式、command_prelude 辅助 trait。"
 readingTime: "18 min"

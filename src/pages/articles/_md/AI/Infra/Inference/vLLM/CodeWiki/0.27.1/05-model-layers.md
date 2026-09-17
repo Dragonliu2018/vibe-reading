@@ -6,6 +6,7 @@ source:
 title: "模型执行层"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "并行层", "QKVParallelLinear", "FusedMoE", "量化", "权重加载"]
 description: "解读 vLLM 模型执行层框架：把 PyTorch 标准层替换为 TP 并行版本，权重加载时拆分 fused 权重，量化作为可插拔算子覆盖 apply。"
 readingTime: "18 min"

@@ -8,6 +8,7 @@ source:
   prType: "enhancement"
 date: "2026-08-05T15:30:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "MTMV", "Optimizer", "RBO", "CBO", "Cascades", "Java"]
 description: "通过在 RBO 阶段引入预重写机制，在 CBO 优化前完成物化视图透明改写，避免后续 RBO 规则（如 join 条件消除、limit 下推）改变计划结构导致透明重写失败。"
 readingTime: "18 min"

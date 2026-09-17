@@ -6,6 +6,7 @@ source:
 title: "会话数据层"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "会话数据", "journal"]
 description: "把黑盒 agent 变成结构化会话：append-only journal 的 epoch 隔离与 write-ahead 回执、ai-vault 的增量 parse cache、hook server 的唯一 status store。"
 readingTime: "18 min"

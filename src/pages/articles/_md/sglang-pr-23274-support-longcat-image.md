@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-08-10T22:23:49+08:00"
 category: [AI, Infra, Inference, SGLang, Contributions]
+contentType: "Contributions"
 tags: ["Diffusion", "DiT", "SGLang", "Tensor Parallelism", "Qwen2.5-VL", "LongCat-Image"]
 description: "解读 PR #23274：如何在 SGLang multimodal_gen 框架中接入 LongCat-Image 文生图模型，涵盖 MMDiT TP 并行化、Qwen2.5-VL Prompt Rewrite、3D RoPE 与组合式 Pipeline 复用。"
 readingTime: "20 min"

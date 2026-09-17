@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-09T10:00:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
+contentType: "CodeWiki"
 tags: ["mycli", "Python", "CLI", "MySQL", "prompt_toolkit", "自动补全"]
 description: "mycli 是带自动补全和语法高亮的 MySQL 命令行客户端。本文从系统架构、运行时行为到核心模块，全面解读 v2.10.0 的内部原理。"
 readingTime: "12 min"

@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-07-06"
 category: [AI, Infra, Inference, xLLM, Contributions]
+contentType: "Contributions"
 tags: ["DiT", "TTS", "Voice Cloning", "Audio Generation", "UMT5", "ODE", "APG", "WAV-VAE"]
 description: "为 xLLM 实现 LongCat-AudioDiT CUDA 支持：WAV-VAE 音频压缩、UMT5 文本编码、全局 AdaLN + 长跳连接的 DiT 骨干、Euler ODE 求解、APG 引导的 Voice Cloning，以及 weight_norm 权重重建工具。"
 readingTime: "20 min"

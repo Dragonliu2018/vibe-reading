@@ -6,6 +6,7 @@ source:
 title: "Kernels"
 date: "2026-08-10T14:00:00+08:00"
 category: [AI, Infra, Inference, FasterTransformer, CodeWiki, "5.3"]
+contentType: "CodeWiki"
 tags: ["FasterTransformer", "CUDA", "Fused Kernel", "MMHA", "推理加速"]
 description: "FasterTransformer 的 CUDA 算子层——fused masked multihead attention、layernorm、beam search、sampling、custom all-reduce 等 43K 行 kernel 的设计与优化原理。"
 readingTime: "18 min"

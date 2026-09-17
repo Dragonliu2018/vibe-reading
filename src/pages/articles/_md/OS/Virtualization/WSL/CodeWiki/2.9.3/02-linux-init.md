@@ -6,6 +6,7 @@ source:
 title: "Linux 初始化子系统"
 date: "2026-08-16T00:15:00+08:00"
 category: [OS, Virtualization, WSL, CodeWiki, "2.9.3"]
+contentType: "CodeWiki"
 tags: ["WSL", "C/C++", "Windows", "Linux", "虚拟化", "容器"]
 description: "WSL2 VM 内的 usermode 初始化——mini_init/init/session leader/relay 的 fork+exec 链、namespace 隔离与 hvsocket 消息循环。"
 readingTime: "18 min"

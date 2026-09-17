@@ -6,6 +6,7 @@ source:
 title: "张量并行与通信"
 date: "2026-08-12T15:52:23+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "通信", "Ulysses", "张量并行", "NCCL"]
 description: "DeepSpeed 的通信层是所有分布式策略的共享基座——从 ZeRO 的 allgather/reduce-scatter 到 Ulysses 的 all-to-all 转置，再到 AMD MI300 的 SDMA 快速路径。本文解读通信后端抽象、cdb 全局分发、@timed_op 装饰器、Ulysses 序列并行核心机制，以及 TPConfig 的优先级链。"
 readingTime: "12 min"

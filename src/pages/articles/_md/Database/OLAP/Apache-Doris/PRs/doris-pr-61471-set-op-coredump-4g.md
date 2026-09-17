@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-08-24T22:19:55+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["SetOperator", "ColumnString", "Overflow", "Coredump", "Pipeline"]
 description: "Doris INTERSECT/EXCEPT 在 build 侧 String 总量超 4GB 时 coredump，根因是 4GB 阈值分段 flush 覆盖 build_block、哈希表只存行号致悬空引用。"
 readingTime: "11 min"

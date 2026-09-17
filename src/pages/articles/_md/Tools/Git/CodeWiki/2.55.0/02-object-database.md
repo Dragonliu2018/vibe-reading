@@ -6,6 +6,7 @@ source:
 title: "对象数据库"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "内容寻址", "packfile", "commit-graph"]
 description: "解读 Git 内容寻址对象存储——loose/packed 两级、odb_source 后端抽象、commit-graph 与 midx 加速结构、对象名解析。"
 readingTime: "14 min"

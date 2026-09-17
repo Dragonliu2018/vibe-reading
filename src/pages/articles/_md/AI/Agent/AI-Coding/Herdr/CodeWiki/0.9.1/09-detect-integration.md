@@ -6,6 +6,7 @@ source:
 title: "Agent 检测与集成"
 date: "2026-09-17T10:54:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "规则引擎", "agent 集成"]
 description: "herdr agent 检测：TOML manifest 声明式规则引擎三源仲裁，integration 模块管理 23 家 agent 的安装差异。"
 readingTime: "20 min"

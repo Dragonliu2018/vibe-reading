@@ -6,6 +6,7 @@ source:
 title: "安装与系统装配"
 date: "2026-08-25T10:44:29+08:00"
 category: [OS, Linux, Distribution, Omarchy, CodeWiki, "4.0.0"]
+contentType: "CodeWiki"
 tags: ["Omarchy", "Arch Linux", "安装", "系统装配"]
 description: "Omarchy 发行版的装配管线——三层 $HOME 填充、env bootstrap 单一真源、root 编排与硬件 quirks、幂等标记。"
 readingTime: "11 min"

@@ -6,6 +6,7 @@ source:
 title: "多阶段查询引擎 MSQ"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "MSQ", "DAG", "kernel", "shuffle"]
 description: "Druid MSQ 多阶段查询引擎——ControllerQueryKernel 纯状态机 DAG 调度、ShuffleKind 四类、frame 流水线、ControllerStagePhase 状态机、容错重试、kernel/IO 分离。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "应用状态机"
 date: "2026-09-17T10:47:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "Elm 架构", "状态机"]
 description: "herdr 的 App/AppState：Elm 式纯数据状态机，用户意图走 API、后台事实走 AppEvent 的双入口 reducer。"
 readingTime: "20 min"

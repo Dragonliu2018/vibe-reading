@@ -6,6 +6,7 @@ source:
 title: "Rollout 与 Router"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "RL", "Rollout", "TITO", "R3", "SGLang", "Router"]
 description: "Rollout 生成管线 + MilesRouter 请求分发 + TITO 增量分词 + R3 MoE 路由回放 + Session 多轮状态管理。"
 readingTime: "28 min"

@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T22:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "07 SQL 手册", "SQL 语句", "表和视图"]
+contentType: "Docs"
 tags: ["Apache Doris", "CANCEL ALTER TABLE", "Schema Change", "ROLLUP", "SQL", "表和视图"]
 description: "Apache Doris 3.x 官方文档：CANCEL ALTER TABLE 语句用于取消正在执行的 ALTER TABLE 操作，支持取消 COLUMN、MATERIALIZED VIEW、ROLLUP 三种修改类型。"
 readingTime: "4 min"

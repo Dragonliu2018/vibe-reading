@@ -6,6 +6,7 @@ source:
 title: "补全引擎"
 date: "2026-08-09T10:30:00+08:00"
 category: [Database, Ecosystems, mycli, CodeWiki, "2.10.0"]
+contentType: "CodeWiki"
 tags: ["mycli", "Python", "补全", "sqlparse", "rapidfuzz"]
 description: "mycli 补全引擎深度解读：三层架构（解析→建议→匹配）、SuggestRule 规则引擎、多级模糊匹配、后台线程刷新。"
 readingTime: "8 min"

@@ -8,6 +8,7 @@ source:
   prType: "refactor"
 date: "2026-08-16T19:30:48+08:00"
 category: ["OS", "Linux", "PRs"]
+contentType: "PRs"
 tags: ["Linux Kernel", "RDMA", "RTRS", "likely", "unlikely", "Branch Prediction", "Benchmark", "Gioh Kim", "v5.15", "IONOS"]
 description: "Gioh Kim 用 fio benchmark 测试发现 RTRS 驱动里散布的 likely()/unlikely() 编译器分支预测提示对性能毫无帮助（IOPS=829k 不变），遂全部移除。涉及 rtrs-clt.c/rtrs-srv.c/rtrs-clt-stats.c 三文件、~30 处 if 语句，包括 __rtrs_get_permit() 的 unlikely(bit >= max_depth)——该函数后来由 c733a5 优化时也**没有再加回 unlikely**（保持一致）。"
 readingTime: "12 min"

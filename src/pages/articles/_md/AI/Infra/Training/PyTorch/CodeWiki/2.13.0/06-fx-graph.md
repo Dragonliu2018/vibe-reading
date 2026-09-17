@@ -6,6 +6,7 @@ source:
 title: "torch.fx 图变换"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "torch.fx", "Proxy", "IR", "codegen"]
 description: "Python 级符号追踪：Proxy 拦截捕获运行时语义、Node 五种 op 类型、GraphModule 生成真实 Python 代码，被量化/Dynamo/Inductor 复用。"
 readingTime: "11 min"

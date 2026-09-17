@@ -6,6 +6,7 @@ source:
 title: "IPC 序列化"
 date: "2026-08-21T10:31:12+08:00"
 category: [Database, Misc, Apache Arrow, CodeWiki, "26.0.0.dev"]
+contentType: "CodeWiki"
 tags: ["Apache Arrow", "C++", "IPC", "FlatBuffers"]
 description: "Arrow IPC 序列化——FlatBuffers 元数据描述 buffer 布局、原始 body 零拷贝、stream/file 双模式与字典/variadic buffer 处理"
 readingTime: "10 min"

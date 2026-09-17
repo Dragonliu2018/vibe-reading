@@ -8,6 +8,7 @@ source:
   site: "腾讯技术工程 微信公众号"
 date: "2026-08-10T21:55:39+08:00"
 category: ["OS", "Linux", "Blogs"]
+contentType: "Blogs"
 tags: ["Linux Kernel", "Xarray", "Page Cache", "Race Condition", "Large Folio", "TencentOS", "Linus Torvalds", "内核优化", "LTS"]
 description: "TencentOS 内核团队 4 月提交的 2 个 commit，在社区正式重视 Page Cache 数据损毁 Bug 前默默完成修复并优化了性能，被 Linus Torvalds 评价为“不明觉赞，祝顺利”。本文由浅入深解析 Xarray、Page Cache 底层原理与问题来龙去脉。"
 readingTime: "25 min"

@@ -6,6 +6,7 @@ source:
 title: "hookify 规则引擎"
 date: "2026-08-11T23:04:56+08:00"
 category: [AI, Agent, "AI Coding", "Claude Code", CodeWiki, "2.1.199"]
+contentType: "CodeWiki"
 tags: ["claude-code", "Plugin", "Hooks", "Python", "规则引擎"]
 description: "hookify——本仓唯一含实质 Python 代码的插件：Rule/Condition dataclass + RuleEngine + 4 hook 事件，用户写 markdown 规则阻止不想要的行为"
 readingTime: "22 min"

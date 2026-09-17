@@ -8,6 +8,7 @@ source:
   prType: "enhancement"
 date: "2026-08-05T19:00:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "Bucket", "分桶", "DDL", "动态分区", "Java"]
 description: "新增 BUCKETS AUTO 语法，建表时根据数据量和集群规模自动计算分桶数；动态分区新增分区时根据历史分区数据量的指数移动平均趋势预测下一分区大小，动态调整分桶数。"
 readingTime: "16 min"

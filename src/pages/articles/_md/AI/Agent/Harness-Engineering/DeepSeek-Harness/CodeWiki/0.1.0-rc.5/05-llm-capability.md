@@ -6,6 +6,7 @@ source:
 title: "LLM 能力层"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "LLM", "Streaming", "Adapter", "Cordis"]
 description: "dsh 的 LLM seam——provider-neutral 的 Message/StreamChunk 词汇、llm/stream waterfall、pi-ai 与 DeepSeek adapter 如何让一次 swap 切换模型。"
 readingTime: "14 min"

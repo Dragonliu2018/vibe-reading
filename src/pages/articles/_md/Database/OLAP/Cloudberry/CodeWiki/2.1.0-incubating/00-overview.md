@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C/C++", "MPP", "数据库", "ORCA", "PostgreSQL"]
 description: "Apache Cloudberry 孵化器项目——由 Greenplum 原班人马打造、基于 PostgreSQL 14 内核的 MPP 数据仓库，CBDB 风格并行查询、AQUMV 物化视图改写与分布式执行内核解读。"
 readingTime: "40 min"

@@ -6,6 +6,7 @@ source:
 title: "LSP Server"
 date: "2026-08-13T20:14:13+08:00"
 category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
+contentType: "CodeWiki"
 tags: ["ruff", "Rust", "LSP", "编辑器集成", "Snapshot"]
 description: "ruff 的 LSP server——基于 lsp_server 自建同步线程模型，Snapshot COW，与 CLI 共享 lint/format 核心。"
 readingTime: "14 min"

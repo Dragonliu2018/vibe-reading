@@ -6,7 +6,7 @@
  * 样式复用首页 .filter-tabs 的胶囊风格；用 is:global 让所有引用页共享同一套 CSS。
  * count：可选，显示在 tab 行右端的安静总数（当前仅列表视图使用）。
  */
-export type ViewKey = 'list' | 'pinned' | 'favorites' | 'review' | 'tags' | 'timeline' | 'activity' | 'badges';
+export type ViewKey = 'list' | 'pinned' | 'favorites' | 'type' | 'review' | 'tags' | 'timeline' | 'activity' | 'badges';
 
 interface Props {
   active: ViewKey;
@@ -20,6 +20,7 @@ const tabs: { key: ViewKey; label: string; href: string }[] = [
   { key: 'list',      label: '列表',   href: `${base}/`          },
   { key: 'pinned',    label: '置顶',   href: `${base}/pinned`    },
   { key: 'favorites', label: '收藏',   href: `${base}/favorites` },
+  { key: 'type',      label: '类型',   href: `${base}/type`      },
   { key: 'review',    label: 'Reviewed', href: `${base}/review`  },
   { key: 'tags',      label: 'Tag',    href: `${base}/tags`     },
   { key: 'timeline',  label: '时间线', href: `${base}/timeline`  },

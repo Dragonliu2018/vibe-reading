@@ -6,6 +6,7 @@ source:
 title: "算子内核"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "Kernels", "PageAttention", "MoE", "国产算子"]
 description: "xLLM 算子内核解读：各硬件后端（NPU/CUDA/MLU/DCU/ILU/MUSA）的 Attention/MatMul/MoE dispatch-combine 算子。"
 readingTime: "9 min"

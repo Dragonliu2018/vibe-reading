@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-08-05T16:00:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "Nereids", "Optimizer", "RBO", "Cache", "Java"]
 description: "新增 RewriteSimpleAggToConstantRule，将 DUP 表的无 GROUP BY 聚合查询（count/min/max）改写为常量返回，通过 FE 侧异步缓存获取精确值，完全绕过 BE 执行。"
 readingTime: "14 min"

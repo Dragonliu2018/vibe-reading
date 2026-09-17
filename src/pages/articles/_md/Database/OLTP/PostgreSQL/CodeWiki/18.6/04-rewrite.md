@@ -6,6 +6,7 @@ source:
 title: "查询重写"
 date: "2026-08-21T17:55:32+08:00"
 category: [Database, OLTP, PostgreSQL, CodeWiki, "18.6"]
+contentType: "CodeWiki"
 tags: ["PostgreSQL", "rewrite", "规则系统", "视图展开", "QueryRewrite"]
 description: "PostgreSQL rewrite 模块——规则系统 QueryRewrite 三步流程、视图展开 fireRIRrules、INSTEAD 规则、递归检测"
 readingTime: "25 min"

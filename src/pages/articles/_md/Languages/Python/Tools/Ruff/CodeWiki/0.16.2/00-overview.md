@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-13T20:14:13+08:00"
 category: ["Languages", "Python", "Tools", "Ruff", "CodeWiki", "0.16.2"]
+contentType: "CodeWiki"
 tags: ["ruff", "Rust", "Linter", "Formatter", "Python", "AST"]
 description: "ruff 是用 Rust 编写的极速 Python linter 与 formatter。本文从分层架构、解析管线、语义模型、规则系统、格式化 IR 到 LSP，全面解读 ruff v0.16.2 的内部实现。"
 readingTime: "35 min"

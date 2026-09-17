@@ -6,6 +6,7 @@ source:
 title: "流水线并行"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "Pipeline", "1F1B", "流水线并行"]
 description: "DeepSpeed 流水线并行模块通过 PipelineEngine 覆写引擎三段式训练循环，以 1F1B 调度编排 stage 间通信，将峰值激活内存从 O(micro_batches) 降到 O(stages)。"
 readingTime: "14 min"

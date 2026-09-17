@@ -6,6 +6,7 @@ source:
 title: "事务与时间戳"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "事务", "MVCC", "TSO", "FoundationDB"]
 description: "ByConity 分布式事务与全局时间戳：TSO 批量预分配、MVCC、IntentLock 与 CAS 提交。"
 readingTime: "14 min"

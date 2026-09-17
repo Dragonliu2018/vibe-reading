@@ -6,6 +6,7 @@ source:
 title: "Config"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "Pydantic", "Config", "HotReload"]
 description: "DeerFlow 配置中枢解析：AppConfig #1 god node、Paths 路径管理、content-signature 热重载、双配置源与 reload_boundary。"
 readingTime: "12 min"

@@ -6,6 +6,7 @@ source:
 title: "Catalog 元数据"
 date: "2026-08-23T18:58:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Env", "BDBJE", "EditLog", "高可用"]
 description: "Doris 3.1.4 Catalog 元数据：Env god class 集中元数据 + EditLog/BDBJE 复制高可用 + Master/Follower 选主。"
 readingTime: "11 min"

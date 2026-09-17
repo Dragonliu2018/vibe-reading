@@ -6,6 +6,7 @@ source:
 title: "静态分析器（-fanalyzer）"
 date: "2026-08-18T14:16:25+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "analyzer", "static analysis", "path-sensitive", "state machine", "region model", "exploded graph"]
 description: "GCC -fanalyzer 是 path-sensitive 静态分析引擎：supergraph 跨函数 CFG、program_state（region model + 约束 + SM state）、exploded graph worklist、可插拔 state-machine checker，检测 double-free/use-after-free/taint/资源泄漏。"
 readingTime: "17 min"

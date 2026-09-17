@@ -6,6 +6,7 @@ source:
 title: "接口与配置"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "FastAPI", "Channels", "Config"]
 description: "DeerFlow 接口与配置子系统：HTTP 网关、IM 渠道、配置中枢与终端工作台的协作关系。"
 readingTime: "5 min"

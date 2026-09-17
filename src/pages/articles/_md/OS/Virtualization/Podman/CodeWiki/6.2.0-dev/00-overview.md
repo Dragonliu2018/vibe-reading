@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-17T12:06:00+08:00"
 category: [OS, Virtualization, Podman, CodeWiki, "6.2.0-dev"]
+contentType: "CodeWiki"
 tags: ["Podman", "Go", "容器引擎", "OCI", "libpod"]
 description: "解读 Podman（containers/podman）的分层架构与同一 CLI 双后端设计：从 cobra 命令到 libpod 运行时与 OCI runtime。"
 readingTime: "22 min"

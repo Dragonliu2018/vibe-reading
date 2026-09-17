@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-29T22:10:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "FE", "OlapTable", "Bug Fix"]
 description: "Doris 修复单副本数据量查询错误：OlapTable.getDataSize(true) 漏写 return，导致单副本查询落到多副本总量分支，返回值偏大。一行补上 return 即修正。"
 readingTime: "7 min"

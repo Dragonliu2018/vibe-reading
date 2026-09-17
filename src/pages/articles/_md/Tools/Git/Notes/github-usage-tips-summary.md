@@ -2,6 +2,7 @@
 title: "github 使用技巧汇总"
 date: "2026-08-23T17:10:29+08:00"
 category: [Tools, Git, Notes]
+contentType: "Notes"
 alsoCategories:
   - [Tools, Notes]
 tags: ["GitHub", "SSH", "版本控制", "下载加速", "技巧"]

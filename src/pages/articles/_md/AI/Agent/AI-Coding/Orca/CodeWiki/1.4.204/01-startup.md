@@ -6,6 +6,7 @@ source:
 title: "主进程启动与生命周期"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "Electron", "启动流程"]
 description: "Orca 主进程的 composition root：preflight→ready→launch 三阶段装配、单实例锁退出码 3 契约、pull-as-proof 深链握手与 serve/desktop 双模式同构。"
 readingTime: "16 min"

@@ -6,6 +6,7 @@ source:
 title: "infrastructure 基础设施"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "运行时", "RegionEngine", "procedure", "插件系统"]
 description: "infrastructure——全仓共享基础设施与存储契约：named runtime、Plugins、MemoryManager、Procedure 框架与 RegionEngine trait。"
 readingTime: "18 min"

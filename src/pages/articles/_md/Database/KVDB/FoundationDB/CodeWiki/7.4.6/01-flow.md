@@ -6,6 +6,7 @@ source:
 title: "异步运行时"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "Future", "Promise", "协程", "事件循环"]
 description: "flow 模块——FoundationDB 协作式异步运行时，SAV/Future/Promise + C++20 协程与旧 actor 编译器并存 + Net2 事件循环 + FastAlloc + Arena + 确定性随机。"
 readingTime: "40 min"

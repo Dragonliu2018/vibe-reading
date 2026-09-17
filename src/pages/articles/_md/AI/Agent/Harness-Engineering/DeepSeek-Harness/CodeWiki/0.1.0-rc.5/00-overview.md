@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-14T17:00:29+08:00"
 category: [AI, Agent, "Harness Engineering", DeepSeek Harness, CodeWiki, "0.1.0-rc.5"]
+contentType: "CodeWiki"
 tags: ["DeepSeek Harness", "TypeScript", "Cordis", "Agent", "Plugin"]
 description: "DeepSeek AI 开源的 agent harness——基于 vendored Cordis 的 everything is a plugin 架构，从 profile/bundle 装配到 turn/step 驱动、session log 真相源与 capability seam 执行生态的端到端解读。"
 readingTime: "28 min"

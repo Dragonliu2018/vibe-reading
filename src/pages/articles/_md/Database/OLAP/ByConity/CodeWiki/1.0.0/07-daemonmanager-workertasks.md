@@ -6,6 +6,7 @@ source:
 title: "后台任务编排与执行"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "后台任务", "merge", "DaemonManager"]
 description: "ByConity 后台任务三层管线：DaemonManager 编排、CloudServices 选 part、WorkerTasks 执行 merge/mutate。"
 readingTime: "14 min"

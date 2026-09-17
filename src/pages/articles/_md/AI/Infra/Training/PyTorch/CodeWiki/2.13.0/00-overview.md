@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T12:09:21+08:00"
 category: [AI, Infra, Training, PyTorch, CodeWiki, "2.13.0"]
+contentType: "CodeWiki"
 tags: ["PyTorch", "C++", "Python", "深度学习框架", "编译栈", "自动微分"]
 description: "PyTorch v2.13.0 源码架构解读：从 c10 核心库、ATen Dispatcher、Autograd 引擎、nn.Module、TorchScript JIT、torch.fx 到 TorchDynamo+TorchInductor 编译栈与分布式训练的全面 internals 拆解。"
 readingTime: "45 min"

@@ -6,6 +6,7 @@ source:
 title: "前端架构与 Tracing UI"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "Next.js", "tRPC", "Feature-based", "React Table"]
 description: "Langfuse 前端：76 feature 垂直切片、tRPC 端到端类型、共享 filter/table 基础设施、列式访问原则落地。"
 readingTime: "15 min"

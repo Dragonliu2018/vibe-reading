@@ -6,6 +6,7 @@ source:
 title: "代码生成"
 date: "2026-08-14T10:26:00+08:00"
 category: ["Languages", "C/C++", "Tools", "GCC", "CodeWiki", "17.0.0"]
+contentType: "CodeWiki"
 tags: ["GCC", "final", "varasm", "DWARF", "代码生成", "retargetability"]
 description: "GCC 代码生成把 RTL 指令经 .md 输出模板发射为汇编（final），管理静态数据汇编（varasm），生成 DWARF 调试信息（dwarf2out）。"
 readingTime: "11 min"

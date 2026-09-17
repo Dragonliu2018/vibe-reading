@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-29T21:10:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "FE", "OlapTable", "锁优化", "死锁", "TabletStatMgr"]
 description: "Doris 1.2-lts 把表统计数据量/副本数从 createTable 配额检查时的现场遍历加读锁，改成 TabletStatMgr 周期预计算的 volatile 快照读取，消除跨表读锁导致的公平锁死锁。"
 readingTime: "9 min"

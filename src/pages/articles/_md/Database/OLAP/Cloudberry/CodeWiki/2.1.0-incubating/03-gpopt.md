@@ -6,6 +6,7 @@ source:
 title: "DXL 翻译桥"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C/C++", "MPP", "ORCA", "DXL"]
 description: "Cloudberry gpopt 模块——PostgreSQL Query/Plan 与 GPORCA DXL 之间的双向翻译桥，用 Context + 映射表 + Wrapper 解耦 C 内核与 C++ 优化器。"
 readingTime: "12 min"

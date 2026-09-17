@@ -6,6 +6,7 @@ source:
 title: "表达式与列式内核"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "列式存储", "DataType", "enum dispatch"]
 description: "Databend 表达式与列式内核——全仓 fan-in 最高模块，enum dispatch 零开销 + 向量化 kernel + 表达式求值。"
 readingTime: "16 min"

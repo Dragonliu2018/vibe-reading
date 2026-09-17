@@ -6,6 +6,7 @@ source:
 title: "插件系统"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "Plugins", "mbridge", "Megatron", "Model Spec", "Optimizer"]
 description: "mbridge 声明式权重转换、model spec 注入自定义 attention、megatron_bridge 在线桥接、NVMe 流式 optimizer。"
 readingTime: "22 min"

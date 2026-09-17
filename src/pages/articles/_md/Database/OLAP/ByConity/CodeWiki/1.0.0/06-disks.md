@@ -6,6 +6,7 @@ source:
 title: "存储抽象"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "S3", "HDFS", "缓存", "存储"]
 description: "ByConity 共享存储抽象：DiskByteS3/HDFS 无本地元数据、DiskCacheWrapper 本地 SSD 缓存、StoragePolicy 卷管理。"
 readingTime: "12 min"

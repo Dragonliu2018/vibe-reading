@@ -6,6 +6,7 @@ source:
 title: "进程与命令分发"
 date: "2026-08-11T20:38:04+08:00"
 category: [Tools, Git, CodeWiki, "2.55.0"]
+contentType: "CodeWiki"
 tags: ["git", "C", "命令分发", "parse-options", "仓库发现"]
 description: "解读 Git 的进程入口、commands[] 表驱动命令分发、仓库发现与 parse-options 选项解析框架。"
 readingTime: "12 min"

@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-08-15T18:09:07+08:00"
 category: ["OS", "Linux", "PRs"]
+contentType: "PRs"
 tags: ["Linux Kernel", "MTD", "Device Tree", "of_node", "引用计数", "Memory Leak", "Use-After-Clear", "DT Overlay", "configfs"]
 description: "解读 Linux MTD 核心的一次 of_node 引用泄漏修复：del_mtd_device 先 memset 清零 mtd->dev，再 of_node_put(mtd_get_of_node(mtd))，读到的是 NULL 空指针，put 变空操作导致引用泄漏。修复是在清零前快照指针。"
 readingTime: "11 min"

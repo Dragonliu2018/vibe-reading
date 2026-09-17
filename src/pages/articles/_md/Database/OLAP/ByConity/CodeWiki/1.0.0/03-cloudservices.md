@@ -6,6 +6,7 @@ source:
 title: "云服务协调"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "brpc", "后台线程", "去重"]
 description: "ByConity 云服务协调层：后台线程框架、server↔worker RPC、去重与 manifest checkpoint。"
 readingTime: "15 min"

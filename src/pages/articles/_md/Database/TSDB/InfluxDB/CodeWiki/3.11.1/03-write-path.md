@@ -6,6 +6,7 @@ source:
 title: "写入路径"
 date: "2026-08-20T13:07:26+08:00"
 category: [Database, TSDB, InfluxDB, CodeWiki, "3.11.1"]
+contentType: "CodeWiki"
 tags: ["InfluxDB", "Rust", "TSDB"]
 description: "InfluxDB 3 Core 写入路径：Line Protocol 解析 → WriteValidator 校验建表 → WriteBatch → WAL → TableBuffer 内存缓冲"
 readingTime: "20 min"

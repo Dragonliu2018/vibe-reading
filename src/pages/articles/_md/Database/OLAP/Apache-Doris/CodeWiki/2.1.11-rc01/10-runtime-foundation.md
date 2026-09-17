@@ -6,6 +6,7 @@ source:
 title: "运行时基础"
 date: "2026-08-23T20:10:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "2.1.11-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "ExecEnv", "MemTracker", "RuntimeState", "FileSystem", "服务定位器", "TCMalloc"]
 description: "Doris 2.1.11 运行时基础：ExecEnv 服务定位器 + MemTracker 层级追踪 + FileSystem 多后端抽象 + RuntimeState 查询状态。"
 readingTime: "12 min"

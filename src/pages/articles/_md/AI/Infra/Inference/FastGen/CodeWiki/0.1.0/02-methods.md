@@ -6,6 +6,7 @@ source:
 title: "蒸馏方法"
 date: "2026-08-11T15:42:00+08:00"
 category: [AI, Infra, Inference, FastGen, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["FastGen", "Python", "PyTorch", "扩散模型", "蒸馏"]
 description: "FastGen 蒸馏方法模块深度解读：FastGenModel 抽象基类（全局 god node #1）、DMD2 交替优化（student/fake_score/discriminator）、common_loss 共享逻辑、组合模式（method 包 network）。"
 readingTime: "12 min"

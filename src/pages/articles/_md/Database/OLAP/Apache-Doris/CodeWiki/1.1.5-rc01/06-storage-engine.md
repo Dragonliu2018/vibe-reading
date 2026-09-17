@@ -6,6 +6,7 @@ source:
 title: "存储引擎"
 date: "2026-08-24T11:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "1.1.5-rc01"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "olap", "Tablet", "Rowset", "alpha", "beta", "Segment", "Compaction"]
 description: "Doris 1.1.5 存储引擎 olap：StorageEngine 单例、Tablet/Rowset(alpha+beta 迁移期)/Segment 列存、两级 Compaction(Cumulative+Base)、stale rowset 延迟删除、多级索引。"
 readingTime: "16 min"

@@ -9,6 +9,7 @@ source:
   site: "美团技术团队 微信公众号"
 date: "2026-09-14T17:50:00+08:00"
 category: [AI, Agent, Evaluation, Meituan, Official]
+contentType: "Blogs"
 tags: ["美团", "Agent 评测", "观测", "人人一致", "人机一致", "Rubric", "长程Agent", "Skill 评测"]
 description: "美团图灵 Agent 评测团队科普长文：Agent 评测要回答“好不好、哪里不好”，观测是评测的基石；体系搭建靠搭桥而非堆指标，靠“人人一致、人机一致”对齐主观标准；从 ChatBot 到长程 Agent，评测正从答案评测走向行为评测。"
 readingTime: "20 min"

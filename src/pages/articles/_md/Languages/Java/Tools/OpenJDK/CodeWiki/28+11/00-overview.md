@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-19T23:29:36+08:00"
 category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
+contentType: "CodeWiki"
 tags: ["OpenJDK", "HotSpot", "JVM", "C++", "JIT", "C2", "GC"]
 description: "OpenJDK HotSpot 虚拟机执行引擎源码解读——类加载、模板解释器、分层 JIT 编译（C1/C2）、对象模型与内存管理"
 readingTime: "34 min"

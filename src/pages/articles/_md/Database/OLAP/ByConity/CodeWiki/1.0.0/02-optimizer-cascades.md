@@ -6,6 +6,7 @@ source:
 title: "Cascades 框架"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "Cascades", "优化器", "Memo", "CBO"]
 description: "ByConity Cascades 优化器深度解读：Memo 数据结构、TaskStack 搜索、规则匹配与代价剪枝。"
 readingTime: "12 min"

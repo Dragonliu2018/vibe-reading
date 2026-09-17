@@ -6,6 +6,7 @@ source:
 title: "Heartbeat & Recovery"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 心跳执行引擎——DB-backed 唤醒队列、原子 checkout、有界退避重试、孤儿进程恢复"
 readingTime: "25 min"

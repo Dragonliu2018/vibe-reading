@@ -6,6 +6,7 @@ source:
 title: "引擎层"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "SGLang", "rollout", "reward", "SlimeRouter", "radix tree", "GenRM"]
 description: "解读 Relax 引擎层：rollout 编排与 SGLang HTTP 通信、可插拔奖励 RewardExecutor 与 GenRM LLM-as-judge、SlimeRouter 路由与 radix tree 前缀缓存、数据过滤与 OPD 蒸馏。"
 readingTime: "13 min"

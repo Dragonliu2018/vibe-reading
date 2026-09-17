@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/salmonn-generic-hearing-llm.pdf"
 date: "2026-08-04T14:00:00+08:00"
 category: [AI, Models, Audio Model, Papers]
+contentType: "Papers"
 tags: ["Audio LLM", "Speech", "Multimodal", "Whisper", "BEATs", "Q-Former", "Emergent Abilities", "Instruction Tuning"]
 description: "目的：赋予 LLM 通用听觉能力。手段：双编码器 + 窗口级 Q-Former + 三阶段训练（含激活调优）。结论：15 项音视频任务竞争力强，涌现跨模态能力。"
 readingTime: "12 min"

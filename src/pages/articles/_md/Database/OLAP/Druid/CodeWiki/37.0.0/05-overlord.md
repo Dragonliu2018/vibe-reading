@@ -6,6 +6,7 @@ source:
 title: "Overlord 任务调度"
 date: "2026-08-21T15:52:35+08:00"
 category: [Database, OLAP, Druid, CodeWiki, "37.0.0"]
+contentType: "CodeWiki"
 tags: ["Druid", "Overlord", "任务调度", "Supervisor", "autoscaling"]
 description: "Druid Overlord——TaskMaster leader 选举、TaskQueue 读写锁并发、HttpRemoteTaskRunner（37 默认全 HTTP）、Supervisor 生命周期、TaskLockbox 时间锁、autoscaling。"
 readingTime: "15 min"

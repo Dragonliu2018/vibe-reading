@@ -6,6 +6,7 @@ source:
 title: "Agent 执行引擎"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "Agent", "ReviewAgent", "Concurrency"]
 description: "OpenCodeReview ReviewAgent 执行引擎——diff 审查编排、场景化 prompt 构建、并发子审查、coverage 冻结、Plan/Main 两阶段、续审指纹匹配。"
 readingTime: "22 min"

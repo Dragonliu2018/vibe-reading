@@ -6,6 +6,7 @@ source:
 title: "瘦客户端"
 date: "2026-09-17T10:48:00+08:00"
 category: [AI, Agent, "AI Coding", Herdr, CodeWiki, "0.9.1"]
+contentType: "CodeWiki"
 tags: ["herdr", "Rust", "TUI", "终端"]
 description: "herdr 瘦客户端：0.9.0 起 TUI 在每个 client 内本地渲染，server 只发元数据快照与 pane surface。"
 readingTime: "21 min"

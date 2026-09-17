@@ -6,6 +6,7 @@ source:
 title: "Sandbox"
 date: "2026-08-12T10:45:17+08:00"
 category: [AI, Agent, "Harness Engineering", DeerFlow, CodeWiki, "2.0.0"]
+contentType: "CodeWiki"
 tags: ["DeerFlow", "Python", "Sandbox", "E2B", "Docker"]
 description: "DeerFlow 沙箱模块解析：SandboxProvider 可插拔契约、warm-pool 对象池、跨进程 ownership lease、LocalSandbox/E2B/AIO 多后端。"
 readingTime: "13 min"

@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "TypeScript", "Electron", "code editor", "Monaco", "Extension", "Agent"]
 description: "VS Code 1.135 源码架构解读——Electron 多进程、DI 服务脊柱、Monaco 编辑器、扩展系统与 AI Agent"
 readingTime: "35 min"

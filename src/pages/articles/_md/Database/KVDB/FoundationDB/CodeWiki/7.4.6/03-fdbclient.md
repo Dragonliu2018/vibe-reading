@@ -6,6 +6,7 @@ source:
 title: "客户端库与事务 API"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "NativeAPI", "RYW", "定位缓存", "SpecialKeySpace"]
 description: "fdbclient 模块——FoundationDB 客户端库，Transaction/Database API + RYW 客户端缓存 + 定位缓存 + SpecialKeySpace 管理 keyspace + 多版本封装。"
 readingTime: "38 min"

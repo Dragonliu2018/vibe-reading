@@ -8,6 +8,7 @@ source:
   site: "美团技术团队"
 date: "2026-07-30T20:30:00+08:00"
 category: [AI, Agent, AI Coding, CatPaw, Official]
+contentType: "Blogs"
 tags: ["美团", "CatPaw", "LongCat", "AI Agent", "数字员工", "Managed Agents", "本地生活"]
 description: "美团搭载开源万亿参数 LongCat 2.0 模型的 AI Agent 平台 CatPaw 正式上线，提供全场景 AI 智能工作台与企业级 Managed Agents 开发托管能力，融合美团本地生活行业积累。"
 readingTime: "7 min"

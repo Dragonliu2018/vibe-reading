@@ -6,6 +6,7 @@ source:
 title: "函数与聚合工厂"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "FunctionFactory", "IFunction", "IAggregateFunction", "CRTP"]
 description: "ClickHouse 函数与聚合工厂源码解读——四层抽象、工厂注册器、适配器桥接、CRTP 去虚化与组合器。"
 readingTime: "25 min"

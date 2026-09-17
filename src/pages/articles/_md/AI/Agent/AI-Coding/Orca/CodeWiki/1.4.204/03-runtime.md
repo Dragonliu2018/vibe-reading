@@ -6,6 +6,7 @@ source:
 title: "Agent 运行时核心"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "运行时", "状态机", "SQLite"]
 description: "OrcaRuntimeService 的 135 层 mixin 继承链、OrchestrationDb 的 75 组方法挂载、agent 会话的 fence/lease 三段式 acquire，以及 2 秒轮询的编排 coordinator。"
 readingTime: "20 min"

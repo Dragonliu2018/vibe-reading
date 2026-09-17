@@ -6,6 +6,7 @@ source:
 title: "平台服务层"
 date: "2026-08-18T15:19:54+08:00"
 category: [Tools, IDE, VSCode, CodeWiki, "1.135.0"]
+contentType: "CodeWiki"
 tags: ["vscode", "平台服务", "配置", "命令", "上下文键", "IPC"]
 description: "VS Code 跨进程复用的服务脊柱——Registry、配置、命令、上下文键、IPC 透明代理"
 readingTime: "14 min"

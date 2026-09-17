@@ -6,6 +6,7 @@ source:
 title: "Agent Runtime"
 date: "2026-08-11T20:31:27+08:00"
 category: [AI, Agent, Team, Multica, CodeWiki, "0.3.28"]
+contentType: "CodeWiki"
 tags: ["multica", "Go", "Agent Runtime", "CLI", "Strategy Pattern"]
 description: "pkg/agent 模块用 Backend 接口统一 14 种编码 CLI（Claude Code、Codex、Copilot 等），把私有协议翻译为统一 Message/Result 事件流。"
 readingTime: "10 min"

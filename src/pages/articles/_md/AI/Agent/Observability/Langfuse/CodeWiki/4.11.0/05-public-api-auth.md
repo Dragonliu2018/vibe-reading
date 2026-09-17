@@ -6,6 +6,7 @@ source:
 title: "公开 API 与鉴权"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "tRPC", "REST API", "API Key", "Rate Limit"]
 description: "Langfuse API 层：tRPC appRouter 聚合 60+ feature router、REST 公开 API、API key scope 鉴权、Redis 限流。"
 readingTime: "14 min"

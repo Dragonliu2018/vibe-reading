@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/ellsa-end-to-end-listen-look-speak-act.pdf"
 date: "2026-08-03T18:00:00+08:00"
 category: [AI, Models, Multimodal, Papers]
+contentType: "Papers"
 tags: ["ELLSA", "Full-duplex", "Multimodal", "SA-MoE", "VLA", "Speech Interaction", "Robot Manipulation", "MIMO", "MoE", "GLM-5.2", "DeepSeek-V4", "Embodied AI"]
 description: "目的：构建首个全双工端到端多模态模型，同时感知与生成视觉/文本/语音/动作四模态。手段：SA-MoE 架构将不同模态路由至专门专家，通过统一自注意力融合；交错时间块序列实现流式 MIMO；三阶段训练（独立专家→SA-MoE 联合→语音合成器接入）。结论：在语音交互与机器人操作基准上匹配专用基线，并解锁边说边做、动作打断、缺陷指令拒绝等此前无法实现的交互能力。"
 readingTime: "18 min"

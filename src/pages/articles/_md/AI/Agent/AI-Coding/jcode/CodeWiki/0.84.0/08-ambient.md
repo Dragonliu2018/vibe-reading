@@ -6,6 +6,7 @@ source:
 title: "Ambient 后台"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "Ambient", "Memory Gardening", "自适应调度", "ScheduledItem"]
 description: "jcode Ambient 后台模式——单 pass 交织的 gardening/scouting/working、自适应调度器与未接线的 headroom 算法、ScheduledItem 跨重启调度、与 overnight 的关系、安全权限审批"
 readingTime: "18 min"

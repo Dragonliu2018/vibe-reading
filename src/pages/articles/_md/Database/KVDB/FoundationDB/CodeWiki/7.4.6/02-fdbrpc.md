@@ -6,6 +6,7 @@ source:
 title: "RPC 与网络层"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "RPC", "FlowTransport", "负载均衡", "模拟网络"]
 description: "fdbrpc 模块——FoundationDB 的 RPC 与网络层，FlowTransport 连接复用 + Endpoint 寻址 + ReplyPromise/RequestStream + QueueModel 负载均衡 + Sim2 模拟网络。"
 readingTime: "35 min"

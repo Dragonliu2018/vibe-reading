@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T20:00:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据导入", "导入方式"]
+contentType: "Docs"
 tags: ["Apache Doris", "Routine Load", "Kafka", "流式导入", "Exactly-Once", "数据导入"]
 description: "Apache Doris 3.x 官方文档：Routine Load 持续消费 Kafka Topic 中的数据，流式导入支持 Exactly-Once 语义，保证数据不丢不重，支持 CSV/JSON 格式及多种 Kafka 安全认证。"
 readingTime: "30 min"

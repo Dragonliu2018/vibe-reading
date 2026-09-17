@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-07-01"
 category: [Database, OLAP, Apache Doris, Contributions]
+contentType: "Contributions"
 tags: ["Apache Doris", "Java", "FE", "DDL"]
 description: "将 ColumnDef.analyzeDefaultValue() 中的类型兼容性检查前移到字面量构造之前，确保非法默认值给出准确的错误提示而非内部实现细节。"
 readingTime: "5 min"

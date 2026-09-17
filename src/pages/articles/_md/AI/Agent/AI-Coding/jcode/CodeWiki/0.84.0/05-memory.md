@@ -6,6 +6,7 @@ source:
 title: "Memory 记忆系统"
 date: "2026-09-11T17:39:13+08:00"
 category: [AI, Agent, "AI Coding", jcode, CodeWiki, "0.84.0"]
+contentType: "CodeWiki"
 tags: ["jcode", "Rust", "Memory", "Embedding", "Rerank", "被动记忆", "Hybrid Retrieval"]
 description: "jcode Memory 记忆系统——passive 自动召回 pipeline、hybrid 检索（dense+BM25+RRF 融合）、consensus listwise LLM rerank（recall@5 0.53→0.75）、carry verified 降级保护、语义漂移提取、记忆图"
 readingTime: "24 min"

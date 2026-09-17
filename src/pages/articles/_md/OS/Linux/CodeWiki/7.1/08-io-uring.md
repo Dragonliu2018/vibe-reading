@@ -6,6 +6,7 @@ source:
 title: "io_uring 异步 I/O"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "io_uring", "异步IO", "SQPOLL"]
 description: "Linux io_uring 异步 I/O 框架——共享内存 SQ/CQ ring、SQPOLL 零系统调用、53 种 opcode、deferred completion 批量完成。"
 readingTime: "14 min"

@@ -6,6 +6,7 @@ source:
 title: "模拟测试体系"
 date: "2026-08-22T15:19:30+08:00"
 category: [Database, KVDB, FoundationDB, CodeWiki, "7.4.6"]
+contentType: "CodeWiki"
 tags: ["FoundationDB", "C++", "Simulation", "DeterministicRandom", "Buggify", "FaultInjection", "Workload"]
 description: "模拟测试体系——Sim2 单进程确定性模拟整个集群 + Workload 框架 + FaultInjection/Buggify/SimBugInjector 故障注入，FDB 可靠性的根本保障。"
 readingTime: "38 min"

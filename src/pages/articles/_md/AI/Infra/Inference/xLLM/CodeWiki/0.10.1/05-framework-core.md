@@ -6,6 +6,7 @@ source:
 title: "框架核心"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "Batch", "KVCache", "Block", "Sequence", "Sampler"]
 description: "xLLM 框架核心解读：Batch/Sequence/Request 批处理模型、KVCache/BlockManager 显存管理、Sampler 采样与 PrefixCache。"
 readingTime: "15 min"

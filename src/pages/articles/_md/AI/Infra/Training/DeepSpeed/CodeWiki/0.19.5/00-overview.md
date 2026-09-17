@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-12T15:35:32+08:00"
 category: [AI, Infra, Training, DeepSpeed, CodeWiki, "0.19.5"]
+contentType: "CodeWiki"
 tags: ["DeepSpeed", "Python", "分布式训练", "ZeRO", "3D 并行", "MoE", "推理引擎"]
 description: "DeepSpeed 是微软开源的大规模分布式深度学习训练框架，以 ZeRO 优化器闻名。本文从系统架构、ZeRO 分片、3D 并行、推理引擎到 DeepCompile，全面解读 v0.19.5 的内部原理。"
 readingTime: "28 min"

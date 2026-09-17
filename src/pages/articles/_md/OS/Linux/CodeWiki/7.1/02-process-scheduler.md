@@ -6,6 +6,7 @@ source:
 title: "进程管理与调度"
 date: "2026-08-14T21:30:28+08:00"
 category: [OS, Linux, CodeWiki, "7.1"]
+contentType: "CodeWiki"
 tags: ["Linux", "内核", "调度", "EEVDF", "进程管理"]
 description: "Linux 进程生命周期（fork/exec/exit）与 EEVDF 调度器——sched_class 多态、__schedule 上下文切换、vruntime 虚拟时间。"
 readingTime: "15 min"

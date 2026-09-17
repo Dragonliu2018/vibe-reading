@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-09-07T17:38:43+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["FE", "Config", "masterOnly", "RedirectStatus", "HighAvailability"]
 description: "Doris 的 ADMIN SET ALL FRONTENDS CONFIG 遇到 masterOnly 配置时被构造器静默降级为仅 Master 生效，主备切换后动态修改丢失；本 PR 用 if (!applyToAll) 守卫恢复全 FE 扇出语义。"
 readingTime: "9 min"

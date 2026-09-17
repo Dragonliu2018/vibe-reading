@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-20T10:23:42+08:00"
 category: ["Languages", "C/C++", "Tools", "LLVM", "CodeWiki", "24"]
+contentType: "CodeWiki"
 tags: ["LLVM", "C++", "编译器", "IR", "CodeGen", "TableGen"]
 description: "LLVM 24 编译器基础设施核心架构解读——从 IR 到目标代码的完整流水线"
 readingTime: "35 min"

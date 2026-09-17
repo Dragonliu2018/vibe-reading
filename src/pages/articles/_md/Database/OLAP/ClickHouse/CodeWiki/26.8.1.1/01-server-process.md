@@ -6,6 +6,7 @@ source:
 title: "服务端入口与进程模型"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "Server", "网络协议", "多路复用"]
 description: "ClickHouse 单二进制多路复用与多协议 server 源码解读——main 分发表、Server::main 装配、HTTP/TCP handler 与工厂模式。"
 readingTime: "20 min"

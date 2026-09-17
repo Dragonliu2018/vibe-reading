@@ -6,6 +6,7 @@ source:
 title: "采样算子"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "Sampling", "TopK", "TopP", "SpeculativeDecoding", "SortingFree"]
 description: "FlashInfer 采样算子解读：sorting-free 设计（radix select + CDF scan 替代排序）、AIR Top-P、chain speculative sampling、变长 top-k。"
 readingTime: "14 min"

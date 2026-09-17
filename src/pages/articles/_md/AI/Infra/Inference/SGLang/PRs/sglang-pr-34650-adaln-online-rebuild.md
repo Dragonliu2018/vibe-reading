@@ -8,6 +8,7 @@ source:
   prType: "feat"
 date: "2026-08-14T16:27:27+08:00"
 category: [AI, Infra, Inference, SGLang, PRs]
+contentType: "PRs"
 tags: ["SGLang", "MiniMax-H3", "Diffusion", "DiT", "AdaLN", "Tensor Parallelism"]
 description: "解读 SGLang #34650：按需重建 MiniMax-H3 的 AdaLN 输出，甩掉 24.2 GiB sidecar，DiT 全驻留提速 6.4%，根因是 H2D 流与 Ulysses all2all 的带宽争用。"
 readingTime: "14 min"

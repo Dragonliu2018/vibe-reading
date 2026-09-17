@@ -6,6 +6,7 @@ source:
 title: "SSH 连接"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "libssh", "RAII", "SSH"]
 description: "libssh C API 的 C++ RAII 封装 + 单例虚函数 seam，重连逻辑在调用方。"
 readingTime: "9 min"

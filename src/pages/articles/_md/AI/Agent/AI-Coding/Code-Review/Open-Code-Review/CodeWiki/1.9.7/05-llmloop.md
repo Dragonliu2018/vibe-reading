@@ -6,6 +6,7 @@ source:
 title: "LLM 工具循环"
 date: "2026-08-19T17:25:00+08:00"
 category: [AI, Agent, "AI Coding", "Code Review", "Open Code Review", CodeWiki, "1.9.7"]
+contentType: "CodeWiki"
 tags: ["OpenCodeReview", "Go", "LLM", "ToolLoop", "Compression"]
 description: "OpenCodeReview LLM 工具循环引擎——通用 tool-call 往返驱动、三区上下文压缩、CommentWorkerPool 异步评论、四路终止判定。"
 readingTime: "18 min"

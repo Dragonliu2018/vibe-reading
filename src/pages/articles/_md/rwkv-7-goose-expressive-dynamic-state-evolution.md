@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/rwkv-7-goose-expressive-dynamic-state-evolution.pdf"
 date: "2026-08-04T19:00:00+08:00"
 category: [AI, Models, Text Model, RWKV, Papers]
+contentType: "Papers"
 tags: ["RNN", "Generalized Delta Rule", "Matrix-Valued State", "Dynamic Recurrence", "State Tracking", "Regular Languages", "TC0", "NC1", "Linear Attention", "RWKV-7", "Data-Dependent Decay", "Value Residual", "LoRA", "Multilingual"]
 description: "目的：提升 RNN 表达力超越 TC0。手段：广义 delta rule + 向量值门控 + 解耦移除/替换键 + 值残差。结论：RWKV-7 多语言 SOTA，可识别所有正则语言。"
 readingTime: "18 min"

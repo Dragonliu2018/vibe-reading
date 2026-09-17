@@ -6,6 +6,7 @@ source:
 title: "扩展系统"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "wasmtime", "WASM", "Node.js", "extension", "WIT"]
 description: "SideX 扩展系统——Node sidecar + WASM 组件双轨，wasmtime/WIT 契约，Open VSX 市场"
 readingTime: "16 min"

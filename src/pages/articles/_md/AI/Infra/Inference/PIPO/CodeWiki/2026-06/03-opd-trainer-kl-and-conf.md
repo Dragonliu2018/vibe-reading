@@ -6,6 +6,7 @@ source:
 title: "OPD KL 模式与置信度目标"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "KL 散度", "置信度头", "EAGLE"]
 description: "PIPO OPD 的三档 KL 模式、ConfidenceHead 的 EAGLE 接受率目标推导与 chunked 实现细节"
 readingTime: "11 min"

@@ -6,6 +6,7 @@ source:
 title: "镜像管理"
 date: "2026-08-17T11:04:42+08:00"
 category: [OS, Virtualization, Multipass, CodeWiki, "1.16.2"]
+contentType: "CodeWiki"
 tags: ["Multipass", "C++", "Simple Streams", "镜像缓存"]
 description: "DefaultVMImageVault：Simple Streams 协议 + 两层缓存 + single-flight 去重 + sha256 校验。"
 readingTime: "9 min"

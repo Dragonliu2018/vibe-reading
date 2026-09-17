@@ -6,6 +6,7 @@ source:
 title: "后端层"
 date: "2026-08-18T17:52:22+08:00"
 category: [AI, Infra, Training, Relax, CodeWiki, "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Relax", "Megatron-LM", "SGLang", "权重同步", "TP/PP/CP/EP", "权重转换"]
 description: "解读 Relax 后端层：MegatronTrainRayActor 训练 Actor 的前向/反向/权重广播、SGLangEngine 推理生命周期、HF↔Megatron 权重转换与三条权重同步路径（IPC/NCCL/DCS）。"
 readingTime: "15 min"

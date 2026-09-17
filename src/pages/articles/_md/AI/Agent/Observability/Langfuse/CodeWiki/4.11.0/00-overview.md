@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-18T16:35:50+08:00"
 category: ["AI", "Agent", "Observability", "Langfuse", CodeWiki, "4.11.0"]
+contentType: "CodeWiki"
 tags: ["Langfuse", "Observability", "TypeScript", "ClickHouse", "BullMQ", "Next.js"]
 description: "开源 LLM 可观测性平台 Langfuse v4.11.0 源码解读：摄入管线、队列分片、ClickHouse 宽表统一、后台作业、应用内 Agent。"
 readingTime: "28 min"

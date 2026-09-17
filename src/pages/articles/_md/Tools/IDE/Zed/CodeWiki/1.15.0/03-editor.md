@@ -6,6 +6,7 @@ source:
 title: "编辑器"
 date: "2026-08-18T11:06:09+08:00"
 category: [Tools, IDE, Zed, CodeWiki, "1.15.0"]
+contentType: "CodeWiki"
 tags: ["zed", "Rust", "code editor", "GPUI", "CRDT"]
 description: "Zed 编辑器组件：buffer 到 display_map 到 element 的三级渲染管道与多光标管理"
 readingTime: "20 min"

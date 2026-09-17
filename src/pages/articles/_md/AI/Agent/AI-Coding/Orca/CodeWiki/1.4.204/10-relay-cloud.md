@@ -6,6 +6,7 @@ source:
 title: "Relay 云中继"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "Relay", "E2EE", "推送"]
 description: "手机与桌面从不直连：director/cell 两级路由、splice 纯帧转接、独立 push 网关、fence broker 的 Terraform 变更互斥——云永不成为状态权威。"
 readingTime: "16 min"

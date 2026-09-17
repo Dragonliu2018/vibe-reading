@@ -6,6 +6,7 @@ source:
 title: "HTTP 客户端"
 date: "2026-08-13T20:07:12+08:00"
 category: ["Languages", "Python", "Tools", "uv", "CodeWiki", "0.12.3"]
+contentType: "CodeWiki"
 tags: ["uv", "Rust", "HTTP", "缓存"]
 description: "uv-client 装饰器链：BaseClient + CachedClient + RegistryClient，自实现 RFC 9111 HTTP 缓存与 rkyv 零拷贝序列化。"
 readingTime: "14 min"

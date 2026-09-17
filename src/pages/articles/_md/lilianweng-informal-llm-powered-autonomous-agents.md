@@ -8,6 +8,7 @@ source:
   site: "Lil'Log"
 date: "2026-07-31T15:00:00+08:00"
 category: [AI, Agent, Blogs]
+contentType: "Blogs"
 tags: ["LLM Agents", "Planning", "Memory", "Tool Use", "ReAct", "Reflexion", "Prompt Engineering", "Lilian Weng"]
 description: "Lilian Weng 系统梳理 LLM 自主 agent 架构：以 LLM 为大脑，配合规划（任务分解与自我反思）、记忆（短期/长期、向量检索 MIPS）、工具使用三大组件，并解析 ChemCrow、Generative Agents、AutoGPT、GPT-Engineer 等案例与当前挑战。"
 readingTime: "31 min"

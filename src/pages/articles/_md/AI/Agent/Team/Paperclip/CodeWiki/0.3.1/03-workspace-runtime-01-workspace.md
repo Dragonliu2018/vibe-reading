@@ -6,6 +6,7 @@ source:
 title: "Workspace Runtime"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 工作区运行时——git worktree 隔离、runtime service 跨 heartbeat 复用、unsafe cwd 检测"
 readingTime: "15 min"

@@ -8,6 +8,7 @@ source:
   prType: "fix"
 date: "2026-08-05T18:30:00+08:00"
 category: [Database, OLAP, Apache Doris, PRs]
+contentType: "PRs"
 tags: ["Apache Doris", "BRPC", "Protobuf", "RPC", "Stream Load", "C++"]
 description: "修复大块数据通过 brpc 传输时 protobuf 序列化溢出 2GB 限制的 bug，使用 std::move 转移 block 数据后清空原字段，并将 transfer_large_data_by_brpc 默认值从 false 改为 true。"
 readingTime: "8 min"

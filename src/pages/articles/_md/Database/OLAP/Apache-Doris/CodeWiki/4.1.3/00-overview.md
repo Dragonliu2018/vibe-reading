@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-23T18:20:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "4.1.3"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Java", "C++", "MPP", "OLAP", "向量化执行"]
 description: "Apache Doris 4.1.3 源码架构解读：FE(Java) 元数据/优化/协调 + BE(C++) Pipeline 向量化执行/列存引擎的 MPP 分析型数据库。"
 readingTime: "28 min"

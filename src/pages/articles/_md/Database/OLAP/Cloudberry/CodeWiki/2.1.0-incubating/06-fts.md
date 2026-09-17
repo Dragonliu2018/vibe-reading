@@ -6,6 +6,7 @@ source:
 title: "容错服务"
 date: "2026-08-20T11:29:59+08:00"
 category: [Database, OLAP, Cloudberry, CodeWiki, "2.1.0-incubating"]
+contentType: "CodeWiki"
 tags: ["Cloudberry", "C/C++", "MPP", "FTS", "高可用", "failover"]
 description: "Cloudberry fts 模块——运行于 coordinator 的后台容错服务，周期探测 primary/mirror segment，故障时协调 in-sync mirror 提升，单点决策避免脑裂。"
 readingTime: "13 min"

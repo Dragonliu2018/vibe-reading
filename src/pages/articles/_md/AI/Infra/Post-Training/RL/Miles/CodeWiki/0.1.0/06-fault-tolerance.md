@@ -6,6 +6,7 @@ source:
 title: "容错与审计"
 date: "2026-08-20T00:17:42+08:00"
 category: ["AI", "Infra", "Post-Training", "RL", "Miles", "CodeWiki", "0.1.0"]
+contentType: "CodeWiki"
 tags: ["Miles", "Fault Tolerance", "IndepDP", "Audit", "Event Sourcing", "Witness"]
 description: "原地容错恢复（no restart no pause）、控制平面/数据平面分离、IndepDP 弹性数据并行、事件溯源审计。"
 readingTime: "24 min"

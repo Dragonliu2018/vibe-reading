@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-03T23:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "查询加速", "优化技术原理"]
+contentType: "Docs"
 tags: ["Apache Doris", "Runtime Filter", "Join Runtime Filter", "TopN Runtime Filter", "Bloom Filter", "查询优化"]
 description: "Apache Doris 3.x 官方文档：Runtime Filter 分为 Join Runtime Filter 与 TopN Runtime Filter，详细介绍工作原理、Filter 类型（In/Bloom/Min-Max）、查看方法及调优。"
 readingTime: "15 min"

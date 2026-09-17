@@ -6,6 +6,7 @@ source:
 title: "调度器"
 date: "2026-08-12T15:35:17+08:00"
 category: [AI, Infra, Inference, Diffusers, CodeWiki, "0.39.0"]
+contentType: "CodeWiki"
 tags: ["Diffusers", "Scheduler", "DDPM", "DDIM", "Euler", "噪声调度"]
 description: "SchedulerMixin 基类、DDPM/DDIM/Euler 三大调度器的去噪数学、统一接口与策略模式。"
 readingTime: "10 min"

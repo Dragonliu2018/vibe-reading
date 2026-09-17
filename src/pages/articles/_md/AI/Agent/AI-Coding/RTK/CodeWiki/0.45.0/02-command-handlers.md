@@ -6,6 +6,7 @@ source:
 title: "命令处理器"
 date: "2026-08-25T10:45:03+08:00"
 category: [AI, Agent, "AI Coding", RTK, CodeWiki, "0.45.0"]
+contentType: "CodeWiki"
 tags: ["RTK", "Rust", "CLI 代理", "过滤策略"]
 description: "RTK cmds/ 模块：100+ 命令的专用输出过滤，按 ecosystem 分组，复用 core 统一骨架。"
 readingTime: "20 min"

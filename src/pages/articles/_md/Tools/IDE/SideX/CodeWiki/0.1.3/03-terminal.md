@@ -6,6 +6,7 @@ source:
 title: "集成终端"
 date: "2026-08-18T15:41:58+08:00"
 category: [Tools, IDE, SideX, CodeWiki, "0.1.3"]
+contentType: "CodeWiki"
 tags: ["sidex", "Rust", "portable-pty", "terminal", "OSC 633"]
 description: "SideX 集成终端——portable-pty PTY、OSC 633 shell 集成、三世代实现并存的过渡架构"
 readingTime: "15 min"

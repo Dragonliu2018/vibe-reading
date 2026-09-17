@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-20T13:29:34+08:00"
 category: [Database, TSDB, GreptimeDB, CodeWiki, "1.3.0"]
+contentType: "CodeWiki"
 tags: ["GreptimeDB", "Rust", "TSDB", "时序数据库", "可观测性", "DataFusion"]
 description: "开源可观测性数据库——metrics/logs/traces 统一列式引擎、对象存储之上的 region 存储内核、多协议接入与分布式查询协调机制解读。"
 readingTime: "45 min"

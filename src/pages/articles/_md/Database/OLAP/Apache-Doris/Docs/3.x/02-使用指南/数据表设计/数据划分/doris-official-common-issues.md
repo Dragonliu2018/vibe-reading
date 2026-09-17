@@ -8,6 +8,7 @@ source:
   site: "Apache Doris 官方文档"
 date: "2026-08-04T12:30:00+08:00"
 category: [Database, OLAP, Apache Doris, Docs, "3.x", "02 使用指南", "数据表设计", "数据划分"]
+contentType: "Docs"
 tags: ["Apache Doris", "常见问题", "建表", "分区", "Tablet", "数据划分", "FAQ"]
 description: "Apache Doris 3.x 官方文档：数据划分常见问题，涵盖建表语法错误、Failed to create partition 超时、建表长时间不返回等问题的排查方法。"
 readingTime: "5 min"

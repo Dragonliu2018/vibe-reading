@@ -6,6 +6,7 @@ source:
 title: "平台扩展与可移植"
 date: "2026-08-11T22:29:06+08:00"
 category: [AI, Agent, Team, Paperclip, CodeWiki, "0.3.1"]
+contentType: "CodeWiki"
 tags: ["paperclip", "TypeScript", "AI Agent 编排", "控制平面"]
 description: "Paperclip 平台扩展与可移植子系统——插件系统、公司导入导出、密钥存储与审计"
 readingTime: "20 min"

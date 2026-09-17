@@ -6,6 +6,7 @@ source:
 title: "SQL 编译"
 date: "2026-08-22T15:17:11+08:00"
 category: [Database, OLAP, Databend, CodeWiki, "1.2.925-patch-8"]
+contentType: "CodeWiki"
 tags: ["Databend", "Rust", "Binder", "Planner", "SExpr"]
 description: "Databend SQL 编译模块——Binder 语义绑定 + 不可变 SExpr 计划树 + Metadata 解耦。"
 readingTime: "16 min"

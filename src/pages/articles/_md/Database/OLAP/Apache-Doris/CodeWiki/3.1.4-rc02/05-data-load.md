@@ -6,6 +6,7 @@ source:
 title: "数据导入"
 date: "2026-08-23T19:00:00+08:00"
 category: [Database, OLAP, "Apache Doris", CodeWiki, "3.1.4-rc02"]
+contentType: "CodeWiki"
 tags: ["Apache Doris", "Stream Load", "事务", "DeltaWriter", "MoW"]
 description: "Doris 3.1.4 数据导入：Stream/Broker/Routine Load + GlobalTransactionMgr 两阶段事务（PREPARE→COMMITTED→VISIBLE）。"
 readingTime: "10 min"

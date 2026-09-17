@@ -6,6 +6,7 @@ source:
 title: "终端守护进程"
 date: "2026-09-16T17:05:03+08:00"
 category: [AI, Agent, "AI Coding", Orca, CodeWiki, "1.4.204"]
+contentType: "CodeWiki"
 tags: ["Orca", "终端", "PTY", "xterm"]
 description: "orcad 独立终端守护进程：三方拓扑与收养机制、scrollback 跨重启的三段式冷恢复、@xterm/headless 无头解析 OSC、遥测永不影响终端的硬规则。"
 readingTime: "18 min"

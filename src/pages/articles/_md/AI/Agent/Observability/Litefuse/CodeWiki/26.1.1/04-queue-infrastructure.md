@@ -6,6 +6,7 @@ source:
 title: "队列基础设施"
 date: "2026-08-18T18:00:56+08:00"
 category: ["AI", "Agent", "Observability", "Litefuse", CodeWiki, "26.1.1"]
+contentType: "CodeWiki"
 tags: ["Litefuse", "BullMQ", "Redis", "队列", "分片"]
 description: "Litefuse 队列基础设施：28 个 BullMQ 队列契约、ingestion/otel 分片、WorkerManager 注册、主备队列与 DeadLetterRetryQueue。"
 readingTime: "12 min"

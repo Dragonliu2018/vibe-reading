@@ -6,6 +6,7 @@ source:
 title: "Overview"
 date: "2026-08-21T15:08:54+08:00"
 category: [Database, OLAP, ByConity, CodeWiki, "1.0.0"]
+contentType: "CodeWiki"
 tags: ["ByConity", "C++", "存算分离", "云原生数仓", "Cascades", "FoundationDB"]
 description: "ByConity 源码解读：基于 ClickHouse 21.8 的云原生数据仓库，存算分离 + Cascades 优化器 + 无状态 Worker。"
 readingTime: "32 min"

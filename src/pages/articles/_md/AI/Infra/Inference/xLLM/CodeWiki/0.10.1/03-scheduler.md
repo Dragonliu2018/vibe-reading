@@ -6,6 +6,7 @@ source:
 title: "请求调度器"
 date: "2026-08-22T17:19:22+08:00"
 category: [AI, Infra, Inference, xLLM, CodeWiki, "0.10.1"]
+contentType: "CodeWiki"
 tags: ["xLLM", "Scheduler", "连续批处理", "PD 分离", "Chunked Prefill"]
 description: "xLLM 请求调度器解读：ContinuousScheduler 主循环、PD 分离调度、Chunked Prefill、调度重叠与 RL pause/resume。"
 readingTime: "13 min"

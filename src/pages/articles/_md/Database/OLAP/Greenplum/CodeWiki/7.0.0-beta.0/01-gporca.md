@@ -6,6 +6,7 @@ source:
 title: "GPORCA 优化器"
 date: "2026-08-14T15:39:30+08:00"
 category: [Database, OLAP, Greenplum, CodeWiki, "7.0.0-beta.0"]
+contentType: "CodeWiki"
 tags: ["Greenplum", "C++", "ORCA", "Cascades", "查询优化器"]
 description: "GPORCA——基于 Cascades 搜索框架的模块化 C++ 代价优化器：Memo、变换规则与多阶段需求驱动搜索。"
 readingTime: "20 min"

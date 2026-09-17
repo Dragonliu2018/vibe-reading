@@ -6,6 +6,7 @@ source:
 title: "配置上下文"
 date: "2026-08-19T12:13:38+08:00"
 category: [Languages, Rust, Tools, Cargo, CodeWiki, "0.100.0"]
+contentType: "CodeWiki"
 tags: ["Cargo", "Rust", "配置", "GlobalContext", "serde"]
 description: "Cargo 配置上下文 GlobalContext 解读：两层反序列化（ConfigValue→目标类型）、Definition 优先级（CLI>env>文件）、OnceLock 懒初始化、target.$TRIPLE 环境变量映射。"
 readingTime: "16 min"

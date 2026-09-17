@@ -6,6 +6,7 @@ source:
 title: "OPD 训练器"
 date: "2026-08-18T21:08:21+08:00"
 category: [AI, Infra, Inference, PIPO, CodeWiki, "2026-06"]
+contentType: "CodeWiki"
 tags: ["PIPO", "OPD", "蒸馏", "SGLang rollout"]
 description: "PIPOGKDTrainer 的三阶段蒸馏流水线：SGLang rollout、压缩 student forward、PAD-compacted teacher forward、chunked sampled-KL 与 confidence head EAGLE 目标"
 readingTime: "20 min"

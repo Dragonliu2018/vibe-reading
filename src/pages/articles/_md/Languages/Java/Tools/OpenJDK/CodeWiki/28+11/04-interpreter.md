@@ -6,6 +6,7 @@ source:
 title: "字节码解释器"
 date: "2026-08-19T23:29:36+08:00"
 category: ["Languages", "Java", "Tools", "OpenJDK", "CodeWiki", "28+11"]
+contentType: "CodeWiki"
 tags: ["OpenJDK", "HotSpot", "TemplateInterpreter", "TosState", "LinkResolver", "Rewriter", "dispatch"]
 description: "HotSpot 模板解释器——dispatch 表与 TosState、invoke 快慢路径、LinkResolver 符号解析、Rewriter 常量池改写、Zero 移植后端"
 readingTime: "14 min"

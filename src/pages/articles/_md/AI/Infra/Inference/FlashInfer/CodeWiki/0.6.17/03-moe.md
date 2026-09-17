@@ -6,6 +6,7 @@ source:
 title: "MoE 算子"
 date: "2026-08-12T15:50:29+08:00"
 category: [AI, Infra, Inference, FlashInfer, CodeWiki, "0.6.17"]
+contentType: "CodeWiki"
 tags: ["FlashInfer", "MoE", "DeepSeek", "ExpertParallel", "FusedKernel"]
 description: "FlashInfer MoE 算子解读：统一 MoEConfig API、7 个 Runner 策略、跨 backend 竞速、DSV3/Llama4 routing、FP8/FP4 量化、Expert Parallel。"
 readingTime: "18 min"

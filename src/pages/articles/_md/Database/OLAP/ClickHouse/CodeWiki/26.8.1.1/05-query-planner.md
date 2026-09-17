@@ -6,6 +6,7 @@ source:
 title: "查询计划器"
 date: "2026-08-22T15:50:10+08:00"
 category: [Database, OLAP, ClickHouse, CodeWiki, "26.8.1.1"]
+contentType: "CodeWiki"
 tags: ["ClickHouse", "Planner", "QueryPlan", "优化器"]
 description: "ClickHouse 查询计划器源码解读——QueryTree→QueryPlan step 树、18+ 优化 pass、子规划器与 ActionsDAG。"
 readingTime: "25 min"

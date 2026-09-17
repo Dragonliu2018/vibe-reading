@@ -6,6 +6,7 @@ source:
 title: "V1 引擎"
 date: "2026-08-22T18:02:27+08:00"
 category: [AI, Infra, Inference, vLLM, CodeWiki, "0.27.1"]
+contentType: "CodeWiki"
 tags: ["vLLM", "V1 引擎", "多进程", "ZMQ", "asyncio", "EngineCore"]
 description: "解读 vLLM V1 引擎模块：AsyncLLM 与独立进程的 EngineCoreProc 通过 ZMQ 通信，用多进程 actor 模型解耦 asyncio IO 与 GPU 计算。"
 readingTime: "18 min"

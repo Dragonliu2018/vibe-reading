@@ -6,6 +6,7 @@ source:
 title: "Task API & Service"
 date: "2026-08-11T20:31:27+08:00"
 category: [AI, Agent, Team, Multica, CodeWiki, "0.3.28"]
+contentType: "CodeWiki"
 tags: ["multica", "Go", "Task Queue", "FOR UPDATE SKIP LOCKED", "Lease"]
 description: "handler + service 模块实现 issue→task 生命周期：enqueue→claim→start→complete/fail，含原子 claim、租约、负缓存与自动重试。"
 readingTime: "12 min"

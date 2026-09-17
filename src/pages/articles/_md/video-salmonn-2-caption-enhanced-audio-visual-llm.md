@@ -7,6 +7,7 @@ source:
   pdf: "/vibe-reading/papers/video-salmonn-2-caption-enhanced-audio-visual-llm.pdf"
 date: "2026-08-03T19:00:00+08:00"
 category: [AI, Models, Multimodal, Papers]
+contentType: "Papers"
 tags: ["video-SALMONN 2", "Audio-Visual LLM", "MrDPO", "DPO", "Video Captioning", "Video QA", "LoRA", "RL", "Caption Quality", "Knowledge Distillation", "SOTA"]
 description: "目的：提升音视频大语言模型的视频字幕质量并转移至视频问答。手段：MrDPO 通过周期性合并并重新初始化 LoRA 代理刷新 DPO 参考策略，配合基于原子事件的字幕质量目标（完整度+事实准确度），实现持续改进；用 MrDPO 模型生成高质量字幕语料蒸馏到新模型。结论：生成的字幕在细节与准确性上超越 GPT-4o 和 Gemini-1.5 Pro，3B/7B/72B 模型在多个音视频与纯视觉基准上达到 SOTA，72B 超越所有其他开源系统。"
 readingTime: "16 min"

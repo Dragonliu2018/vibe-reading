@@ -34,6 +34,7 @@ _md/{category[0]}/{category[1]}/.../{category[N-1]}/{slug}.md
 title: "文章标题（双引号包裹）"
 date: "YYYY-MM-DDTHH:MM:SS+08:00"      # 取博客编写时的当前时间（TZ=Asia/Shanghai date '+%Y-%m-%dT%H:%M:%S+08:00'，勿手填近似）；ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
 category: [Domain, Project, Type]
+contentType: "CodeWiki"                # 内容类型徽章（见下方 contentType 说明）
 tags: ["Tag1", "Tag2"]
 description: "一句话描述，出现在文章卡片和 SEO meta 中"
 readingTime: "N min"
@@ -81,6 +82,22 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读�
 | `Papers` | 论文解读 |
 
 > 转载类末级按来源分：版本化官方文档 `Docs`（+ 版本号）/ 非版本化官方文章 `Official` / 非官方 `Informal`。`Docs` 和 `CodeWiki` 的版本号元素必须加引号（`"3.x"` / `"2.1"` / `"1.2.0"` / `"main-2025-12"`），否则 YAML 会把 `2.1` 解析成浮点数。
+
+**`contentType`（内容类型徽章，必填）：**
+
+与 category 末级平行声明的 frontmatter 字段——category 回答"在哪"（领域路径），contentType 回答"是什么"（内容体裁）。徽章、类型视图（/type）都读它，一色一标签（CodeWiki 蓝 / Papers 紫 / Docs 蓝灰 / Contributions 淡紫 / PRs 玫红 / Blogs 橄榄绿 / Notes 沙金）。
+
+| contentType | 用于 |
+|-------------|------|
+| `CodeWiki` | 源码架构解读（category 末级 CodeWiki + 版本号的所有文章） |
+| `Contributions` | 自己写的 PR / commit |
+| `PRs` | 解读他人的 PR / commit |
+| `Docs` | 官方版本化文档转载 |
+| `Papers` | 论文解读 |
+| `Blogs` | 博客/文章转载（category 末级为 Official / Informal / Blogs 的全部文章，统一为 Blogs） |
+| `Notes` | 技术笔记 |
+
+规则：**contentType 与 category 末级类型标记对应**（末级 `Official`/`Informal`/`Blogs` → `Blogs`；`CodeWiki`+版本号 → `CodeWiki`；`Contributions` → `Contributions`；等等）。写在 `category:` 行的下一行。
 
 ---
 

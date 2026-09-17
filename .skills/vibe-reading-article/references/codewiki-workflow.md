@@ -614,7 +614,7 @@ git worktree remove --force /tmp/<project-name>-"<tag>" 2>/dev/null || rm -rf /t
     - **是否有重复 `<path>` 元素？**（相同 `d` 属性的两个 path 会叠加渲染）→ 全文 SVG
     - **箭头方向是否与语义一致？**（A→B 的箭头起点在 A 边缘、终点在 B 边缘，不能反向）→ 全文 SVG
     - **箭头线是否互相交叉？**（竖线与横线交叉时用桥接折线避开）→ 全文 SVG
-17. frontmatter 字段是否完整？（`title`、`date`、`category`、`description`、`readingTime`、`aiModel`）→ 文件头
+17. frontmatter 字段是否完整？（`title`、`date`、`category`、`contentType`、`description`、`readingTime`、`aiModel`）→ 文件头
 18. 验证循环是否执行？未通过的题目是否已修订或标注"待核实"？→ Step 5.5
 
 ---
@@ -625,4 +625,4 @@ git worktree remove --force /tmp/<project-name>-"<tag>" 2>/dev/null || rm -rf /t
 bash .skills/vibe-reading-article/scripts/check-article.sh src/pages/articles/_md/<slug>.md
 ```
 
-Markdown 文章校验项：文件名 kebab-case、frontmatter 必填字段（`title`/`date`/`category`/`description`/`readingTime`/`aiModel`）、不含 `layout:` 行。
+Markdown 文章校验项：文件名 kebab-case、frontmatter 必填字段（`title`/`date`/`category`/`contentType`/`description`/`readingTime`/`aiModel`）、不含 `layout:` 行。

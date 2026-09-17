@@ -41,7 +41,7 @@ visibility: private
 comments: false    # 推荐；私有文章默认不应启用 Giscus
 ```
 
-其余字段（`title` / `date` / `category` / `description` / `readingTime` / `aiModel`）同公开 Markdown。
+其余字段（`title` / `date` / `category` / `contentType` / `description` / `readingTime` / `aiModel`）同公开 Markdown（contentType = 内容类型徽章，必填，规则见 `markdown-style.md`）。
 
 ## 合规检查
 

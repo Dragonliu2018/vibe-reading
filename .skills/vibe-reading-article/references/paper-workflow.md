@@ -263,6 +263,7 @@ source:
   pdf: "/vibe-reading/papers/{slug}.pdf"   # 博客本地 PDF 链接（论文解读必填，见下"PDF 本地化"）
 date: "YYYY-MM-DDTHH:MM:SS+08:00"      # 取博客编写时的当前时间（TZ=Asia/Shanghai date '+%Y-%m-%dT%H:%M:%S+08:00'，勿手填近似）；ISO 8601 带时区（北京时间）；同日多篇按完整值排序，展示截前 10 字符
 category: [AI, Models, Papers]          # 末级 Papers；域按主题（AI/Math/...）
+contentType: "Papers"
 tags: ["论文主题词"]
 description: "目的 + 手段 + 结论（50 字摘要，卡片/SEO 用，标题下方引文）"
 readingTime: "N min"

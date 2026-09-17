@@ -53,8 +53,8 @@ process.stdin.on("end", () => {
     fi
   fi
 
-  # 3. 必填 frontmatter 字段
-  for field in title date category description readingTime aiModel; do
+  # 3. 必填 frontmatter 字段（contentType = 内容类型徽章，2026-09 起必填）
+  for field in title date category contentType description readingTime aiModel; do
     if ! grep -qE "^${field}:" "$FILE"; then
       ERRORS+=("frontmatter 缺少字段: $field")
     fi

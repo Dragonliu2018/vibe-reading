@@ -22,7 +22,7 @@ export interface Props {
     description?: string;
     readingTime?: string;
     aiModel?:     string;
-    reviewed?:    boolean;
+    reviewed?:    boolean | number;  // number = 温习次数（每次重读确认 +1）
     pinned?:      boolean;
     star?:        boolean;
     contentType?: string;       // 内容类型徽章（CodeWiki/Papers/Docs/PRs…）

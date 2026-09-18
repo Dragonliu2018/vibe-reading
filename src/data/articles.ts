@@ -25,7 +25,7 @@ export interface Article {
   description:  string;
   readingTime?: string;
   aiModel?:     string;
-  reviewed?:    boolean;     // frontmatter 显式声明已 review；与 src/data/reviewed.ts 数组取并集，构建期静态决定徽章状态
+  reviewed?:    boolean | number;  // frontmatter 声明 review（温习）状态：number = 已 review 次数（每次重读确认 +1），true 等值 1 次，false/缺省 = 未 review
   pinned?:      boolean;     // frontmatter 显式声明顶置；首页排序 pinned 优先于 date，并显示「置顶」徽章
   star?:        boolean;     // frontmatter 显式声明收藏（好文标星）；收藏视图聚合展示
   visibility?:  ContentVisibility; // private 文章仅在 CONTENT_MODE=private 时进入集合

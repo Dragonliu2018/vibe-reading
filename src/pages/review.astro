@@ -11,11 +11,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ViewTabs from '../components/ViewTabs.astro';
 import ArticleBadges from '../components/ArticleBadges.astro';
 
+// reviewCount 派生：number 即次数；true → 1（兼容存量）
+const reviewCount = (a: typeof articles[number]): number =>
+  typeof a.reviewed === 'number' ? a.reviewed : (a.reviewed ? 1 : 0);
+
 const reviewed = [...articles]
-  .filter(a => a.reviewed)
+  .filter(a => reviewCount(a) > 0)
   .sort((a, b) => {
-    const pa = !!a.pinned, pb = !!b.pinned;
-    if (pa !== pb) return pa ? -1 : 1;
+    // 温习次数降序（多次 review = 质量信号），同次数按日期降序
+    const d = reviewCount(b) - reviewCount(a);
+    if (d !== 0) return d;
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
@@ -30,14 +35,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 >
   <ViewTabs active="review" count={reviewed.length} />
 
+  {reviewed.length > 1 && (
+    <div class="sort-toolbar">
+      <div class="sort-seg" id="sort-seg">
+        <button class="sort-btn active" type="button" data-sort="count" data-dir="desc">温习次数 <span class="sort-arrow">↓</span></button>
+        <button class="sort-btn" type="button" data-sort="date" data-dir="desc">创建时间 <span class="sort-arrow">↓</span></button>
+      </div>
+    </div>
+  )}
+
   {reviewed.length > 0 ? (
-    <main class="articles">
+    <main class="articles" id="review-articles">
       {reviewed.map(article => {
         const badges = deriveBadges(article);
         const src = article.source;
         const encodedSlug = article.slug.split('/').map(encodeURIComponent).join('/');
         return (
-          <a class="article-card" href={`${base}/articles/${encodedSlug}`}>
+          <a class="article-card" href={`${base}/articles/${encodedSlug}`}
+             data-count={reviewCount(article)} data-ts={new Date(article.date).getTime()}>
             <div class="card-inner">
               <div>
                 <div class="card-meta">
@@ -71,9 +86,59 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <a class="review-empty-cta" href={`${base}/`}>去列表逛逛</a>
     </div>
   )}
+  <script>
+    // 渐进增强：排序切换（构建期已按次数降序渲染，脚本只做 DOM 重排）
+    function initReviewSort() {
+      const seg  = document.getElementById('sort-seg');
+      const list = document.getElementById('review-articles');
+      if (!seg || !list) return;
+      seg.addEventListener('click', e => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('.sort-btn');
+        if (!btn) return;
+        const key = btn.dataset.sort ?? 'count';
+        const wasActive = btn.classList.contains('active');
+        // 同一维度再点 = 翻转方向；换维度 = 默认降序
+        const dir = wasActive && btn.dataset.dir === 'desc' ? 'asc' : 'desc';
+        seg.querySelectorAll('.sort-btn').forEach(b => {
+          b.classList.toggle('active', b === btn);
+          if (b === btn) b.dataset.dir = dir; else b.dataset.dir = 'desc';  // 非活动重置降序
+          const arrow = b.querySelector('.sort-arrow');
+          if (arrow) arrow.textContent = b.dataset.dir === 'asc' ? '↑' : '↓';
+        });
+        const count = (el: HTMLElement) => Number(el.dataset.count ?? 0);
+        const ts    = (el: HTMLElement) => Number(el.dataset.ts ?? 0);
+        const sgn = dir === 'asc' ? 1 : -1;
+        const cmp = key === 'date'
+          ? (a: HTMLElement, b: HTMLElement) => sgn * (ts(a) - ts(b))
+          : (a: HTMLElement, b: HTMLElement) => sgn * (count(a) - count(b)) || ts(b) - ts(a);
+        const cards = [...list.children] as HTMLElement[];
+        cards.sort(cmp);
+        for (const c of cards) list.appendChild(c);
+      });
+    }
+    document.addEventListener('astro:page-load', initReviewSort);
+  </script>
 </BaseLayout>
 
 <style>
+  /* ── 排序工具条 ── */
+  .sort-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .sort-arrow { font-size: 11px; opacity: 0.7; margin-left: 1px; }
+  .sort-seg {
+    display: inline-flex; padding: 2px; gap: 2px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 100px;
+  }
+  .sort-btn {
+    border: none; background: none; cursor: pointer;
+    font-family: inherit; font-size: 12px; color: var(--text-dim);
+    padding: 3px 11px; border-radius: 100px; white-space: nowrap;
+    transition: color .15s, background .15s;
+  }
+  .sort-btn:hover { color: var(--text-muted); }
+  .sort-btn.active { color: var(--accent); background: rgba(41,151,255,0.12); }
+
   /* 卡片样式与列表 view（index.astro）/ 收藏 view 一致——Paperclip 卡片语言 */
   .articles { display: flex; flex-direction: column; }
 

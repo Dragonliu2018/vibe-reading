@@ -59,7 +59,9 @@ const tabs: { key: ViewKey; label: string; href: string }[] = [
   }
   .view-tab:hover { color: #f5f5f7; }
   .view-tab.active { background: rgba(255,255,255,0.09); color: #f5f5f7; }
-  /* 总数：tab 行右端的计数胶囊（同 badges 分组 count 的视觉重量） */
+  /* 总数：tab 行右端的计数胶囊（同 badges 分组 count 的视觉重量）。
+     定宽居中：宽度不随计数位数变化——否则 "948 篇" 与 "3 篇" 宽度不同，
+     换行临界点不同，切视图时胶囊会在单行/两行间跳动（位置上移） */
   .view-tabs-count {
     margin-left: auto;
     font-size: 12px; font-weight: 500; color: var(--text-muted);
@@ -67,6 +69,7 @@ const tabs: { key: ViewKey; label: string; href: string }[] = [
     background: rgba(255,255,255,0.06);
     border-radius: 20px;
     padding: 2px 9px;
+    min-width: 65px; text-align: center;   /* 定宽 ≥ "9999 篇"（64.2px），位数无关 */
     white-space: nowrap;
   }
 </style>

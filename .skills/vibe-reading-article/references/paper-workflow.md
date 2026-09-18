@@ -268,7 +268,7 @@ tags: ["论文主题词"]
 description: "目的 + 手段 + 结论（50 字摘要，卡片/SEO 用，标题下方引文）"
 readingTime: "N min"
 aiModel: "Claude Opus 4.8"
-reviewed: false                         # 人工校对后改 true（= 温习）
+reviewed: false                         # 人工校对后改 1；之后每次温习 +1（如 reviewed: 3 = 已读三遍确认）
 ---
 ```
 

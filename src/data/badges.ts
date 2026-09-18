@@ -49,6 +49,7 @@ export interface BadgeState {
   contentType?: string;         // 内容类型徽章标签（frontmatter 显式声明；空/缺省不渲染）
   catStyle:     string;         // 内容类型徽章 inline style
   reviewState:  'reviewed' | 'pending';
+  reviewCount:  number;         // 温习次数（reviewed: N；true → 1，false/缺省 → 0）
   reviewLabel:  string;
   reviewTitle:  string;
   originState:  'repost' | 'original';
@@ -64,12 +65,13 @@ export function deriveBadges(input: {
   pinned?:      boolean;
   star?:        boolean;
   contentType?: string;
-  reviewed?:    boolean;
+  reviewed?:    boolean | number;
   source?:      ArticleSource;
   visibility?:  'public' | 'private';
 }): BadgeState {
   const contentType = input.contentType || '';
-  const isReviewed = !!input.reviewed;
+  const reviewCount = typeof input.reviewed === 'number' ? input.reviewed : (input.reviewed ? 1 : 0);
+  const isReviewed = reviewCount > 0;
   const isRepost   = input.source?.type === 'article';
   return {
     pinned:       !!input.pinned,
@@ -78,8 +80,9 @@ export function deriveBadges(input: {
     contentType,
     catStyle:     badgeStyle(contentType),
     reviewState:  isReviewed ? 'reviewed' : 'pending',
-    reviewLabel:  isReviewed ? 'Reviewed' : 'Draft',
-    reviewTitle:  isReviewed ? '已人工 review' : 'AI 初稿，待人工 review',
+    reviewCount,
+    reviewLabel:  reviewCount > 1 ? `Reviewed ×${reviewCount}` : (isReviewed ? 'Reviewed' : 'Draft'),
+    reviewTitle:  reviewCount > 1 ? `已人工 review ${reviewCount} 次（温习确认）` : (isReviewed ? '已人工 review' : 'AI 初稿，待人工 review'),
     originState:  isRepost ? 'repost' : 'original',
     originLabel:  isRepost ? '转载' : 'AI 生成',
     originTitle:  isRepost ? '转载自外部文章' : 'AI 生成内容',

@@ -39,7 +39,7 @@ tags: ["Tag1", "Tag2"]
 description: "一句话描述，出现在文章卡片和 SEO meta 中"
 readingTime: "N min"
 aiModel: "Claude Opus 4.8"
-reviewed: false
+reviewed: false    # number = 温习次数（每次重读确认内容仍准确 +1，如 reviewed: 3）；true 等值 1；false/省略 = 未 review
 ---
 ```
 

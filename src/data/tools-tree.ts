@@ -58,4 +58,16 @@ function buildToolTree(): ToolNode[] {
   return roots;
 }
 
-export const toolsTree: ToolNode[] = buildToolTree();
+// 注意：不能在模块顶层直接 buildToolTree()。本模块 eager-glob 工具页，
+// 而工具页经 ToolLayout → Sidebar 又 import 回本模块，构成循环依赖 —— 
+// dev 下若某工具页是首个被请求的页面，glob 会捕获到该页尚未完成初始化的
+// partial 模块（toolMeta 尚未导出），该工具就会从侧边栏永久消失。
+// 延迟到首次渲染（所有模块已初始化完毕、export 为 live binding）再建树，
+// 循环依赖即无害化。
+let cachedTree: ToolNode[] | null = null;
+
+export function getToolsTree(): ToolNode[] {
+  if (cachedTree === null) cachedTree = buildToolTree();
+  return cachedTree;
+}
+

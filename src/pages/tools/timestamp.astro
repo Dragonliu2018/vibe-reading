@@ -1,0 +1,336 @@
+---
+export const toolMeta = {
+  categoryPath: ['时间', 'Unix 时间戳'],
+  description:  '时间戳与日期时间互相转换，实时显示当前时间戳',
+};
+import ToolLayout from '../../layouts/ToolLayout.astro';
+---
+
+<ToolLayout title="Unix 时间戳" description="时间戳 ⇄ 日期时间互相转换，实时显示当前时间戳（本地时区）" toolHref="/tools/timestamp">
+  <style>
+    /* ── 当前时间戳 ── */
+    .now-card {
+      background: rgba(41,151,255,0.06);
+      border: 1px solid rgba(41,151,255,0.18);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 8px;
+    }
+    .now-label {
+      font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px;
+      text-transform: uppercase; color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    .now-value {
+      font-family: var(--mono); font-size: 30px; font-weight: 600;
+      color: var(--accent); letter-spacing: 0.5px;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer; user-select: all;
+      transition: color .15s;
+    }
+    .now-value:hover { color: #6cb6ff; }
+    .now-value.stopped { color: var(--text-muted); }
+    .now-sub {
+      display: flex; gap: 28px; flex-wrap: wrap;
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 13px; color: var(--text-muted);
+    }
+    .now-sub b {
+      font-family: var(--mono); font-weight: 500;
+      color: var(--text); font-variant-numeric: tabular-nums;
+    }
+    .now-controls {
+      display: flex; gap: 8px; margin-top: 14px;
+    }
+    .now-controls .tool-btn { padding: 6px 16px; font-size: 12.5px; }
+
+    /* ── 输入行 ── */
+    .ts-input-row {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .ts-input-row input { flex: 1; }
+    .unit-select {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: var(--font); font-size: 13px;
+      padding: 11px 12px; cursor: pointer; outline: none;
+      transition: border-color .15s; min-width: 76px;
+    }
+    .unit-select:focus { border-color: var(--accent); }
+
+    /* ── 日期六输入框 ── */
+    .date-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 680px) { .date-grid { grid-template-columns: repeat(3, 1fr); } }
+    .date-cell { text-align: center; }
+    .date-cell input {
+      text-align: center; font-size: 16px;
+      -moz-appearance: textfield;
+    }
+    .date-cell input::-webkit-outer-spin-button,
+    .date-cell input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .date-cell .tool-label { margin-bottom: 6px; }
+
+    .result-box {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .result-box input { flex: 1; }
+    .result-note {
+      font-size: 12.5px; color: var(--text-muted);
+      margin-top: 8px; min-height: 18px;
+    }
+    .section-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap;
+    }
+    .section-head .tool-label { margin-bottom: 0; }
+  </style>
+
+  <!-- ═══ 当前时间戳 ═══ -->
+  <div class="now-card">
+    <div class="now-label">现在的 Unix 时间戳是</div>
+    <div class="now-value" id="now-ts" title="点击复制">—</div>
+    <div class="now-sub">
+      <span>毫秒 <b id="now-ms">—</b></span>
+      <span>本地时间 <b id="now-str">—</b></span>
+    </div>
+    <div class="now-controls">
+      <button class="tool-btn tool-btn-primary" id="btn-start">开始</button>
+      <button class="tool-btn tool-btn-secondary" id="btn-stop">停止</button>
+      <button class="tool-btn tool-btn-secondary" id="btn-refresh">刷新</button>
+      <button class="tool-btn tool-btn-secondary" id="btn-copy-now">复制</button>
+    </div>
+  </div>
+
+  <div class="tool-divider"></div>
+
+  <!-- ═══ 时间戳 → 时间 ═══ -->
+  <div class="section-head" style="margin-bottom:12px">
+    <p class="tool-label">时间戳 → 时间</p>
+    <button class="tool-btn tool-btn-secondary" id="btn-now-ts" style="padding:4px 14px;font-size:12px">取当前时间戳</button>
+  </div>
+  <div class="ts-input-row">
+    <input type="text" id="ts-input" inputmode="numeric" placeholder="输入 Unix 时间戳，如 1789714254" spellcheck="false" />
+    <select class="unit-select" id="ts-unit">
+      <option value="s" selected>秒</option>
+      <option value="ms">毫秒</option>
+    </select>
+  </div>
+  <div class="tool-actions" style="margin-top:14px"></div>
+  <div class="ts-input-row" style="margin-bottom:0">
+    <input type="text" id="ts-output" placeholder="转换结果：2026-09-18 12:34:56" readonly />
+    <button class="tool-btn tool-btn-secondary" id="btn-copy-date" style="min-height:44px">复制</button>
+  </div>
+  <p class="result-note" id="ts-note"></p>
+
+  <div class="tool-divider"></div>
+
+  <!-- ═══ 时间 → 时间戳 ═══ -->
+  <div class="section-head" style="margin-bottom:12px">
+    <p class="tool-label">时间 → 时间戳</p>
+    <button class="tool-btn tool-btn-secondary" id="btn-fill-now" style="padding:4px 14px;font-size:12px">填入当前时间</button>
+  </div>
+  <div class="date-grid">
+    <div class="date-cell"><p class="tool-label">年</p><input type="number" id="d-y" min="1" max="9999" /></div>
+    <div class="date-cell"><p class="tool-label">月</p><input type="number" id="d-m" min="1" max="12" /></div>
+    <div class="date-cell"><p class="tool-label">日</p><input type="number" id="d-d" min="1" max="31" /></div>
+    <div class="date-cell"><p class="tool-label">时</p><input type="number" id="d-h" min="0" max="23" /></div>
+    <div class="date-cell"><p class="tool-label">分</p><input type="number" id="d-i" min="0" max="59" /></div>
+    <div class="date-cell"><p class="tool-label">秒</p><input type="number" id="d-s" min="0" max="59" /></div>
+  </div>
+  <div class="tool-actions" style="margin:14px 0 14px">
+    <select class="unit-select" id="date-unit">
+      <option value="s" selected>秒</option>
+      <option value="ms">毫秒</option>
+    </select>
+  </div>
+  <div class="ts-input-row" style="margin-bottom:0">
+    <input type="text" id="date-output" placeholder="转换结果：1789714254" readonly />
+    <button class="tool-btn tool-btn-secondary" id="btn-copy-ts" style="min-height:44px">复制</button>
+  </div>
+  <p class="result-note" id="date-note"></p>
+
+  <div class="tool-divider"></div>
+
+  <p style="font-size:12.5px;color:var(--text-dim);line-height:1.8">
+    Unix 时间戳指从格林威治时间 1970 年 01 月 01 日 00 时 00 分 00 秒（北京时间 08:00:00）起至现在的总秒数，不考虑闰秒。
+    转换均基于浏览器本地时区。
+  </p>
+</ToolLayout>
+
+<script>
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const pad = (n: number, len = 2) => String(Math.abs(n)).padStart(len, '0');
+  const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
+
+  function fmtDateTime(d: Date): string {
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
+           `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
+  function relTime(ms: number): string {
+    const diff = ms - Date.now();
+    const abs = Math.abs(diff);
+    const suffix = diff < 0 ? '前' : '后';
+    if (abs < 60_000)      return `刚刚（${Math.round(abs / 1000)} 秒${suffix}）`;
+    if (abs < 3_600_000)   return `${Math.round(abs / 60_000)} 分钟${suffix}`;
+    if (abs < 86_400_000)  return `${Math.round(abs / 3_600_000)} 小时${suffix}`;
+    if (abs < 2_592_000_000) return `${Math.round(abs / 86_400_000)} 天${suffix}`;
+    return `${(abs / 31_536_000_000).toFixed(1)} 年${suffix}`;
+  }
+
+  /* ═══ ① 当前时间戳：开始 / 停止 / 刷新 ═══ */
+  const nowTsEl  = $('now-ts');
+  const nowMsEl  = $('now-ms');
+  const nowStrEl = $('now-str');
+  let timer: ReturnType<typeof setInterval> | null = null;
+  let frozenMs = 0;
+
+  function renderNow(ms: number) {
+    const d = new Date(ms);
+    nowTsEl.textContent  = String(Math.floor(ms / 1000));
+    nowMsEl.textContent  = String(ms);
+    nowStrEl.textContent = fmtDateTime(d) + ` 星期${WEEKDAYS[d.getDay()]}`;
+  }
+  function tick() { frozenMs = Date.now(); renderNow(frozenMs); }
+  function start() {
+    if (timer !== null) return;
+    nowTsEl.classList.remove('stopped');
+    tick();
+    timer = setInterval(tick, 53);
+  }
+  function stop() {
+    if (timer === null) return;
+    clearInterval(timer);
+    timer = null;
+    nowTsEl.classList.add('stopped');
+  }
+
+  $('btn-start').addEventListener('click', start);
+  $('btn-stop').addEventListener('click', stop);
+  $('btn-refresh').addEventListener('click', () => { tick(); });
+
+  nowTsEl.addEventListener('click', () => {
+    navigator.clipboard.writeText(nowTsEl.textContent ?? '').then(
+      () => { const t = nowTsEl.textContent; nowTsEl.textContent = '已复制'; setTimeout(() => { if (timer !== null) tick(); else nowTsEl.textContent = t; }, 600); }
+    );
+  });
+  $('btn-copy-now').addEventListener('click', () => {
+    navigator.clipboard.writeText(nowTsEl.textContent ?? '');
+  });
+  start();
+
+  /* ═══ ② 时间戳 → 时间 ═══ */
+  const tsInput  = $('ts-input')  as HTMLInputElement;
+  const tsUnit   = $('ts-unit')   as HTMLSelectElement;
+  const tsOutput = $('ts-output') as HTMLInputElement;
+  const tsNote   = $('ts-note');
+
+  function convertTs() {
+    const raw = tsInput.value.trim();
+    tsNote.textContent = ''; tsNote.style.color = '';
+
+    if (!raw) { tsOutput.value = ''; return; }
+    if (!/^-?\d+$/.test(raw)) {
+      tsOutput.value = '';
+      tsNote.textContent = '✕ 请输入纯数字时间戳'; tsNote.style.color = '#f85149';
+      return;
+    }
+
+    const num = Number(raw);
+    const ms  = tsUnit.value === 'ms' ? num : num * 1000;
+    const d = new Date(ms);
+    if (!Number.isFinite(d.getTime())) {
+      tsOutput.value = '';
+      tsNote.textContent = '✕ 时间戳超出可表示范围'; tsNote.style.color = '#f85149';
+      return;
+    }
+    tsOutput.value = fmtDateTime(d);
+    const weekday = `星期${WEEKDAYS[d.getDay()]}`;
+    tsNote.textContent = `${weekday} · ${relTime(ms)} · 时区 UTC${-d.getTimezoneOffset() / 60 >= 0 ? '+' : ''}${-d.getTimezoneOffset() / 60}`;
+  }
+
+  // 输入时按位数自动识别单位：10 位 → 秒，13 位 → 毫秒（手动切换单位时不覆盖）
+  tsInput.addEventListener('input', () => {
+    const digits = tsInput.value.trim().replace('-', '').length;
+    if (digits === 13)                 tsUnit.value = 'ms';
+    else if (digits === 9 || digits === 10) tsUnit.value = 's';
+    convertTs();
+  });
+  tsUnit.addEventListener('change', convertTs);
+
+  $('btn-now-ts').addEventListener('click', () => {
+    tsUnit.value = 's';
+    tsInput.value = String(Math.floor(Date.now() / 1000));
+    convertTs();
+  });
+  $('btn-copy-date').addEventListener('click', () => {
+    if (tsOutput.value) navigator.clipboard.writeText(tsOutput.value);
+  });
+
+  /* ═══ ③ 时间 → 时间戳 ═══ */
+  const fields = {
+    y: $('d-y') as HTMLInputElement, m: $('d-m') as HTMLInputElement,
+    d: $('d-d') as HTMLInputElement, h: $('d-h') as HTMLInputElement,
+    i: $('d-i') as HTMLInputElement, s: $('d-s') as HTMLInputElement,
+  };
+  const dateUnit   = $('date-unit')   as HTMLSelectElement;
+  const dateOutput = $('date-output') as HTMLInputElement;
+  const dateNote   = $('date-note');
+
+  function convertDate() {
+    dateNote.textContent = ''; dateNote.style.color = '';
+    const v = {
+      y: fields.y.value, m: fields.m.value, d: fields.d.value,
+      h: fields.h.value, i: fields.i.value, s: fields.s.value,
+    };
+    if (!Object.values(v).some(Boolean)) { dateOutput.value = ''; return; }
+    if (!Object.values(v).every(Boolean)) {
+      dateOutput.value = '';
+      dateNote.textContent = '✕ 请填写完整的年 / 月 / 日 / 时 / 分 / 秒'; dateNote.style.color = '#f85149';
+      return;
+    }
+    const d = new Date(
+      Number(v.y), Number(v.m) - 1, Number(v.d),
+      Number(v.h), Number(v.i), Number(v.s)
+    );
+    // 组件溢出校验：如 2 月 30 日会被 Date 回滚，视为无效输入
+    if (d.getFullYear() !== Number(v.y) || d.getMonth() !== Number(v.m) - 1 ||
+        d.getDate() !== Number(v.d)) {
+      dateOutput.value = '';
+      dateNote.textContent = '✕ 该日期不存在（请检查月 / 日）'; dateNote.style.color = '#f85149';
+      return;
+    }
+    const ms = d.getTime();
+    dateOutput.value = String(dateUnit.value === 'ms' ? ms : Math.floor(ms / 1000));
+    const other = dateUnit.value === 'ms'
+      ? `秒时间戳：${Math.floor(ms / 1000)}`
+      : `毫秒时间戳：${ms}`;
+    dateNote.textContent = `${other} · ${fmtDateTime(d)} 星期${WEEKDAYS[d.getDay()]}`;
+  }
+
+  Object.values(fields).forEach(el => el.addEventListener('input', convertDate));
+  dateUnit.addEventListener('change', convertDate);
+
+  function fillNow() {
+    const d = new Date();
+    fields.y.value = String(d.getFullYear());
+    fields.m.value = String(d.getMonth() + 1);
+    fields.d.value = String(d.getDate());
+    fields.h.value = pad(d.getHours());
+    fields.i.value = pad(d.getMinutes());
+    fields.s.value = pad(d.getSeconds());
+    convertDate();
+  }
+  $('btn-fill-now').addEventListener('click', fillNow);
+  $('btn-copy-ts').addEventListener('click', () => {
+    if (dateOutput.value) navigator.clipboard.writeText(dateOutput.value);
+  });
+
+  fillNow();
+</script>

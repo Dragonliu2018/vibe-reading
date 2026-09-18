@@ -4,7 +4,7 @@ import type { ToolNode } from '../data/tools-tree';
 import { articles, sourceLabel } from '../data/articles';
 import { deriveBadges } from '../data/badges';
 import { categoryTree, findActivePath, splitRootCategoryTree } from '../data/categories';
-import { toolsTree } from '../data/tools-tree';
+import { getToolsTree } from '../data/tools-tree';
 import { encodeArticleSlug } from '../data/paths';
 const reviewIcon = {
   reviewed: `<svg class="tree-review-icon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 6.15l1.7 1.7 3.1-3.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -93,7 +93,9 @@ const { publicRoots, privateRoots } = splitRootCategoryTree(categoryTree);
 const publicTreeHtml  = publicRoots.map((n) => renderNode(n)).join('');
 const privateTreeHtml = privateRoots.map((n) => renderNode(n)).join('');
 const hasPrivateZone  = privateRoots.length > 0;
-const toolTreeHtml    = toolsTree.map(n => renderToolNode(n)).join('');
+// 渲染时才建树：见 tools-tree.ts 注释（eager-glob 循环依赖，须延迟到
+// 所有模块初始化完成后读取 toolMeta）
+const toolTreeHtml    = getToolsTree().map(n => renderToolNode(n)).join('');
 ---
 
 <!-- Sidebar：文章/工具双模式。transition:persist 让它在 ClientRouter

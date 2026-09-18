@@ -86,9 +86,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       .tool-scroll { flex: none; height: auto; overflow: visible; }
     }
 
-    /* ── Tool content area ── */
+    /* ── Tool content area ──
+       居中而非左对齐：宽屏下左侧固定 860px 列会在右侧留大片空白 */
     .tool-body {
-      max-width: 860px;
+      max-width: 980px;
+      margin-inline: auto;
       padding: 40px 52px 80px 52px;
     }
     @media (max-width: 959px) { .tool-body { padding: 28px 6% 60px; max-width: none; } }

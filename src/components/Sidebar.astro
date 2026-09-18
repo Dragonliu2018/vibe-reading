@@ -51,7 +51,7 @@ function renderNode(node: TreeNode, depth: number = 0): string {
       if (label) displayTitle = `${label} ${prTypeLabel}${baseTitle}`;
     }
     const review = deriveBadges({ reviewed: article?.reviewed });
-    const reviewMark = `<span class="tree-review-mark" data-review-state="${review.reviewState}" title="${esc(review.reviewTitle)}">${reviewIcon[review.reviewState]}</span>`;
+    const reviewMark = `<span class="tree-review-mark" data-review-state="${review.reviewState}" data-count="${review.reviewCount}" title="${esc(review.reviewTitle)}">${reviewIcon[review.reviewState]}${review.reviewCount > 1 ? `<span class="tree-review-count">×${review.reviewCount}</span>` : ''}</span>`;
     const encodedSlug = encodeArticleSlug(slug);
     const active = slug === currentSlug ? ' active' : '';
     return `<a class="tree-article${active}" href="${base}/articles/${encodedSlug}" data-tip="${esc(displayTitle)}">${reviewMark}<span class="tree-article-title">${esc(displayTitle)}</span></a>`;
@@ -505,10 +505,19 @@ const toolTreeHtml    = toolsTree.map(n => renderToolNode(n)).join('');
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .tree-review-mark {
-    flex-shrink: 0; display: inline-flex;
-    width: 12px; height: 12px;
+    flex-shrink: 0; display: inline-flex; align-items: center;
+    height: 12px;
   }
   .tree-review-icon { width: 12px; height: 12px; }
+  /* ×N 次数：小胶囊徽章（带底色，与正文徽章语言统一），仅多次 review 出现 */
+  .tree-review-count {
+    font-size: 9px; font-weight: 600; line-height: 1;
+    margin-left: 3px; padding: 1.5px 4px; border-radius: 6px;
+    background: rgba(63,185,80,0.14);
+    font-variant-numeric: tabular-nums;
+    align-self: center;
+  }
+  .tree-review-mark[data-review-state="pending"] .tree-review-count { background: rgba(255,159,10,0.14); }
   .tree-review-mark[data-review-state="pending"]  { color: #ff9f0a; }
   .tree-review-mark[data-review-state="reviewed"] { color: #3fb950; }
   .tree-article:hover {

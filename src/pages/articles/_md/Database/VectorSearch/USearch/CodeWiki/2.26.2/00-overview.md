@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "Overview"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "C++", "向量检索", "HNSW"]
 description: "USearch v2.26.2 源码架构解读——单头文件 HNSW 向量搜索引擎：核心图引擎 index_gt、metric_punned 类型擦除、稠密索引序列化、C ABI 与 10 语言绑定的完整内幕"
@@ -207,13 +207,13 @@ USearch/
 
 | 模块 | 职责 | 核心入口 | 为什么独立 | 深入阅读 |
 |------|------|---------|-----------|---------|
-| 核心图引擎 | HNSW 图算法、并发增删查、refine 启发式、join | `index_gt::add()` in `index.hpp:3181` | 图引擎必须无值感知才能泛型化（文本/集合/自定义对象） | [核心图引擎](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/01-core-graph-engine) |
-| 并发与锁设计 | striped locks、读写并发不变量、锁层级 | `striped_locks_gt` in `index.hpp:668` | 并发正确性横跨 add/search/update，值得单独深读 | [并发与锁设计](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/01-core-concurrency) |
-| 基础设施与度量 | 标量类型系统、metric 路由、执行器、分配器 | `metric_punned_t::builtin()` in `index_plugins.hpp:2916` | "标准库"层可整体替换（换 SIMD 后端不动图引擎） | [基础设施与度量](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/02-plugins-infra) |
-| 稠密索引 | key 管理、惰性删除、序列化、聚类 | `index_dense_gt::make()` in `index_dense.hpp:663` | 向量语义与图算法解耦——删除/序列化都只在这层有意义 | [稠密索引](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/03-dense-index) |
-| C ABI 接口层 | C99 导出面、错误传递、枚举映射 | `usearch_init` in `c/usearch.h:143` | 一个 `.so` 服务所有弱 FFI 语言的最低公分母层 | [C ABI 接口层](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/04-c-abi) |
-| 多语言绑定 | Rust/JS/Go/Swift/Java/SQLite/WASM 的桥接选型 | `rust/lib.hpp`、`javascript/lib.cpp` 等 | 每语言的句柄/错误/数组转换模式差异大且互相独立 | [多语言绑定](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/05-language-bindings) |
-| Python 生态 | pybind11 原生层 + Pythonic 封装 + Numba JIT + RPC | `Index.__init__` in `python/usearch/index.py:541` | 引用量最大的绑定，双层结构与 GIL 模型自成体系 | [Python 生态](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/06-python-ecosystem) |
+| 核心图引擎 | HNSW 图算法、并发增删查、refine 启发式、join | `index_gt::add()` in `index.hpp:3181` | 图引擎必须无值感知才能泛型化（文本/集合/自定义对象） | [核心图引擎](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/01-core-graph-engine) |
+| 并发与锁设计 | striped locks、读写并发不变量、锁层级 | `striped_locks_gt` in `index.hpp:668` | 并发正确性横跨 add/search/update，值得单独深读 | [并发与锁设计](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/01-core-concurrency) |
+| 基础设施与度量 | 标量类型系统、metric 路由、执行器、分配器 | `metric_punned_t::builtin()` in `index_plugins.hpp:2916` | "标准库"层可整体替换（换 SIMD 后端不动图引擎） | [基础设施与度量](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/02-plugins-infra) |
+| 稠密索引 | key 管理、惰性删除、序列化、聚类 | `index_dense_gt::make()` in `index_dense.hpp:663` | 向量语义与图算法解耦——删除/序列化都只在这层有意义 | [稠密索引](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/03-dense-index) |
+| C ABI 接口层 | C99 导出面、错误传递、枚举映射 | `usearch_init` in `c/usearch.h:143` | 一个 `.so` 服务所有弱 FFI 语言的最低公分母层 | [C ABI 接口层](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/04-c-abi) |
+| 多语言绑定 | Rust/JS/Go/Swift/Java/SQLite/WASM 的桥接选型 | `rust/lib.hpp`、`javascript/lib.cpp` 等 | 每语言的句柄/错误/数组转换模式差异大且互相独立 | [多语言绑定](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/05-language-bindings) |
+| Python 生态 | pybind11 原生层 + Pythonic 封装 + Numba JIT + RPC | `Index.__init__` in `python/usearch/index.py:541` | 引用量最大的绑定，双层结构与 GIL 模型自成体系 | [Python 生态](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/06-python-ecosystem) |
 
 模块间的动态调用顺序见下方「运行时行为 > 核心运行流程」的三条链路。
 
@@ -318,7 +318,7 @@ cpp/bench.cpp      # 基准（693 行）
 - 第三遍：理解度量与精度机制
   `index_plugins.hpp` 的 `metric_punned_t`（`index_plugins.hpp:2856`，重点 `configure_with_numkong` at 3045 与 `configure_with_autovec` at 3108）→ `f16_bits_t`/`e5m2_bits_t` 的 LUT 转换（569/935）→ `index_dense.hpp` 的 `add_` 里 cast 注入
 - 第四遍：选择重点深入
-  并发正确性 → [并发与锁设计](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/01-core-concurrency)；序列化格式 → [稠密索引](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/03-dense-index)；跨语言桥接 → [多语言绑定](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/05-language-bindings)；Python GIL 模型 → [Python 生态](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/06-python-ecosystem)
+  并发正确性 → [并发与锁设计](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/01-core-concurrency)；序列化格式 → [稠密索引](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/03-dense-index)；跨语言桥接 → [多语言绑定](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/05-language-bindings)；Python GIL 模型 → [Python 生态](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/06-python-ecosystem)
 
 ## 附录
 

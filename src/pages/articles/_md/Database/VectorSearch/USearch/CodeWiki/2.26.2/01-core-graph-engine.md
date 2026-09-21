@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "核心图引擎"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "C++", "HNSW", "图算法"]
 description: "USearch 核心图引擎 index_gt 解读——HNSW 单 tape 节点布局、add/search/update 的完整算法流程、refine_ 启发式选边、per-thread context 与稳定婚姻 join 的实现内幕"
@@ -14,7 +14,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/00-overview)
 
 ---
 
@@ -43,7 +43,7 @@ class index_gt {
 
 ![HNSW 多层图与节点 tape 布局](/vibe-reading/images/articles/usearch-internals/core-hnws-levels.svg)
 
-引擎内部由四组构件组成。**图结构**：`nodes_` 是 C 风台的 `node_t` 数组（按 `compressed_slot_t` 下标），`entry_slot_`/`max_level_` 记录顶层入口，`choose_random_level_` 用指数分布随机选层——每个节点以递减概率出现在更高层，上层天然稀疏。**节点布局**：`node_t` 仅是一个 `byte_t*` 的"智能指针"（2424-2425 两条 static_assert 强制 trivially copyable/destructible，"Nodes must be light!"——8 字节一个，一条 cache line 装 8 个），其 tape 打包 `key + level + 所有层邻接表`，一次分配。**每线程上下文** `context_t`：双优先队列 + visits 哈希集 + 每线程随机引擎 + 统计计数（`computed_distances` 及 `computed_distances_in_refines`/`computed_distances_in_reverse_refines` 两个 refine 专项计数），"相当于把这些做成 `thread_local`"（文档 `index.hpp:2486`）。**分片锁** `striped_locks_gt`：与图大小无关、按 threads×connectivity 配比的 cache-line 对齐自旋锁（详见[并发与锁设计](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/01-core-concurrency)）。
+引擎内部由四组构件组成。**图结构**：`nodes_` 是 C 风台的 `node_t` 数组（按 `compressed_slot_t` 下标），`entry_slot_`/`max_level_` 记录顶层入口，`choose_random_level_` 用指数分布随机选层——每个节点以递减概率出现在更高层，上层天然稀疏。**节点布局**：`node_t` 仅是一个 `byte_t*` 的"智能指针"（2424-2425 两条 static_assert 强制 trivially copyable/destructible，"Nodes must be light!"——8 字节一个，一条 cache line 装 8 个），其 tape 打包 `key + level + 所有层邻接表`，一次分配。**每线程上下文** `context_t`：双优先队列 + visits 哈希集 + 每线程随机引擎 + 统计计数（`computed_distances` 及 `computed_distances_in_refines`/`computed_distances_in_reverse_refines` 两个 refine 专项计数），"相当于把这些做成 `thread_local`"（文档 `index.hpp:2486`）。**分片锁** `striped_locks_gt`：与图大小无关、按 threads×connectivity 配比的 cache-line 对齐自旋锁（详见[并发与锁设计](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/01-core-concurrency)）。
 
 为什么所有层邻接表拼进单条 tape：一，节点访问一次 cache miss 拿到全部元数据与邻接表（头注释 `index.hpp:2394-2396`："minimize memory usage and maximize the number of entries per cache-line"）；二，序列化退化为逐节点 memcpy（`save_to_stream` in `index.hpp:3692` 直接 `output(node_bytes.data(), node_bytes.size())`），view 模式 `node_t` 直接指向 mmap 区域（`index.hpp:4012-4013`），**零反序列化**。代价是 packed 布局无对齐保证，全库字段访问走 `misaligned_load/store`（避免解引用不对齐指针的 UB，`index.hpp:305-308` 注释原文）。
 
@@ -206,4 +206,4 @@ while (!next.empty()) {
 - **新增图遍历操作**：照 `cluster()` 的模式（`search_for_one_` 下降 + `context.measure` 收尾）；只读遍历用公开的 `neighbors_view_t`（`index.hpp:2726`），注意其别名节点邻接表、仅在无并发 mutation 时有效。
 - **调节超参**：`index_config_t`（`index.hpp:1607`）的 connectivity/connectivity_base 与 `index_update_config_t::expansion`——影响链：`pre_.neighbors_bytes`（每节点 tape 尺寸）→ 内存；`top_limit`（`index.hpp:3207`）→ 构建质量/时间；search 的 expansion → 召回/延迟。connectivity < 2 被 `validate()`（`index.hpp:1634`）拒绝（"index degenerates into ropes"）。
 
-并发与锁的正确性论证（striped locks 的 Fibonacci 散列、写序不变量、锁层级）单独展开在[并发与锁设计](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/01-core-concurrency)。
+并发与锁的正确性论证（striped locks 的 Fibonacci 散列、写序不变量、锁层级）单独展开在[并发与锁设计](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/01-core-concurrency)。

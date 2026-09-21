@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "基础设施与度量"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "C++", "SIMD", "类型擦除"]
 description: "USearch 基础设施层解读——f16/bf16/FP8 标量位级实现与 LUT 转换、metric_punned_t 类型擦除与 NumKong 内核路由、双执行器、arena 分配器与开地址哈希容器"
@@ -14,7 +14,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/00-overview)
 
 ---
 
@@ -95,7 +95,7 @@ inline result_t operator()(byte_t const* a, byte_t const* b) const noexcept {
 
 ### 高层算法件
 
-`exact_search_t`（L3287）暴力搜索三阶段：数据并行算全距离矩阵 → 单线程转置避免写竞争 → 每 query `partial_sort`。`kmeans_clustering_gt`（L3410）混合精度 K-Means：质心同时保 f64（聚合防累加误差）与量化（距离计算零转换开销）两份；四种早停（迭代数/惯性阈值/最小迁移/时限）。注意 v2.26.2 中 kmeans 只被 `cpp/test.cpp` 使用，`index_dense_gt::cluster()` 的聚类路径已改为纯 HNSW-level 方案（见[稠密索引](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/03-dense-index)）。
+`exact_search_t`（L3287）暴力搜索三阶段：数据并行算全距离矩阵 → 单线程转置避免写竞争 → 每 query `partial_sort`。`kmeans_clustering_gt`（L3410）混合精度 K-Means：质心同时保 f64（聚合防累加误差）与量化（距离计算零转换开销）两份；四种早停（迭代数/惯性阈值/最小迁移/时限）。注意 v2.26.2 中 kmeans 只被 `cpp/test.cpp` 使用，`index_dense_gt::cluster()` 的聚类路径已改为纯 HNSW-level 方案（见[稠密索引](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/03-dense-index)）。
 
 ## 设计模式
 

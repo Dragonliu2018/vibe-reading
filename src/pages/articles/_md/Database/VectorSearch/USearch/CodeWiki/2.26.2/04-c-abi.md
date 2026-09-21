@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "C ABI 接口层"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "C", "FFI", "ABI"]
 description: "USearch C ABI 解读——c/usearch.h 的不透明句柄与错误输出参数约定、约 40 个导出函数分组、枚举双向映射、metadata 免打开探测与 Go 回调开洞"
@@ -14,7 +14,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/00-overview)
 
 ---
 
@@ -22,7 +22,7 @@ reviewed: false
 
 `c/usearch.h`（508 行，C99）+ `c/lib.cpp`（540 行）是 USearch 的**公共导出底座**：一个 `libusearch_c` 共享库即可被几乎所有 FFI 机制加载（cgo / Swift 直接链接 / DllImport / Emscripten / dlopen），无需各语言配 C++ 工具链。它编译出的稳定符号集（无 name mangling）就是版本契约。
 
-一个需要先澄清的事实：C ABI 是"底座之一"而非唯一通路——Go/Swift/C#/WASM 消费它；Rust（CXX）/JS（N-API）/Java（JNI）/Python（pybind11）是平行的 C++ 直连绑定（详见[多语言绑定](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/05-language-bindings)）。本版 C 头里**没有** `usearch_compact` 导出（compact 只在 C++ 侧）。
+一个需要先澄清的事实：C ABI 是"底座之一"而非唯一通路——Go/Swift/C#/WASM 消费它；Rust（CXX）/JS（N-API）/Java（JNI）/Python（pybind11）是平行的 C++ 直连绑定（详见[多语言绑定](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/05-language-bindings)）。本版 C 头里**没有** `usearch_compact` 导出（compact 只在 C++ 侧）。
 
 ## 模块架构
 

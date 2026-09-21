@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "稠密索引"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "C++", "序列化", "聚类"]
 description: "USearch 稠密索引层解读——key→slot 查找表与向量 tape、.usearch 三段式序列化字节布局、mmap 零拷贝 view、惰性删除与 compact、HNSW 上层图当聚类中心"
@@ -14,7 +14,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/00-overview)
 
 ---
 
@@ -144,6 +144,6 @@ merge_nearby_clusters: 簇数 > max_clusters ？ → 最不受欢迎的簇并给
 
 ## 扩展方式
 
-- **新增输入标量**：`index_dense.hpp:872-942` 的 clang-format off 块里照抄一行重载（add/search/filtered_search/get/cluster/distance_between 六张表各一行）——完全机械，配合 [基础设施层](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/02-plugins-infra) 的 cast 矩阵。
+- **新增输入标量**：`index_dense.hpp:872-942` 的 clang-format off 块里照抄一行重载（add/search/filtered_search/get/cluster/distance_between 六张表各一行）——完全机械，配合 [基础设施层](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/02-plugins-infra) 的 cast 矩阵。
 - **改序列化格式**：head 尾部 22 字节余量只允许**向后追加**，动前 42 字节旧文件偏移全毁；需同步 `load_from_stream`/`view` 与 `index_dense_metadata_from_*` 的偏移推算（依赖 `8/16 + rows×cols` 的矩阵段大小公式）。
 - **改 free-key 回收策略**：影响面集中在 remove（入环）、`add_`（try_pop + reuse_node 分支）、`reindex_keys_`（重建环）、compact/copy（导出环）——例如换成 LRU 只需改 ring 出入队语义；要改物理删除则必须给 `typed_` 加节点摘除能力（现版 `index_gt` 无此能力）。

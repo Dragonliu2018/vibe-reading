@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "并发与锁设计"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "C++", "并发", "无锁数据结构"]
 description: "USearch 并发设计深度解读——striped locks 分片锁的 Fibonacci 散列、无锁读的两个不变量、unfair_shared_mutex 锁升级、每线程 context 复用与 Python GIL 协作"
@@ -14,13 +14,13 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回核心图引擎](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/01-core-graph-engine)
+> [← 返回核心图引擎](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/01-core-graph-engine)
 
 ---
 
 ## 主题定位
 
-USearch 宣称"Thread-safe for concurrent construction, search, and updates"（`index.hpp:2240`），而它的锁开销在常见路径上**接近零**：search 是 `const` 方法、一锁不加；add 只在可能刷新入口点时短暂持全局锁。这份深读拆解它如何用"写序不变量 + 分片锁 + 每线程上下文"三件套换到无锁读，以及稠密索引层和 Python 绑定层各自补的并发拼图。内容横跨 [核心图引擎](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/01-core-graph-engine) 与 [基础设施](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/02-plugins-infra) 两个模块，是它们共用的正确性论证。
+USearch 宣称"Thread-safe for concurrent construction, search, and updates"（`index.hpp:2240`），而它的锁开销在常见路径上**接近零**：search 是 `const` 方法、一锁不加；add 只在可能刷新入口点时短暂持全局锁。这份深读拆解它如何用"写序不变量 + 分片锁 + 每线程上下文"三件套换到无锁读，以及稠密索引层和 Python 绑定层各自补的并发拼图。内容横跨 [核心图引擎](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/01-core-graph-engine) 与 [基础设施](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/02-plugins-infra) 两个模块，是它们共用的正确性论证。
 
 ## 核心原理
 

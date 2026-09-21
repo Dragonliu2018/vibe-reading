@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "多语言绑定"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "FFI", "绑定", "跨语言"]
 description: "USearch 多语言绑定层解读——Rust CXX 静态桥 vs C ABI 双轨选型、N-API 的 GIL 类比与错误聚合、JNI 手写、SQLite 扩展与 StringZilla 复用、WASM 五行桥"
@@ -14,7 +14,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/00-overview)
 
 ---
 
@@ -97,7 +97,7 @@ Index::add::<f32>(key, vector)                      rust/lib.rs:762（VectorType
 
 ## 模块间交互
 
-全部绑定的直接对象是 `index_dense_t`（C++ 直连）或其 C 转译；NumKong 动态分发（`NK_DYNAMIC_DISPATCH=1`）在 JS/Swift/Python 绑定间共享同一套配置模式。与 [Python 生态](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/06-python-ecosystem) 的分工：本模块覆盖静态编译型绑定，Python 因 GIL 与双层结构单独成篇。
+全部绑定的直接对象是 `index_dense_t`（C++ 直连）或其 C 转译；NumKong 动态分发（`NK_DYNAMIC_DISPATCH=1`）在 JS/Swift/Python 绑定间共享同一套配置模式。与 [Python 生态](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/06-python-ecosystem) 的分工：本模块覆盖静态编译型绑定，Python 因 GIL 与双层结构单独成篇。
 
 ## 扩展方式
 

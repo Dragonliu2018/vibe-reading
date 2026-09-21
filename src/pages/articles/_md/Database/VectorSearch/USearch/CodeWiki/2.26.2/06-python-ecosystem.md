@@ -5,7 +5,7 @@ source:
   url: "https://github.com/unum-cloud/USearch"
 title: "Python 生态"
 date: "2026-09-21T15:26:32+08:00"
-category: [Database, Misc, USearch, CodeWiki, "2.26.2"]
+category: [Database, VectorSearch, USearch, CodeWiki, "2.26.2"]
 contentType: "CodeWiki"
 tags: ["USearch", "Python", "pybind11", "GIL"]
 description: "USearch Python 生态解读——pybind11 原生层的 GIL 释放模式与 per-index mutex、index.py 的 Pythonic 封装、numba cfunc JIT 度量、Indexes 分片 facade 与 ucall RPC 服务器"
@@ -14,7 +14,7 @@ aiModel: "Claude Opus 5"
 reviewed: false
 ---
 
-> [← 返回概览](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/00-overview)
+> [← 返回概览](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/00-overview)
 
 ---
 
@@ -106,7 +106,7 @@ Index.add(keys, vectors, copy, threads, log)                    python/usearch/i
 
 ## 模块间交互
 
-`python/lib.cpp:32-33` 直接 include `index_dense.hpp` 与 `index_plugins.hpp`（与 [多语言绑定](/vibe-reading/articles/Database/Misc/USearch/CodeWiki/2.26.2/05-language-bindings) 的直连路线同源）；`__init__.py` 的 NumKong RTLD_GLOBAL 预加载与 `BinaryManager`（定位/下载 `usearch_sqlite` 二进制）是 Python 特有的部署拼图。`Indexes` 分片搜索路径：每 shard 单线程内逐查询搜索 + `result.merge_into` 把各分片 top-k 归并进同一行（`lib.cpp:376-463`）。
+`python/lib.cpp:32-33` 直接 include `index_dense.hpp` 与 `index_plugins.hpp`（与 [多语言绑定](/vibe-reading/articles/Database/VectorSearch/USearch/CodeWiki/2.26.2/05-language-bindings) 的直连路线同源）；`__init__.py` 的 NumKong RTLD_GLOBAL 预加载与 `BinaryManager`（定位/下载 `usearch_sqlite` 二进制）是 Python 特有的部署拼图。`Indexes` 分片搜索路径：每 shard 单线程内逐查询搜索 + `result.merge_into` 把各分片 top-k 归并进同一行（`lib.cpp:376-463`）。
 
 ## 扩展方式
 

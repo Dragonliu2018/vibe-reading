@@ -18,7 +18,7 @@ reviewed: false
 
 **【方法1】**
 ```bash
-git clone \      
+git clone \
   -c http.postBuffer=524288000 \
   -c http.lowSpeedLimit=1000 \
   -c http.lowSpeedTime=60 \

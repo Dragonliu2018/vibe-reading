@@ -13,6 +13,7 @@
     "commit:corvus": "node scripts/commit-corvus.mjs",
     "push:corvus": "node scripts/push-corvus.mjs",
     "test:content-mode": "node --test scripts/check-private-leak.test.mjs",
+    "test:private-images": "node --test scripts/private-images.test.mjs",
     "guard:staged": "node scripts/guard-public-repo-staged.mjs",
     "add-image": "node scripts/add-image.mjs"
   },

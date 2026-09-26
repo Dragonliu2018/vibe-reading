@@ -6,6 +6,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { rehypeJsdelivrImages } from './scripts/rehype-jsdelivr-images.mjs';
 import { generateSiteManifest } from './scripts/generate-site-manifest.mjs';
+import { privateImagesDevPlugin, privateImagesIntegration } from './scripts/private-images.mjs';
 
 const BASE = '/vibe-reading';
 const rawContentMode = process.env.CONTENT_MODE ?? 'public';
@@ -24,6 +25,7 @@ const MIME = {
   '.css':  'text/css',
   '.wasm': 'application/wasm',
 };
+const PRIVATE_IMGS = fileURLToPath(new URL('./src/pages/articles/_private/imgs/', import.meta.url));
 
 export default defineConfig({
   site: 'https://Dragonliu2018.github.io',
@@ -48,30 +50,36 @@ export default defineConfig({
     },
   },
 
-  integrations: [generateSiteManifest(), {
-    /**
-     * 构建后自动往 HTML 文章页注入 giscus-loader.js
-     * HTML 源文件零修改，新增文章自动获得评论功能
-     */
-    name: 'inject-giscus',
-    hooks: {
-      'astro:build:done': async ({ dir, pages }) => {
-        const { existsSync: ex, readFileSync: rf, writeFileSync: wf } = await import('fs');
-        const { join: pj } = await import('path');
-        const SCRIPT = `<script src="${BASE}/giscus-loader.js" defer></script>`;
+  integrations: [
+    // Copy first so generateSiteManifest sees private images in dist-private.
+    privateImagesIntegration({ enabled: PRIVATE_BUILD, sourceDir: PRIVATE_IMGS }),
+    generateSiteManifest(),
+    {
+      /**
+       * 构建后自动往 HTML 文章页注入 giscus-loader.js
+       * HTML 源文件零修改，新增文章自动获得评论功能
+       */
+      name: 'inject-giscus',
+      hooks: {
+        'astro:build:done': async ({ dir, pages }) => {
+          const { existsSync: ex, readFileSync: rf, writeFileSync: wf } = await import('fs');
+          const { join: pj } = await import('path');
+          const outputDir = fileURLToPath(dir);
+          const SCRIPT = `<script src="${BASE}/giscus-loader.js" defer></script>`;
 
-        for (const page of pages) {
-          // 仅注入 HTML 文章页（MD 文章已通过 GiscusComments.astro 组件加载）
-          if (!page.pathname.startsWith('articles/html/')) continue;
-          const file = pj(dir.pathname, page.pathname, 'index.html');
-          if (!ex(file)) continue;
-          const html = rf(file, 'utf-8');
-          if (html.includes('giscus-loader.js')) continue; // 已注入，跳过
-          wf(file, html.replace('</body>', `${SCRIPT}\n</body>`));
-        }
+          for (const page of pages) {
+            // 仅注入 HTML 文章页（MD 文章已通过 GiscusComments.astro 组件加载）
+            if (!page.pathname.startsWith('articles/html/')) continue;
+            const file = pj(outputDir, page.pathname, 'index.html');
+            if (!ex(file)) continue;
+            const html = rf(file, 'utf-8');
+            if (html.includes('giscus-loader.js')) continue; // 已注入，跳过
+            wf(file, html.replace('</body>', `${SCRIPT}\n</body>`));
+          }
+        },
       },
     },
-  }],
+  ],
 
   vite: {
     define: {
@@ -83,6 +91,7 @@ export default defineConfig({
       },
     },
     plugins: [
+      privateImagesDevPlugin({ enabled: PRIVATE_BUILD, sourceDir: PRIVATE_IMGS }),
       {
         // Astro/Vite 本地路由按字面匹配 `+`，不把 `%2B` 当成同一段。
         // 侧边栏曾 encodeURIComponent 出 `%2B`，GitHub Pages 能解码，localhost 会 404。

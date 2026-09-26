@@ -10,6 +10,7 @@
 
 import { readdirSync, statSync, writeFileSync } from 'fs';
 import { join, relative, extname } from 'path';
+import { fileURLToPath } from 'url';
 
 const BASE = '/vibe-reading';
 const EXCLUDE_DIRS = ['papers', 'pagefind'];
@@ -26,7 +27,7 @@ export function generateSiteManifest() {
     name: 'generate-site-manifest',
     hooks: {
       'astro:build:done': async ({ dir }) => {
-        const distDir = dir.pathname.replace(/\/$/, '');
+        const distDir = fileURLToPath(dir);
         const urls = [];
         let totalSize = 0;
 

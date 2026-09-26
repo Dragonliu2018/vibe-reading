@@ -1,0 +1,19 @@
+[Unit]
+Description=Vibe Reading private local blog (Astro) at /%I
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# systemd-escape --path strips the leading slash from the instance name;
+# prepend it again after %I unescapes the remaining path.
+WorkingDirectory=/%I
+ExecStart=/%I/scripts/local-blog.sh
+Restart=always
+RestartSec=3
+KillMode=control-group
+TimeoutStopSec=15
+Environment=CONTENT_MODE=private
+
+[Install]
+WantedBy=default.target

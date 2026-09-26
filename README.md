@@ -73,6 +73,15 @@ npm run preview  # 预览公开构建结果
 
 可选能力：本地用 `npm run setup:private` 拉取私有 Markdown 源，`npm run dev:private` 预览。私有内容不参与公开构建与 GitHub Pages 部署。
 
+需要常驻预览时，可在 Linux、WSL 或 macOS 上安装用户级后台服务：
+
+```bash
+bash scripts/local-blog-ctl.sh install
+bash scripts/local-blog-ctl.sh status
+```
+
+统一使用 `start`、`stop`、`restart`、`logs` 和 `uninstall` 管理服务；Linux/WSL 后端为 systemd，macOS 后端为登录后运行的 launchd LaunchAgent。
+
 ## 文章列表
 
 | 标题 | 分类 | 日期 |

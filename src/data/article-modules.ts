@@ -24,9 +24,11 @@ export interface MarkdownFrontmatter {
   description?: string;
   readingTime?: string;
   aiModel?: string;
+  contentType?: string;
   source?: unknown;
-  reviewed?: boolean;
+  reviewed?: boolean | number;
   pinned?: boolean;
+  star?: boolean;
   visibility?: ContentVisibility;
   comments?: boolean;
 }

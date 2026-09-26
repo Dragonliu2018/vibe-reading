@@ -127,3 +127,6 @@ export const articles: Article[] = [...mdArticles, ...htmlArticles]
     if (pa !== pb) return pa ? -1 : 1;
     return b.date.localeCompare(a.date);
   });
+
+/** Constant-time article lookup for category and sidebar rendering. */
+export const articleBySlug = new Map(articles.map((article) => [article.slug, article]));

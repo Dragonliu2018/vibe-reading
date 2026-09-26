@@ -217,6 +217,7 @@
   let pf: any   = null;
   let pfReady   = false;
   let activeIdx = -1;
+  let searchVersion = 0;
   let debounce: ReturnType<typeof setTimeout>;
 
   /* ── Pagefind 懒加载 ──────────────────────────────────────── */
@@ -241,6 +242,7 @@
     loadPf();
   }
   function close() {
+    searchVersion++;
     overlay.classList.remove('open');
     box.classList.remove('open');
     input.value = '';
@@ -264,6 +266,7 @@
 
   async function search() {
     const q = input.value.trim();
+    const version = ++searchVersion;
     if (!q) {
       body.innerHTML = '<p class="srch-placeholder">输入关键词搜索…</p>';
       foot.classList.add('hidden');
@@ -278,6 +281,7 @@
     }
 
     const res = await engine.search(q);
+    if (version !== searchVersion) return;
     if (!res.results.length) {
       body.innerHTML = `<p class="srch-empty">未找到「${q}」相关文章</p>`;
       foot.classList.add('hidden');
@@ -285,11 +289,14 @@
       return;
     }
 
-    /* 加载 24 条原始结果，按 URL 去重，每篇文章保留相关度最高的摘录 */
-    const raw: any[] = await Promise.all(res.results.slice(0, 24).map((r: any) => r.data()));
+    /* Pagefind 已按页面去重；预取少量候选用于标题优先排序。 */
+    const raw: any[] = await Promise.all(res.results.slice(0, 12).map((r: any) => r.data()));
+    if (version !== searchVersion) return;
     const seen = new Map<string, any>();
     for (const item of raw) {
-      const url = item.url.replace(/#.*$/, '');
+      const url = item.url
+        .replace(/#.*$/, '')
+        .replace('/articles/html/', '/articles/');
       if (!seen.has(url)) seen.set(url, item);
     }
     const deduped = [...seen.values()];
@@ -309,16 +316,19 @@
   function render(item: any, i: number): string {
     const title   = escHtml(item.meta?.title ?? '未知文章');
     const excerpt = item.excerpt ?? '';   // pagefind 已处理 <mark>
+    // 原始 HTML 文章由 /articles/html/<slug> 提供 iframe 内容，搜索结果
+    // 应回到带站点导航的统一文章路由 /articles/<slug>。
+    const resultUrl = item.url.replace('/articles/html/', '/articles/');
 
     /* 路径：取 /articles/mycli-architecture 格式，去掉尾部 /index */
     const pathHtml = escHtml(
-      item.url.replace(BASE, '').replace(/\/index$/, '').replace(/\/$/, '') || '/'
+      resultUrl.replace(BASE, '').replace(/\/index$/, '').replace(/\/$/, '') || '/'
     );
 
-    return `<a class="srch-hit" href="${item.url}" data-idx="${i}" role="option" tabindex="-1">
+    return `<a class="srch-hit" href="${resultUrl}" data-idx="${i}" role="option" tabindex="-1">
       <div class="srch-hit-title">${title}</div>
       <div class="srch-hit-excerpt">${excerpt}</div>
-      <div class="srch-hit-path" title="${escHtml(item.url)}">${pathHtml}</div>
+      <div class="srch-hit-path" title="${escHtml(resultUrl)}">${pathHtml}</div>
     </a>`;
   }
 

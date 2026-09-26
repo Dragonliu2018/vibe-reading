@@ -144,28 +144,33 @@
       }
     };
 
-    // 下拉菜单（每项存 data-id 方便查找）
-    LANGS.forEach(({ id, label }) => {
-      const opt = document.createElement('button');
-      opt.className = `code-lang-option${id === currentLang ? ' current' : ''}`;
-      opt.dataset.id  = id;
-      opt.textContent = label;
-      opt.addEventListener('click', () => {
-        currentLang = id;
-        updateLangBtn(id);
-        langMenu.classList.remove('open');
-        langMenu.querySelectorAll<HTMLElement>('.code-lang-option').forEach(o =>
-          o.classList.toggle('current', o.dataset.id === id));
-        reHighlight(id);
+    // Build the full language menu only if the user opens this selector.
+    let menuBuilt = false;
+    const ensureMenu = () => {
+      if (menuBuilt) return;
+      menuBuilt = true;
+      LANGS.forEach(({ id, label }) => {
+        const opt = document.createElement('button');
+        opt.className = `code-lang-option${id === currentLang ? ' current' : ''}`;
+        opt.dataset.id  = id;
+        opt.textContent = label;
+        opt.addEventListener('click', () => {
+          currentLang = id;
+          updateLangBtn(id);
+          langMenu.classList.remove('open');
+          langMenu.querySelectorAll<HTMLElement>('.code-lang-option').forEach(o =>
+            o.classList.toggle('current', o.dataset.id === id));
+          reHighlight(id);
+        });
+        langMenu.appendChild(opt);
       });
-      langMenu.appendChild(opt);
-    });
+    };
 
     langBtn.addEventListener('click', e => {
       e.stopPropagation();
+      ensureMenu();
       langMenu.classList.toggle('open');
     });
-    document.addEventListener('click', () => langMenu.classList.remove('open'));
 
     langWrap.append(langBtn, langMenu);
 
@@ -283,5 +288,10 @@
         setTimeout(() => { cpBtn.innerHTML = SVG_COPY; cpBtn.style.color = ''; }, 1800);
       } catch { cpBtn.title = '复制失败'; }
     });
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll<HTMLElement>('.code-lang-menu.open')
+      .forEach(menu => menu.classList.remove('open'));
   });
 })();

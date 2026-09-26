@@ -2,21 +2,12 @@
 /**
  * 首页 — 文章列表视图（多视图之一，active=list）
  *
- * 外壳由 BaseLayout 收敛；本页是纯文章卡片流（按分类浏览 → 徽章视图或侧边栏分类树）。
- * 哲理语句轮播已移入 NavBar 中部（全站可见、跨导航保活）。
+ * 外壳由 BaseLayout 收敛；文章列表按日期分页，避免一次构建和解析上千张卡片。
  */
-import { articles, sourceLabel } from '../data/articles';
-import { deriveBadges } from '../data/badges';
+import ArticleList from '../components/ArticleList.astro';
+import { articlePageCount, articlesByDate, getArticlePage } from '../data/article-pagination';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ViewTabs from '../components/ViewTabs.astro';
-import ArticleBadges from '../components/ArticleBadges.astro';
-
-// 纯日期降序；置顶文章不再特殊排序（置顶独立成 /pinned 视图）
-const sorted = [...articles].sort((a, b) =>
-  new Date(b.date).getTime() - new Date(a.date).getTime());
-
-// 注意：import.meta 只能出现在 frontmatter；模板表达式内使用会触发 Astro 7 编译器 bug
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout
@@ -24,147 +15,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   description="AI-drafted, human-reviewed technical reading blog — code walkthroughs and paper breakdowns."
   mainClass="padded"
 >
-
-
-  <ViewTabs active="list" count={sorted.length} />
-
-  <main class="articles stagger" id="article-list">
-    {sorted.map((article) => {
-      const badges = deriveBadges(article);
-      return (
-        <a class="article-card fade-up" href={`${base}/articles/${article.slug}`}>
-          <div class="card-inner">
-            <div>
-              <div class="card-meta">
-                <ArticleBadges state={badges} />
-              </div>
-              <div class="card-title">
-                {(() => {
-                  const src = article.source; if (!src) return <>{article.title}</>;
-                  const label = sourceLabel(src, article.categoryPath ?? []);
-                  return <>{label && <span class="card-source-label">{label}</span>}{src.prType && <span class="card-pr-type"> {src.prType}:</span>}{label ? ` ${article.title}` : article.title}</>;
-                })()}
-              </div>
-              <div class="card-desc">{article.description}</div>
-              <div class="card-tags">
-                {article.tags.map(tag => <span class="tag">{tag}</span>)}
-              </div>
-            </div>
-            <div class="card-aside">
-              <span class="card-date">{article.date.slice(0, 10)}</span>
-              {article.readingTime && <span class="card-reading">{article.readingTime}</span>}
-            </div>
-          </div>
-        </a>
-      );
-    })}
-  </main>
+  <ViewTabs active="list" count={articlesByDate.length} />
+  <ArticleList items={getArticlePage(1)} page={1} totalPages={articlePageCount} />
 
   <Fragment slot="footer">
     AI-drafted · Human-reviewed &nbsp;·&nbsp;
     <a href="https://github.com/Dragonliu2018/vibe-reading" target="_blank" rel="noopener">GitHub</a>
   </Fragment>
-
-
-
-
-    <!-- NOTE: 勿在本注释与下方 script 之间添加多行注释（Astro 7 compiler-rs bug）-->
-    <script>
-      // ClientRouter 客户端导航后 DOM 全新，须重新绑定；
-      // 首次整页加载时 page-load 事件同样触发，单一代码路径覆盖两种情况
-      function initPage() {
-        // ── Fade-up 入场动画（Paperclip 风格）──────────────────────
-        const fadeEls = document.querySelectorAll<HTMLElement>('.fade-up');
-        const fadeObs = new IntersectionObserver(
-          entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-          { threshold: 0.08 }
-        );
-        fadeEls.forEach(el => fadeObs.observe(el));
-      }
-
-      document.addEventListener('astro:page-load', initPage);
-    </script>
 </BaseLayout>
-
-
-<style>
-  /* Article list */
-  .articles { display: flex; flex-direction: column; }
-
-  .article-card {
-    display: block;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-bottom: none;
-    padding: 22px 26px;
-    box-shadow: var(--card-shadow);      /* ← 双层阴影，Paperclip 标志 */
-    transition: background .22s, transform .25s ease, box-shadow .25s ease;
-    position: relative;
-  }
-  .article-card:last-of-type { border-bottom: 1px solid var(--card-border); }
-  .article-card:first-of-type { border-radius: var(--radius) var(--radius) 0 0; }
-  .article-card:last-of-type  { border-radius: 0 0 var(--radius) var(--radius); }
-  .article-card:only-of-type  { border-radius: var(--radius); border-bottom: 1px solid var(--card-border); }
-  .article-card:hover {
-    background: #1a1a1d;
-    transform: translateY(-2px);         /* ← Paperclip hover 上浮 */
-    box-shadow: var(--card-shadow-h);
-    z-index: 1;
-  }
-  .article-card:hover .card-title { color: var(--accent); }
-
-  .card-inner { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
-  .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
-  /* 徽章由 ArticleBadges 子组件渲染，用 :global() 让本页作用域样式穿透到子组件元素 */
-  :global(.cat-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; }
-  :global(.pin-badge)    { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
-  :global(.star-badge)   { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
-  :global(.review-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
-  :global(.review-badge[data-review-state="pending"]) { color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30); }
-  :global(.review-badge[data-review-state="reviewed"]) { color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30); }
-  :global(.origin-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; }
-  :global(.origin-badge[data-origin="repost"]) { color: #2dd4bf; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.30); }
-  :global(.origin-badge[data-origin="original"]) { color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30); }
-  :global(.private-badge) { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.2px; cursor: default; color: #f85149; background: rgba(248,81,73,.12); border: 1px solid rgba(248,81,73,.30); }
-  .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
-  .card-source-label { color: inherit; margin-right: 0.2em; }
-  .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
-  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
-  .tag {
-    font-size: 11px; font-weight: 500; color: var(--text-dim);
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
-    padding: 2px 8px; border-radius: 6px; font-family: var(--mono);
-  }
-  .card-aside { text-align: right; flex-shrink: 0; padding-top: 2px; }
-  .card-date { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; display: block; margin-bottom: 3px; white-space: nowrap; }
-  .card-reading { font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
-
-
-  /* ── Fade-up 入场动画（Paperclip 风格）── */
-  @media (prefers-reduced-motion: no-preference) {
-    .fade-up {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity .5s ease, transform .5s ease;
-    }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    /* Stagger：子元素依次延迟出现 */
-    .stagger > .article-card:nth-child(1) { transition-delay: 0ms; }
-    .stagger > .article-card:nth-child(2) { transition-delay: 60ms; }
-    .stagger > .article-card:nth-child(3) { transition-delay: 120ms; }
-    .stagger > .article-card:nth-child(4) { transition-delay: 180ms; }
-    .stagger > .article-card:nth-child(5) { transition-delay: 240ms; }
-    .stagger > .article-card:nth-child(6) { transition-delay: 300ms; }
-    .stagger > .article-card:nth-child(7) { transition-delay: 360ms; }
-    .stagger > .article-card:nth-child(8) { transition-delay: 420ms; }
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 680px) {
-    .card-inner { grid-template-columns: 1fr; gap: 10px; }
-    .card-aside { text-align: left; }
-  }
-</style>

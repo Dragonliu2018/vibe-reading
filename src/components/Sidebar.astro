@@ -1,25 +1,14 @@
 ---
-import type { TreeNode } from '../data/categories';
 import type { ToolNode } from '../data/tools-tree';
-import { articles, sourceLabel } from '../data/articles';
-import { deriveBadges } from '../data/badges';
-import { categoryTree, findActivePath, splitRootCategoryTree } from '../data/categories';
 import { getToolsTree } from '../data/tools-tree';
-import { encodeArticleSlug } from '../data/paths';
-const reviewIcon = {
-  reviewed: `<svg class="tree-review-icon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 6.15l1.7 1.7 3.1-3.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  pending:  `<svg class="tree-review-icon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M6 3.6v3.1M6 8.55h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
-} as const;
-
 export interface Props {
   currentSlug?: string;               // 文章模式：当前文章 slug
   mode?:        'articles' | 'tools'; // 默认 articles
   currentHref?: string;               // 工具模式：当前工具路径（如 /tools/diff）
 }
 
-const { currentSlug, mode = 'articles', currentHref } = Astro.props;
-const base        = import.meta.env.BASE_URL.replace(/\/$/, '');
-const activePath  = findActivePath(categoryTree, currentSlug);
+const { mode = 'articles', currentHref } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 /** HTML 转义 */
 function esc(s: string): string {
@@ -30,40 +19,6 @@ const chevron = `<svg class="tree-chevron" viewBox="0 0 12 12" fill="none" aria-
   <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.3"
         stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
-
-// ── 文章模式：递归渲染分类树 ──────────────────────────────────────
-function renderNode(node: TreeNode, depth: number = 0): string {
-  const isOpen   = activePath.has(node.key);
-  const catClass = `tree-cat${depth > 0 ? ' tree-cat-sub' : ''}${isOpen ? ' open' : ''}`;
-  const divClass = `tree-children${isOpen ? ' open' : ''}`;
-
-  const childHtml   = (node.children ?? []).map(c => renderNode(c, depth + 1)).join('');
-  const articleHtml = (node.slugs ?? []).map(slug => {
-    const article = articles.find(a => a.slug === slug);
-    const { source } = article ?? {};
-    const baseTitle    = article?.title ?? slug;
-    const prTypeLabel  = source?.prType ? `${source.prType}: ` : '';
-    // source 前缀（统一用 articles.ts 的 sourceLabel helper）：article → [project 来源]；
-    //   有 id（PR/commit）→ [project type-id]；无 id（论文解读）→ [project type]
-    let displayTitle = baseTitle;
-    if (source) {
-      const label = sourceLabel(source, article?.categoryPath ?? []);
-      if (label) displayTitle = `${label} ${prTypeLabel}${baseTitle}`;
-    }
-    const review = deriveBadges({ reviewed: article?.reviewed });
-    const reviewMark = `<span class="tree-review-mark" data-review-state="${review.reviewState}" data-count="${review.reviewCount}" title="${esc(review.reviewTitle)}">${reviewIcon[review.reviewState]}${review.reviewCount > 1 ? `<span class="tree-review-count">×${review.reviewCount}</span>` : ''}</span>`;
-    const encodedSlug = encodeArticleSlug(slug);
-    const active = slug === currentSlug ? ' active' : '';
-    return `<a class="tree-article${active}" href="${base}/articles/${encodedSlug}" data-tip="${esc(displayTitle)}">${reviewMark}<span class="tree-article-title">${esc(displayTitle)}</span></a>`;
-  }).join('');
-
-  return `<div class="tree-node">
-  <button class="${catClass}" data-key="${esc(node.key)}" data-depth="${depth}">
-    ${chevron}<span class="tree-cat-name">${esc(node.label)}</span>
-  </button>
-  <div class="${divClass}">${childHtml}${articleHtml}</div>
-</div>`;
-}
 
 // ── 工具模式：渲染工具树 ──────────────────────────────────────────
 function renderToolNode(node: ToolNode, depth: number = 0): string {
@@ -87,20 +42,31 @@ function renderToolNode(node: ToolNode, depth: number = 0): string {
 }
 
 // 注意：import.meta 只能在 frontmatter 使用（Astro 7 编译器 bug）
-const showOfflineCache = mode !== 'tools' && import.meta.env.PROD;
-
-const { publicRoots, privateRoots } = splitRootCategoryTree(categoryTree);
-const publicTreeHtml  = publicRoots.map((n) => renderNode(n)).join('');
-const privateTreeHtml = privateRoots.map((n) => renderNode(n)).join('');
-const hasPrivateZone  = privateRoots.length > 0;
+const showOfflineCache = import.meta.env.PROD;
 // 渲染时才建树：见 tools-tree.ts 注释（eager-glob 循环依赖，须延迟到
 // 所有模块初始化完成后读取 toolMeta）
 const toolTreeHtml    = getToolsTree().map(n => renderToolNode(n)).join('');
+const toolTreeContent = `<p class="tree-label">Tools</p>${toolTreeHtml}`;
+const sidebarTreeUrl = `${base}/sidebar-tree.txt`;
 ---
 
 <!-- Sidebar：文章/工具双模式。transition:persist 让它在 ClientRouter
      客户端导航间保活：脚本绑定与交互状态（展开/宽度/滚动）持续有效 -->
-<aside class="sidebar" id="g-sidebar" data-pagefind-ignore="all" transition:persist="sidebar">
+<aside class="sidebar" id="g-sidebar" data-sidebar-mode={mode} data-tree-url={sidebarTreeUrl} data-pagefind-ignore="all" transition:persist="sidebar">
+
+  <!-- Review icons are defined once; tree links reference them with <use>. -->
+  <svg width="0" height="0" aria-hidden="true" class="tree-review-symbols">
+    <defs>
+      <symbol id="tree-review-reviewed" viewBox="0 0 12 12">
+        <circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.3" />
+        <path d="M3.6 6.15l1.7 1.7 3.1-3.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="tree-review-pending" viewBox="0 0 12 12">
+        <circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.3" />
+        <path d="M6 3.6v3.1M6 8.55h.01" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+      </symbol>
+    </defs>
+  </svg>
 
   <!-- 移动端模式切换（桌面端在 nav 里，移动端在侧边栏顶部）-->
   <div class="mob-mode-toggle">
@@ -116,38 +82,11 @@ const toolTreeHtml    = getToolsTree().map(n => renderToolNode(n)).join('');
 
   <!-- 滚动区：树在此滚动；离线缓存区在滚动区外，永不遮挡树行 -->
   <div class="sidebar-scroll" id="g-sidebar-scroll">
-    {mode === 'tools' ? (
-      <>
-        <p class="tree-label">Tools</p>
-        <Fragment set:html={toolTreeHtml} />
-      </>
-    ) : (
-      <>
-        <div class="tree-header">
-          <p class="tree-label">Categories</p>
-          <button id="g-collapse-all" class="collapse-all-btn" type="button">全部折叠</button>
-        </div>
-
-        {hasPrivateZone && (
-          <div class="tree-zone-divider tree-zone-divider--public" role="separator" aria-label="Public categories">
-            <span class="tree-zone-divider-line" aria-hidden="true"></span>
-            <span class="tree-zone-divider-label">Public</span>
-            <span class="tree-zone-divider-line" aria-hidden="true"></span>
-          </div>
-        )}
-        {publicTreeHtml && <Fragment set:html={publicTreeHtml} />}
-        {hasPrivateZone && (
-          <>
-            <div class="tree-zone-divider tree-zone-divider--private" role="separator" aria-label="Private categories">
-              <span class="tree-zone-divider-line" aria-hidden="true"></span>
-              <span class="tree-zone-divider-label">Private</span>
-              <span class="tree-zone-divider-line" aria-hidden="true"></span>
-            </div>
-            <Fragment set:html={privateTreeHtml} />
-          </>
-        )}
-      </>
-    )}
+    <div id="g-sidebar-tree" aria-live="polite">
+      {mode === 'tools'
+        ? <Fragment set:html={toolTreeContent} />
+        : <p class="tree-loading">正在加载分类…</p>}
+    </div>
     <!-- 离线缓存控制：位于分类栏下侧、随内容滚动（滚动区 flex 尾部）。
          树短时 margin-top:auto 落在可视底部；树长时紧随树尾 —— 都不悬浮遮挡 -->
     <div class="sidebar-scroll-tail"></div>
@@ -158,13 +97,15 @@ const toolTreeHtml    = getToolsTree().map(n => renderToolNode(n)).join('');
             <path d="M8 2v8m0 0L4.5 6.5M8 10l3.5-3.5M2.5 11.5v1.5a1 1 0 001 1h9a1 1 0 001-1v-1.5"
                   stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span class="offline-label">离线缓存</span>
+          <span class="offline-label">缓存当前页</span>
         </button>
         <div id="offline-cache-status" class="offline-cache-status"></div>
       </div>
     )}
   </div>
 </aside>
+
+<template id="g-tools-tree"><Fragment set:html={toolTreeContent} /></template>
 
 <!-- 同步还原所有侧边栏状态（is:inline = 首次绘制前执行，消除闪动）-->
 <script is:inline>
@@ -274,6 +215,14 @@ const toolTreeHtml    = getToolsTree().map(n => renderToolNode(n)).join('');
   }
   .sidebar-scroll::-webkit-scrollbar { display: none; }
   .sidebar.mob-open { transform: translateX(0); }
+  .tree-review-symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .tree-loading {
+    padding: 8px 6px;
+    color: rgba(235,235,245,0.32);
+    font-size: 12px;
+  }
+  .sidebar[data-sidebar-mode="tools"] .offline-cache-section,
+  .sidebar[data-sidebar-mode="tools"] .sidebar-scroll-tail { display: none; }
 
   .mob-backdrop {
     display: none;
@@ -632,124 +581,221 @@ const toolTreeHtml    = getToolsTree().map(n => renderToolNode(n)).join('');
 </style>
 
 <script>
-  const sidebar  = document.getElementById('g-sidebar')       as HTMLElement | null;
-  const handle   = document.getElementById('g-resize-handle') as HTMLElement | null;
-  const toggle   = document.getElementById('g-sidebar-toggle')as HTMLElement | null;
-  const backdrop = document.getElementById('g-mob-backdrop')  as HTMLElement | null;
-
   const isDesktop = () => window.matchMedia('(min-width: 960px)').matches;
+  let articleTreePromise: Promise<string> | null = null;
+  let isDownloading = false;
+  let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
-  // ── Mobile: open / close ──────────────────────────────────────────
+  const getSidebar = () => document.getElementById('g-sidebar') as HTMLElement | null;
+  const getBackdrop = () => document.getElementById('g-mob-backdrop') as HTMLElement | null;
+
   function openMobile() {
-    sidebar?.classList.add('mob-open');
-    backdrop?.classList.add('mob-open');
+    getSidebar()?.classList.add('mob-open');
+    getBackdrop()?.classList.add('mob-open');
     document.body.style.overflow = 'hidden';
   }
+
   function closeMobile() {
-    sidebar?.classList.remove('mob-open');
-    backdrop?.classList.remove('mob-open');
+    getSidebar()?.classList.remove('mob-open');
+    getBackdrop()?.classList.remove('mob-open');
     document.body.style.overflow = '';
   }
-  (window as any).openMobileSidebar  = openMobile;
+
+  (window as any).openMobileSidebar = openMobile;
   (window as any).closeMobileSidebar = closeMobile;
 
-  backdrop?.addEventListener('click', closeMobile);
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape') closeMobile();
-  });
-  sidebar?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => { if (!isDesktop()) closeMobile(); });
-  });
+  function saveOpenCats(sidebar: HTMLElement) {
+    const open = Array.from(sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat.open'))
+      .map((button) => button.dataset.key ?? '')
+      .filter(Boolean);
+    localStorage.setItem('sidebar-open-cats', JSON.stringify(open));
+  }
 
-  // ── Always-on: category expand / collapse ─────────────────────────
-  if (sidebar) {
-    // 展开状态已由 <script is:inline> 在首次绘制前同步还原，此处只处理交互
+  function syncCollapseLabel(sidebar: HTMLElement) {
+    const button = sidebar.querySelector<HTMLButtonElement>('#g-collapse-all');
+    if (button) button.textContent = sidebar.querySelector('.tree-cat.open') ? '全部折叠' : '全部展开';
+  }
 
-    function saveOpenCats() {
-      const open = Array.from(
-        sidebar!.querySelectorAll<HTMLButtonElement>('.tree-cat.open')
-      ).map(b => b.dataset.key ?? '').filter(Boolean);
-      localStorage.setItem('sidebar-open-cats', JSON.stringify(open));
-    }
-
-    // ── 一键全部折叠 / 全部展开（展开 = 仅顶层一级，避免千余条全倾泻）──
-    const collapseBtn = document.getElementById('g-collapse-all') as HTMLButtonElement | null;
-    const syncCollapseLabel = () => {
-      if (!collapseBtn) return;
-      const anyOpen = sidebar!.querySelector('.tree-cat.open') !== null;
-      collapseBtn.textContent = anyOpen ? '全部折叠' : '全部展开';
-    };
-    collapseBtn?.addEventListener('click', () => {
-      const anyOpen = sidebar.querySelector('.tree-cat.open') !== null;
-      sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat').forEach(btn => {
-        const list = btn.nextElementSibling as HTMLElement | null;
-        if (anyOpen) {
-          btn.classList.remove('open'); list?.classList.remove('open');
-        } else if (btn.dataset.depth === '0') {
-          btn.classList.add('open');    list?.classList.add('open');
-        }
-      });
-      saveOpenCats();
-      syncCollapseLabel();
-    });
-    syncCollapseLabel();   // 含 is:inline 还原后的初始态
-
-    // 各分类独立展开/折叠
-    sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const isOpen = btn.classList.contains('open');
-        const list   = btn.nextElementSibling as HTMLElement | null;
-        btn.classList.toggle('open', !isOpen);
-        list?.classList.toggle('open', !isOpen);
-        saveOpenCats();
-        syncCollapseLabel();
-      });
+  function restoreOpenCats(sidebar: HTMLElement) {
+    let keys: string[] = [];
+    try { keys = JSON.parse(localStorage.getItem('sidebar-open-cats') || '[]'); } catch {}
+    const openKeys = new Set(keys);
+    sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat').forEach((button) => {
+      if (!openKeys.has(button.dataset.key ?? '')) return;
+      button.classList.add('open');
+      button.nextElementSibling?.classList.add('open');
     });
   }
 
-  // 导航前保存侧边栏滚动位置，使下一页侧边栏原位不动
+  function syncActiveLink(sidebar: HTMLElement) {
+    const currentPath = location.pathname.replace(/\/$/, '');
+    const activeLinks: HTMLAnchorElement[] = [];
+    sidebar.querySelectorAll<HTMLAnchorElement>('.tree-article').forEach((link) => {
+      const active = new URL(link.href, location.href).pathname.replace(/\/$/, '') === currentPath;
+      link.classList.toggle('active', active);
+      if (active) activeLinks.push(link);
+    });
+
+    for (const link of activeLinks) {
+      let parent: HTMLElement | null = link.parentElement;
+      while (parent && parent !== sidebar) {
+        if (parent.classList.contains('tree-children')) {
+          parent.classList.add('open');
+          const button = parent.previousElementSibling;
+          if (button instanceof HTMLElement && button.classList.contains('tree-cat')) {
+            button.classList.add('open');
+          }
+        }
+        parent = parent.parentElement;
+      }
+    }
+
+    const scroller = sidebar.querySelector<HTMLElement>('#g-sidebar-scroll');
+    const active = activeLinks[0];
+    if (active && scroller) {
+      requestAnimationFrame(() => {
+        const sRect = scroller.getBoundingClientRect();
+        const lRect = active.getBoundingClientRect();
+        if (lRect.top < sRect.top || lRect.bottom > sRect.bottom) {
+          scroller.scrollTop += (lRect.top + lRect.height / 2) - (sRect.top + sRect.height / 2);
+        }
+      });
+    }
+  }
+
+  async function loadArticleTree(sidebar: HTMLElement): Promise<string> {
+    if (!articleTreePromise) {
+      const url = sidebar.dataset.treeUrl;
+      articleTreePromise = fetch(url ?? '')
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.text();
+        })
+        .catch((error) => {
+          articleTreePromise = null;
+          throw error;
+        });
+    }
+    return articleTreePromise;
+  }
+
+  async function syncSidebar() {
+    const sidebar = getSidebar();
+    const root = sidebar?.querySelector<HTMLElement>('#g-sidebar-tree');
+    if (!sidebar || !root) return;
+
+    const mode = document.body.dataset.sidebarMode === 'tools' ? 'tools' : 'articles';
+    sidebar.dataset.sidebarMode = mode;
+    sidebar.querySelectorAll<HTMLElement>('.mob-mode-btn').forEach((link, index) => {
+      link.classList.toggle('active', mode === (index === 0 ? 'articles' : 'tools'));
+    });
+
+    if (mode === 'tools') {
+      if (root.dataset.kind !== 'tools') {
+        const template = document.getElementById('g-tools-tree') as HTMLTemplateElement | null;
+        root.innerHTML = template?.innerHTML ?? '<p class="tree-label">Tools</p>';
+        root.dataset.kind = 'tools';
+      }
+    } else if (root.dataset.kind !== 'articles') {
+      root.innerHTML = '<p class="tree-loading">正在加载分类…</p>';
+      try {
+        const html = await loadArticleTree(sidebar);
+        if (!root.isConnected || document.body.dataset.sidebarMode === 'tools') return;
+        root.innerHTML = html;
+        root.dataset.kind = 'articles';
+        restoreOpenCats(sidebar);
+      } catch {
+        root.innerHTML = '<p class="tree-loading">分类加载失败，点击刷新重试</p>';
+      }
+    }
+
+    syncActiveLink(sidebar);
+    syncCollapseLabel(sidebar);
+  }
+
+  // One delegated handler replaces thousands of per-node listeners.
+  getSidebar()?.addEventListener('click', (event) => {
+    const sidebar = getSidebar();
+    const target = event.target as HTMLElement;
+    if (!sidebar) return;
+
+    if (target.closest('a') && !isDesktop()) closeMobile();
+
+    const collapseAll = target.closest<HTMLButtonElement>('#g-collapse-all');
+    if (collapseAll) {
+      const anyOpen = sidebar.querySelector('.tree-cat.open') !== null;
+      sidebar.querySelectorAll<HTMLButtonElement>('.tree-cat').forEach((button) => {
+        const list = button.nextElementSibling as HTMLElement | null;
+        const open = !anyOpen && button.dataset.depth === '0';
+        button.classList.toggle('open', open);
+        list?.classList.toggle('open', open);
+      });
+      saveOpenCats(sidebar);
+      syncCollapseLabel(sidebar);
+      return;
+    }
+
+    const category = target.closest<HTMLButtonElement>('.tree-cat');
+    if (category) {
+      const open = !category.classList.contains('open');
+      category.classList.toggle('open', open);
+      category.nextElementSibling?.classList.toggle('open', open);
+      saveOpenCats(sidebar);
+      syncCollapseLabel(sidebar);
+    }
+  });
+
+  getBackdrop()?.addEventListener('click', closeMobile);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMobile();
+  });
+
   window.addEventListener('pagehide', () => {
     const scroller = document.getElementById('g-sidebar-scroll');
     if (scroller) sessionStorage.setItem('sidebar-scroll', String(scroller.scrollTop));
   });
 
-  // ── Desktop only: collapse toggle + drag to resize ───────────────
-  if (sidebar && handle && toggle && isDesktop()) {
-    // 宽度和折叠状态已由 is:inline 在首次绘制前还原，此处只需同步 toggle 文案
-    if (sidebar.classList.contains('collapsed')) {
-      toggle.title = '展开侧边栏';
-      toggle.setAttribute('aria-label', '展开侧边栏');
-    }
-
-    toggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const nowCollapsed = sidebar.classList.toggle('collapsed');
-      toggle.title = nowCollapsed ? '展开侧边栏' : '折叠侧边栏';
-      toggle.setAttribute('aria-label', nowCollapsed ? '展开侧边栏' : '折叠侧边栏');
-      localStorage.setItem('sidebar-collapsed', String(nowCollapsed));
-      if (!nowCollapsed) {
-        sidebar.style.width = localStorage.getItem('sidebar-width') ?? '240px';
-      }
+  // Desktop resize controls remain constant because the sidebar is persisted.
+  const sidebar = getSidebar();
+  const handle = document.getElementById('g-resize-handle') as HTMLElement | null;
+  const toggle = document.getElementById('g-sidebar-toggle') as HTMLElement | null;
+  if (sidebar && handle && toggle) {
+    const syncToggle = () => {
+      const label = sidebar.classList.contains('collapsed') ? '展开侧边栏' : '折叠侧边栏';
+      toggle.title = label;
+      toggle.setAttribute('aria-label', label);
+    };
+    syncToggle();
+    toggle.addEventListener('click', (event) => {
+      if (!isDesktop()) return;
+      event.stopPropagation();
+      const collapsed = sidebar.classList.toggle('collapsed');
+      localStorage.setItem('sidebar-collapsed', String(collapsed));
+      if (!collapsed) sidebar.style.width = localStorage.getItem('sidebar-width') ?? '240px';
+      syncToggle();
     });
 
-    let dragging = false, startX = 0, startW = 0;
-    handle.addEventListener('mousedown', (e: MouseEvent) => {
-      if ((e.target as HTMLElement).closest('.sidebar-toggle')) return;
+    let dragging = false;
+    let startX = 0;
+    let startW = 0;
+    handle.addEventListener('mousedown', (event) => {
+      if (!isDesktop() || (event.target as HTMLElement).closest('.sidebar-toggle')) return;
       if (sidebar.classList.contains('collapsed')) {
         sidebar.classList.remove('collapsed');
         localStorage.setItem('sidebar-collapsed', 'false');
+        syncToggle();
       }
-      dragging = true; startX = e.clientX; startW = sidebar.offsetWidth;
+      dragging = true;
+      startX = event.clientX;
+      startW = sidebar.offsetWidth;
       handle.classList.add('dragging');
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
-      // 拖拽期间关闭 transition，避免动画追赶鼠标导致迟钝感
       sidebar.style.transition = 'none';
-      e.preventDefault();
+      event.preventDefault();
     });
-    document.addEventListener('mousemove', (e: MouseEvent) => {
-      if (!dragging) return;
-      sidebar.style.width = Math.min(480, Math.max(120, startW + e.clientX - startX)) + 'px';
+    document.addEventListener('mousemove', (event) => {
+      if (dragging) sidebar.style.width = Math.min(480, Math.max(120, startW + event.clientX - startX)) + 'px';
     });
     document.addEventListener('mouseup', () => {
       if (!dragging) return;
@@ -757,173 +803,126 @@ const toolTreeHtml    = getToolsTree().map(n => renderToolNode(n)).join('');
       handle.classList.remove('dragging');
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
-      // 拖拽结束后恢复 transition（折叠/展开动画仍然有效）
       sidebar.style.transition = '';
       localStorage.setItem('sidebar-width', sidebar.style.width);
     });
   }
 
-  // ── 文章标题自定义悬浮提示 ──────────────────────────────────────
-  const tip = document.createElement('div');
-  tip.id = 'g-sidebar-tip';
-  document.body.appendChild(tip);
-
-  let hideTimer: ReturnType<typeof setTimeout> | null = null;
-
-  document.querySelectorAll<HTMLElement>('.tree-article[data-tip]').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
-
-      const text = el.dataset.tip ?? '';
-      tip.textContent = text;
-      tip.classList.remove('visible');   // 先隐藏，无动画，让浏览器计算位置
-
-      const rect    = el.getBoundingClientRect();
-      const tipTop  = rect.top + rect.height / 2;
-      let   tipLeft = rect.right + 10;
-
-      tip.style.top   = tipTop  + 'px';
-      tip.style.left  = tipLeft + 'px';
-      tip.style.right = '';
-
-      // 量出宽度判断是否越界，再触发入场动画
-      requestAnimationFrame(() => {
-        if (tipLeft + tip.offsetWidth > window.innerWidth - 12) {
-          tip.style.left  = '';
-          tip.style.right = (window.innerWidth - rect.left + 10) + 'px';
-        }
-        tip.classList.add('visible');
-      });
-    });
-
-    el.addEventListener('mouseleave', () => {
-      hideTimer = setTimeout(() => { tip.classList.remove('visible'); }, 80);
+  // Delegated tooltip: text is read from the visible title instead of duplicated in data-tip.
+  const tip = document.getElementById('g-sidebar-tip') ?? document.body.appendChild(Object.assign(document.createElement('div'), { id: 'g-sidebar-tip' }));
+  getSidebar()?.addEventListener('mouseover', (event) => {
+    const link = (event.target as HTMLElement).closest<HTMLElement>('.tree-article');
+    if (!link || link.contains(event.relatedTarget as Node | null)) return;
+    if (hideTimer) clearTimeout(hideTimer);
+    tip.textContent = link.querySelector('.tree-article-title')?.textContent?.trim() ?? '';
+    if (!tip.textContent) return;
+    tip.classList.remove('visible');
+    const rect = link.getBoundingClientRect();
+    const left = rect.right + 10;
+    tip.style.top = rect.top + rect.height / 2 + 'px';
+    tip.style.left = left + 'px';
+    tip.style.right = '';
+    requestAnimationFrame(() => {
+      if (left + tip.offsetWidth > window.innerWidth - 12) {
+        tip.style.left = '';
+        tip.style.right = window.innerWidth - rect.left + 10 + 'px';
+      }
+      tip.classList.add('visible');
     });
   });
+  getSidebar()?.addEventListener('mouseout', (event) => {
+    const link = (event.target as HTMLElement).closest<HTMLElement>('.tree-article');
+    if (!link || link.contains(event.relatedTarget as Node | null)) return;
+    hideTimer = setTimeout(() => tip.classList.remove('visible'), 80);
+  });
 
-  // ── 离线缓存控制 ──────────────────────────────────────────────────
-  (function initOfflineCache() {
-    const btn = document.getElementById('offline-cache-btn') as HTMLButtonElement | null;
-    const statusEl = document.getElementById('offline-cache-status');
-    if (!btn || !statusEl) return;
+  function getOfflineControls() {
+    return {
+      button: document.getElementById('offline-cache-btn') as HTMLButtonElement | null,
+      status: document.getElementById('offline-cache-status'),
+    };
+  }
 
-    let isDownloading = false;
+  function setOfflineState(ready: boolean, message = '') {
+    const { button, status } = getOfflineControls();
+    if (!button || !status) return;
+    button.classList.toggle('ready', ready);
+    const label = button.querySelector('.offline-label');
+    if (label) label.textContent = ready ? '当前页已缓存' : '缓存当前页';
+    status.textContent = message;
+    status.classList.toggle('visible', Boolean(message));
+  }
 
-    function setLabel(text: string) {
-      const span = btn.querySelector('.offline-label');
-      if (span) span.textContent = text;
-    }
+  function requestCacheStatus() {
+    navigator.serviceWorker?.ready.then((registration) => {
+      registration.active?.postMessage({ type: 'GET_STATUS', url: location.href });
+    });
+  }
 
-    function showStatus(text: string, visible = true) {
-      statusEl.textContent = text;
-      statusEl.classList.toggle('visible', visible);
-    }
-
-    function renderProgress(done: number, total: number) {
-      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-      showStatus(`缓存中… ${done}/${total} (${pct}%)`);
-      // 更新进度条
-      let bar = statusEl.querySelector('.offline-progress-bar') as HTMLElement | null;
-      if (!bar) {
-        bar = document.createElement('div');
-        bar.className = 'offline-progress-bar';
-        const fill = document.createElement('div');
-        fill.className = 'offline-progress-fill';
-        bar.appendChild(fill);
-        statusEl.appendChild(bar);
-      }
-      const fill = bar.querySelector('.offline-progress-fill') as HTMLElement;
-      if (fill) fill.style.width = pct + '%';
-    }
-
-    // 监听 SW 消息
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', (e) => {
-        const msg = e.data;
-        if (!msg || !msg.type) return;
-
-        switch (msg.type) {
-          case 'CACHE_START':
-            isDownloading = true;
-            btn.classList.add('downloading');
-            btn.classList.remove('ready');
-            setLabel('缓存中…');
-            renderProgress(0, msg.total);
-            break;
-          case 'CACHE_PROGRESS':
-            renderProgress(msg.done, msg.total);
-            break;
-          case 'CACHE_DONE':
-            isDownloading = false;
-            btn.classList.remove('downloading');
-            btn.classList.add('ready');
-            setLabel('离线已就绪');
-            showStatus(`✓ 已缓存 ${msg.total} 个资源，可离线访问`);
-            break;
-          case 'CACHE_ERROR':
-            isDownloading = false;
-            btn.classList.remove('downloading');
-            setLabel('离线缓存');
-            showStatus(`✗ ${msg.error || '缓存失败'}`);
-            break;
-          case 'STATUS':
-            if (msg.precacheCount > 0 && !isDownloading) {
-              btn.classList.add('ready');
-              setLabel('离线已就绪');
-              showStatus(`✓ 已缓存 ${msg.precacheCount} 个资源`, false);
-            }
-            break;
-          case 'CACHE_CLEARED':
-            btn.classList.remove('ready', 'downloading');
-            setLabel('离线缓存');
-            showStatus('缓存已清空');
-            setTimeout(() => showStatus('', false), 2000);
-            break;
-        }
-      });
-
-      // 页面加载后查询缓存状态
-      navigator.serviceWorker.ready.then((reg) => {
-        reg.active?.postMessage({ type: 'GET_STATUS' });
-      });
-    }
-
-    // 按钮点击：未缓存→开始缓存；已缓存→长按清空（单击显示状态）
-    let clickTimer: ReturnType<typeof setTimeout> | null = null;
-    btn.addEventListener('click', () => {
-      if (isDownloading) return;
-
-      if (btn.classList.contains('ready')) {
-        // 已缓存：单击显示状态，双击清空
-        if (clickTimer) {
-          // 双击 → 清空
-          clearTimeout(clickTimer);
-          clickTimer = null;
-          if (confirm('确认清空所有离线缓存？')) {
-            navigator.serviceWorker.controller?.postMessage({ type: 'CLEAR_CACHE' });
-            btn.classList.remove('ready');
-            setLabel('离线缓存');
-          }
-        } else {
-          clickTimer = setTimeout(() => {
-            clickTimer = null;
-            showStatus('双击可清空缓存', true);
-            setTimeout(() => {
-              if (!isDownloading) {
-                const ready = btn.classList.contains('ready');
-                showStatus(ready ? '✓ 离线缓存就绪' : '', ready);
-              }
-            }, 2500);
-          }, 250);
-        }
-      } else {
-        // 未缓存：触发全站缓存
-        if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
-          showStatus('Service Worker 尚未就绪，请刷新页面重试');
-          return;
-        }
-        navigator.serviceWorker.controller.postMessage({ type: 'CACHE_ALL' });
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      const message = event.data;
+      const { button, status } = getOfflineControls();
+      if (!message?.type || !button || !status) return;
+      if (message.type === 'CACHE_START') {
+        isDownloading = true;
+        button.classList.add('downloading');
+        setOfflineState(false, `缓存中… 0/${message.total}`);
+      } else if (message.type === 'CACHE_PROGRESS') {
+        status.textContent = `缓存中… ${message.done}/${message.total}`;
+        status.classList.add('visible');
+      } else if (message.type === 'CACHE_DONE') {
+        isDownloading = false;
+        button.classList.remove('downloading');
+        setOfflineState(true, `✓ 当前页及 ${message.total - 1} 个资源可离线访问`);
+      } else if (message.type === 'CACHE_ERROR') {
+        isDownloading = false;
+        button.classList.remove('downloading');
+        setOfflineState(false, `✗ ${message.error || '缓存失败'}`);
+      } else if (message.type === 'STATUS') {
+        if (!isDownloading) setOfflineState(Boolean(message.pageCached));
+      } else if (message.type === 'CACHE_CLEARED') {
+        setOfflineState(false, '缓存已清空');
       }
     });
-  })();
+  }
+
+  getSidebar()?.addEventListener('dblclick', (event) => {
+    if (!(event.target as HTMLElement).closest('#offline-cache-btn')) return;
+    if (confirm('确认清空离线缓存？')) navigator.serviceWorker.controller?.postMessage({ type: 'CLEAR_CACHE' });
+  });
+  getSidebar()?.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('#offline-cache-btn');
+    if (!button || isDownloading) return;
+    if (!navigator.serviceWorker?.controller) {
+      setOfflineState(false, 'Service Worker 尚未就绪，请刷新页面重试');
+      return;
+    }
+    if (button.classList.contains('ready')) {
+      setOfflineState(true, '✓ 当前页离线缓存就绪；双击可清空');
+      return;
+    }
+    const selectors = [
+      'img[src]',
+      'script[src]',
+      'link[rel="stylesheet"][href]',
+      'link[rel="modulepreload"][href]',
+      'link[rel="preload"][href]',
+      'iframe[src]',
+    ];
+    const urls = new Set<string>([location.href]);
+    document.querySelectorAll<HTMLElement>(selectors.join(',')).forEach((element) => {
+      const value = element.getAttribute('src') ?? element.getAttribute('href');
+      if (value) urls.add(new URL(value, location.href).href);
+    });
+    navigator.serviceWorker.controller.postMessage({ type: 'CACHE_PAGE', pageUrl: location.href, urls: [...urls] });
+  });
+
+  function onPageLoad() {
+    syncSidebar();
+    requestCacheStatus();
+  }
+
+  onPageLoad();
+  document.addEventListener('astro:page-load', onPageLoad);
 </script>

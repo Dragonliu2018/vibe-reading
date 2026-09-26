@@ -10,11 +10,17 @@ const scroll = document.querySelector<HTMLElement>('.main-scroll');
 // ── 阅读进度条 + 桌面端回到顶部 ─────────────────────────────
 const backToTop = document.getElementById('back-to-top') as HTMLElement | null;
 if (scroll) {
+  let progressFrame = 0;
   scroll.addEventListener('scroll', () => {
-    const top = scroll.scrollTop;
-    bar.style.width = (top / (scroll.scrollHeight - scroll.clientHeight) * 100) + '%';
-    if (isDesktop()) backToTop?.classList.toggle('visible', top > 300);
-  });
+    if (progressFrame) return;
+    progressFrame = requestAnimationFrame(() => {
+      progressFrame = 0;
+      const top = scroll.scrollTop;
+      const range = Math.max(1, scroll.scrollHeight - scroll.clientHeight);
+      bar.style.width = (top / range * 100) + '%';
+      if (isDesktop()) backToTop?.classList.toggle('visible', top > 300);
+    });
+  }, { passive: true });
 }
 backToTop?.addEventListener('click', () => {
   scroll?.scrollTo({ top: 0, behavior: 'smooth' });

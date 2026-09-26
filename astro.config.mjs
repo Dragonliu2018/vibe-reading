@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { rehypeJsdelivrImages } from './scripts/rehype-jsdelivr-images.mjs';
-import { generateSiteManifest } from './scripts/generate-site-manifest.mjs';
 import { privateImagesDevPlugin, privateImagesIntegration } from './scripts/private-images.mjs';
+import { prunePublicImagesIntegration } from './scripts/prune-public-images.mjs';
 
 const BASE = '/vibe-reading';
 const rawContentMode = process.env.CONTENT_MODE ?? 'public';
@@ -32,6 +32,9 @@ export default defineConfig({
   base: '/vibe-reading',
   output: 'static',
   outDir: PRIVATE_BUILD ? './dist-private' : './dist',
+  // ClientRouter otherwise attaches hover-prefetch listeners to every one of
+  // the thousands of article/category links on aggregate pages.
+  prefetch: { prefetchAll: false },
 
   markdown: {
     remarkPlugins: [remarkMath],
@@ -51,9 +54,7 @@ export default defineConfig({
   },
 
   integrations: [
-    // Copy first so generateSiteManifest sees private images in dist-private.
     privateImagesIntegration({ enabled: PRIVATE_BUILD, sourceDir: PRIVATE_IMGS }),
-    generateSiteManifest(),
     {
       /**
        * 构建后自动往 HTML 文章页注入 giscus-loader.js
@@ -73,12 +74,18 @@ export default defineConfig({
             const file = pj(outputDir, page.pathname, 'index.html');
             if (!ex(file)) continue;
             const html = rf(file, 'utf-8');
-            if (html.includes('giscus-loader.js')) continue; // 已注入，跳过
-            wf(file, html.replace('</body>', `${SCRIPT}\n</body>`));
+            const marked = html.replace(/<body(?![^>]*data-pagefind-body)/i, '<body data-pagefind-body');
+            const output = marked.includes('giscus-loader.js')
+              ? marked
+              : marked.replace('</body>', `${SCRIPT}\n</body>`);
+            if (output !== html) wf(file, output);
           }
         },
       },
     },
+    // Markdown images use the CDN in production. Keep only exceptional local
+    // image assets still referenced by generated HTML instead of shipping all 248 MiB.
+    prunePublicImagesIntegration({ base: BASE }),
   ],
 
   vite: {

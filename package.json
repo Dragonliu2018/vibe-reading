@@ -14,6 +14,8 @@
     "push:corvus": "node scripts/push-corvus.mjs",
     "test:content-mode": "node --test scripts/check-private-leak.test.mjs",
     "test:private-images": "node --test scripts/private-images.test.mjs",
+    "test:article-images": "node --test scripts/rehype-jsdelivr-images.test.mjs",
+    "test:prune-images": "node --test scripts/prune-public-images.test.mjs",
     "guard:staged": "node scripts/guard-public-repo-staged.mjs",
     "add-image": "node scripts/add-image.mjs"
   },

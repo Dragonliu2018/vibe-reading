@@ -13,16 +13,41 @@ const LOCAL_PREFIX = '/vibe-reading/images';
 
 export function rehypeJsdelivrImages() {
   return (tree) => {
-    // 仅生产构建改写；dev 保留本地路径
-    if (process.env.NODE_ENV !== 'production') return;
     const walk = (node) => {
       if (node && node.type === 'element' && node.tagName === 'img') {
+        node.properties ??= {};
         const src = node.properties?.src;
-        if (typeof src === 'string' && src.startsWith(LOCAL_PREFIX + '/')) {
+        // Native lazy loading avoids eagerly downloading dozens of below-fold
+        // article figures. Explicit author choices still win.
+        node.properties.loading ??= 'lazy';
+        node.properties.decoding ??= 'async';
+
+        // 仅生产构建改写；dev 保留本地路径
+        if (process.env.NODE_ENV === 'production' && typeof src === 'string' && src.startsWith(LOCAL_PREFIX + '/')) {
           node.properties.src = JSDELIVR_BASE + src.slice(LOCAL_PREFIX.length);
         }
       }
-      if (node && node.children) node.children.forEach(walk);
+      if (node && node.children) {
+        node.children.forEach(walk);
+
+        // Build standalone image paragraphs as semantic figures. Doing this
+        // here avoids client-side DOM replacement and the associated layout shift.
+        if (
+          node.type === 'element' &&
+          node.tagName === 'p' &&
+          node.children.length === 1 &&
+          node.children[0]?.type === 'element' &&
+          node.children[0].tagName === 'img'
+        ) {
+          const image = node.children[0];
+          const alt = typeof image.properties?.alt === 'string' ? image.properties.alt.trim() : '';
+          node.tagName = 'figure';
+          node.properties = { ...(node.properties ?? {}), className: ['image-figure'] };
+          node.children = alt
+            ? [image, { type: 'element', tagName: 'figcaption', properties: {}, children: [{ type: 'text', value: alt }] }]
+            : [image];
+        }
+      }
     };
     walk(tree);
   };

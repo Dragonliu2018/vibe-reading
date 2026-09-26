@@ -9,7 +9,7 @@
  * 新增文章只需在文件里写 category，无需改此文件。
  */
 
-import { articles, sourceLabel } from './articles';
+import { articleBySlug, articles, sourceLabel } from './articles';
 
 export interface TreeNode {
   key:       string;       // 完整路径作为唯一 key，例如 "AI/Agent/Observability/Litefuse"
@@ -20,7 +20,7 @@ export interface TreeNode {
 
 // ── 计算文章在侧边栏的展示标题（含 source 前缀）──────────────────
 function displayTitle(slug: string): string {
-  const a = articles.find(a => a.slug === slug);
+  const a = articleBySlug.get(slug);
   if (!a) return slug;
   if (!a.source) return a.title;
   const label = sourceLabel(a.source, a.categoryPath ?? []);
@@ -59,7 +59,7 @@ function collectSlugs(node: TreeNode): string[] {
 function isPrivateBranch(node: TreeNode): boolean {
   const slugs = collectSlugs(node);
   if (!slugs.length) return false;
-  return slugs.every((slug) => articles.find((a) => a.slug === slug)?.visibility === 'private');
+  return slugs.every((slug) => articleBySlug.get(slug)?.visibility === 'private');
 }
 
 // ── 从 articles 自动构建分类树 ──────────────────────────────────────
@@ -81,8 +81,8 @@ function buildTree(): TreeNode[] {
     for (const node of nodes) {
       if (node.slugs) {
         node.slugs.sort((a, b) => {
-          const artA = articles.find(x => x.slug === a);
-          const artB = articles.find(x => x.slug === b);
+          const artA = articleBySlug.get(a);
+          const artB = articleBySlug.get(b);
           // Overview 固定排第一
           if (artA?.title === 'Overview') return -1;
           if (artB?.title === 'Overview') return 1;

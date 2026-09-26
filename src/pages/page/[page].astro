@@ -1,0 +1,24 @@
+---
+import ArticleList from '../../components/ArticleList.astro';
+import ViewTabs from '../../components/ViewTabs.astro';
+import { articlePageCount, articlesByDate, getArticlePage } from '../../data/article-pagination';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return Array.from({ length: Math.max(0, articlePageCount - 1) }, (_, index) => {
+    const page = index + 2;
+    return { params: { page: String(page) }, props: { page } };
+  });
+}
+
+const { page } = Astro.props;
+---
+
+<BaseLayout
+  title={`文章列表 · 第 ${page} 页 · Vibe Reading`}
+  description={`Vibe Reading 文章列表第 ${page} 页`}
+  mainClass="padded"
+>
+  <ViewTabs active="list" count={articlesByDate.length} />
+  <ArticleList items={getArticlePage(page)} page={page} totalPages={articlePageCount} />
+</BaseLayout>

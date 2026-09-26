@@ -154,7 +154,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     @media (max-width: 680px) { .footer { padding: 28px 6%; } }
   </style>
 </head>
-<body class={theme === 'github' ? 'theme-github' : undefined}>
+<body class={theme === 'github' ? 'theme-github' : undefined} data-sidebar-mode={navMode}>
 
   <NavBar mode={navMode} />
 

@@ -1,0 +1,77 @@
+---
+import type { Article } from '../data/articles';
+import { sourceLabel } from '../data/articles';
+import { deriveBadges } from '../data/badges';
+import { encodeArticleSlug } from '../data/paths';
+import ArticleBadges from './ArticleBadges.astro';
+
+export interface Props {
+  article: Article;
+  animate?: boolean;
+}
+
+const { article, animate = false } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const badges = deriveBadges(article);
+const source = article.source;
+const sourcePrefix = source ? sourceLabel(source, article.categoryPath ?? []) : '';
+---
+
+<a class:list={['article-card', { 'fade-up': animate }]} href={`${base}/articles/${encodeArticleSlug(article.slug)}`}>
+  <div class="card-inner">
+    <div>
+      <div class="card-meta"><ArticleBadges state={badges} /></div>
+      <div class="card-title">
+        {sourcePrefix && <span class="card-source-label">{sourcePrefix}</span>}
+        {source?.prType && <span class="card-pr-type"> {source.prType}:</span>}
+        {sourcePrefix ? ` ${article.title}` : article.title}
+      </div>
+      <div class="card-desc">{article.description}</div>
+      <div class="card-tags">{article.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+    </div>
+    <div class="card-aside">
+      <span class="card-date">{article.date.slice(0, 10)}</span>
+      {article.readingTime && <span class="card-reading">{article.readingTime}</span>}
+    </div>
+  </div>
+</a>
+
+<style>
+  .article-card {
+    display: block; background: var(--card-bg); border: 1px solid var(--card-border);
+    border-bottom: none; padding: 22px 26px; box-shadow: var(--card-shadow);
+    transition: background .22s, transform .25s ease, box-shadow .25s ease;
+    position: relative; content-visibility: auto; contain-intrinsic-size: auto 150px;
+  }
+  .article-card:last-of-type { border-bottom: 1px solid var(--card-border); }
+  .article-card:first-of-type { border-radius: var(--radius) var(--radius) 0 0; }
+  .article-card:last-of-type { border-radius: 0 0 var(--radius) var(--radius); }
+  .article-card:only-of-type { border-radius: var(--radius); border-bottom: 1px solid var(--card-border); }
+  .article-card:hover { background: #1a1a1d; transform: translateY(-2px); box-shadow: var(--card-shadow-h); z-index: 1; }
+  .article-card:hover .card-title { color: var(--accent); }
+  .card-inner { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
+  .card-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; flex-wrap: wrap; }
+  :global(.cat-badge), :global(.pin-badge), :global(.star-badge),
+  :global(.review-badge), :global(.origin-badge), :global(.private-badge) {
+    font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+    letter-spacing: 0.2px; cursor: default;
+  }
+  :global(.pin-badge), :global(.star-badge) { color: #ffd60a; background: rgba(255,214,10,.12); border: 1px solid rgba(255,214,10,.30); display: inline-flex; align-items: center; gap: 3px; }
+  :global(.review-badge[data-review-state="pending"]) { color: #ff9f0a; background: rgba(255,159,10,.12); border: 1px solid rgba(255,159,10,.30); }
+  :global(.review-badge[data-review-state="reviewed"]) { color: #3fb950; background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.30); }
+  :global(.origin-badge[data-origin="repost"]) { color: #2dd4bf; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.30); }
+  :global(.origin-badge[data-origin="original"]) { color: #ff6b9d; background: rgba(255,107,157,.12); border: 1px solid rgba(255,107,157,.30); }
+  :global(.private-badge) { color: #f85149; background: rgba(248,81,73,.12); border: 1px solid rgba(248,81,73,.30); }
+  .card-title { font-size: 16.5px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 7px; transition: color .15s; }
+  .card-source-label { color: inherit; margin-right: 0.2em; }
+  .card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin-bottom: 13px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag { font-size: 11px; font-weight: 500; color: var(--text-dim); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 6px; font-family: var(--mono); }
+  .card-aside { text-align: right; flex-shrink: 0; padding-top: 2px; }
+  .card-date { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; display: block; margin-bottom: 3px; white-space: nowrap; }
+  .card-reading { font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
+  @media (max-width: 680px) {
+    .card-inner { grid-template-columns: 1fr; gap: 10px; }
+    .card-aside { text-align: left; }
+  }
+</style>

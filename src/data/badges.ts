@@ -11,7 +11,7 @@
 import type { ArticleSource } from './articles';
 
 // ── 内容类型徽章调色板：一色一标签 ──────────────────────────────────
-// 11 个标签是站点语料的封闭集合（frontmatter contentType），每个专属一色，
+// 12 个标签是站点语料的封闭集合（frontmatter contentType），每个专属一色，
 // 颜色真正编码信息。新类型追加到尾部即可（缺失降级首色）。
 export const BADGE_PALETTE = [
   { text: '#58a6ff', bg: 'rgba(88,166,255,.12)',  border: 'rgba(88,166,255,.30)'  },  // CodeWiki      蓝
@@ -25,10 +25,11 @@ export const BADGE_PALETTE = [
   { text: '#bb9af7', bg: 'rgba(187,154,247,.12)', border: 'rgba(187,154,247,.30)' },  // Informal      兰紫
   { text: '#7dcfff', bg: 'rgba(125,207,255,.12)', border: 'rgba(125,207,255,.30)' },  // Reading       浅蓝
   { text: '#ff9e64', bg: 'rgba(255,158,100,.12)', border: 'rgba(255,158,100,.30)' },  // Meetups       橙
+  { text: '#818cf8', bg: 'rgba(129,140,248,.12)', border: 'rgba(129,140,248,.30)' },  // Interview     靛蓝
 ] as const;
 
 /** 内容类型标签 → 专属色（顺序即 BADGE_PALETTE 下标） */
-const CONTENT_TYPES = ['CodeWiki', 'Papers', 'Docs', 'Contributions', 'Official', 'PRs', 'Blogs', 'Notes', 'Informal', 'Reading', 'Meetups'] as const;
+const CONTENT_TYPES = ['CodeWiki', 'Papers', 'Docs', 'Contributions', 'Official', 'PRs', 'Blogs', 'Notes', 'Informal', 'Reading', 'Meetups', 'Interview'] as const;
 
 const typeColorMap = new Map<string, (typeof BADGE_PALETTE)[number]>(
   CONTENT_TYPES.map((label, i) => [label, BADGE_PALETTE[i]])

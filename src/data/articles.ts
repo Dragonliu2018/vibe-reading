@@ -18,7 +18,7 @@ export interface Article {
   source?:      ArticleSource;
   date:         string;        // ISO 8601: YYYY-MM-DDTHH:MM:SS+08:00（北京时间）；排序按完整值，展示截前 10 字符
   category:     string[];      // 主分类层级路径（frontmatter 第一个分类组）；决定文件位置、面包屑、sourceLabel
-  contentType?: string;       // 内容类型徽章（CodeWiki/Papers/Docs/PRs/Official/Blogs…），frontmatter 显式声明
+  contentType?: string;       // 内容类型徽章（CodeWiki/Papers/Docs/PRs/Blogs/Interview…），frontmatter 显式声明
   categoryPath: string[];      // 同 category，供侧边栏树使用（别名，保持侧边栏逻辑不变）
   alsoCategoryPaths?: string[][]; // 副分类组列表（frontmatter alsoCategories）；每条是一个完整分类路径，文章在树中多处引用，文件仍只在主分类目录
   tags:         string[];

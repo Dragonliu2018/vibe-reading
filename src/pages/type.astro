@@ -3,7 +3,7 @@
  * 类型视图 — 按内容类型（frontmatter contentType）分组展示文章
  *
  * 从徽章视图独立出来的视图（原"按内容类型"维度）：
- * CodeWiki/Papers/Docs/PRs/Official… 一色一标签（BADGE_PALETTE 专属色）。
+ * CodeWiki/Papers/Docs/PRs/Interview… 一色一标签（BADGE_PALETTE 专属色）。
  * 分组头复用徽章语言，与徽章视图的折叠组同款交互。
  */
 import { articles, type Article } from '../data/articles';
@@ -37,7 +37,7 @@ const groups = groupByContentType();
 
 <BaseLayout
   title="类型 · Vibe Reading"
-  description={`按内容类型（CodeWiki/Papers/Docs 等）分组的 ${totalArticles} 篇文章`}
+  description={`按内容类型（CodeWiki/Papers/Docs/Interview 等）分组的 ${totalArticles} 篇文章`}
   mainClass="padded"
 >
   <ViewTabs active="type" />

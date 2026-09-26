@@ -84,7 +84,7 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读�
 
 **`contentType`（内容类型徽章，必填）：**
 
-与 category 末级平行声明的 frontmatter 字段——category 回答"在哪"（领域路径），contentType 回答"是什么"（内容体裁）。徽章、类型视图（/type）都读它，一色一标签（CodeWiki 蓝 / Papers 紫 / Docs 蓝灰 / Contributions 淡紫 / PRs 玫红 / Blogs 橄榄绿 / Notes 沙金）。
+与 category 末级平行声明的 frontmatter 字段——category 回答"在哪"（领域路径），contentType 回答"是什么"（内容体裁）。徽章、类型视图（/type）都读它，一色一标签（CodeWiki 蓝 / Papers 紫 / Docs 蓝灰 / Contributions 淡紫 / PRs 玫红 / Blogs 橄榄绿 / Notes 沙金 / Interview 靛蓝）。
 
 | contentType | 用于 |
 |-------------|------|
@@ -95,6 +95,7 @@ PR/commit 文章还需加 `source` 字段，见 `markdown-pr.md`。论文解读�
 | `Papers` | 论文解读 |
 | `Blogs` | 博客/文章转载（category 末级为 Official / Informal / Blogs 的全部文章，统一为 Blogs） |
 | `Notes` | 技术笔记 |
+| `Interview` | 八股 |
 
 规则：**contentType 与 category 末级类型标记对应**（末级 `Official`/`Informal`/`Blogs` → `Blogs`；`CodeWiki`+版本号 → `CodeWiki`；`Contributions` → `Contributions`；等等）。写在 `category:` 行的下一行。
 

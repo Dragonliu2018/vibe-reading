@@ -582,7 +582,7 @@ const sidebarTreeUrl = `${base}/sidebar-tree.txt`;
 
 <script>
   const isDesktop = () => window.matchMedia('(min-width: 960px)').matches;
-  let articleTreePromise: Promise<string> | null = null;
+  let articleTreeRequestId = 0;
   let isDownloading = false;
   let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -664,19 +664,18 @@ const sidebarTreeUrl = `${base}/sidebar-tree.txt`;
   }
 
   async function loadArticleTree(sidebar: HTMLElement): Promise<string> {
-    if (!articleTreePromise) {
-      const url = sidebar.dataset.treeUrl;
-      articleTreePromise = fetch(url ?? '')
-        .then((response) => {
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          return response.text();
-        })
-        .catch((error) => {
-          articleTreePromise = null;
-          throw error;
-        });
+    const response = await fetch(sidebar.dataset.treeUrl ?? '', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.text();
+  }
+
+  function hashTree(html: string): string {
+    let hash = 2166136261;
+    for (let i = 0; i < html.length; i++) {
+      hash ^= html.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
     }
-    return articleTreePromise;
+    return (hash >>> 0).toString(16);
   }
 
   async function syncSidebar() {
@@ -691,21 +690,30 @@ const sidebarTreeUrl = `${base}/sidebar-tree.txt`;
     });
 
     if (mode === 'tools') {
+      articleTreeRequestId++;
+      delete root.dataset.treeHash;
       if (root.dataset.kind !== 'tools') {
         const template = document.getElementById('g-tools-tree') as HTMLTemplateElement | null;
         root.innerHTML = template?.innerHTML ?? '<p class="tree-label">Tools</p>';
         root.dataset.kind = 'tools';
       }
-    } else if (root.dataset.kind !== 'articles') {
-      root.innerHTML = '<p class="tree-loading">正在加载分类…</p>';
+    } else {
+      const requestId = ++articleTreeRequestId;
+      const hadArticleTree = root.dataset.kind === 'articles';
+      if (!hadArticleTree) root.innerHTML = '<p class="tree-loading">正在加载分类…</p>';
       try {
         const html = await loadArticleTree(sidebar);
-        if (!root.isConnected || document.body.dataset.sidebarMode === 'tools') return;
-        root.innerHTML = html;
+        if (requestId !== articleTreeRequestId || !root.isConnected || document.body.dataset.sidebarMode === 'tools') return;
+        const treeHash = hashTree(html);
+        if (root.dataset.treeHash !== treeHash) {
+          if (hadArticleTree) saveOpenCats(sidebar);
+          root.innerHTML = html;
+          root.dataset.treeHash = treeHash;
+          restoreOpenCats(sidebar);
+        }
         root.dataset.kind = 'articles';
-        restoreOpenCats(sidebar);
       } catch {
-        root.innerHTML = '<p class="tree-loading">分类加载失败，点击刷新重试</p>';
+        if (!hadArticleTree) root.innerHTML = '<p class="tree-loading">分类加载失败，点击刷新重试</p>';
       }
     }
 

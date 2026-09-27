@@ -57,6 +57,12 @@ self.addEventListener('fetch', (event) => {
   // 不拦截论文 PDF（体积较大，交给浏览器按需处理）
   if (isSameOrigin && url.pathname.startsWith(`${BASE}/papers/`)) return;
 
+  // 分类树随文章元数据变化，优先取网络新版本；离线时再回退到上次成功缓存。
+  if (isSameOrigin && url.pathname === `${BASE}/sidebar-tree.txt`) {
+    event.respondWith(networkFirst(req, CACHE_RUNTIME));
+    return;
+  }
+
   // HTML 页面导航 → stale-while-revalidate
   if (req.mode === 'navigate') {
     event.respondWith(staleWhileRevalidate(req, CACHE_RUNTIME));
@@ -94,6 +100,18 @@ async function cacheFirst(req, cacheName) {
     return res;
   } catch {
     return cached || Response.error();
+  }
+}
+
+// ── 分类树：network-first，保证更新及时，同时保留离线回退 ──────────
+async function networkFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetch(req, { cache: 'no-store' });
+    if (response && response.ok) await cache.put(req, response.clone());
+    return response;
+  } catch {
+    return (await cache.match(req)) || Response.error();
   }
 }
 

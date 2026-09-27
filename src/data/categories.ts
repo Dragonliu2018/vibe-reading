@@ -95,7 +95,7 @@ function buildTree(): TreeNode[] {
           if (!isNaN(idA) && !isNaN(idB)) return idA - idB;   // 都有 PR 号：数值升序
           if (!isNaN(idA)) return -1;                           // 只 a 有：a 在前
           if (!isNaN(idB)) return 1;                            // 只 b 有：b 在前
-          return displayTitle(a).localeCompare(displayTitle(b)); // 都没有：字母序
+          return displayTitle(a).localeCompare(displayTitle(b), 'zh-CN'); // 都没有：按中文拼音排序
         });
       }
       if (node.children) sortSlugs(node.children);

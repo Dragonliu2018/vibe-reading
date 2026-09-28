@@ -122,6 +122,42 @@ const sidebarTreeUrl = `${base}/sidebar-tree.txt`;
       // 禁用所有过渡，防止箭头旋转、高度展开等动画在切换文章时触发
       sidebar.classList.add('no-transition');
 
+      // 0. 首帧前注入 localStorage 缓存的树 HTML：硬刷新 / 新标签页 / 从外链
+      //    进入时，树在首帧就存在，展开态与滚动位置还原不再是"还原了个寂寞"。
+      //    端点 HTML 是纯净树（无 active / 无展开态），注入后再点亮当前文章。
+      //    673KB 同步读 localStorage 约 1-2ms，远早于首帧，无感。
+      //    key 带 v1：树 HTML 结构变更时同步 bump，旧缓存自然失效。
+      if (sidebar.dataset.sidebarMode !== 'tools') {
+        var root = document.getElementById('g-sidebar-tree');
+        var cached = null;
+        try { cached = localStorage.getItem('sidebar-tree-html-v1'); } catch (_) {}
+        if (root && cached && !root.querySelector('.tree-node')) {
+          root.innerHTML = cached;
+          root.dataset.kind = 'articles';
+          try { root.dataset.treeHash = localStorage.getItem('sidebar-tree-hash-v1') || ''; } catch (_) {}
+        }
+
+        // 0.5 点亮当前文章（含展开祖先分类），与页面主体同步出现在首帧；
+        //     之后模块脚本的 syncActiveLink 幂等复核，无二次变更
+        var cur = location.pathname.replace(/\/$/, '');
+        var links = sidebar.querySelectorAll('a.tree-article');
+        for (var i = 0; i < links.length; i++) {
+          if (links[i].pathname.replace(/\/$/, '') === cur) {
+            links[i].classList.add('active');
+            var p = links[i].parentElement;
+            while (p && p !== sidebar) {
+              if (p.classList.contains('tree-children')) {
+                p.classList.add('open');
+                var pb = p.previousElementSibling;
+                if (pb && pb.classList.contains('tree-cat')) pb.classList.add('open');
+              }
+              p = p.parentElement;
+            }
+            break;
+          }
+        }
+      }
+
       // 1. 还原分类展开状态
       var keys = JSON.parse(localStorage.getItem('sidebar-open-cats') || '[]');
       keys.forEach(function (key) {
@@ -710,6 +746,12 @@ const sidebarTreeUrl = `${base}/sidebar-tree.txt`;
           root.innerHTML = html;
           root.dataset.treeHash = treeHash;
           restoreOpenCats(sidebar);
+          // 写入首帧缓存：下次硬刷新 / 新标签页时 inline 脚本首帧前注入。
+          // 配额满（QuotaExceededError）等失败静默放弃，退回加载占位路径
+          try {
+            localStorage.setItem('sidebar-tree-html-v1', html);
+            localStorage.setItem('sidebar-tree-hash-v1', treeHash);
+          } catch {}
         }
         root.dataset.kind = 'articles';
       } catch {

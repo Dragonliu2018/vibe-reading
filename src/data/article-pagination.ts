@@ -1,6 +1,6 @@
 import { articles } from './articles';
 
-export const ARTICLE_PAGE_SIZE = 60;
+export const ARTICLE_PAGE_SIZE = 20;
 export const articlesByDate = [...articles].sort(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 );

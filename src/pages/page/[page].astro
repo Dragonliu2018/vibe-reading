@@ -20,5 +20,5 @@ const { page } = Astro.props;
   mainClass="padded"
 >
   <ViewTabs active="list" count={articlesByDate.length} />
-  <ArticleList items={getArticlePage(page)} page={page} totalPages={articlePageCount} />
+  <ArticleList items={getArticlePage(page)} page={page} totalPages={articlePageCount} total={articlesByDate.length} />
 </BaseLayout>

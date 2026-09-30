@@ -16,7 +16,7 @@ import ViewTabs from '../components/ViewTabs.astro';
   mainClass="padded"
 >
   <ViewTabs active="list" count={articlesByDate.length} />
-  <ArticleList items={getArticlePage(1)} page={1} totalPages={articlePageCount} />
+  <ArticleList items={getArticlePage(1)} page={1} totalPages={articlePageCount} total={articlesByDate.length} />
 
   <Fragment slot="footer">
     AI-drafted · Human-reviewed &nbsp;·&nbsp;

@@ -23,7 +23,6 @@ const firstGroup = groups.findIndex(group => group.children.length > 0);
             <small aria-label="题目数量">{group.children.filter(h => h.depth === 3 && /^\d+\.\d+\s+/.test(h.text)).length}</small>
           </summary>
           <ul>
-            <li><a href={`#${group.heading.slug}`} class:list={[linkClass, 'depth-2']} data-id={group.heading.slug}>章节概览</a></li>
             {group.children.map(h => (
               <li><a href={`#${h.slug}`} class:list={[linkClass, `depth-${h.depth}`]} data-id={h.slug} title={h.text}>{h.text}</a></li>
             ))}

@@ -2,7 +2,7 @@
  * Vibe Reading Service Worker
  *
  * 缓存策略：
- * - HTML 页面 (navigation): stale-while-revalidate（访问即缓存，秒开+后台更新）
+ * - HTML 页面 (navigation): network-first（在线优先获取最新文章，离线回退缓存）
  * - 同源静态资源 (CSS/JS/图片): cache-first
  * - 文章图片 CDN: cache-first（仅允许本站图片仓库）
  *
@@ -63,9 +63,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML 页面导航 → stale-while-revalidate
+  // HTML 页面导航 → 在线优先，避免旧文章长期遮住新题目标注。
   if (req.mode === 'navigate') {
-    event.respondWith(staleWhileRevalidate(req, CACHE_RUNTIME));
+    event.respondWith(networkFirst(req, CACHE_RUNTIME, true));
     return;
   }
 
@@ -73,22 +73,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(cacheFirst(req, CACHE_RUNTIME));
 });
 
-// ── 策略 1: stale-while-revalidate（HTML 页面）────────────────────
-async function staleWhileRevalidate(req, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await caches.match(req);
-
-  const fetchPromise = fetch(req)
-    .then((res) => {
-      if (res && res.ok) cache.put(req, res.clone());
-      return res;
-    })
-    .catch(() => cached);  // 网络失败时返回缓存（离线核心）
-
-  return cached || fetchPromise;
-}
-
-// ── 策略 2: cache-first（静态资源 CSS/JS/图片）────────────────────
+// ── 策略 1: cache-first（静态资源 CSS/JS/图片）────────────────────
 async function cacheFirst(req, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await caches.match(req);
@@ -103,15 +88,15 @@ async function cacheFirst(req, cacheName) {
   }
 }
 
-// ── 分类树：network-first，保证更新及时，同时保留离线回退 ──────────
-async function networkFirst(req, cacheName) {
+// ── 策略 2: network-first，在线取新版本，离线时回退缓存 ───────────
+async function networkFirst(req, cacheName, includeOffline = false) {
   const cache = await caches.open(cacheName);
   try {
     const response = await fetch(req, { cache: 'no-store' });
     if (response && response.ok) await cache.put(req, response.clone());
     return response;
   } catch {
-    return (await cache.match(req)) || Response.error();
+    return (includeOffline ? await caches.match(req) : await cache.match(req)) || Response.error();
   }
 }
 

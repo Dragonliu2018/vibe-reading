@@ -30,15 +30,24 @@ backToTop?.addEventListener('click', () => {
 const tocLinks   = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
 const headingEls = document.querySelectorAll<HTMLElement>('article h2[id], article h3[id], article h4[id]');
 
+function scrollToHeading(target: HTMLElement) {
+  const desktop = window.matchMedia('(min-width: 960px)').matches;
+  const toolbar = document.querySelector<HTMLElement>('.interview-toolbar:not([hidden])');
+  const offset = toolbar ? toolbar.offsetHeight + (desktop ? 16 : 68) : 68;
+  if (desktop && scroll) {
+    scroll.scrollBy({ top: target.getBoundingClientRect().top - scroll.getBoundingClientRect().top - offset, behavior: 'smooth' });
+  } else {
+    window.scrollBy({ top: target.getBoundingClientRect().top - offset, behavior: 'smooth' });
+  }
+}
+
 tocLinks.forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
     const id = link.getAttribute('href')?.slice(1);
     const target = id ? document.getElementById(id) : null;
     if (!target || !scroll) return;
-    const containerTop = scroll.getBoundingClientRect().top;
-    const targetTop    = target.getBoundingClientRect().top;
-    scroll.scrollBy({ top: targetTop - containerTop - 68, behavior: 'smooth' });
+    scrollToHeading(target);
   });
 });
 
@@ -64,7 +73,7 @@ if (tocPanel && tocHandle && tocToggle && isDesktop()) {
     tocToggle.setAttribute('aria-label', nowCollapsed ? '展开目录' : '折叠目录');
     localStorage.setItem('toc-collapsed', String(nowCollapsed));
     if (!nowCollapsed) {
-      tocPanel.style.width = localStorage.getItem('toc-width') ?? '160px';
+      tocPanel.style.width = localStorage.getItem('toc-width') ?? (document.body.dataset.contentType === 'Interview' ? '220px' : '160px');
     }
   });
 
@@ -149,7 +158,10 @@ mobLinks.forEach(link => {
     closeMobToc();
     const target = id ? document.getElementById(id) : null;
     if (target) {
-      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+      setTimeout(() => {
+        if (document.body.dataset.contentType === 'Interview') scrollToHeading(target);
+        else target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
     }
   });
 });
@@ -159,6 +171,9 @@ if (headingEls.length) {
   const setActive = (id: string) => {
     tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${id}`));
     mobLinks.forEach(a => a.classList.toggle('active', a.dataset.id === id));
+    if (document.body.dataset.contentType === 'Interview') {
+      document.dispatchEvent(new CustomEvent('article:section-active', { detail: id }));
+    }
   };
 
   // 桌面端：root = .main-scroll；移动端：root = null（视口）

@@ -5,6 +5,9 @@ import { fileURLToPath } from 'url';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { rehypeJsdelivrImages } from './scripts/rehype-jsdelivr-images.mjs';
+// Interview question metadata is parsed at Markdown build time; schema changes
+// need the Astro config/plugin pipeline to reload in dev.
+import { rehypeInterview } from './scripts/rehype-interview.mjs';
 import { privateImagesDevPlugin, privateImagesIntegration } from './scripts/private-images.mjs';
 import { prunePublicImagesIntegration } from './scripts/prune-public-images.mjs';
 
@@ -38,7 +41,7 @@ export default defineConfig({
 
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex, rehypeJsdelivrImages],
+    rehypePlugins: [rehypeKatex, rehypeJsdelivrImages, [rehypeInterview, { base: BASE }]],
     shikiConfig: {
       theme: 'github-dark-dimmed',
       transformers: [{

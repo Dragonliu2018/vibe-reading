@@ -1,0 +1,35 @@
+<section class="interview-toolbar" aria-label="八股复习工具" data-pagefind-ignore="all" hidden>
+  <div class="interview-toolbar-top">
+    <div class="interview-modes" role="group" aria-label="阅读模式">
+      <button type="button" data-interview-mode="quiz" aria-pressed="true">自测</button>
+      <button type="button" data-interview-mode="read" aria-pressed="false">阅读</button>
+    </div>
+    <label class="interview-search">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="interview-sr-only">搜索本篇题目与答案</span>
+      <input type="search" placeholder="搜索本篇题目与答案" autocomplete="off" />
+    </label>
+    <button class="interview-filter-button" type="button" data-interview-important aria-pressed="false" hidden>★ 仅重点</button>
+    <label class="interview-organization-filter" hidden>
+      <span class="interview-sr-only">按公司或团队筛选</span>
+      <select data-interview-organization aria-label="按公司或团队筛选">
+        <option value="">全部公司 / 团队</option>
+      </select>
+    </label>
+    <label class="interview-origin-filter" hidden>
+      <span class="interview-sr-only">按记录来源筛选</span>
+      <select data-interview-origin aria-label="按记录来源筛选">
+        <option value="">全部来源</option>
+        <option value="Private">Private</option>
+        <option value="Public">Public</option>
+      </select>
+    </label>
+  </div>
+  <div class="interview-toolbar-bottom">
+    <p class="interview-mode-hint">先尝试回答，再点击题目核对答案。</p>
+    <div class="interview-toolbar-stats">
+      <span class="interview-annotation-progress" hidden></span>
+      <output class="interview-count" aria-live="polite" aria-atomic="true"></output>
+    </div>
+  </div>
+</section>

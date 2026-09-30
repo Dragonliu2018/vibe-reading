@@ -9,7 +9,10 @@ import NavBar from '../components/NavBar.astro';
 import GiscusComments from '../components/GiscusComments.astro';
 import SWRegister from '../components/SWRegister.astro';
 import ScrollRestore from '../components/ScrollRestore.astro';
+import InterviewToc from '../components/InterviewToc.astro';
+import InterviewToolbar from '../components/InterviewToolbar.astro';
 import '../styles/article.css';
+import '../styles/interview.css';
 import 'katex/dist/katex.min.css';
 
 export interface Props {
@@ -111,6 +114,7 @@ const badges = deriveBadges({ pinned, star, contentType, reviewed, source, visib
 
 // TOC: h2 + h3 + h4 only
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.depth === 4);
+const isInterview = contentType === 'Interview';
 ---
 
 <!DOCTYPE html>
@@ -134,7 +138,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
           href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap" />
   )}
 </head>
-<body data-layout={layoutMode} data-sidebar-mode="articles">
+<body data-layout={layoutMode} data-sidebar-mode="articles" data-content-type={contentType}>
 
   <div id="progress-bar" data-pagefind-ignore="all"></div>
 
@@ -150,7 +154,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
       <>
         <aside id="g-toc-panel" class="article-toc-panel" data-pagefind-ignore="all">
           <p class="toc-heading">目录</p>
-          <ul class="toc-list">
+          {isInterview ? <InterviewToc headings={tocHeadings} /> : <ul class="toc-list">
             {tocHeadings.map(h => (
               <li>
                 <a
@@ -160,7 +164,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
                 >{h.text}</a>
               </li>
             ))}
-          </ul>
+          </ul>}
         </aside>
 
         <!-- TOC 折叠 handle -->
@@ -203,6 +207,8 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
         </header>
 
         <div class="article-divider"></div>
+
+        {isInterview && <InterviewToolbar />}
 
         <article class="prose">
           {catAllPaths.length > 0 && (
@@ -345,6 +351,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
   </script>
 
   <script>
+    import '../scripts/interview';
     import '../scripts/article-toc';
   </script>
   <script>
@@ -498,7 +505,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
             </svg>
           </button>
         </div>
-        <ul class="mob-toc-list">
+        {isInterview ? <InterviewToc headings={tocHeadings} mobile /> : <ul class="mob-toc-list">
           {tocHeadings.map(h => (
             <li>
               <a href={`#${h.slug}`}
@@ -509,7 +516,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3 || h.dep
               </a>
             </li>
           ))}
-        </ul>
+        </ul>}
       </div>
     </>
   )}

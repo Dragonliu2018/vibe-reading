@@ -1,0 +1,40 @@
+---
+interface Heading { depth: number; slug: string; text: string }
+interface Props { headings: Heading[]; mobile?: boolean }
+const { headings, mobile = false } = Astro.props;
+const groups: { heading?: Heading; children: Heading[] }[] = [];
+for (const heading of headings) {
+  if (heading.depth === 2) groups.push({ heading, children: [] });
+  else {
+    if (!groups.length) groups.push({ children: [] });
+    groups[groups.length - 1].children.push(heading);
+  }
+}
+const linkClass = mobile ? 'mob-toc-link' : 'toc-link';
+const firstGroup = groups.findIndex(group => group.children.length > 0);
+---
+<ul class:list={[mobile ? 'mob-toc-list' : 'toc-list', 'interview-toc']}>
+  {groups.map((group, index) => (
+    <li>
+      {group.heading && group.children.length > 0 ? (
+        <details class="interview-toc-group" data-chapter-id={group.heading.slug} open={index === firstGroup}>
+          <summary>
+            <span title={group.heading.text}>{group.heading.text}</span>
+            <small aria-label="题目数量">{group.children.filter(h => h.depth === 3 && /^\d+\.\d+\s+/.test(h.text)).length}</small>
+          </summary>
+          <ul>
+            <li><a href={`#${group.heading.slug}`} class:list={[linkClass, 'depth-2']} data-id={group.heading.slug}>章节概览</a></li>
+            {group.children.map(h => (
+              <li><a href={`#${h.slug}`} class:list={[linkClass, `depth-${h.depth}`]} data-id={h.slug} title={h.text}>{h.text}</a></li>
+            ))}
+          </ul>
+        </details>
+      ) : (
+        <>
+          {group.heading && <a href={`#${group.heading.slug}`} class:list={[linkClass, 'depth-2']} data-id={group.heading.slug}>{group.heading.text}</a>}
+          {group.children.map(h => <a href={`#${h.slug}`} class:list={[linkClass, `depth-${h.depth}`]} data-id={h.slug}>{h.text}</a>)}
+        </>
+      )}
+    </li>
+  ))}
+</ul>

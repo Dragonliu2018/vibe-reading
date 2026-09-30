@@ -32,6 +32,8 @@ reviewed: false
 
 小红书 AllSpark 团队提出三个正则条件，证明满足这些条件的信用分配存在且唯一，并据此分析 OPD、RLOO 和 GAE 中的训练现象。在此基础上，团队提出 PACT，改进 Critic 的回归与策略对齐。在 SWE-bench Verified 上，PACT 达到 67.4% Pass Rate，较 GRPO 提高 2.0 个百分点；在四个数学推理基准上，平均准确率达到 72.87%，较 GRPO 提高 8.80 个百分点。
 
+![五个基准结果概览：AIME 2025、AIME 2026、BeyondAIME、HMMT Nov. 2025 与 SWE-bench Verified 上 Base、SAO、PPO、GRPO 与 PACT 的对比](/vibe-reading/images/articles/xiaohongshu-redtech-allspark-pact-credit-assignment/benchmark-overview.png)
+
 ## 01 有了最终奖励，还缺什么？
 
 在许多大模型强化学习任务中，奖励只在轨迹结束时给出。答案对不对，测试过没过，这些结果比较明确。但同一个最终奖励背后，可能包含正确的中间推理、无效的探索，也可能包含一次关键的纠错。
@@ -82,8 +84,6 @@ RLOO 用同一 Prompt 下其他响应的平均奖励作为基线，将当前响�
 
 Credit 与 Value 的变化紧密相关。接下来的问题是，如何让 Critic 更准确地回归 Value，并跟上正在更新的策略？
 
-![PACT 方法概览](/vibe-reading/images/articles/xiaohongshu-redtech-allspark-pact-credit-assignment/pact-overview.png)
-
 PACT 的全称是 Policy Aligned Critic Training，分别调整 Value 的回归目标与 Actor、Critic 的更新流程。
 
 ### 用 BCE 回归有界 Value
@@ -98,13 +98,13 @@ Actor 更新后，同一个前缀下后续生成的分布会发生变化，对�
 
 PACT 采用 Actor-Then-Critic 的顺序，先更新 Actor，再利用新策略的概率对 Critic 训练进行重要性采样修正，使其更好地对齐更新后的策略。整个过程复用已有轨迹，只需额外进行一次更新后 Actor 的前向计算。实际实现使用局部重要性比率，并屏蔽范围外的样本。
 
+![PPO 独立更新与 PACT Actor-Then-Critic 更新流程对比：PACT 先更新 Actor，再经重要性采样修正 Critic，使其对齐新 Actor](/vibe-reading/images/articles/xiaohongshu-redtech-allspark-pact-credit-assignment/actor-then-critic.png)
+
 ## 05 代码与数学任务，PACT 表现如何？
 
 在代码任务中，团队使用 Qwen3.6-35B-A3B，在 OpenSWE 上训练。PACT 在 SWE-bench Verified 上达到 67.4% Pass Rate，相比 GRPO、PPO 和 SAO，分别提高 2.0、2.4 和 3.8 个百分点。
 
 在 Qwen3.5-4B 上，团队使用 OpenCode 在 DAPO-Math-17k 的 3,200 道题目子集上训练。PACT 在 AIME 2025、AIME 2026、BeyondAIME 和 HMMT November 2025 四个基准上均优于所比较的方法，Avg@16 平均准确率达到 72.87%，较 GRPO 和 PPO（λ=1）分别提高 8.80 和 13.16 个百分点。
-
-![代码与数学基准实验结果](/vibe-reading/images/articles/xiaohongshu-redtech-allspark-pact-credit-assignment/benchmark-results.png)
 
 团队还比较了有无 Critic 重要性采样修正的结果。保持更新顺序、BCE 目标和 Actor 侧设置不变，仅移除 Critic IS，数学平均准确率从 72.87% 降至 67.74%。加入修正后，平均提高 5.13 个百分点，四个基准均有提升。
 

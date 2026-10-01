@@ -18,6 +18,7 @@ import { categoryTree, type TreeNode } from '../../data/categories';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleRow from '../../components/ArticleRow.astro';
 import CategorySubtree from '../../components/CategorySubtree.astro';
+import InterviewAlgorithmCollection from '../../components/InterviewAlgorithmCollection.astro';
 
 export function getStaticPaths() {
   const paths: { params: { path: string }; props: { node: TreeNode; pathArray: string[] } }[] = [];
@@ -70,6 +71,7 @@ function catHref(arr: string[]): string {
 
 const totalArticles = countArticles(node);
 const pageTitle = pathArray[pathArray.length - 1];
+const isInterviewAlgorithmCategory = node.key === 'Corvus/Algorithms/面试算法题';
 ---
 
 <BaseLayout
@@ -100,6 +102,9 @@ const pageTitle = pathArray[pathArray.length - 1];
     <p class="cat-count">{totalArticles} 篇文章</p>
   </div>
 
+  {isInterviewAlgorithmCategory ? (
+    <InterviewAlgorithmCollection node={node} />
+  ) : <>
   <!-- 当前分类直属文章 -->
   {directArticles.length > 0 && (
     <div class="article-section">
@@ -119,6 +124,7 @@ const pageTitle = pathArray[pathArray.length - 1];
   {directArticles.length === 0 && visibleChildren.length === 0 && (
     <div class="empty-state">该分类下暂无文章</div>
   )}
+  </>}
 
 </BaseLayout>
 

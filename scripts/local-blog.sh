@@ -22,6 +22,19 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 127
 fi
 
+# Tailscale Serve preserves its MagicDNS Host header. Keep that machine-local
+# value out of the repository while allowing Vite to accept the proxy request.
+LOCAL_BLOG_HOST_FILE="$ROOT/.local-blog-host"
+if [[ -r "$LOCAL_BLOG_HOST_FILE" ]]; then
+  TAILSCALE_HOSTNAME="$(tr -d '[:space:]' < "$LOCAL_BLOG_HOST_FILE")"
+  if [[ ! "$TAILSCALE_HOSTNAME" =~ ^[a-zA-Z0-9.-]+\.ts\.net$ ]]; then
+    echo "Invalid Tailscale hostname in $LOCAL_BLOG_HOST_FILE" >&2
+    exit 1
+  fi
+  export __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS="$TAILSCALE_HOSTNAME"
+  echo "Allowing additional Vite host: $TAILSCALE_HOSTNAME"
+fi
+
 unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
 export NO_PROXY='*'
 export CONTENT_MODE=private

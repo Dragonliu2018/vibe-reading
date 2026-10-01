@@ -884,6 +884,7 @@ a { color: inherit; text-decoration: none; }
 .prose ul { list-style: disc; }
 .prose ul li::marker { color: var(--accent); }
 .prose ol { list-style: decimal; }
+.prose ol ol { list-style-type: lower-alpha; }
 .prose ol li::marker { color: var(--accent); font-weight: 600; }
 .prose li { margin-bottom: 7px; line-height: 1.75; }
 .prose li p { margin: 0; }

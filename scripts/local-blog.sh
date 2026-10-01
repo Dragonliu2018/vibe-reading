@@ -39,4 +39,4 @@ unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
 export NO_PROXY='*'
 export CONTENT_MODE=private
 
-exec npm run dev:private -- --host 0.0.0.0 --port 4321
+exec npm run dev:private -- --host 127.0.0.1 --port 4321

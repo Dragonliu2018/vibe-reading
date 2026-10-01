@@ -30,6 +30,63 @@ backToTop?.addEventListener('click', () => {
 const tocLinks   = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
 const headingEls = document.querySelectorAll<HTMLElement>('article h2[id], article h3[id], article h4[id]');
 
+function headingId(link: HTMLAnchorElement) {
+  try { return decodeURIComponent(link.hash.slice(1)); }
+  catch { return link.hash.slice(1); }
+}
+
+function fragmentUrl(id: string) {
+  const url = new URL(window.location.href);
+  url.hash = id;
+  return url;
+}
+
+function replaceFragment(id: string) {
+  const url = fragmentUrl(id);
+  history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
+}
+
+let highlightTimer = 0;
+function highlightHeading(target: HTMLElement) {
+  document.querySelector('.heading-link-target')?.classList.remove('heading-link-target');
+  target.classList.add('heading-link-target');
+  window.clearTimeout(highlightTimer);
+  highlightTimer = window.setTimeout(() => target.classList.remove('heading-link-target'), 1600);
+}
+
+let toastTimer = 0;
+function showLinkToast(message: string) {
+  let toast = document.querySelector<HTMLElement>('.heading-link-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'heading-link-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.append(toast);
+  }
+  toast.textContent = message;
+  toast.dataset.visible = 'true';
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => { if (toast) toast.dataset.visible = 'false'; }, 1600);
+}
+
+async function copyText(value: string) {
+  try {
+    await navigator.clipboard.writeText(value);
+    return true;
+  } catch {
+    const input = document.createElement('textarea');
+    input.value = value;
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.append(input);
+    input.select();
+    const copied = document.execCommand('copy');
+    input.remove();
+    return copied;
+  }
+}
+
 function scrollToHeading(target: HTMLElement) {
   const desktop = window.matchMedia('(min-width: 960px)').matches;
   const toolbar = document.querySelector<HTMLElement>('.interview-toolbar:not([hidden])');
@@ -44,11 +101,34 @@ function scrollToHeading(target: HTMLElement) {
 tocLinks.forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
-    const id = link.getAttribute('href')?.slice(1);
+    const id = headingId(link);
     const target = id ? document.getElementById(id) : null;
     if (!target || !scroll) return;
+    replaceFragment(id);
+    highlightHeading(target);
     scrollToHeading(target);
   });
+});
+
+// Every rendered heading already has an Astro-generated slug. Reuse it as a
+// block-level permalink so authors never need to maintain extra metadata.
+headingEls.forEach(heading => {
+  if (heading.querySelector(':scope > .heading-permalink')) return;
+  const permalink = document.createElement('a');
+  permalink.className = 'heading-permalink';
+  permalink.href = `#${encodeURIComponent(heading.id)}`;
+  permalink.setAttribute('aria-label', `复制“${heading.textContent?.trim() ?? '此标题'}”的链接`);
+  permalink.setAttribute('data-pagefind-ignore', 'all');
+  permalink.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a4 4 0 0 0 5.7.1l2.1-2.1a4 4 0 0 0-5.7-5.7l-1.2 1.2m1.9 3.7a4 4 0 0 0-5.7-.1l-2.1 2.1a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg>';
+  permalink.addEventListener('click', async event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    replaceFragment(heading.id);
+    highlightHeading(heading);
+    scrollToHeading(heading);
+    showLinkToast(await copyText(fragmentUrl(heading.id).href) ? '已复制此处链接' : '复制失败，请从地址栏复制');
+  });
+  heading.append(permalink);
 });
 
 // ── TOC：折叠 / 展开 ───────────────────────────────────────
@@ -158,6 +238,8 @@ mobLinks.forEach(link => {
     closeMobToc();
     const target = id ? document.getElementById(id) : null;
     if (target) {
+      replaceFragment(id);
+      highlightHeading(target);
       setTimeout(() => {
         if (document.body.dataset.contentType === 'Interview') scrollToHeading(target);
         else target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -187,4 +269,12 @@ if (headingEls.length) {
   }, { root: obsRoot, rootMargin: obsMargin });
 
   headingEls.forEach(h => obs.observe(h));
+}
+
+if (location.hash) {
+  requestAnimationFrame(() => {
+    let target: HTMLElement | null = null;
+    try { target = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch { /* Invalid URI. */ }
+    if (target?.matches('h2, h3, h4')) highlightHeading(target);
+  });
 }

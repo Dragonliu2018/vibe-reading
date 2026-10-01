@@ -226,7 +226,12 @@ function initInterview() {
       filter();
     }
     const question = questions.find(q => q.card.contains(target));
-    if (question) { question.expanded = true; render(question); }
+    // A question permalink should locate the card without revealing its answer
+    // in self-test mode. Links to content inside the answer still expand it.
+    if (question && (target === question.answer || question.answer.contains(target))) {
+      question.expanded = true;
+      render(question);
+    }
     activateChapter(target, true);
   }
 

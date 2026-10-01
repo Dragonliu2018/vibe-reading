@@ -39,4 +39,8 @@ unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
 export NO_PROXY='*'
 export CONTENT_MODE=private
 
+# Keep the toolbar available for desktop development. The shared layout policy
+# hides it on touch-oriented devices.
+./node_modules/.bin/astro preferences enable devToolbar >/dev/null
+
 exec npm run dev:private -- --host 127.0.0.1 --port 4321

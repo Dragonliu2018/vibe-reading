@@ -1,0 +1,8 @@
+<!-- Astro's dev toolbar is useful on PCs but obstructive on touch devices. -->
+<style is:global>
+  @media (hover: none), (pointer: coarse) {
+    astro-dev-toolbar {
+      display: none !important;
+    }
+  }
+</style>

@@ -8,6 +8,7 @@ import SearchModal from '../components/SearchModal.astro';
 import NavBar from '../components/NavBar.astro';
 import GiscusComments from '../components/GiscusComments.astro';
 import SWRegister from '../components/SWRegister.astro';
+import DevToolbarPolicy from '../components/DevToolbarPolicy.astro';
 import ScrollRestore from '../components/ScrollRestore.astro';
 import InterviewToc from '../components/InterviewToc.astro';
 import InterviewToolbar from '../components/InterviewToolbar.astro';
@@ -130,6 +131,7 @@ const referenceBacklinks = pageBacklinks.filter(backlink => backlink.relation !=
   {isPrivateArticle && <meta name="robots" content="noindex,nofollow,noarchive" />}
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   <SWRegister />
+  <DevToolbarPolicy />
   {layoutMode === 'literary' && (
     <link rel="preconnect" href="https://fonts.googleapis.com" />
   )}

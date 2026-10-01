@@ -9,6 +9,7 @@ import Sidebar from '../components/Sidebar.astro';
 import SearchModal from '../components/SearchModal.astro';
 import { articles } from '../data/articles';
 import SWRegister from '../components/SWRegister.astro';
+import DevToolbarPolicy from '../components/DevToolbarPolicy.astro';
 
 export interface Props {
   slug:      string;
@@ -30,6 +31,7 @@ const meta = articles.find(a => a.slug === slug);
   {meta?.description && <meta name="description" content={meta.description} />}
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   <SWRegister />
+  <DevToolbarPolicy />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

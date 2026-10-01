@@ -29,6 +29,17 @@ interface HeadingContext {
 }
 
 const BASE = '/vibe-reading';
+const HEADING_NUMBER_PREFIX = /^\s*(?:\d+(?:\.\d+)+[.、]?|\d+[.、])\s+/;
+
+function numberedHeadingText(text: string, depth: number, counters: number[]): string {
+  for (let current = 2; current < depth; current++) {
+    if (counters[current] === 0) counters[current] = 1;
+  }
+  counters[depth] += 1;
+  for (let current = depth + 1; current <= 6; current++) counters[current] = 0;
+  const number = counters.slice(2, depth + 1).join('.');
+  return `${number}${depth === 2 ? '.' : ''} ${text.replace(HEADING_NUMBER_PREFIX, '')}`;
+}
 
 function nodeText(node: any): string {
   if (typeof node?.value === 'string') return node.value;
@@ -163,11 +174,15 @@ function buildBacklinks(): Map<string, ArticleBacklink[]> {
 
     const slugger = new GithubSlugger();
     const headingStack = new Map<number, HeadingContext>();
+    const headingCounters = Array(7).fill(0);
     const identity = interviewIdentity(sourceCategory);
 
     for (const child of tree.children ?? []) {
       if (child.type === 'heading') {
-        const text = nodeText(child).trim();
+        const rawText = nodeText(child).trim();
+        const text = sourceArticle.autoNumberHeadings === true && child.depth >= 2 && child.depth <= 6
+          ? numberedHeadingText(rawText, child.depth, headingCounters)
+          : rawText;
         const heading: HeadingContext = {
           depth: child.depth,
           text,

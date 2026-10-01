@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { rehypeJsdelivrImages } from './scripts/rehype-jsdelivr-images.mjs';
+import { remarkHeadingNumbers } from './scripts/remark-heading-numbers.mjs';
 // Interview question metadata is parsed at Markdown build time; schema changes
 // need the Astro config/plugin pipeline to reload in dev.
 import { rehypeInterview } from './scripts/rehype-interview.mjs';
@@ -40,7 +41,7 @@ export default defineConfig({
   prefetch: { prefetchAll: false },
 
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkHeadingNumbers, remarkMath],
     rehypePlugins: [rehypeKatex, rehypeJsdelivrImages, [rehypeInterview, { base: BASE }]],
     shikiConfig: {
       theme: 'github-dark-dimmed',

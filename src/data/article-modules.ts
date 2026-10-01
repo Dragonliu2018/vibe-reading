@@ -25,6 +25,7 @@ export interface MarkdownFrontmatter {
   readingTime?: string;
   aiModel?: string;
   contentType?: string;
+  autoNumberHeadings?: boolean;
   source?: unknown;
   reviewed?: boolean | number;
   pinned?: boolean;

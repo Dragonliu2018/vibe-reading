@@ -49,6 +49,8 @@
     const meta       = pre.getAttribute('data-meta') ?? '';
     const titleMatch = meta.match(/title=["']([^"']+)["']/);
     const codeTitle  = titleMatch?.[1] ?? '代码块';
+    const metaFlags  = titleMatch ? meta.replace(titleMatch[0], '') : meta;
+    const initiallyCollapsed = /(?:^|\s)collapsed(?=\s|$)/.test(metaFlags);
 
     // ── 常用语言列表（id 用于高亮，label 显示在下拉菜单，short 显示在按钮）──
     const LANGS: { id: string; label: string; short: string }[] = [
@@ -84,7 +86,7 @@
     // ① 左侧：▼ 代码块
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'code-toggle';
-    toggleBtn.title     = '折叠代码';
+    toggleBtn.title     = initiallyCollapsed ? '展开代码' : '折叠代码';
     toggleBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 11 11" fill="none">
       <path d="M2 4l3.5 3 3.5-3" stroke="currentColor" stroke-width="1.5"
             stroke-linecap="round" stroke-linejoin="round"/>
@@ -241,14 +243,19 @@
     const body = document.createElement('div');
     body.className = 'code-body';
 
+    // Markdown 代码围栏包含 collapsed 时，仅该代码块默认折叠。
+    let collapsed = initiallyCollapsed;
+    if (collapsed) {
+      wrapper.classList.add('is-collapsed');
+      body.style.maxHeight = COLLAPSED_H + 'px';
+    }
+
     pre.parentNode!.insertBefore(wrapper, pre);
     body.appendChild(pre);
     wrapper.append(header, body);
     pre.style.background = 'transparent';
 
     // ── 箭头按钮：点击切换折叠/展开 ──
-    let collapsed = false;
-
     toggleBtn.addEventListener('click', () => {
       if (!collapsed) {
         // 折叠
